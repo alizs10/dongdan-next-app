@@ -1,6 +1,8 @@
 import { Zap } from "lucide-react";
+import Link from "next/link";
 
 function Landing() {
+
     return (
         <div className="landing">
 
@@ -13,10 +15,10 @@ function Landing() {
 
             <p className="landing_text">دیگه چی میخوای؟ همین الان شروع کن.</p>
 
-            <button className="landing_button">
+            <Link href={'/dashboard'} className="landing_button">
                 <p className="landing_button_text">بزن بریم!</p>
                 <Zap className="size-7" />
-            </button>
+            </Link>
         </div>
     );
 }

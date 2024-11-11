@@ -1,0 +1,27 @@
+.events_container {
+    @apply p-3
+}
+
+.header {
+    @apply text-violet-900 text-lg pb-3 border-b border-gray-200;
+}
+
+.empty_container {
+    @apply py-10 flex flex-col gap-y-8 justify-center items-center;
+}
+
+.empty_icon {
+    @apply size-28 text-gray-300;
+}
+
+.empty_text {
+    @apply text-gray-700 text-sm;
+}
+
+.button {
+    @apply bg-violet-100 border-[.13rem] border-violet-100 w-fit px-10 py-5 rounded-2xl hover:border-violet-900 transition-all duration-300 text-violet-900 mx-auto flex flex-row gap-x-4 items-center;
+}
+
+.button_icon {
+    @apply size-6
+}
