@@ -1,17 +1,9 @@
 import type { Metadata } from "next";
-import localFont from "next/font/local";
+// import { sahel } from 'next-persian-fonts/sahel'
+// import { vazirMatn } from 'next-persian-fonts/vazirmatn'
+import { estedad, estedadFD } from 'next-persian-fonts/estedad'
 import "./globals.css";
-
-const geistSans = localFont({
-  src: "./fonts/GeistVF.woff",
-  variable: "--font-geist-sans",
-  weight: "100 900",
-});
-const geistMono = localFont({
-  src: "./fonts/GeistMonoVF.woff",
-  variable: "--font-geist-mono",
-  weight: "100 900",
-});
+import Layout from "@/components/Layout/Layout";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -24,11 +16,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" dir="rtl">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={estedadFD.className}
       >
-        {children}
+        <Layout>
+          {children}
+        </Layout>
       </body>
     </html>
   );
