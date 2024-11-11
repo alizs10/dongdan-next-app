@@ -2,6 +2,7 @@ import { BriefcaseBusiness, Cake, CalendarPlus, Coffee, Info, Plane, PlusIcon, T
 import styles from "./Events.module.css";
 import NewEventModal from "./NewEventModal";
 import { useState } from "react";
+import Link from "next/link";
 
 const EVENTS = [
     {
@@ -88,22 +89,24 @@ function Events() {
 
                 {EVENTS.map(event => (
 
-                    <li key={event.id} className={styles.event_item}>
-                        <div className={styles.event_item_right}>
+                    <Link href={`/dashboard/events/${event.id}`} key={event.id}>
+                        <li className={styles.event_item}>
+                            <div className={styles.event_item_right}>
 
-                            <div className={styles.event_item_icon_container}>
-                                {renderIcon(event.label)}
+                                <div className={styles.event_item_icon_container}>
+                                    {renderIcon(event.label)}
+                                </div>
+
+                                <h2 className={styles.event_item_name}>{event.name}</h2>
                             </div>
-
-                            <h2 className={styles.event_item_name}>{event.name}</h2>
-                        </div>
-                        <div className={styles.event_item_left}>
-                            <button className={styles.event_item_button}>
-                                <Info className={styles.event_item_button_icon} />
-                                <span>مشاهده جزییات</span>
-                            </button>
-                        </div>
-                    </li>
+                            <div className={styles.event_item_left}>
+                                <button className={styles.event_item_button}>
+                                    <Info className={styles.event_item_button_icon} />
+                                    <span>مشاهده جزییات</span>
+                                </button>
+                            </div>
+                        </li>
+                    </Link>
                 ))}
 
             </ul>

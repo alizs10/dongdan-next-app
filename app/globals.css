@@ -86,7 +86,7 @@ body {
 /* footer styles */
 
 .footer {
-  @apply px-10 md:px-14 xl:px-20 py-5 md:py-10 xl:py-20 mt-auto bg-white flex flex-col gap-10 md:gap-12 xl:gap-20 md:grid md:grid-cols-2 xl:grid-cols-3 border-t border-gray-200;
+  @apply mt-20 px-10 md:px-14 xl:px-20 py-5 md:py-10 xl:py-20 bg-white flex flex-col gap-10 md:gap-12 xl:gap-20 md:grid md:grid-cols-2 xl:grid-cols-3 border-t border-gray-200;
 }
 
 .footer_info {
@@ -149,4 +149,12 @@ body {
 .footer_social_link_text {
   font-size: .9rem;
   font-weight: 400;
+}
+
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  margin: 0;
 }

@@ -6,12 +6,13 @@ type PropsTypes = {
     type?: string,
     hint?: string,
     inpRef?: any,
-    value: string,
+    value: string | number,
     error?: string,
     handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void,
+    inpProps?: React.InputHTMLAttributes<HTMLInputElement>,
 }
 
-function TextInput({ name, label, type, hint, inpRef, value, error, handleChange }: PropsTypes) {
+function TextInput({ name, label, type, hint, inpRef, value, error, handleChange, inpProps }: PropsTypes) {
 
     return (
         <div className={`w-full flex flex-col gap-y-1`}>
@@ -26,6 +27,7 @@ function TextInput({ name, label, type, hint, inpRef, value, error, handleChange
                 onChange={handleChange}
                 placeholder={"اینجا تایپ کنید..."}
                 className={`rounded-xl px-5 py-2 border ${error ? 'border-red-500' : 'border-gray-200 focus:border-violet-900'} p-1 text-base bg-transparent focus:outline-none text-gray-700 transition-all duration-300 outline-none placeholder:text-base`}
+                {...inpProps}
             />
 
             {error && (

@@ -1,0 +1,27 @@
+.event_container {
+    @apply p-3
+}
+
+.header_container {
+    @apply flex flex-row gap-x-4 items-center pb-3 border-b border-gray-200;
+}
+
+.back_button {
+    @apply p-3
+}
+
+.back_button_icon {
+    @apply size-6 text-gray-500
+}
+
+.header_title {
+    @apply text-violet-900 text-lg;
+}
+
+.header_button {
+    @apply bg-violet-100 text-base border border-violet-100 w-fit px-4 py-2 rounded-xl hover:border-violet-900 transition-all duration-300 text-violet-900 flex flex-row gap-x-2 items-center;
+}
+
+.header_button_icon {
+    @apply size-5
+}
