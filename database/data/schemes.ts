@@ -1,0 +1,1 @@
+export const SCHEMES = ['gray', 'blue', 'red', 'rose', 'green', 'orange', 'yellow', 'purple'];

@@ -4,32 +4,79 @@ import TextInput from "@/components/Common/Form/TextInput";
 import ModalHeader from "@/components/Common/ModalHeader";
 import ModalWrapper from "@/components/Common/ModalWrapper";
 import { eventSchema } from "@/database/validations/event-validation";
+import { TomanPriceFormatter } from "@/helpers/helpers";
 import { zValidate } from "@/helpers/validation-helper";
-import { Ban, BriefcaseBusiness, Cake, Coffee, Plane, Save, TreePalm, User, Utensils } from "lucide-react";
+import { Ban, BriefcaseBusiness, Cake, Coffee, Plane, Save, TreePalm, User, Utensils, Zap } from "lucide-react";
 import { useState } from "react";
 import { createPortal, useFormStatus } from "react-dom";
+import ExpensePreview from "./ExpensePreview";
 
 type FormInputs = {
     desc: string;
-    amount: number;
-    group: number[];
+    amount: string;
+    group: string[];
 }
 
 type FormInputs2 = {
     from: string | null;
     to: string | null;
-    amount: number;
+    amount: string;
     desc: string;
 }
+
+type FormTypes = 0 | 1;
+
+const group = [
+    {
+        id: 'p1',
+        name: 'علی',
+        scheme: 'gray'
+    },
+    {
+        id: 'p2',
+        name: 'محمدحسین',
+        scheme: 'rose'
+    },
+    {
+        id: 'p3',
+        name: 'میلاد',
+        scheme: 'orange'
+    },
+    {
+        id: 'p4',
+        name: 'محمدقادر',
+        scheme: 'green'
+    },
+    {
+        id: 'p5',
+        name: 'رضا',
+        scheme: 'yellow'
+    },
+    {
+        id: 'p6',
+        name: 'ابوالفضل',
+        scheme: 'blue'
+    },
+    {
+        id: 'p7',
+        name: 'حامد',
+        scheme: 'purple'
+    },
+    {
+        id: 'p8',
+        name: 'علیرضا',
+        scheme: 'red'
+    },
+]
 
 function NewExpenseModal({ onClose }: { onClose: () => void }) {
 
     const { pending, data, method, action } = useFormStatus();
-    const [formType, setFormType] = useState(0)
+    const [formType, setFormType] = useState<FormTypes>(0)
 
     const initInputs: FormInputs = {
         desc: '',
-        amount: 50,
+        amount: '',
         group: [],
     }
     const [inputs, setInputs] = useState(initInputs);
@@ -38,7 +85,7 @@ function NewExpenseModal({ onClose }: { onClose: () => void }) {
         from: null,
         to: null,
         desc: '',
-        amount: 50,
+        amount: '',
     }
     const [inputs2, setInputs2] = useState(initInputs2);
 
@@ -80,11 +127,22 @@ function NewExpenseModal({ onClose }: { onClose: () => void }) {
         console.log("passed")
     }
 
-    function isPersonSelected(personId: number) {
+    function isPersonSelected(personId: string) {
         return inputs.group.includes(personId);
     }
 
-    function togglePerson(personId: number) {
+    function togglePerson(personId: string) {
+
+        if (personId === 'all' && inputs.group.length === group.length) {
+            setInputs(prev => ({ ...prev, group: [] }))
+            return
+        }
+        if (personId === 'all' && inputs.group.length !== group.length) {
+            setInputs(prev => ({ ...prev, group: group.map(p => p.id) }))
+            return
+        }
+
+
         if (isPersonSelected(personId)) {
             setInputs(prev => ({ ...prev, group: prev.group.filter(id => id !== personId) }))
         } else {
@@ -100,6 +158,20 @@ function NewExpenseModal({ onClose }: { onClose: () => void }) {
         setInputs2(prev => ({ ...prev, to: personId }))
     }
 
+
+    function changeAmountHandler(e: React.ChangeEvent<HTMLInputElement>) {
+        const regex = /^[0-9]+$/;
+        let amount = e.target.value.replaceAll(',', '');
+
+        if (amount.length > 0 && !regex.test(amount)) return;
+
+        if (formType === 0) {
+            setInputs(prev => ({ ...prev, amount: amount.length > 0 ? TomanPriceFormatter(amount) : '' }))
+        } else {
+            setInputs2(prev => ({ ...prev, amount: amount.length > 0 ? TomanPriceFormatter(amount) : '' }))
+        }
+    }
+
     if (typeof window === "object") {
         return createPortal(
             <ModalWrapper onClose={onClose}>
@@ -109,10 +181,10 @@ function NewExpenseModal({ onClose }: { onClose: () => void }) {
 
 
                     <div className="grid grid-cols-2">
-                        <div className={`col-span-1 select-none py-3 cursor-pointer text-center hover:bg-violet-100 ${formType === 0 ? 'bg-violet-100 text-violet-900' : 'bg-white text-gray-700'}`} onClick={() => setFormType(0)}>
+                        <div className={`col-span-1 select-none py-3 cursor-pointer text-center hover:bg-indigo-100 ${formType === 0 ? 'bg-indigo-100 text-indigo-900' : 'bg-white text-gray-700'}`} onClick={() => setFormType(0)}>
                             هزینه
                         </div>
-                        <div className={`col-span-1 select-none py-3 cursor-pointer text-center hover:bg-violet-100 ${formType === 1 ? 'bg-violet-100 text-violet-900' : 'bg-white text-gray-700'}`} onClick={() => setFormType(1)}>
+                        <div className={`col-span-1 select-none py-3 cursor-pointer text-center hover:bg-indigo-100 ${formType === 1 ? 'bg-indigo-100 text-indigo-900' : 'bg-white text-gray-700'}`} onClick={() => setFormType(1)}>
                             جابجایی پول
                         </div>
                     </div>
@@ -123,69 +195,33 @@ function NewExpenseModal({ onClose }: { onClose: () => void }) {
 
                             <div className="p-5 flex flex-col gap-y-4">
 
-                                <TextInput name="amount" type="number" inpProps={{ min: 50, step: 100000 }} value={inputs.amount} error={formErrors.amount} label="هزینه (تومان)" handleChange={e => setInputs(prev => ({ ...prev, [e.target.name]: e.target.value }))} />
+                                <TextInput name="amount" value={inputs.amount} error={formErrors.amount} label="هزینه (تومان)" handleChange={changeAmountHandler} />
                                 <TextInput name="desc" value={inputs.desc} error={formErrors.desc} label="توضیحات" handleChange={e => setInputs(prev => ({ ...prev, [e.target.name]: e.target.value }))} />
 
-                                <span className={`text-base ${formErrors.group ? 'text-red-500' : 'text-violet-900'} capitalize`}>کیا سهیم بودن؟</span>
+                                <span className={`text-base ${formErrors.group ? 'text-red-500' : 'text-indigo-900'} capitalize`}>کیا سهیم بودن؟</span>
 
                                 <div className="flex flex-wrap gap-4">
 
-                                    <div onClick={togglePerson.bind(null, 1)} className={`px-4 cursor-pointer py-2 flex flex-row gap-x-4 items-center border ${isPersonSelected(1) ? 'border-blue-800 bg-blue-100 text-blue-800' : 'border-gray-300 text-gray-500'} transition-all duration-300 rounded-full`}>
+                                    <div onClick={togglePerson.bind(null, 'all')} className={`px-4 cursor-pointer py-2 flex flex-row gap-x-4 items-center border ${inputs.group.length === group.length ? `user_avatar_blue_text user_avatar_blue_border user_avatar_blue_bg` : 'user_avatar_gray_text border-white'} transition-all duration-300 rounded-full`}>
                                         <div className="">
                                             <User className="size-5" />
                                         </div>
 
-                                        <span className="text-base">محمدحسین</span>
+                                        <span className="text-base">همه</span>
                                     </div>
-                                    <div onClick={togglePerson.bind(null, 2)} className={`px-4 cursor-pointer py-2 flex flex-row gap-x-4 items-center border ${isPersonSelected(2) ? 'border-blue-800 bg-blue-100 text-blue-800' : 'border-gray-300 text-gray-500'} transition-all duration-300 rounded-full`}>
-                                        <div className="">
-                                            <User className="size-5" />
-                                        </div>
 
-                                        <span className="text-base">علی</span>
-                                    </div>
-                                    <div onClick={togglePerson.bind(null, 3)} className={`px-4 cursor-pointer py-2 flex flex-row gap-x-4 items-center border ${isPersonSelected(3) ? 'border-blue-800 bg-blue-100 text-blue-800' : 'border-gray-300 text-gray-500'} transition-all duration-300 rounded-full`}>
-                                        <div className="">
-                                            <User className="size-5" />
-                                        </div>
 
-                                        <span className="text-base">علی رضا</span>
-                                    </div>
-                                    <div onClick={togglePerson.bind(null, 4)} className={`px-4 cursor-pointer py-2 flex flex-row gap-x-4 items-center border ${isPersonSelected(4) ? 'border-blue-800 bg-blue-100 text-blue-800' : 'border-gray-300 text-gray-500'} transition-all duration-300 rounded-full`}>
-                                        <div className="">
-                                            <User className="size-5" />
-                                        </div>
+                                    {group.map(user => (
+                                        <div key={user.id} onClick={togglePerson.bind(null, user.id)} className={`px-4 cursor-pointer py-2 flex flex-row gap-x-4 items-center border ${isPersonSelected(user.id) ? `user_avatar_${user.scheme}_text user_avatar_${user.scheme}_border user_avatar_${user.scheme}_bg` : 'user_avatar_gray_text border-white'} transition-all duration-300 rounded-full`}>
+                                            <div className="">
+                                                <User className="size-5" />
+                                            </div>
 
-                                        <span className="text-base">میلاد</span>
-                                    </div>
-                                    <div onClick={togglePerson.bind(null, 5)} className={`px-4 cursor-pointer py-2 flex flex-row gap-x-4 items-center border ${isPersonSelected(5) ? 'border-blue-800 bg-blue-100 text-blue-800' : 'border-gray-300 text-gray-500'} transition-all duration-300 rounded-full`}>
-                                        <div className="">
-                                            <User className="size-5" />
+                                            <span className="text-base">{user.name}</span>
                                         </div>
+                                    ))}
 
-                                        <span className="text-base">محمدقادر</span>
-                                    </div>
-                                    <div onClick={togglePerson.bind(null, 6)} className={`px-4 cursor-pointer py-2 flex flex-row gap-x-4 items-center border ${isPersonSelected(6) ? 'border-blue-800 bg-blue-100 text-blue-800' : 'border-gray-300 text-gray-500'} transition-all duration-300 rounded-full`}>
-                                        <div className="">
-                                            <User className="size-5" />
-                                        </div>
 
-                                        <span className="text-base">محمدامین</span>
-                                    </div>
-                                    <div onClick={togglePerson.bind(null, 7)} className={`px-4 cursor-pointer py-2 flex flex-row gap-x-4 items-center border ${isPersonSelected(7) ? 'border-blue-800 bg-blue-100 text-blue-800' : 'border-gray-300 text-gray-500'} transition-all duration-300 rounded-full`}>
-                                        <div className="">
-                                            <User className="size-5" />
-                                        </div>
-
-                                        <span className="text-base">رضا</span>
-                                    </div>
-                                    <div onClick={togglePerson.bind(null, 8)} className={`px-4 cursor-pointer py-2 flex flex-row gap-x-4 items-center border ${isPersonSelected(8) ? 'border-blue-800 bg-blue-100 text-blue-800' : 'border-gray-300 text-gray-500'} transition-all duration-300 rounded-full`}>
-                                        <div className="">
-                                            <User className="size-5" />
-                                        </div>
-
-                                        <span className="text-base">حامد</span>
-                                    </div>
 
                                 </div>
 
@@ -199,9 +235,9 @@ function NewExpenseModal({ onClose }: { onClose: () => void }) {
                                 <input type="hidden" value={inputs.group.toString()} name="group" />
                             </div>
 
-
+                            <ExpensePreview />
                             <div className="p-5 flex justify-end">
-                                <button disabled={pending} type="submit" className="hover:bg-violet-100 flex gap-x-2 items-center transition-all duration-300 rounded-xl text-violet-900 text-base px-4 py-2">
+                                <button disabled={pending} type="submit" className="hover:bg-indigo-100 flex gap-x-2 items-center transition-all duration-300 rounded-xl text-indigo-900 text-base px-4 py-2">
                                     <span>{pending ? 'در حال ثبت' : 'ثبت'}</span>
                                     <Save className="size-4" />
                                 </button>
@@ -215,69 +251,23 @@ function NewExpenseModal({ onClose }: { onClose: () => void }) {
 
                             <div className="p-5 flex flex-col gap-y-4">
 
-                                <TextInput name="amount" type="number" inpProps={{ min: 50, step: 100000 }} value={inputs.amount} error={formErrors.amount} label="هزینه (تومان)" handleChange={e => setInputs(prev => ({ ...prev, [e.target.name]: e.target.value }))} />
-                                <TextInput name="desc" value={inputs.desc} error={formErrors.desc} label="توضیحات" handleChange={e => setInputs(prev => ({ ...prev, [e.target.name]: e.target.value }))} />
+                                <TextInput name="amount" value={inputs2.amount} error={formErrors2.amount} label="هزینه (تومان)" handleChange={changeAmountHandler} />
+                                <TextInput name="desc" value={inputs2.desc} error={formErrors2.desc} label="توضیحات" handleChange={e => setInputs2(prev => ({ ...prev, [e.target.name]: e.target.value }))} />
 
-                                <span className={`text-base ${formErrors2.from ? 'text-red-500' : 'text-violet-900'} capitalize`}>مبداء</span>
+                                <span className={`text-base ${formErrors2.from ? 'text-red-500' : 'text-indigo-900'} capitalize`}>مبداء</span>
 
                                 <div className="flex flex-wrap gap-4">
 
-                                    <div onClick={selectFromPerson.bind(null, 'p1')} className={`px-4 cursor-pointer py-2 flex flex-row gap-x-4 items-center border ${inputs2.from === 'p1' ? 'border-blue-800 bg-blue-100 text-blue-800' : 'border-gray-300 text-gray-500'} transition-all duration-300 rounded-full`}>
-                                        <div className="">
-                                            <User className="size-5" />
-                                        </div>
+                                    {group.map(user => (
+                                        <div key={user.id} onClick={selectFromPerson.bind(null, user.id)} className={`px-4 cursor-pointer py-2 flex flex-row gap-x-4 items-center border ${inputs2.from === user.id ? `user_avatar_${user.scheme}_border user_avatar_${user.scheme}_text user_avatar_${user.scheme}_bg` : 'user_avatar_gray_text border-white'} transition-all duration-300 rounded-full`}>
+                                            <div className="">
+                                                <User className="size-5" />
+                                            </div>
 
-                                        <span className="text-base">محمدحسین</span>
-                                    </div>
-                                    <div onClick={selectFromPerson.bind(null, 'p2')} className={`px-4 cursor-pointer py-2 flex flex-row gap-x-4 items-center border ${inputs2.from === 'p2' ? 'border-blue-800 bg-blue-100 text-blue-800' : 'border-gray-300 text-gray-500'} transition-all duration-300 rounded-full`}>
-                                        <div className="">
-                                            <User className="size-5" />
+                                            <span className="text-base">{user.name}</span>
                                         </div>
+                                    ))}
 
-                                        <span className="text-base">علی</span>
-                                    </div>
-                                    <div onClick={selectFromPerson.bind(null, 'p3')} className={`px-4 cursor-pointer py-2 flex flex-row gap-x-4 items-center border ${inputs2.from === 'p3' ? 'border-blue-800 bg-blue-100 text-blue-800' : 'border-gray-300 text-gray-500'} transition-all duration-300 rounded-full`}>
-                                        <div className="">
-                                            <User className="size-5" />
-                                        </div>
-
-                                        <span className="text-base">علی رضا</span>
-                                    </div>
-                                    <div onClick={selectFromPerson.bind(null, 'p4')} className={`px-4 cursor-pointer py-2 flex flex-row gap-x-4 items-center border ${inputs2.from === 'p4' ? 'border-blue-800 bg-blue-100 text-blue-800' : 'border-gray-300 text-gray-500'} transition-all duration-300 rounded-full`}>
-                                        <div className="">
-                                            <User className="size-5" />
-                                        </div>
-
-                                        <span className="text-base">میلاد</span>
-                                    </div>
-                                    <div onClick={selectFromPerson.bind(null, 'p5')} className={`px-4 cursor-pointer py-2 flex flex-row gap-x-4 items-center border ${inputs2.from === 'p5' ? 'border-blue-800 bg-blue-100 text-blue-800' : 'border-gray-300 text-gray-500'} transition-all duration-300 rounded-full`}>
-                                        <div className="">
-                                            <User className="size-5" />
-                                        </div>
-
-                                        <span className="text-base">محمدقادر</span>
-                                    </div>
-                                    <div onClick={selectFromPerson.bind(null, 'p6')} className={`px-4 cursor-pointer py-2 flex flex-row gap-x-4 items-center border ${inputs2.from === 'p6' ? 'border-blue-800 bg-blue-100 text-blue-800' : 'border-gray-300 text-gray-500'} transition-all duration-300 rounded-full`}>
-                                        <div className="">
-                                            <User className="size-5" />
-                                        </div>
-
-                                        <span className="text-base">محمدامین</span>
-                                    </div>
-                                    <div onClick={selectFromPerson.bind(null, 'p7')} className={`px-4 cursor-pointer py-2 flex flex-row gap-x-4 items-center border ${inputs2.from === 'p7' ? 'border-blue-800 bg-blue-100 text-blue-800' : 'border-gray-300 text-gray-500'} transition-all duration-300 rounded-full`}>
-                                        <div className="">
-                                            <User className="size-5" />
-                                        </div>
-
-                                        <span className="text-base">رضا</span>
-                                    </div>
-                                    <div onClick={selectFromPerson.bind(null, 'p8')} className={`px-4 cursor-pointer py-2 flex flex-row gap-x-4 items-center border ${inputs2.from === 'p8' ? 'border-blue-800 bg-blue-100 text-blue-800' : 'border-gray-300 text-gray-500'} transition-all duration-300 rounded-full`}>
-                                        <div className="">
-                                            <User className="size-5" />
-                                        </div>
-
-                                        <span className="text-base">حامد</span>
-                                    </div>
 
                                 </div>
 
@@ -290,66 +280,19 @@ function NewExpenseModal({ onClose }: { onClose: () => void }) {
                                 )}
                                 <input type="hidden" value={inputs2.from ?? ''} name="from" />
 
-                                <span className={`text-base ${formErrors2.from ? 'text-red-500' : 'text-violet-900'} capitalize`}>مقصد</span>
+                                <span className={`text-base ${formErrors2.from ? 'text-red-500' : 'text-indigo-900'} capitalize`}>مقصد</span>
 
                                 <div className="flex flex-wrap gap-4">
 
-                                    <div onClick={selectToPerson.bind(null, 'p1')} className={`px-4 cursor-pointer py-2 flex flex-row gap-x-4 items-center border ${inputs2.to === 'p1' ? 'border-blue-800 bg-blue-100 text-blue-800' : 'border-gray-300 text-gray-500'} transition-all duration-300 rounded-full`}>
-                                        <div className="">
-                                            <User className="size-5" />
-                                        </div>
+                                    {group.map(user => (
+                                        <div key={user.id} onClick={selectToPerson.bind(null, user.id)} className={`px-4 cursor-pointer py-2 flex flex-row gap-x-4 items-center border ${inputs2.to === user.id ? `user_avatar_${user.scheme}_border user_avatar_${user.scheme}_text user_avatar_${user.scheme}_bg` : 'user_avatar_gray_text border-white'} transition-all duration-300 rounded-full`}>
+                                            <div className="">
+                                                <User className="size-5" />
+                                            </div>
 
-                                        <span className="text-base">محمدحسین</span>
-                                    </div>
-                                    <div onClick={selectToPerson.bind(null, 'p2')} className={`px-4 cursor-pointer py-2 flex flex-row gap-x-4 items-center border ${inputs2.to === 'p2' ? 'border-blue-800 bg-blue-100 text-blue-800' : 'border-gray-300 text-gray-500'} transition-all duration-300 rounded-full`}>
-                                        <div className="">
-                                            <User className="size-5" />
+                                            <span className="text-base">{user.name}</span>
                                         </div>
-
-                                        <span className="text-base">علی</span>
-                                    </div>
-                                    <div onClick={selectToPerson.bind(null, 'p3')} className={`px-4 cursor-pointer py-2 flex flex-row gap-x-4 items-center border ${inputs2.to === 'p3' ? 'border-blue-800 bg-blue-100 text-blue-800' : 'border-gray-300 text-gray-500'} transition-all duration-300 rounded-full`}>
-                                        <div className="">
-                                            <User className="size-5" />
-                                        </div>
-
-                                        <span className="text-base">علی رضا</span>
-                                    </div>
-                                    <div onClick={selectToPerson.bind(null, 'p4')} className={`px-4 cursor-pointer py-2 flex flex-row gap-x-4 items-center border ${inputs2.to === 'p4' ? 'border-blue-800 bg-blue-100 text-blue-800' : 'border-gray-300 text-gray-500'} transition-all duration-300 rounded-full`}>
-                                        <div className="">
-                                            <User className="size-5" />
-                                        </div>
-
-                                        <span className="text-base">میلاد</span>
-                                    </div>
-                                    <div onClick={selectToPerson.bind(null, 'p5')} className={`px-4 cursor-pointer py-2 flex flex-row gap-x-4 items-center border ${inputs2.to === 'p5' ? 'border-blue-800 bg-blue-100 text-blue-800' : 'border-gray-300 text-gray-500'} transition-all duration-300 rounded-full`}>
-                                        <div className="">
-                                            <User className="size-5" />
-                                        </div>
-
-                                        <span className="text-base">محمدقادر</span>
-                                    </div>
-                                    <div onClick={selectToPerson.bind(null, 'p6')} className={`px-4 cursor-pointer py-2 flex flex-row gap-x-4 items-center border ${inputs2.to === 'p6' ? 'border-blue-800 bg-blue-100 text-blue-800' : 'border-gray-300 text-gray-500'} transition-all duration-300 rounded-full`}>
-                                        <div className="">
-                                            <User className="size-5" />
-                                        </div>
-
-                                        <span className="text-base">محمدامین</span>
-                                    </div>
-                                    <div onClick={selectToPerson.bind(null, 'p7')} className={`px-4 cursor-pointer py-2 flex flex-row gap-x-4 items-center border ${inputs2.to === 'p7' ? 'border-blue-800 bg-blue-100 text-blue-800' : 'border-gray-300 text-gray-500'} transition-all duration-300 rounded-full`}>
-                                        <div className="">
-                                            <User className="size-5" />
-                                        </div>
-
-                                        <span className="text-base">رضا</span>
-                                    </div>
-                                    <div onClick={selectToPerson.bind(null, 'p8')} className={`px-4 cursor-pointer py-2 flex flex-row gap-x-4 items-center border ${inputs2.to === 'p8' ? 'border-blue-800 bg-blue-100 text-blue-800' : 'border-gray-300 text-gray-500'} transition-all duration-300 rounded-full`}>
-                                        <div className="">
-                                            <User className="size-5" />
-                                        </div>
-
-                                        <span className="text-base">حامد</span>
-                                    </div>
+                                    ))}
 
                                 </div>
 
@@ -363,9 +306,11 @@ function NewExpenseModal({ onClose }: { onClose: () => void }) {
                                 <input type="hidden" value={inputs2.from ?? ''} name="group" />
                             </div>
 
+                            <ExpensePreview />
+
 
                             <div className="p-5 flex justify-end">
-                                <button disabled={pending} type="submit" className="hover:bg-violet-100 flex gap-x-2 items-center transition-all duration-300 rounded-xl text-violet-900 text-base px-4 py-2">
+                                <button disabled={pending} type="submit" className="hover:bg-indigo-100 flex gap-x-2 items-center transition-all duration-300 rounded-xl text-indigo-900 text-base px-4 py-2">
                                     <span>{pending ? 'در حال ثبت' : 'ثبت'}</span>
                                     <Save className="size-4" />
                                 </button>
@@ -373,6 +318,8 @@ function NewExpenseModal({ onClose }: { onClose: () => void }) {
 
                         </form>
                     )}
+
+
                 </section>
 
             </ModalWrapper>

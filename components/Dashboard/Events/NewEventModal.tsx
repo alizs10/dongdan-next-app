@@ -56,30 +56,30 @@ function NewEventModal({ onClose }: { onClose: () => void }) {
 
                         <TextInput name="name" value={inputs.name} error={formErrors.name} label="نام رویداد" handleChange={e => setInputs(prev => ({ ...prev, [e.target.name]: e.target.value }))} />
 
-                        <span className={`text-base ${formErrors.label ? 'text-red-500' : 'text-violet-900'} capitalize`}>برچسب رویداد</span>
+                        <span className={`text-base ${formErrors.label ? 'text-red-500' : 'text-indigo-900'} capitalize`}>برچسب رویداد</span>
 
                         <div className="flex flex-wrap gap-2">
-                            <div onClick={() => selectLabelHandler('سفر')} className={`${isLabelSelected('سفر') ? 'text-violet-900 border-violet-900' : 'border-gray-200 hover:border-violet-900 text-gray-500 hover:text-violet-900'} rounded-xl cursor-pointer shadow-sm flex gap-x-4 items-center px-4 py-2 border  transition-all duration-300`}>
+                            <div onClick={() => selectLabelHandler('سفر')} className={`${isLabelSelected('سفر') ? 'text-indigo-900 border-indigo-900' : 'border-gray-200 hover:border-indigo-900 text-gray-500 hover:text-indigo-900'} rounded-xl cursor-pointer shadow-sm flex gap-x-4 items-center px-4 py-2 border  transition-all duration-300`}>
                                 <span className="text-base">سفر</span>
                                 <Plane className="size-4" />
                             </div>
-                            <div onClick={() => selectLabelHandler('کافه')} className={`${isLabelSelected('کافه') ? 'text-violet-900 border-violet-900' : 'border-gray-200 hover:border-violet-900 text-gray-500 hover:text-violet-900'} rounded-xl cursor-pointer shadow-sm flex gap-x-4 items-center px-4 py-2 border  transition-all duration-300`}>
+                            <div onClick={() => selectLabelHandler('کافه')} className={`${isLabelSelected('کافه') ? 'text-indigo-900 border-indigo-900' : 'border-gray-200 hover:border-indigo-900 text-gray-500 hover:text-indigo-900'} rounded-xl cursor-pointer shadow-sm flex gap-x-4 items-center px-4 py-2 border  transition-all duration-300`}>
                                 <span className="text-base">کافه</span>
                                 <Coffee className="size-4" />
                             </div>
-                            <div onClick={() => selectLabelHandler('رستوران')} className={`${isLabelSelected('رستوران') ? 'text-violet-900 border-violet-900' : 'border-gray-200 hover:border-violet-900 text-gray-500 hover:text-violet-900'} rounded-xl cursor-pointer shadow-sm flex gap-x-4 items-center px-4 py-2 border  transition-all duration-300`}>
+                            <div onClick={() => selectLabelHandler('رستوران')} className={`${isLabelSelected('رستوران') ? 'text-indigo-900 border-indigo-900' : 'border-gray-200 hover:border-indigo-900 text-gray-500 hover:text-indigo-900'} rounded-xl cursor-pointer shadow-sm flex gap-x-4 items-center px-4 py-2 border  transition-all duration-300`}>
                                 <span className="text-base">رستوران</span>
                                 <Utensils className="size-4" />
                             </div>
-                            <div onClick={() => selectLabelHandler('کار')} className={`${isLabelSelected('کار') ? 'text-violet-900 border-violet-900' : 'border-gray-200 hover:border-violet-900 text-gray-500 hover:text-violet-900'} rounded-xl cursor-pointer shadow-sm flex gap-x-4 items-center px-4 py-2 border  transition-all duration-300`}>
+                            <div onClick={() => selectLabelHandler('کار')} className={`${isLabelSelected('کار') ? 'text-indigo-900 border-indigo-900' : 'border-gray-200 hover:border-indigo-900 text-gray-500 hover:text-indigo-900'} rounded-xl cursor-pointer shadow-sm flex gap-x-4 items-center px-4 py-2 border  transition-all duration-300`}>
                                 <span className="text-base">کار</span>
                                 <BriefcaseBusiness className="size-4" />
                             </div>
-                            <div onClick={() => selectLabelHandler('جشن')} className={`${isLabelSelected('جشن') ? 'text-violet-900 border-violet-900' : 'border-gray-200 hover:border-violet-900 text-gray-500 hover:text-violet-900'} rounded-xl cursor-pointer shadow-sm flex gap-x-4 items-center px-4 py-2 border  transition-all duration-300`}>
+                            <div onClick={() => selectLabelHandler('جشن')} className={`${isLabelSelected('جشن') ? 'text-indigo-900 border-indigo-900' : 'border-gray-200 hover:border-indigo-900 text-gray-500 hover:text-indigo-900'} rounded-xl cursor-pointer shadow-sm flex gap-x-4 items-center px-4 py-2 border  transition-all duration-300`}>
                                 <span className="text-base">جشن</span>
                                 <Cake className="size-4" />
                             </div>
-                            <div onClick={() => selectLabelHandler('تفریح')} className={`${isLabelSelected('تفریح') ? 'text-violet-900 border-violet-900' : 'border-gray-200 hover:border-violet-900 text-gray-500 hover:text-violet-900'} rounded-xl cursor-pointer shadow-sm flex gap-x-4 items-center px-4 py-2 border  transition-all duration-300`}>
+                            <div onClick={() => selectLabelHandler('تفریح')} className={`${isLabelSelected('تفریح') ? 'text-indigo-900 border-indigo-900' : 'border-gray-200 hover:border-indigo-900 text-gray-500 hover:text-indigo-900'} rounded-xl cursor-pointer shadow-sm flex gap-x-4 items-center px-4 py-2 border  transition-all duration-300`}>
                                 <span className="text-base">تفریح</span>
                                 <TreePalm className="size-4" />
                             </div>
@@ -95,7 +95,7 @@ function NewEventModal({ onClose }: { onClose: () => void }) {
 
 
                     <div className="p-5 flex justify-end">
-                        <button disabled={pending} type="submit" className="hover:bg-violet-100 flex gap-x-2 items-center transition-all duration-300 rounded-xl text-violet-900 text-base px-4 py-2">
+                        <button disabled={pending} type="submit" className="hover:bg-indigo-100 flex gap-x-2 items-center transition-all duration-300 rounded-xl text-indigo-900 text-base px-4 py-2">
                             <span>{pending ? 'در حال ثبت' : 'ثبت'}</span>
                             <Save className="size-4" />
                         </button>

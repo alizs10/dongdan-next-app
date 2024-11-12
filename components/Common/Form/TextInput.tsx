@@ -17,7 +17,7 @@ function TextInput({ name, label, type, hint, inpRef, value, error, handleChange
     return (
         <div className={`w-full flex flex-col gap-y-1`}>
 
-            <label className={`text-base ${error ? 'text-red-500' : 'text-violet-900'} capitalize`}>{label}</label>
+            <label className={`text-base ${error ? 'text-red-500' : 'text-indigo-900'} capitalize`}>{label}</label>
 
             <input
                 type={type ?? 'text'}
@@ -26,7 +26,7 @@ function TextInput({ name, label, type, hint, inpRef, value, error, handleChange
                 value={value ?? ''}
                 onChange={handleChange}
                 placeholder={"اینجا تایپ کنید..."}
-                className={`rounded-xl px-5 py-2 border ${error ? 'border-red-500' : 'border-gray-200 focus:border-violet-900'} p-1 text-base bg-transparent focus:outline-none text-gray-700 transition-all duration-300 outline-none placeholder:text-base`}
+                className={`rounded-xl px-5 py-2 border ${error ? 'border-red-500' : 'border-gray-200 focus:border-indigo-900'} p-1 text-base bg-transparent focus:outline-none text-gray-700 transition-all duration-300 outline-none placeholder:text-base`}
                 {...inpProps}
             />
 

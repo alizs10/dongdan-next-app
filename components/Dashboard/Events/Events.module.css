@@ -7,11 +7,11 @@
 }
 
 .header_title {
-    @apply text-violet-900 text-lg;
+    @apply text-indigo-900 text-lg;
 }
 
 .header_button {
-    @apply bg-violet-100 text-base border border-violet-100 w-fit px-4 py-2 rounded-xl hover:border-violet-900 transition-all duration-300 text-violet-900 flex flex-row gap-x-2 items-center;
+    @apply bg-indigo-100 text-base border border-indigo-100 w-fit px-4 py-2 rounded-xl hover:border-indigo-900 transition-all duration-300 text-indigo-900 flex flex-row gap-x-2 items-center;
 }
 
 .header_button_icon {
@@ -31,7 +31,7 @@
 }
 
 .button {
-    @apply bg-violet-100 border-[.13rem] border-violet-100 w-fit px-10 py-5 rounded-2xl hover:border-violet-900 transition-all duration-300 text-violet-900 text-xl mx-auto flex flex-row gap-x-4 items-center;
+    @apply bg-indigo-100 border-[.13rem] border-indigo-100 w-fit px-10 py-5 rounded-2xl hover:border-indigo-900 transition-all duration-300 text-indigo-900 text-xl mx-auto flex flex-row gap-x-4 items-center;
 }
 
 .button_icon {
@@ -55,7 +55,7 @@
 }
 
 .event_item_name {
-    @apply text-violet-900 text-lg;
+    @apply text-indigo-900 text-lg;
 }
 
 .event_item_icon {
