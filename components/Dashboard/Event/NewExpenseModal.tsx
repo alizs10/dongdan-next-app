@@ -10,11 +10,13 @@ import { Ban, BriefcaseBusiness, Cake, Coffee, Plane, Save, TreePalm, User, Uten
 import { useState } from "react";
 import { createPortal, useFormStatus } from "react-dom";
 import ExpensePreview from "./ExpensePreview";
+import PDatePicker from "@/components/Common/Form/PDatePicker";
 
 type FormInputs = {
     desc: string;
     amount: string;
     group: string[];
+    date: Date;
 }
 
 type FormInputs2 = {
@@ -22,6 +24,7 @@ type FormInputs2 = {
     to: string | null;
     amount: string;
     desc: string;
+    date: Date;
 }
 
 type FormTypes = 0 | 1;
@@ -78,6 +81,7 @@ function NewExpenseModal({ onClose }: { onClose: () => void }) {
         desc: '',
         amount: '',
         group: [],
+        date: new Date(Date.now())
     }
     const [inputs, setInputs] = useState(initInputs);
 
@@ -86,6 +90,7 @@ function NewExpenseModal({ onClose }: { onClose: () => void }) {
         to: null,
         desc: '',
         amount: '',
+        date: new Date(Date.now())
     }
     const [inputs2, setInputs2] = useState(initInputs2);
 
@@ -94,6 +99,7 @@ function NewExpenseModal({ onClose }: { onClose: () => void }) {
         desc: '',
         amount: '',
         group: '',
+        date: '',
     }
     const [formErrors, setFormErrors] = useState(initFormErrors);
 
@@ -102,16 +108,9 @@ function NewExpenseModal({ onClose }: { onClose: () => void }) {
         to: '',
         amount: '',
         desc: '',
+        date: '',
     }
     const [formErrors2, setFormErrors2] = useState(initFormErrors2);
-
-    // function selectLabelHandler(label: string) {
-    //     setInputs(prev => ({ ...prev, label }))
-    // }
-
-    // function isLabelSelected(label: string) {
-    //     return inputs.label === label;
-    // }
 
     function formActionHandler(formData: FormData) {
         let formDataObj = Object.fromEntries(formData.entries());
@@ -151,10 +150,12 @@ function NewExpenseModal({ onClose }: { onClose: () => void }) {
     }
 
     function selectFromPerson(personId: string) {
+        if (personId === inputs2.to) return
         setInputs2(prev => ({ ...prev, from: personId }))
     }
 
     function selectToPerson(personId: string) {
+        if (personId === inputs2.from) return
         setInputs2(prev => ({ ...prev, to: personId }))
     }
 
@@ -197,6 +198,14 @@ function NewExpenseModal({ onClose }: { onClose: () => void }) {
 
                                 <TextInput name="amount" value={inputs.amount} error={formErrors.amount} label="هزینه (تومان)" handleChange={changeAmountHandler} />
                                 <TextInput name="desc" value={inputs.desc} error={formErrors.desc} label="توضیحات" handleChange={e => setInputs(prev => ({ ...prev, [e.target.name]: e.target.value }))} />
+
+                                <PDatePicker
+                                    name="date"
+                                    value={inputs.date}
+                                    label="تاریخ"
+                                    onChange={(date) => setInputs((prev: FormInputs) => ({ ...prev, date: date.toDate() }))}
+                                    error={formErrors.date}
+                                />
 
                                 <span className={`text-base ${formErrors.group ? 'text-red-500' : 'text-indigo-900'} capitalize`}>کیا سهیم بودن؟</span>
 
@@ -253,13 +262,20 @@ function NewExpenseModal({ onClose }: { onClose: () => void }) {
 
                                 <TextInput name="amount" value={inputs2.amount} error={formErrors2.amount} label="هزینه (تومان)" handleChange={changeAmountHandler} />
                                 <TextInput name="desc" value={inputs2.desc} error={formErrors2.desc} label="توضیحات" handleChange={e => setInputs2(prev => ({ ...prev, [e.target.name]: e.target.value }))} />
+                                <PDatePicker
+                                    label={'تاریخ'}
+                                    name={"date"}
+                                    value={inputs2.date}
+                                    error={formErrors2.date}
+                                    onChange={(date) => setInputs2((prev: FormInputs2) => ({ ...prev, date: date.toDate() }))}
+                                />
 
                                 <span className={`text-base ${formErrors2.from ? 'text-red-500' : 'text-indigo-900'} capitalize`}>مبداء</span>
 
                                 <div className="flex flex-wrap gap-4">
 
                                     {group.map(user => (
-                                        <div key={user.id} onClick={selectFromPerson.bind(null, user.id)} className={`px-4 cursor-pointer py-2 flex flex-row gap-x-4 items-center border ${inputs2.from === user.id ? `user_avatar_${user.scheme}_border user_avatar_${user.scheme}_text user_avatar_${user.scheme}_bg` : 'user_avatar_gray_text border-white'} transition-all duration-300 rounded-full`}>
+                                        <div key={user.id} onClick={selectFromPerson.bind(null, user.id)} className={`px-4 cursor-pointer py-2 flex flex-row gap-x-4 items-center border ${inputs2.to === user.id ? 'border-gray-300 text-gray-300' : inputs2.from === user.id ? `user_avatar_${user.scheme}_border user_avatar_${user.scheme}_text user_avatar_${user.scheme}_bg` : 'user_avatar_gray_text border-white'} transition-all duration-300 rounded-full`}>
                                             <div className="">
                                                 <User className="size-5" />
                                             </div>
@@ -285,7 +301,7 @@ function NewExpenseModal({ onClose }: { onClose: () => void }) {
                                 <div className="flex flex-wrap gap-4">
 
                                     {group.map(user => (
-                                        <div key={user.id} onClick={selectToPerson.bind(null, user.id)} className={`px-4 cursor-pointer py-2 flex flex-row gap-x-4 items-center border ${inputs2.to === user.id ? `user_avatar_${user.scheme}_border user_avatar_${user.scheme}_text user_avatar_${user.scheme}_bg` : 'user_avatar_gray_text border-white'} transition-all duration-300 rounded-full`}>
+                                        <div key={user.id} onClick={selectToPerson.bind(null, user.id)} className={`px-4 cursor-pointer py-2 flex flex-row gap-x-4 items-center border ${inputs2.from === user.id ? 'border-gray-300 text-gray-300' : inputs2.to === user.id ? `user_avatar_${user.scheme}_border user_avatar_${user.scheme}_text user_avatar_${user.scheme}_bg` : 'user_avatar_gray_text border-white'} transition-all duration-300 rounded-full`}>
                                             <div className="">
                                                 <User className="size-5" />
                                             </div>
