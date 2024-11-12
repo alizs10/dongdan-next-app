@@ -3,7 +3,15 @@
 }
 
 .header_container {
-    @apply flex flex-row gap-x-4 items-center pb-3 border-b border-gray-200;
+    @apply flex flex-row justify-between items-center pb-3 border-b border-gray-200;
+}
+
+.header_right {
+    @apply flex flex-row gap-x-4 items-center;
+}
+
+.header_left {
+    @apply flex flex-row gap-x-4 items-center;
 }
 
 .back_button {
