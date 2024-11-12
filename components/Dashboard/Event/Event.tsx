@@ -5,6 +5,7 @@ import styles from "./Event.module.css";
 import Link from "next/link";
 import { useState } from "react";
 import NewExpenseModal from "./NewExpenseModal";
+import NewPersonModal from "./NewPersonModal";
 
 const group = [
     {
@@ -62,6 +63,14 @@ function Event() {
         setIsNewExpenseModalOpen(false);
     }
 
+    function openNewPersonModal() {
+        setIsNewPersonModalOpen(true);
+    }
+
+    function closeNewPersonModal() {
+        setIsNewPersonModalOpen(false);
+    }
+
     return (
         <div className={styles.event_container}>
             <div className={styles.header_container}>
@@ -106,11 +115,13 @@ function Event() {
 
                     </ul>
 
-                    <button className="flex gap-x-2 text-sm justify-center text-gray-700 bg-gray-200 rounded-xl py-3">
+                    <button onClick={openNewPersonModal} className="flex gap-x-2 text-sm justify-center text-gray-700 bg-gray-200 rounded-xl py-3">
                         <UserPlus className="size-5" />
                         <span>افزودن عضو جدید</span>
                     </button>
                 </aside>
+
+                {isNewPersonModalOpen && <NewPersonModal onClose={closeNewPersonModal} />}
             </div>
 
         </div>
