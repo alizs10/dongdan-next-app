@@ -1,9 +1,9 @@
 'use client'
 
-import { CalendarCheck, Filter, MoveRight, NotebookPen, Plus, ReceiptText, User, UserPlus, Zap } from "lucide-react";
+import { CalendarCheck, Filter, MoveRight, Plus, User, UserPlus, Zap } from "lucide-react";
 import styles from "./Event.module.css";
 import Link from "next/link";
-import { useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import NewExpenseModal from "./NewExpenseModal";
 import NewPersonModal from "./NewPersonModal";
 import Expenses from "./Expenses/Expenses";
@@ -13,55 +13,13 @@ import NoExpenses from "./Expenses/NoExpenses";
 import NoGroupExpenses from "./Expenses/NoGroupExpenses";
 import moment from "jalali-moment";
 import Button from "@/components/Common/Button";
-
-const group = [
-    {
-        id: 'p1',
-        name: 'علی',
-        scheme: 'gray'
-    },
-    {
-        id: 'p2',
-        name: 'محمدحسین',
-        scheme: 'rose'
-    },
-    {
-        id: 'p3',
-        name: 'میلاد',
-        scheme: 'orange'
-    },
-    {
-        id: 'p4',
-        name: 'محمدقادر',
-        scheme: 'green'
-    },
-    {
-        id: 'p5',
-        name: 'رضا',
-        scheme: 'yellow'
-    },
-    {
-        id: 'p6',
-        name: 'ابوالفضل',
-        scheme: 'blue'
-    },
-    {
-        id: 'p7',
-        name: 'حامد',
-        scheme: 'purple'
-    },
-    {
-        id: 'p8',
-        name: 'علیرضا',
-        scheme: 'red'
-    },
-]
+import { TomanPriceFormatter } from "@/helpers/helpers";
 
 function Event() {
 
     const { event_id } = useParams()
     const events = useEventStore(state => state.events);
-    const event = events.find(e => e.id === event_id);
+    const event = useMemo(() => events.find(e => e.id === event_id), [events, event_id]);
 
     if (!event) return null;
 
@@ -85,6 +43,122 @@ function Event() {
         setIsNewPersonModalOpen(false);
     }
 
+    const getAllCosts = useCallback(() => {
+        let total = 0;
+
+        event.expenses.forEach(expense => {
+            if (expense.type === 'expend') {
+                total += expense.amount;
+            }
+        });
+        return total;
+    }, [event.expenses]);
+
+    const getCostsCount = useCallback(() => {
+        return event.expenses.filter(e => e.type === 'expend').length;
+    }, [event.expenses]);
+
+    const getTransfersCount = useCallback(() => {
+        return event.expenses.filter(e => e.type === 'transfer').length;
+    }, [event.expenses]);
+
+    const getMostCost = useCallback(() => {
+
+        let max = 0;
+
+        event.expenses.forEach(expense => {
+            if (expense.type === 'expend' && expense.amount > max) {
+                max = expense.amount;
+            }
+        });
+
+        return max;
+
+    }, [event.expenses]);
+
+    const getHighestTransfer = useCallback(() => {
+        let max = 0;
+
+        event.expenses.forEach(expense => {
+            if (expense.type === 'transfer' && expense.amount > max) {
+                max = expense.amount;
+            }
+        });
+
+        return max;
+    }, [event.expenses]);
+
+    const getAllPersonExpends = useCallback((personId: string) => {
+        let total = 0;
+
+        event.expenses.forEach(expense => {
+            if (expense.type === 'expend' && expense.payer === personId) {
+                total += expense.amount;
+            }
+        });
+
+        return total;
+    }, [event.group, event.expenses]);
+
+    const getAllPersonDebts = useCallback((personId: string) => {
+        let total = 0;
+
+        event.expenses.forEach(expense => {
+            if (expense.type === 'expend' && expense.group.includes(personId)) {
+                total += expense.amount / expense.group.length;
+            }
+        });
+
+        return total;
+    }, [event.group, event.expenses]);
+
+    const getAllPersonRecieved = useCallback((personId: string) => {
+
+        let total = 0;
+
+        event.expenses.forEach(expense => {
+            if (expense.type === 'transfer' && expense.to === personId) {
+                total += expense.amount;
+            }
+        })
+
+        return total;
+
+    }, [event.group, event.expenses])
+
+    const getAllPersonSent = useCallback((personId: string) => {
+
+        let total = 0;
+
+        event.expenses.forEach(expense => {
+            if (expense.type === 'transfer' && expense.from === personId) {
+                total += expense.amount;
+            }
+        })
+
+        return total;
+
+    }, [event.group, event.expenses])
+
+
+    const getMaxPayer = useCallback(() => {
+
+        let maxPayer = '';
+        let paid = 0;
+
+        event.group.forEach(person => {
+            let personPaid = getAllPersonExpends(person.id);
+            if (personPaid > paid) {
+                paid = personPaid;
+                maxPayer = person.name;
+            }
+        })
+
+        return { name: maxPayer, amount: paid };
+    }, [event.expenses]);
+
+
+
     return (
         <div className={styles.event_container}>
             <div className={styles.header_container}>
@@ -97,7 +171,6 @@ function Event() {
                 </div>
 
                 {event.group.length > 0 && (
-
                     <div className={styles.header_left}>
                         <Button
                             text="فیلتر"
@@ -147,24 +220,24 @@ function Event() {
 
                                 <div className="flex w-full justify-between items-center">
                                     <h1 className="text-sm text-gray-500 font-semibold">مجموع هزینه ها</h1>
-                                    <span className="text-sm text-gray-500">2200500 تومان</span>
+                                    <span className="text-sm text-gray-500">{TomanPriceFormatter(getAllCosts().toString())} تومان</span>
                                 </div>
                                 <div className="flex w-full justify-between items-center">
                                     <h1 className="text-sm text-gray-500">تعداد هزینه ها</h1>
-                                    <span className="text-sm text-gray-500">12</span>
+                                    <span className="text-sm text-gray-500">{getCostsCount()}</span>
                                 </div>
                                 <div className="flex w-full justify-between items-center">
                                     <h1 className="text-sm text-gray-500">تعداد جابجایی پول</h1>
-                                    <span className="text-sm text-gray-500">7</span>
+                                    <span className="text-sm text-gray-500">{getTransfersCount()}</span>
                                 </div>
 
                                 <div className="flex w-full justify-between items-center">
                                     <h1 className="text-sm text-gray-500">بیشترین هزینه</h1>
-                                    <span className="text-sm text-gray-500">800000</span>
+                                    <span className="text-sm text-gray-500">{TomanPriceFormatter(getMostCost().toString())} تومان</span>
                                 </div>
                                 <div className="flex w-full justify-between items-center">
                                     <h1 className="text-sm text-gray-500">بیشترین جابجایی پول</h1>
-                                    <span className="text-sm text-gray-500">1200000</span>
+                                    <span className="text-sm text-gray-500">{TomanPriceFormatter(getHighestTransfer().toString())} تومان</span>
                                 </div>
 
 
@@ -199,11 +272,23 @@ function Event() {
                                     <li key={person.id} className="flex w-full justify-between items-center">
                                         <div className="flex flex-row gap-x-2 justify-center items-center">
                                             <h1 className={`user_avatar_${person.scheme}_text`}>{person.name}</h1>
-                                            <span className="text-[.6rem] font-semibold rounded-full px-2 py-1 bg-red-100 text-red-600">
-                                                بدهکار
-                                            </span>
+                                            {parseInt((getAllPersonExpends(person.id) - getAllPersonDebts(person.id) - getAllPersonRecieved(person.id) + getAllPersonSent(person.id)).toFixed(0)) > 0 && (
+                                                <span className="text-[.6rem] font-semibold rounded-full px-2 py-1 bg-green-100 text-green-700">
+                                                    طلبکار
+                                                </span>
+                                            )}
+                                            {parseInt((getAllPersonExpends(person.id) - getAllPersonDebts(person.id) - getAllPersonRecieved(person.id) + getAllPersonSent(person.id)).toFixed(0)) < 0 && (
+                                                <span className="text-[.6rem] font-semibold rounded-full px-2 py-1 bg-red-100 text-red-600">
+                                                    بدهکار
+                                                </span>
+                                            )}
+                                            {parseInt((getAllPersonExpends(person.id) - getAllPersonDebts(person.id) - getAllPersonRecieved(person.id) + getAllPersonSent(person.id)).toFixed(0)) === 0 && (
+                                                <span className="text-[.6rem] font-semibold rounded-full px-2 py-1 bg-gray-200 text-gray-700">
+                                                    تسویه
+                                                </span>
+                                            )}
                                         </div>
-                                        <span className="text-sm text-gray-500">100000 تومان</span>
+                                        <span className="text-sm text-gray-500">{TomanPriceFormatter(Math.abs(getAllPersonExpends(person.id) - getAllPersonDebts(person.id) - getAllPersonRecieved(person.id) + getAllPersonSent(person.id)).toFixed(0))} تومان</span>
                                     </li>
                                 ))}
 
@@ -265,7 +350,11 @@ function Event() {
                             </div>
                             <div className="flex w-full justify-between items-center">
                                 <h1 className="text-sm text-gray-500">مادرخرج</h1>
-                                <span className="text-sm text-gray-500">علی</span>
+                                <span className="text-sm text-gray-500">{getMaxPayer().name}</span>
+                            </div>
+                            <div className="flex w-full justify-between items-center">
+                                <h1 className="text-sm text-gray-500">هزینه های مادرخرج</h1>
+                                <span className="text-sm text-gray-500">{TomanPriceFormatter(getMaxPayer().amount.toFixed(0))} تومان</span>
                             </div>
 
 

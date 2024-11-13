@@ -9,7 +9,6 @@ type ButtonProps = {
 
 
 function Button({ onClick, text, icon, color, size }: ButtonProps) {
-
     const colorClasses = color === 'accent' ? 'bg-indigo-100 border-indigo-100 hover:border-indigo-900 text-indigo-900' : color === 'gray' ? 'bg-gray-200 text-gray-700 border-gray-200 hover:border-gray-700' : 'bg-red-100 text-red-600 border-red-100 hover:border-red-600';
 
     const sizeClasses = size === 'small' ? 'text-sm' : size === 'medium' ? 'text-base' : 'text-lg';
