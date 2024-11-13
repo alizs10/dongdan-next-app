@@ -9,13 +9,15 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "jalali-moment": "^3.3.11",
     "lucide-react": "^0.456.0",
     "next": "15.0.3",
     "next-persian-fonts": "^1.0.0",
     "react": "19.0.0-rc-66855b96-20241106",
     "react-dom": "19.0.0-rc-66855b96-20241106",
     "react-multi-date-picker": "^4.5.2",
-    "zod": "^3.23.8"
+    "zod": "^3.23.8",
+    "zustand": "^5.0.1"
   },
   "devDependencies": {
     "@types/node": "^20",

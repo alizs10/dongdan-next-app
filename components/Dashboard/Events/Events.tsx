@@ -3,6 +3,8 @@ import styles from "./Events.module.css";
 import NewEventModal from "./NewEventModal";
 import { useState } from "react";
 import Link from "next/link";
+import { useEventStore } from "@/store/event-store";
+import moment from "jalali-moment";
 
 const EVENTS = [
     {
@@ -33,6 +35,8 @@ const EVENTS = [
 ]
 
 function Events() {
+
+    const events = useEventStore((state) => state.events);
 
     const [newEventModalVis, setNewEventModalVis] = useState(false);
 
@@ -87,7 +91,7 @@ function Events() {
 
             <ul className={styles.events_list}>
 
-                {EVENTS.map(event => (
+                {events.map(event => (
 
                     <li key={event.id} className={styles.event_item}>
                         <div className={styles.event_item_right}>
@@ -98,11 +102,15 @@ function Events() {
 
                             <h2 className={styles.event_item_name}>{event.name}</h2>
                         </div>
-                        <div className={styles.event_item_left}>
-                            <Link href={`/dashboard/events/${event.id}`} className={styles.event_item_button}>
-                                <Info className={styles.event_item_button_icon} />
-                                <span>مشاهده جزییات</span>
-                            </Link>
+
+                        <div className="flex flex-wrap items-center gap-x-2">
+                            <span className="text-xs text-gray-500 selft-end">{moment(event.date).locale('fa').format("DD MMM، YYYY")}</span>
+                            <div className={styles.event_item_left}>
+                                <Link href={`/dashboard/events/${event.id}`} className={styles.event_item_button}>
+                                    <Info className={styles.event_item_button_icon} />
+                                    <span>مشاهده جزییات</span>
+                                </Link>
+                            </div>
                         </div>
                     </li>
                 ))}

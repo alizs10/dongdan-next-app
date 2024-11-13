@@ -11,6 +11,8 @@ import { createPortal, useFormStatus } from "react-dom";
 import { SCHEMES, SchemeType } from "@/database/data/schemes";
 import { useParams } from "next/navigation";
 import { personSchema } from "@/database/validations/person-validation";
+import { useEventStore } from "@/store/event-store";
+import { generateUID } from "@/helpers/helpers";
 
 type FormInputs = {
     name: string;
@@ -20,6 +22,7 @@ type FormInputs = {
 
 function NewPersonModal({ onClose }: { onClose: () => void }) {
 
+    const addPerson = useEventStore(state => state.addPerson);
     const { pending, data, method, action } = useFormStatus();
     const { event_id } = useParams()
 
@@ -47,9 +50,9 @@ function NewPersonModal({ onClose }: { onClose: () => void }) {
     }
 
     function formActionHandler(formData: FormData) {
-        let formDataObj = Object.fromEntries(formData.entries());
 
-        let { hasError, errors } = zValidate(personSchema, formDataObj);
+        if (typeof event_id !== 'string') return;
+        let { hasError, errors } = zValidate(personSchema, inputs);
 
         if (hasError) {
             setFormErrors(errors);
@@ -57,7 +60,14 @@ function NewPersonModal({ onClose }: { onClose: () => void }) {
         }
 
         setFormErrors(initFormErrors);
-        console.log("passed")
+
+        let newPerson = {
+            id: generateUID(),
+            ...inputs
+        }
+
+        addPerson(event_id, newPerson);
+        onClose();
     }
 
     if (typeof window === "object") {

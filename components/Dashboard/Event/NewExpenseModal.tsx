@@ -13,6 +13,7 @@ import ExpensePreview from "./ExpensePreview";
 import PDatePicker from "@/components/Common/Form/PDatePicker";
 import { expendSchema } from "@/database/validations/expend-validation";
 import { transferSchema } from "@/database/validations/transfer-validation";
+import { Event } from "@/types/event-types";
 
 type FormInputs = {
     desc: string;
@@ -74,7 +75,7 @@ const group = [
     },
 ]
 
-function NewExpenseModal({ onClose }: { onClose: () => void }) {
+function NewExpenseModal({ onClose, event }: { onClose: () => void, event: Event }) {
 
     const { pending, data, method, action } = useFormStatus();
     const [formType, setFormType] = useState<FormTypes>(0)
@@ -120,12 +121,12 @@ function NewExpenseModal({ onClose }: { onClose: () => void }) {
 
     function togglePerson(personId: string) {
 
-        if (personId === 'all' && inputs.group.length === group.length) {
+        if (personId === 'all' && inputs.group.length === event.group.length) {
             setInputs(prev => ({ ...prev, group: [] }))
             return
         }
-        if (personId === 'all' && inputs.group.length !== group.length) {
-            setInputs(prev => ({ ...prev, group: group.map(p => p.id) }))
+        if (personId === 'all' && inputs.group.length !== event.group.length) {
+            setInputs(prev => ({ ...prev, group: event.group.map(p => p.id) }))
             return
         }
 
@@ -139,12 +140,12 @@ function NewExpenseModal({ onClose }: { onClose: () => void }) {
 
     function selectFromPerson(personId: string) {
         if (personId === inputs2.to) return
-        setInputs2(prev => ({ ...prev, from: personId }))
+        setInputs2(prev => ({ ...prev, from: prev.from === personId ? '' : personId }))
     }
 
     function selectToPerson(personId: string) {
         if (personId === inputs2.from) return
-        setInputs2(prev => ({ ...prev, to: personId }))
+        setInputs2(prev => ({ ...prev, to: prev.to === personId ? '' : personId }))
     }
 
 
@@ -234,7 +235,7 @@ function NewExpenseModal({ onClose }: { onClose: () => void }) {
 
                                 <div className="flex flex-wrap gap-4">
 
-                                    <div onClick={togglePerson.bind(null, 'all')} className={`px-4 cursor-pointer py-2 flex flex-row gap-x-4 items-center border ${inputs.group.length === group.length ? `user_avatar_blue_text user_avatar_blue_border user_avatar_blue_bg` : 'user_avatar_gray_text border-white'} transition-all duration-300 rounded-full`}>
+                                    <div onClick={togglePerson.bind(null, 'all')} className={`px-4 cursor-pointer py-2 flex flex-row gap-x-4 items-center border ${inputs.group.length === event.group.length ? `user_avatar_blue_text user_avatar_blue_border user_avatar_blue_bg` : 'user_avatar_gray_text border-white'} transition-all duration-300 rounded-full`}>
                                         <div className="">
                                             <User className="size-5" />
                                         </div>
@@ -243,7 +244,7 @@ function NewExpenseModal({ onClose }: { onClose: () => void }) {
                                     </div>
 
 
-                                    {group.map(user => (
+                                    {event.group.map(user => (
                                         <div key={user.id} onClick={togglePerson.bind(null, user.id)} className={`px-4 cursor-pointer py-2 flex flex-row gap-x-4 items-center border ${isPersonSelected(user.id) ? `user_avatar_${user.scheme}_text user_avatar_${user.scheme}_border user_avatar_${user.scheme}_bg` : 'user_avatar_gray_text border-white'} transition-all duration-300 rounded-full`}>
                                             <div className="">
                                                 <User className="size-5" />
@@ -297,7 +298,7 @@ function NewExpenseModal({ onClose }: { onClose: () => void }) {
 
                                 <div className="flex flex-wrap gap-4">
 
-                                    {group.map(user => (
+                                    {event.group.map(user => (
                                         <div key={user.id} onClick={selectFromPerson.bind(null, user.id)} className={`px-4 cursor-pointer py-2 flex flex-row gap-x-4 items-center border ${inputs2.to === user.id ? 'border-gray-300 text-gray-300' : inputs2.from === user.id ? `user_avatar_${user.scheme}_border user_avatar_${user.scheme}_text user_avatar_${user.scheme}_bg` : 'user_avatar_gray_text border-white'} transition-all duration-300 rounded-full`}>
                                             <div className="">
                                                 <User className="size-5" />
@@ -317,13 +318,14 @@ function NewExpenseModal({ onClose }: { onClose: () => void }) {
                                         <span>{formErrors2.from}</span>
                                     </div>
                                 )}
+
                                 <input type="hidden" value={inputs2.from ?? ''} name="from" />
 
-                                <span className={`text-base ${formErrors2.from ? 'text-red-500' : 'text-indigo-900'} capitalize`}>مقصد</span>
+                                <span className={`text-base ${formErrors2.to ? 'text-red-500' : 'text-indigo-900'} capitalize`}>مقصد</span>
 
                                 <div className="flex flex-wrap gap-4">
 
-                                    {group.map(user => (
+                                    {event.group.map(user => (
                                         <div key={user.id} onClick={selectToPerson.bind(null, user.id)} className={`px-4 cursor-pointer py-2 flex flex-row gap-x-4 items-center border ${inputs2.from === user.id ? 'border-gray-300 text-gray-300' : inputs2.to === user.id ? `user_avatar_${user.scheme}_border user_avatar_${user.scheme}_text user_avatar_${user.scheme}_bg` : 'user_avatar_gray_text border-white'} transition-all duration-300 rounded-full`}>
                                             <div className="">
                                                 <User className="size-5" />
@@ -336,13 +338,13 @@ function NewExpenseModal({ onClose }: { onClose: () => void }) {
                                 </div>
 
 
-                                {formErrors2.from && (
+                                {formErrors2.to && (
                                     <div className="flex gap-x-2 items-center mt-2 text-sm text-red-500">
                                         <Ban className="size-3.5" />
-                                        <span>{formErrors2.from}</span>
+                                        <span>{formErrors2.to}</span>
                                     </div>
                                 )}
-                                <input type="hidden" value={inputs2.from ?? ''} name="group" />
+                                <input type="hidden" value={inputs2.to ?? ''} name="to" />
                             </div>
 
                             <ExpensePreview />

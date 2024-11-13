@@ -7,6 +7,8 @@ import { useState } from "react";
 import NewExpenseModal from "./NewExpenseModal";
 import NewPersonModal from "./NewPersonModal";
 import Expenses from "./Expenses/Expenses";
+import { useParams } from "next/navigation";
+import { useEventStore } from "@/store/event-store";
 
 const group = [
     {
@@ -52,6 +54,12 @@ const group = [
 ]
 
 function Event() {
+
+    const { event_id } = useParams()
+    const events = useEventStore(state => state.events);
+    const event = events.find(e => e.id === event_id);
+
+    if (!event) return null;
 
     const [isNewExpenseModalOpen, setIsNewExpenseModalOpen] = useState(false);
     const [isNewPersonModalOpen, setIsNewPersonModalOpen] = useState(false);
@@ -112,7 +120,7 @@ function Event() {
                         </button>
                     </div>
 
-                    {isNewExpenseModalOpen && <NewExpenseModal onClose={closeNewExpenseModal} />}
+                    {isNewExpenseModalOpen && <NewExpenseModal event={event} onClose={closeNewExpenseModal} />}
                 </div>
 
                 <aside className="col-span-1 border-r border-gray-200 flex flex-col-reverse">
@@ -120,12 +128,12 @@ function Event() {
                     <div className="p-3 flex flex-col gap-y-8">
                         <div className="flex w-full justify-between items-center">
                             <h1 className={styles.header_title}>اعضای گروه</h1>
-                            <span className="text-sm text-gray-500">8 نفر</span>
+                            <span className="text-sm text-gray-500">{event.group.length} نفر</span>
                         </div>
 
                         <ul className="flex flex-col gap-y-4">
 
-                            {group.map(user => (
+                            {event.group.map(user => (
                                 <li key={user.id} className="flex flex-row gap-x-4 items-center">
                                     <div className={`p-2 border user_avatar_${user.scheme}_border user_avatar_${user.scheme}_bg rounded-full`}>
                                         <User className={`size-5 user_avatar_${user.scheme}_text`} />
@@ -163,7 +171,7 @@ function Event() {
 
                         <ul className="flex flex-col gap-y-4">
 
-                            {group.map(person => (
+                            {event.group.map(person => (
                                 <li key={person.id} className="flex w-full justify-between items-center">
                                     <div className="flex flex-row gap-x-2 justify-center items-center">
                                         <h1 className={`user_avatar_${person.scheme}_text`}>{person.name}</h1>
