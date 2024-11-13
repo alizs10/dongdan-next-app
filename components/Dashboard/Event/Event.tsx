@@ -1,6 +1,6 @@
 'use client'
 
-import { Filter, MoveRight, NotebookPen, Plus, ReceiptText, User, UserPlus, Zap } from "lucide-react";
+import { CalendarCheck, Filter, MoveRight, NotebookPen, Plus, ReceiptText, User, UserPlus, Zap } from "lucide-react";
 import styles from "./Event.module.css";
 import Link from "next/link";
 import { useState } from "react";
@@ -212,7 +212,7 @@ function Event() {
 
 
 
-                    <div className="h-full p-3 flex flex-col gap-y-8">
+                    <div className="h-full p-3 flex flex-col gap-y-8 border-b border-gray-200">
                         <div className="flex w-full justify-between items-center">
                             <h1 className={styles.header_title}>اعضای گروه</h1>
                             <span className="text-sm text-gray-500">{event.group.length} نفر</span>
@@ -231,9 +231,36 @@ function Event() {
 
                         </ul>
 
-                        <button onClick={openNewPersonModal} className="mt-auto flex gap-x-2 text-sm justify-center text-gray-700 bg-gray-200 rounded-xl py-3">
-                            <UserPlus className="size-5" />
+                        <button onClick={openNewPersonModal} className="mt-auto flex gap-x-2 text-sm justify-center items-center text-gray-700 bg-gray-200 rounded-xl py-3">
+                            <UserPlus className="size-4" />
                             <span>افزودن عضو جدید</span>
+                        </button>
+                    </div>
+
+                    <div className="p-3 flex flex-col gap-y-8">
+                        <div className="flex w-full justify-between items-center">
+                            <h1 className={styles.header_title}>اطلاعات رویداد</h1>
+                            {/* <span className="text-sm text-gray-500">8 نفر</span> */}
+                        </div>
+
+                        <ul className="flex flex-col gap-y-4">
+
+                            <div className="flex w-full justify-between items-center">
+                                <h1 className="text-sm text-gray-500 font-semibold">وضعیت</h1>
+                                <span className="text-sm text-gray-500">درجریان</span>
+                            </div>
+                            <div className="flex w-full justify-between items-center">
+                                <h1 className="text-sm text-gray-500">تاریخ شروع</h1>
+                                <span className="text-sm text-gray-500">13 آبان، 1403</span>
+                            </div>
+
+
+
+                        </ul>
+
+                        <button className="mt-auto flex gap-x-2 text-sm justify-center items-center text-red-700 bg-red-100 rounded-xl py-3">
+                            <CalendarCheck className="size-4" />
+                            <span>پایان رویداد</span>
                         </button>
                     </div>
                 </aside>
