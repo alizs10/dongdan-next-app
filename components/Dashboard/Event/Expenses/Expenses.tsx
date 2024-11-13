@@ -1,12 +1,13 @@
+import { type Expense as ExpenseType } from "@/types/event-types";
 import Expense from "./Expense";
 
-function Expenses() {
+function Expenses({ expenses }: { expenses: ExpenseType[] }) {
     return (
         <div className="py-3 flex flex-col">
-            <Expense type="expend" />
-            <Expense type="transfer" />
-            <Expense type="expend" />
-            <Expense type="expend" />
+            {expenses.map(expense => (
+                <Expense key={expense.id} expense={expense} />
+            ))}
+
         </div>
     );
 }

@@ -60,6 +60,7 @@ function NewEventModal({ onClose }: { onClose: () => void }) {
         let newEvent = {
             id: generateUID(),
             group: [],
+            expenses: [],
             ...inputs,
         }
 

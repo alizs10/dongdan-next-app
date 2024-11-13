@@ -9,6 +9,8 @@ import NewPersonModal from "./NewPersonModal";
 import Expenses from "./Expenses/Expenses";
 import { useParams } from "next/navigation";
 import { useEventStore } from "@/store/event-store";
+import NoExpenses from "./Expenses/NoExpenses";
+import NoGroupExpenses from "./Expenses/NoGroupExpenses";
 
 const group = [
     {
@@ -65,6 +67,7 @@ function Event() {
     const [isNewPersonModalOpen, setIsNewPersonModalOpen] = useState(false);
 
     function openNewExpenseModal() {
+        if (event?.group.length === 0) return
         setIsNewExpenseModalOpen(true);
     }
 
@@ -88,44 +91,128 @@ function Event() {
                     <Link href={'/dashboard/events'} className={styles.back_button}>
                         <MoveRight className={styles.back_button_icon} />
                     </Link>
-                    <h1 className={styles.header_title}>سفر شمال</h1>
+                    <h1 className={styles.header_title}>{event.name}</h1>
                 </div>
 
-                <div className={styles.header_left}>
+                {event.group.length > 0 && (
 
-                    <button className="flex gap-x-2 items-center px-5 py-2 rounded-xl bg-gray-100 text-gray-700">
-                        <Filter className="size-3.5" />
-                        <span className="text-sm">فیلتر</span>
-                    </button>
-                    <button onClick={openNewExpenseModal} className="flex gap-x-2 items-center px-5 py-2 rounded-xl bg-indigo-50 text-indigo-900">
-                        <Plus className="size-3.5" />
-                        <span className="text-sm">افزودن هزینه</span>
-                    </button>
-                </div>
+                    <div className={styles.header_left}>
+                        <button className="bg-gray-200 text-base border border-gray-100 w-fit px-4 py-2 rounded-xl hover:border-gray-900 transition-all duration-300 text-gray-900 flex flex-row gap-x-2 items-center">
+                            <Filter className="size-4" />
+                            <span className="text-sm">فیلتر</span>
+                        </button>
+                        <button onClick={openNewExpenseModal} className="bg-indigo-100 text-base border border-indigo-100 w-fit px-4 py-2 rounded-xl hover:border-indigo-900 transition-all duration-300 text-indigo-900 flex flex-row gap-x-2 items-center">
+                            <Plus className="size-4" />
+                            <span className="text-sm">ثبت هزینه/جابجایی پول</span>
+                        </button>
+                    </div>
+                )}
             </div>
 
             <div className="grid grid-cols-4">
 
                 <div className="col-span-3">
 
-                    <Expenses />
+                    {event.group.length > 0 ? (
+                        <Expenses expenses={event.expenses} />
+                    ) : <NoGroupExpenses openNewPersonModal={openNewPersonModal} />}
 
-                    <div className="hidden w-full h-full justify-center items-center flex-col gap-y-4">
-                        <ReceiptText className="size-64 text-gray-300" />
-                        <span className="text-base text-gray-500">هنوز کسی هزینه ای نکرده...</span>
-
-                        <button onClick={openNewExpenseModal} className="flex gap-x-2 items-center px-5 py-2 rounded-xl bg-indigo-50 text-indigo-900 mt-2">
-                            <NotebookPen className="size-5" />
-                            <span>افزودن هزینه</span>
-                        </button>
-                    </div>
+                    {(event.group.length > 0 && event.expenses.length === 0) && (
+                        <NoExpenses openNewExpenseModal={openNewExpenseModal} />
+                    )}
 
                     {isNewExpenseModalOpen && <NewExpenseModal event={event} onClose={closeNewExpenseModal} />}
                 </div>
 
-                <aside className="col-span-1 border-r border-gray-200 flex flex-col-reverse">
+                <aside className="col-span-1 border-r border-gray-200 flex flex-col">
 
-                    <div className="p-3 flex flex-col gap-y-8">
+
+                    {event.group.length > 0 && (
+
+                        <div className="p-3 flex flex-col gap-y-8 border-b border-gray-200">
+                            <div className="flex w-full justify-between items-center">
+                                <h1 className={styles.header_title}>محاسبات</h1>
+                                {/* <span className="text-sm text-gray-500">8 نفر</span> */}
+                            </div>
+
+                            <ul className="flex flex-col gap-y-4">
+
+                                <div className="flex w-full justify-between items-center">
+                                    <h1 className="text-sm text-gray-500 font-semibold">مجموع هزینه ها</h1>
+                                    <span className="text-sm text-gray-500">2200500 تومان</span>
+                                </div>
+                                <div className="flex w-full justify-between items-center">
+                                    <h1 className="text-sm text-gray-500">تعداد هزینه ها</h1>
+                                    <span className="text-sm text-gray-500">12</span>
+                                </div>
+                                <div className="flex w-full justify-between items-center">
+                                    <h1 className="text-sm text-gray-500">تعداد جابجایی پول</h1>
+                                    <span className="text-sm text-gray-500">7</span>
+                                </div>
+                                <div className="flex w-full justify-between items-center">
+                                    <h1 className="text-sm text-gray-500">تعداد اعضا</h1>
+                                    <span className="text-sm text-gray-500">8</span>
+                                </div>
+                                <div className="flex w-full justify-between items-center">
+                                    <h1 className="text-sm text-gray-500">بیشترین هزینه</h1>
+                                    <span className="text-sm text-gray-500">800000</span>
+                                </div>
+                                <div className="flex w-full justify-between items-center">
+                                    <h1 className="text-sm text-gray-500">بیشترین جابجایی پول</h1>
+                                    <span className="text-sm text-gray-500">1200000</span>
+                                </div>
+                                <div className="flex w-full justify-between items-center">
+                                    <h1 className="text-sm text-gray-500">مادرخرج</h1>
+                                    <span className="text-sm text-gray-500">علی</span>
+                                </div>
+
+
+                            </ul>
+                        </div>
+                    )}
+
+                    {event.group.length > 0 && (
+
+                        <div className="p-3 flex flex-col gap-y-8 border-b border-gray-200">
+                            <div className="flex flex-row justify-between items-center">
+
+                                <div className="flex w-full justify-between items-center">
+                                    <h1 className={styles.header_title}>سهم اعضا</h1>
+                                    {/* <span className="text-sm text-gray-500">8 نفر</span> */}
+                                </div>
+
+
+                                <button className="flex flex-row flex-nowrap gap-x-2 items-center w-fit rounded-full px-3 py-1.5 bg-indigo-50 text-indigo-700">
+                                    <Zap className="size-4" />
+                                    <p className="text-[.7rem] font-semibold text-nowrap">
+                                        راهنمای تسویه
+                                    </p>
+                                </button>
+                            </div>
+
+
+                            <ul className="flex flex-col gap-y-4">
+
+                                {event.group.map(person => (
+                                    <li key={person.id} className="flex w-full justify-between items-center">
+                                        <div className="flex flex-row gap-x-2 justify-center items-center">
+                                            <h1 className={`user_avatar_${person.scheme}_text`}>{person.name}</h1>
+                                            <span className="text-[.6rem] font-semibold rounded-full px-2 py-1 bg-red-100 text-red-600">
+                                                بدهکار
+                                            </span>
+                                        </div>
+                                        <span className="text-sm text-gray-500">100000 تومان</span>
+                                    </li>
+                                ))}
+
+
+                            </ul>
+                        </div>
+                    )}
+
+
+
+                    <div className="h-full p-3 flex flex-col gap-y-8">
                         <div className="flex w-full justify-between items-center">
                             <h1 className={styles.header_title}>اعضای گروه</h1>
                             <span className="text-sm text-gray-500">{event.group.length} نفر</span>
@@ -144,90 +231,11 @@ function Event() {
 
                         </ul>
 
-                        <button onClick={openNewPersonModal} className="flex gap-x-2 text-sm justify-center text-gray-700 bg-gray-200 rounded-xl py-3">
+                        <button onClick={openNewPersonModal} className="mt-auto flex gap-x-2 text-sm justify-center text-gray-700 bg-gray-200 rounded-xl py-3">
                             <UserPlus className="size-5" />
                             <span>افزودن عضو جدید</span>
                         </button>
                     </div>
-
-
-                    <div className="p-3 flex flex-col gap-y-8 border-b border-gray-200">
-                        <div className="flex flex-row justify-between items-center">
-
-                            <div className="flex w-full justify-between items-center">
-                                <h1 className={styles.header_title}>سهم اعضا</h1>
-                                {/* <span className="text-sm text-gray-500">8 نفر</span> */}
-                            </div>
-
-
-                            <button className="flex flex-row flex-nowrap gap-x-2 items-center w-fit rounded-full px-3 py-1.5 bg-indigo-50 text-indigo-700">
-                                <Zap className="size-4" />
-                                <p className="text-[.7rem] font-semibold text-nowrap">
-                                    راهنمای تسویه
-                                </p>
-                            </button>
-                        </div>
-
-
-                        <ul className="flex flex-col gap-y-4">
-
-                            {event.group.map(person => (
-                                <li key={person.id} className="flex w-full justify-between items-center">
-                                    <div className="flex flex-row gap-x-2 justify-center items-center">
-                                        <h1 className={`user_avatar_${person.scheme}_text`}>{person.name}</h1>
-                                        <span className="text-[.6rem] font-semibold rounded-full px-2 py-1 bg-red-100 text-red-600">
-                                            بدهکار
-                                        </span>
-                                    </div>
-                                    <span className="text-sm text-gray-500">100000 تومان</span>
-                                </li>
-                            ))}
-
-
-                        </ul>
-                    </div>
-
-                    <div className="p-3 flex flex-col gap-y-8 border-b border-gray-200">
-                        <div className="flex w-full justify-between items-center">
-                            <h1 className={styles.header_title}>محاسبات</h1>
-                            {/* <span className="text-sm text-gray-500">8 نفر</span> */}
-                        </div>
-
-                        <ul className="flex flex-col gap-y-4">
-
-                            <div className="flex w-full justify-between items-center">
-                                <h1 className="text-sm text-gray-500 font-semibold">مجموع هزینه ها</h1>
-                                <span className="text-sm text-gray-500">2200500 تومان</span>
-                            </div>
-                            <div className="flex w-full justify-between items-center">
-                                <h1 className="text-sm text-gray-500">تعداد هزینه ها</h1>
-                                <span className="text-sm text-gray-500">12</span>
-                            </div>
-                            <div className="flex w-full justify-between items-center">
-                                <h1 className="text-sm text-gray-500">تعداد جابجایی پول</h1>
-                                <span className="text-sm text-gray-500">7</span>
-                            </div>
-                            <div className="flex w-full justify-between items-center">
-                                <h1 className="text-sm text-gray-500">تعداد اعضا</h1>
-                                <span className="text-sm text-gray-500">8</span>
-                            </div>
-                            <div className="flex w-full justify-between items-center">
-                                <h1 className="text-sm text-gray-500">بیشترین هزینه</h1>
-                                <span className="text-sm text-gray-500">800000</span>
-                            </div>
-                            <div className="flex w-full justify-between items-center">
-                                <h1 className="text-sm text-gray-500">بیشترین جابجایی پول</h1>
-                                <span className="text-sm text-gray-500">1200000</span>
-                            </div>
-                            <div className="flex w-full justify-between items-center">
-                                <h1 className="text-sm text-gray-500">مادرخرج</h1>
-                                <span className="text-sm text-gray-500">علی</span>
-                            </div>
-
-
-                        </ul>
-                    </div>
-
                 </aside>
 
                 {isNewPersonModalOpen && <NewPersonModal onClose={closeNewPersonModal} />}

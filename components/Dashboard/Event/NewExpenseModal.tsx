@@ -4,7 +4,7 @@ import TextInput from "@/components/Common/Form/TextInput";
 import ModalHeader from "@/components/Common/ModalHeader";
 import ModalWrapper from "@/components/Common/ModalWrapper";
 import { eventSchema } from "@/database/validations/event-validation";
-import { TomanPriceFormatter } from "@/helpers/helpers";
+import { generateUID, TomanPriceFormatter, TomanPriceToNumber } from "@/helpers/helpers";
 import { zValidate } from "@/helpers/validation-helper";
 import { Ban, BriefcaseBusiness, Cake, Coffee, Plane, Save, TreePalm, User, Utensils, Zap } from "lucide-react";
 import { useState } from "react";
@@ -14,17 +14,19 @@ import PDatePicker from "@/components/Common/Form/PDatePicker";
 import { expendSchema } from "@/database/validations/expend-validation";
 import { transferSchema } from "@/database/validations/transfer-validation";
 import { Event } from "@/types/event-types";
+import { useEventStore } from "@/store/event-store";
 
 type FormInputs = {
     desc: string;
     amount: string;
     group: string[];
+    payer: string;
     date: Date;
 }
 
 type FormInputs2 = {
-    from: string | null;
-    to: string | null;
+    from: string;
+    to: string;
     amount: string;
     desc: string;
     date: Date;
@@ -32,50 +34,10 @@ type FormInputs2 = {
 
 type FormTypes = 0 | 1;
 
-const group = [
-    {
-        id: 'p1',
-        name: 'علی',
-        scheme: 'gray'
-    },
-    {
-        id: 'p2',
-        name: 'محمدحسین',
-        scheme: 'rose'
-    },
-    {
-        id: 'p3',
-        name: 'میلاد',
-        scheme: 'orange'
-    },
-    {
-        id: 'p4',
-        name: 'محمدقادر',
-        scheme: 'green'
-    },
-    {
-        id: 'p5',
-        name: 'رضا',
-        scheme: 'yellow'
-    },
-    {
-        id: 'p6',
-        name: 'ابوالفضل',
-        scheme: 'blue'
-    },
-    {
-        id: 'p7',
-        name: 'حامد',
-        scheme: 'purple'
-    },
-    {
-        id: 'p8',
-        name: 'علیرضا',
-        scheme: 'red'
-    },
-]
 
 function NewExpenseModal({ onClose, event }: { onClose: () => void, event: Event }) {
+
+    const addExpense = useEventStore(state => state.addExpense);
 
     const { pending, data, method, action } = useFormStatus();
     const [formType, setFormType] = useState<FormTypes>(0)
@@ -84,13 +46,14 @@ function NewExpenseModal({ onClose, event }: { onClose: () => void, event: Event
         desc: '',
         amount: '',
         group: [],
+        payer: '',
         date: new Date(Date.now())
     }
     const [inputs, setInputs] = useState(initInputs);
 
     const initInputs2: FormInputs2 = {
-        from: null,
-        to: null,
+        from: '',
+        to: '',
         desc: '',
         amount: '',
         date: new Date(Date.now())
@@ -102,6 +65,7 @@ function NewExpenseModal({ onClose, event }: { onClose: () => void, event: Event
         desc: '',
         amount: '',
         group: '',
+        payer: '',
         date: '',
     }
     const [formErrors, setFormErrors] = useState(initFormErrors);
@@ -117,6 +81,11 @@ function NewExpenseModal({ onClose, event }: { onClose: () => void, event: Event
 
     function isPersonSelected(personId: string) {
         return inputs.group.includes(personId);
+    }
+
+    function selectPayer(personId: string) {
+        if (personId === inputs2.to) return
+        setInputs(prev => ({ ...prev, payer: prev.payer === personId ? '' : personId }))
     }
 
     function togglePerson(personId: string) {
@@ -137,6 +106,8 @@ function NewExpenseModal({ onClose, event }: { onClose: () => void, event: Event
             setInputs(prev => ({ ...prev, group: [...prev.group, personId] }))
         }
     }
+
+
 
     function selectFromPerson(personId: string) {
         if (personId === inputs2.to) return
@@ -164,9 +135,7 @@ function NewExpenseModal({ onClose, event }: { onClose: () => void, event: Event
 
 
     function expendFormHandler(formData: FormData) {
-        // let formDataObj = Object.fromEntries(formData.entries());
 
-        console.log(inputs)
         let { hasError, errors } = zValidate(expendSchema, inputs);
 
         if (hasError) {
@@ -177,12 +146,21 @@ function NewExpenseModal({ onClose, event }: { onClose: () => void, event: Event
         }
 
         setFormErrors(initFormErrors);
-        console.log("passed")
+
+        let newExpend = {
+            id: generateUID(),
+            type: 'expend' as const,
+            ...inputs,
+            amount: TomanPriceToNumber(inputs.amount),
+        }
+
+        addExpense(event.id, newExpend)
+        onClose();
     }
 
 
     function transferFormHandler(formData: FormData) {
-        console.log(inputs2)
+
         let { hasError, errors } = zValidate(transferSchema, inputs2);
 
         if (hasError) {
@@ -193,7 +171,18 @@ function NewExpenseModal({ onClose, event }: { onClose: () => void, event: Event
         }
 
         setFormErrors2(initFormErrors2);
-        console.log("passed")
+
+        if (inputs2.to === inputs2.from) return;
+
+        let newTransfer = {
+            ...inputs2,
+            id: generateUID(),
+            type: 'transfer' as const,
+            amount: TomanPriceToNumber(inputs2.amount)
+        }
+
+        addExpense(event.id, newTransfer)
+        onClose();
     }
 
 
@@ -209,9 +198,9 @@ function NewExpenseModal({ onClose, event }: { onClose: () => void, event: Event
                         <div className={`col-span-1 select-none py-3 cursor-pointer text-center hover:bg-indigo-100 ${formType === 0 ? 'bg-indigo-100 text-indigo-900' : 'bg-white text-gray-700'}`} onClick={() => setFormType(0)}>
                             هزینه
                         </div>
-                        <div className={`col-span-1 select-none py-3 cursor-pointer text-center hover:bg-indigo-100 ${formType === 1 ? 'bg-indigo-100 text-indigo-900' : 'bg-white text-gray-700'}`} onClick={() => setFormType(1)}>
+                        <button disabled={event.group.length < 2} className={`col-span-1 select-none py-3 cursor-pointer text-center  ${formType === 1 ? 'hover:bg-indigo-100 bg-indigo-100 text-indigo-900' : event.group.length < 2 ? 'text-gray-300 cursor-not-allowed' : 'hover:bg-indigo-100 bg-white text-gray-700'}`} onClick={() => setFormType(event.group.length < 2 ? 0 : 1)}>
                             جابجایی پول
-                        </div>
+                        </button>
                     </div>
 
 
@@ -231,41 +220,72 @@ function NewExpenseModal({ onClose, event }: { onClose: () => void, event: Event
                                     error={formErrors.date}
                                 />
 
-                                <span className={`text-base ${formErrors.group ? 'text-red-500' : 'text-indigo-900'} capitalize`}>کیا سهیم بودن؟</span>
+                                <div className="flex flex-col gap-y-2">
 
-                                <div className="flex flex-wrap gap-4">
+                                    <span className={`text-base ${formErrors.payer ? 'text-red-500' : 'text-indigo-900'} capitalize`}>کی پرداخت کرده؟</span>
 
-                                    <div onClick={togglePerson.bind(null, 'all')} className={`px-4 cursor-pointer py-2 flex flex-row gap-x-4 items-center border ${inputs.group.length === event.group.length ? `user_avatar_blue_text user_avatar_blue_border user_avatar_blue_bg` : 'user_avatar_gray_text border-white'} transition-all duration-300 rounded-full`}>
-                                        <div className="">
-                                            <User className="size-5" />
-                                        </div>
+                                    <div className="flex flex-wrap gap-4">
 
-                                        <span className="text-base">همه</span>
+                                        {event.group.map(user => (
+                                            <div key={user.id} onClick={selectPayer.bind(null, user.id)} className={`px-4 cursor-pointer py-2 flex flex-row gap-x-4 items-center border ${user.id === inputs.payer ? `user_avatar_${user.scheme}_text user_avatar_${user.scheme}_border user_avatar_${user.scheme}_bg` : 'user_avatar_gray_text border-white'} transition-all duration-300 rounded-full`}>
+                                                <div className="">
+                                                    <User className="size-5" />
+                                                </div>
+
+                                                <span className="text-base">{user.name}</span>
+                                            </div>
+                                        ))}
+
                                     </div>
 
 
-                                    {event.group.map(user => (
-                                        <div key={user.id} onClick={togglePerson.bind(null, user.id)} className={`px-4 cursor-pointer py-2 flex flex-row gap-x-4 items-center border ${isPersonSelected(user.id) ? `user_avatar_${user.scheme}_text user_avatar_${user.scheme}_border user_avatar_${user.scheme}_bg` : 'user_avatar_gray_text border-white'} transition-all duration-300 rounded-full`}>
+                                    {formErrors.payer && (
+                                        <div className="flex gap-x-2 items-center mt-2 text-sm text-red-500">
+                                            <Ban className="size-3.5" />
+                                            <span>{formErrors.payer}</span>
+                                        </div>
+                                    )}
+                                    <input type="hidden" value={inputs.payer} name="payer" />
+                                </div>
+                                <div className="flex flex-col gap-y-2">
+
+                                    <span className={`text-base ${formErrors.group ? 'text-red-500' : 'text-indigo-900'} capitalize`}>کیا سهیم بودن؟</span>
+
+                                    <div className="flex flex-wrap gap-4">
+
+                                        <div onClick={togglePerson.bind(null, 'all')} className={`px-4 cursor-pointer py-2 flex flex-row gap-x-4 items-center border ${inputs.group.length === event.group.length ? `user_avatar_blue_text user_avatar_blue_border user_avatar_blue_bg` : 'user_avatar_gray_text border-white'} transition-all duration-300 rounded-full`}>
                                             <div className="">
                                                 <User className="size-5" />
                                             </div>
 
-                                            <span className="text-base">{user.name}</span>
+                                            <span className="text-base">همه</span>
                                         </div>
-                                    ))}
+
+
+                                        {event.group.map(user => (
+                                            <div key={user.id} onClick={togglePerson.bind(null, user.id)} className={`px-4 cursor-pointer py-2 flex flex-row gap-x-4 items-center border ${isPersonSelected(user.id) ? `user_avatar_${user.scheme}_text user_avatar_${user.scheme}_border user_avatar_${user.scheme}_bg` : 'user_avatar_gray_text border-white'} transition-all duration-300 rounded-full`}>
+                                                <div className="">
+                                                    <User className="size-5" />
+                                                </div>
+
+                                                <span className="text-base">{user.name}</span>
+                                            </div>
+                                        ))}
 
 
 
+                                    </div>
+
+
+                                    {formErrors.group && (
+                                        <div className="flex gap-x-2 items-center mt-2 text-sm text-red-500">
+                                            <Ban className="size-3.5" />
+                                            <span>{formErrors.group}</span>
+                                        </div>
+                                    )}
+                                    <input type="hidden" value={inputs.group.toString()} name="group" />
                                 </div>
 
-
-                                {formErrors.group && (
-                                    <div className="flex gap-x-2 items-center mt-2 text-sm text-red-500">
-                                        <Ban className="size-3.5" />
-                                        <span>{formErrors.group}</span>
-                                    </div>
-                                )}
-                                <input type="hidden" value={inputs.group.toString()} name="group" />
                             </div>
 
                             <ExpensePreview />

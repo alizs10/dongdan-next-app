@@ -4,7 +4,30 @@ export type Event = {
     date: Date;
     label: string;
     group: Person[];
+    expenses: Expense[];
 }
+
+export type Expend = {
+    id: string;
+    desc: string;
+    amount: number;
+    date: Date;
+    type: 'expend';
+    payer: string;
+    group: string[];
+}
+
+export type Transfer = {
+    id: string;
+    desc: string;
+    amount: number;
+    date: Date;
+    type: 'transfer';
+    to: string;
+    from: string;
+}
+
+export type Expense = Expend | Transfer;
 
 export type Person = {
     id: string;
@@ -16,4 +39,5 @@ export type EventState = {
     events: Event[];
     addEvent: (event: Event) => void;
     addPerson: (eventId: string, person: Person) => void;
+    addExpense: (eventId: string, expense: Expense) => void;
 };

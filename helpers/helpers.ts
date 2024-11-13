@@ -20,3 +20,7 @@ export function TomanPriceFormatter(price: string) {
 
     return priceArr2.reverse().join('');
 }
+
+export function TomanPriceToNumber(price: string) {
+    return Number(price.replaceAll(',', ''));
+}

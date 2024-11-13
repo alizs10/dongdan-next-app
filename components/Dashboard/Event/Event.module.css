@@ -19,7 +19,7 @@
 }
 
 .back_button_icon {
-    @apply size-6 text-gray-500
+    @apply size-6 text-gray-300
 }
 
 .header_title {
