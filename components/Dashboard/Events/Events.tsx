@@ -5,6 +5,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useEventStore } from "@/store/event-store";
 import moment from "jalali-moment";
+import NoEvents from "./NoEvents";
 
 const EVENTS = [
     {
@@ -82,41 +83,46 @@ function Events() {
                 <h1 className={styles.header_title}>رویداد ها</h1>
                 {EVENTS.length > 0 && (
                     <button onClick={openModal} className={styles.header_button}>
-                        <PlusIcon className={styles.header_button_icon} />
+                        <CalendarPlus className={styles.header_button_icon} />
                         <span>افزودن رویداد</span>
                     </button>
                 )}
             </div>
 
 
-            <ul className={styles.events_list}>
+            {events.length > 0 ? (
 
-                {events.map(event => (
+                <ul className={styles.events_list}>
 
-                    <li key={event.id} className={styles.event_item}>
-                        <div className={styles.event_item_right}>
+                    {events.map(event => (
 
-                            <div className={styles.event_item_icon_container}>
-                                {renderIcon(event.label)}
+                        <li key={event.id} className={styles.event_item}>
+                            <div className={styles.event_item_right}>
+
+                                <div className={styles.event_item_icon_container}>
+                                    {renderIcon(event.label)}
+                                </div>
+
+                                <h2 className={styles.event_item_name}>{event.name}</h2>
                             </div>
 
-                            <h2 className={styles.event_item_name}>{event.name}</h2>
-                        </div>
-
-                        <div className="flex flex-wrap items-center gap-x-2">
-                            <span className="text-xs text-gray-500 selft-end">{moment(event.date).locale('fa').format("DD MMM، YYYY")}</span>
-                            <div className={styles.event_item_left}>
-                                <Link href={`/dashboard/events/${event.id}`} className={styles.event_item_button}>
-                                    <Info className={styles.event_item_button_icon} />
-                                    <span>مشاهده جزییات</span>
-                                </Link>
+                            <div className="flex flex-wrap items-center gap-x-2">
+                                <span className="text-xs text-gray-500 selft-end">{moment(event.date).locale('fa').format("DD MMM، YYYY")}</span>
+                                <div className={styles.event_item_left}>
+                                    <Link href={`/dashboard/events/${event.id}`} className={styles.event_item_button}>
+                                        <Info className={styles.event_item_button_icon} />
+                                        <span>مشاهده جزییات</span>
+                                    </Link>
+                                </div>
                             </div>
-                        </div>
-                    </li>
-                ))}
+                        </li>
+                    ))}
 
-            </ul>
+                </ul>
 
+            ) : (
+                <NoEvents openNewEventModal={openModal} />
+            )}
 
             {EVENTS.length === 0 && (
 

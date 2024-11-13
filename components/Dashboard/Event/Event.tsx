@@ -11,6 +11,8 @@ import { useParams } from "next/navigation";
 import { useEventStore } from "@/store/event-store";
 import NoExpenses from "./Expenses/NoExpenses";
 import NoGroupExpenses from "./Expenses/NoGroupExpenses";
+import moment from "jalali-moment";
+import Button from "@/components/Common/Button";
 
 const group = [
     {
@@ -97,14 +99,20 @@ function Event() {
                 {event.group.length > 0 && (
 
                     <div className={styles.header_left}>
-                        <button className="bg-gray-200 text-base border border-gray-100 w-fit px-4 py-2 rounded-xl hover:border-gray-900 transition-all duration-300 text-gray-900 flex flex-row gap-x-2 items-center">
-                            <Filter className="size-4" />
-                            <span className="text-sm">فیلتر</span>
-                        </button>
-                        <button onClick={openNewExpenseModal} className="bg-indigo-100 text-base border border-indigo-100 w-fit px-4 py-2 rounded-xl hover:border-indigo-900 transition-all duration-300 text-indigo-900 flex flex-row gap-x-2 items-center">
-                            <Plus className="size-4" />
-                            <span className="text-sm">ثبت هزینه/جابجایی پول</span>
-                        </button>
+                        <Button
+                            text="فیلتر"
+                            color="gray"
+                            onClick={() => { }}
+                            size="small"
+                            icon={<Filter className="size-4" />}
+                        />
+                        <Button
+                            text="ثبت هزینه/جابجایی پول"
+                            color="accent"
+                            onClick={openNewExpenseModal}
+                            size="small"
+                            icon={<Plus className="size-4" />}
+                        />
                     </div>
                 )}
             </div>
@@ -149,10 +157,7 @@ function Event() {
                                     <h1 className="text-sm text-gray-500">تعداد جابجایی پول</h1>
                                     <span className="text-sm text-gray-500">7</span>
                                 </div>
-                                <div className="flex w-full justify-between items-center">
-                                    <h1 className="text-sm text-gray-500">تعداد اعضا</h1>
-                                    <span className="text-sm text-gray-500">8</span>
-                                </div>
+
                                 <div className="flex w-full justify-between items-center">
                                     <h1 className="text-sm text-gray-500">بیشترین هزینه</h1>
                                     <span className="text-sm text-gray-500">800000</span>
@@ -161,10 +166,7 @@ function Event() {
                                     <h1 className="text-sm text-gray-500">بیشترین جابجایی پول</h1>
                                     <span className="text-sm text-gray-500">1200000</span>
                                 </div>
-                                <div className="flex w-full justify-between items-center">
-                                    <h1 className="text-sm text-gray-500">مادرخرج</h1>
-                                    <span className="text-sm text-gray-500">علی</span>
-                                </div>
+
 
 
                             </ul>
@@ -231,10 +233,14 @@ function Event() {
 
                         </ul>
 
-                        <button onClick={openNewPersonModal} className="mt-auto flex gap-x-2 text-sm justify-center items-center text-gray-700 bg-gray-200 rounded-xl py-3">
-                            <UserPlus className="size-4" />
-                            <span>افزودن عضو جدید</span>
-                        </button>
+                        <Button
+                            text="افزودن عضو جدید"
+                            color="gray"
+                            onClick={openNewPersonModal}
+                            size="small"
+                            icon={<UserPlus className="size-4" />}
+                        />
+
                     </div>
 
                     <div className="p-3 flex flex-col gap-y-8">
@@ -251,17 +257,31 @@ function Event() {
                             </div>
                             <div className="flex w-full justify-between items-center">
                                 <h1 className="text-sm text-gray-500">تاریخ شروع</h1>
-                                <span className="text-sm text-gray-500">13 آبان، 1403</span>
+                                <span className="text-sm text-gray-500">{moment(event.date).locale('fa').format("DD MMM، YYYY")}</span>
+                            </div>
+                            <div className="flex w-full justify-between items-center">
+                                <h1 className="text-sm text-gray-500">تعداد اعضا</h1>
+                                <span className="text-sm text-gray-500">{event.group.length}</span>
+                            </div>
+                            <div className="flex w-full justify-between items-center">
+                                <h1 className="text-sm text-gray-500">مادرخرج</h1>
+                                <span className="text-sm text-gray-500">علی</span>
                             </div>
 
 
 
                         </ul>
 
-                        <button className="mt-auto flex gap-x-2 text-sm justify-center items-center text-red-700 bg-red-100 rounded-xl py-3">
-                            <CalendarCheck className="size-4" />
-                            <span>پایان رویداد</span>
-                        </button>
+                        <Button
+                            text="پایان رویداد"
+                            color="danger"
+                            onClick={() => {
+                                console.log("Ending event...");
+                            }}
+                            size="small"
+                            icon={<CalendarCheck className="size-4" />}
+                        />
+
                     </div>
                 </aside>
 
