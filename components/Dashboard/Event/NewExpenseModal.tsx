@@ -11,6 +11,8 @@ import { useState } from "react";
 import { createPortal, useFormStatus } from "react-dom";
 import ExpensePreview from "./ExpensePreview";
 import PDatePicker from "@/components/Common/Form/PDatePicker";
+import { expendSchema } from "@/database/validations/expend-validation";
+import { transferSchema } from "@/database/validations/transfer-validation";
 
 type FormInputs = {
     desc: string;
@@ -112,20 +114,6 @@ function NewExpenseModal({ onClose }: { onClose: () => void }) {
     }
     const [formErrors2, setFormErrors2] = useState(initFormErrors2);
 
-    function formActionHandler(formData: FormData) {
-        let formDataObj = Object.fromEntries(formData.entries());
-
-        let { hasError, errors } = zValidate(eventSchema, formDataObj);
-
-        if (hasError) {
-            setFormErrors(errors);
-            return;
-        }
-
-        setFormErrors(initFormErrors);
-        console.log("passed")
-    }
-
     function isPersonSelected(personId: string) {
         return inputs.group.includes(personId);
     }
@@ -173,12 +161,47 @@ function NewExpenseModal({ onClose }: { onClose: () => void }) {
         }
     }
 
+
+    function expendFormHandler(formData: FormData) {
+        // let formDataObj = Object.fromEntries(formData.entries());
+
+        console.log(inputs)
+        let { hasError, errors } = zValidate(expendSchema, inputs);
+
+        if (hasError) {
+            console.log(errors)
+
+            setFormErrors(errors);
+            return;
+        }
+
+        setFormErrors(initFormErrors);
+        console.log("passed")
+    }
+
+
+    function transferFormHandler(formData: FormData) {
+        console.log(inputs2)
+        let { hasError, errors } = zValidate(transferSchema, inputs2);
+
+        if (hasError) {
+            console.log(errors)
+
+            setFormErrors2(errors);
+            return;
+        }
+
+        setFormErrors2(initFormErrors2);
+        console.log("passed")
+    }
+
+
     if (typeof window === "object") {
         return createPortal(
             <ModalWrapper onClose={onClose}>
 
-                <section onClick={e => e.stopPropagation()} className="w-4/5 md:w-2/3 lg:w-1/2 xl:w-1/3 bg-white rounded-2xl">
-                    <ModalHeader title="افزودن هزینه" onClose={onClose} />
+                <section onClick={e => e.stopPropagation()} className="w-4/5 md:w-2/3 lg:w-1/2 xl:w-1/3 max-h-[90%]  bg-white rounded-2xl">
+                    <ModalHeader title={formType === 0 ? 'ثبت هزینه' : 'ثبت جابجایی پول'} onClose={onClose} />
 
 
                     <div className="grid grid-cols-2">
@@ -192,7 +215,7 @@ function NewExpenseModal({ onClose }: { onClose: () => void }) {
 
 
                     {formType === 0 && (
-                        <form action={formActionHandler} className="">
+                        <form action={expendFormHandler} className="h-full max-h-[70vh] overflow-y-scroll mb-5">
 
                             <div className="p-5 flex flex-col gap-y-4">
 
@@ -256,7 +279,7 @@ function NewExpenseModal({ onClose }: { onClose: () => void }) {
                     )}
 
                     {formType === 1 && (
-                        <form action={formActionHandler} className="">
+                        <form action={transferFormHandler} className="h-full max-h-[70vh] overflow-y-scroll mb-5">
 
                             <div className="p-5 flex flex-col gap-y-4">
 

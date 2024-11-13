@@ -1,2 +1,2 @@
 export type SchemeType = 'gray' | 'blue' | 'red' | 'rose' | 'green' | 'orange' | 'yellow' | 'purple';
-export const SCHEMES: SchemeType[] = ['gray', 'blue', 'red', 'rose', 'green', 'orange', 'yellow', 'purple'];
+export const SCHEMES: SchemeType[] = ['gray', 'blue', 'red', 'rose', 'green', 'orange', 'yellow', 'purple'] as const;

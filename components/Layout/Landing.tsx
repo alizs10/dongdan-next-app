@@ -15,7 +15,7 @@ function Landing() {
 
             <p className="landing_text">دیگه چی میخوای؟ همین الان شروع کن.</p>
 
-            <Link href={'/dashboard'} className="landing_button">
+            <Link href={'/dashboard/events'} className="landing_button">
                 <p className="landing_button_text">بزن بریم!</p>
                 <Zap className="size-7" />
             </Link>

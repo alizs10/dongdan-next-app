@@ -89,24 +89,22 @@ function Events() {
 
                 {EVENTS.map(event => (
 
-                    <Link href={`/dashboard/events/${event.id}`} key={event.id}>
-                        <li className={styles.event_item}>
-                            <div className={styles.event_item_right}>
+                    <li key={event.id} className={styles.event_item}>
+                        <div className={styles.event_item_right}>
 
-                                <div className={styles.event_item_icon_container}>
-                                    {renderIcon(event.label)}
-                                </div>
+                            <div className={styles.event_item_icon_container}>
+                                {renderIcon(event.label)}
+                            </div>
 
-                                <h2 className={styles.event_item_name}>{event.name}</h2>
-                            </div>
-                            <div className={styles.event_item_left}>
-                                <button className={styles.event_item_button}>
-                                    <Info className={styles.event_item_button_icon} />
-                                    <span>مشاهده جزییات</span>
-                                </button>
-                            </div>
-                        </li>
-                    </Link>
+                            <h2 className={styles.event_item_name}>{event.name}</h2>
+                        </div>
+                        <div className={styles.event_item_left}>
+                            <Link href={`/dashboard/events/${event.id}`} className={styles.event_item_button}>
+                                <Info className={styles.event_item_button_icon} />
+                                <span>مشاهده جزییات</span>
+                            </Link>
+                        </div>
+                    </li>
                 ))}
 
             </ul>

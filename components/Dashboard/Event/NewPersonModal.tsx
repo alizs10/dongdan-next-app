@@ -9,19 +9,24 @@ import { Ban, Check, Save, User } from "lucide-react";
 import { useState } from "react";
 import { createPortal, useFormStatus } from "react-dom";
 import { SCHEMES, SchemeType } from "@/database/data/schemes";
+import { useParams } from "next/navigation";
+import { personSchema } from "@/database/validations/person-validation";
 
 type FormInputs = {
     name: string;
     scheme: SchemeType;
+    eventId: string;
 }
 
 function NewPersonModal({ onClose }: { onClose: () => void }) {
 
     const { pending, data, method, action } = useFormStatus();
+    const { event_id } = useParams()
 
     const initInputs: FormInputs = {
         name: '',
         scheme: 'gray',
+        eventId: typeof event_id === 'string' ? event_id : '',
     }
     const [inputs, setInputs] = useState(initInputs);
 
@@ -29,6 +34,7 @@ function NewPersonModal({ onClose }: { onClose: () => void }) {
     const initFormErrors = {
         name: '',
         scheme: '',
+        eventId: '',
     }
     const [formErrors, setFormErrors] = useState(initFormErrors);
 
@@ -43,7 +49,7 @@ function NewPersonModal({ onClose }: { onClose: () => void }) {
     function formActionHandler(formData: FormData) {
         let formDataObj = Object.fromEntries(formData.entries());
 
-        let { hasError, errors } = zValidate(eventSchema, formDataObj);
+        let { hasError, errors } = zValidate(personSchema, formDataObj);
 
         if (hasError) {
             setFormErrors(errors);
@@ -65,7 +71,7 @@ function NewPersonModal({ onClose }: { onClose: () => void }) {
 
                         <div className="p-5 flex flex-col gap-y-4">
 
-                            <TextInput name="name" value={inputs.name} error={formErrors.name} label="نام" handleChange={e => setInputs(prev => ({ ...prev, [e.target.name]: e.target.value }))} />
+                            <TextInput name="name" value={inputs.name} error={formErrors.name} label="نام شخص" handleChange={e => setInputs(prev => ({ ...prev, [e.target.name]: e.target.value }))} />
 
                             <span className={`text-base ${formErrors.scheme ? 'text-red-500' : 'text-indigo-900'} capitalize`}>انتخاب آواتار</span>
 
@@ -73,17 +79,17 @@ function NewPersonModal({ onClose }: { onClose: () => void }) {
                                 {SCHEMES.map(scheme => (<div key={scheme} onClick={() => selectSchemeHandler(scheme)} className={`user_avatar_${scheme}_bg user_avatar_${scheme}_border user_avatar_${scheme}_text rounded-full cursor-pointer shadow-sm flex gap-x-4 items-center p-3 border  transition-all duration-300`}>
                                     {isSchemeSelected(scheme) ? (<Check className="size-6" />) : (<User className="size-6" />)}
                                 </div>))}
-
-
-                                {formErrors.scheme && (
-                                    <div className="flex gap-x-2 items-center mt-2 text-sm text-red-500">
-                                        <Ban className="size-3.5" />
-                                        <span>{formErrors.scheme}</span>
-                                    </div>
-                                )}
-                                <input type="hidden" value={inputs.scheme} name="label" />
-
                             </div>
+
+
+                            {formErrors.scheme && (
+                                <div className="flex gap-x-2 items-center mt-2 text-sm text-red-500">
+                                    <Ban className="size-3.5" />
+                                    <span>{formErrors.scheme}</span>
+                                </div>
+                            )}
+                            <input type="hidden" value={inputs.scheme} name="scheme" />
+
 
 
 

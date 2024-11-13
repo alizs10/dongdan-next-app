@@ -77,7 +77,7 @@ function Event() {
             <div className={styles.header_container}>
 
                 <div className={styles.header_right}>
-                    <Link href={'/dashboard'} className={styles.back_button}>
+                    <Link href={'/dashboard/events'} className={styles.back_button}>
                         <MoveRight className={styles.back_button_icon} />
                     </Link>
                     <h1 className={styles.header_title}>سفر شمال</h1>

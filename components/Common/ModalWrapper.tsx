@@ -1,6 +1,6 @@
 function ModalWrapper({ children, onClose }: { children: React.ReactNode, onClose: () => void }) {
     return (
-        <section onClick={onClose} className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex items-center justify-center">
+        <section onClick={onClose} className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
             {children}
         </section>
     );
