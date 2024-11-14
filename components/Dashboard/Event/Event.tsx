@@ -436,6 +436,10 @@ function Event() {
                                 <span className="text-sm text-gray-500">{event.status === 'active' ? 'درجریان' : 'به پایان رسیده'}</span>
                             </div>
                             <div className="flex w-full justify-between items-center">
+                                <h1 className="text-sm text-gray-500">برچسب</h1>
+                                <span className="text-sm text-gray-500">{event.label}</span>
+                            </div>
+                            <div className="flex w-full justify-between items-center">
                                 <h1 className="text-sm text-gray-500">تاریخ شروع</h1>
                                 <span className="text-sm text-gray-500">{moment(event.date).locale('fa').format("DD MMM، YYYY")}</span>
                             </div>
