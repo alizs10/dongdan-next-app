@@ -6,6 +6,8 @@ export type Event = {
     group: Person[];
     expenses: Expense[];
     status: 'active' | 'inactive';
+    createdAt: Date;
+    updatedAt: Date;
 }
 
 export type Expend = {

@@ -4,6 +4,11 @@ import EventItem from './EventItem';
 
 function EventsList({ events }: { events: Event[] }) {
 
+    // sort events by date
+    events.sort((a, b) => {
+        return new Date(b.date).getTime() - new Date(a.date).getTime();
+    });
+
     return (
         <ul className={styles.events_list}>
             {events.map(event => (<EventItem key={event.id} event={event} />))}

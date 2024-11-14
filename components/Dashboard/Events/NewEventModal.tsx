@@ -58,11 +58,13 @@ function NewEventModal({ onClose }: { onClose: () => void }) {
 
         setFormErrors(initFormErrors);
         let newEvent = {
+            ...inputs,
             id: generateUID(),
             group: [],
             expenses: [],
             status: 'active' as const,
-            ...inputs,
+            createdAt: new Date(Date.now()),
+            updatedAt: new Date(Date.now()),
         }
 
         addEvent(newEvent);
