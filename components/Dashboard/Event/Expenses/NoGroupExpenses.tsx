@@ -1,3 +1,4 @@
+import Button from "@/components/Common/Button";
 import { ReceiptText, UserPlus } from "lucide-react";
 
 function NoGroupExpenses({ openNewPersonModal }: { openNewPersonModal: () => void }) {
@@ -6,10 +7,14 @@ function NoGroupExpenses({ openNewPersonModal }: { openNewPersonModal: () => voi
             <ReceiptText className="size-64 text-gray-300" />
             <span className="text-base text-gray-500">برای شروع اولین عضو گروه رو اضافه کن</span>
 
-            <button onClick={openNewPersonModal} className="flex gap-x-2 items-center px-5 py-2 rounded-xl bg-indigo-50 text-indigo-900 mt-2">
-                <UserPlus className="size-5" />
-                <span>افزودن شخص</span>
-            </button>
+
+            <Button
+                text="افزودن شخص"
+                color="accent"
+                onClick={openNewPersonModal}
+                size="medium"
+                icon={<UserPlus className="size-5" />}
+            />
         </div>
     );
 }

@@ -63,7 +63,7 @@
 }
 
 .event_item_left {
-    @apply flex;
+    @apply flex flex-row gap-x-2 items-center;
 }
 
 .event_item_button {

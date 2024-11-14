@@ -1,8 +1,9 @@
 import { Event } from '@/types/event-types';
 import styles from './Events.module.css';
-import { BriefcaseBusiness, Cake, Coffee, Info, Plane, TreePalm, Utensils } from "lucide-react";
+import { BriefcaseBusiness, Cake, Coffee, Ellipsis, Info, Plane, TreePalm, Utensils } from "lucide-react";
 import Link from 'next/link';
 import moment from 'jalali-moment';
+import Button from '@/components/Common/Button';
 
 
 function renderIcon(label: string) {
@@ -47,15 +48,28 @@ function EventItem({ event }: { event: Event }) {
                 <h2 className={styles.event_item_name}>{event.name}</h2>
             </div>
 
-            <div className="flex flex-wrap items-center gap-x-2">
+            {/* <div className="flex flex-wrap items-center gap-x-2"> */}
+            <div className={styles.event_item_left}>
                 <span className="text-xs text-gray-500 selft-end">{moment(event.date).locale('fa').format("DD MMM، YYYY")}</span>
-                <div className={styles.event_item_left}>
-                    <Link href={`/dashboard/events/${event.id}`} className={styles.event_item_button}>
-                        <Info className={styles.event_item_button_icon} />
-                        <span>مشاهده جزییات</span>
-                    </Link>
-                </div>
+                <Button
+                    text=''
+                    icon={<Ellipsis className='size-4' />}
+                    color='gray'
+                    size='small'
+                    shape='square'
+                    onClick={() => { }}
+                />
+                <Link href={`/dashboard/events/${event.id}`}>
+                    <Button
+                        text='مشاهده جزییات'
+                        icon={<Info className={styles.event_item_button_icon} />}
+                        color='gray'
+                        size='small'
+                        onClick={() => { }}
+                    />
+                </Link>
             </div>
+            {/* </div> */}
         </li>
 
     );
