@@ -5,6 +5,7 @@ export type Event = {
     label: string;
     group: Person[];
     expenses: Expense[];
+    status: 'active' | 'inactive';
 }
 
 export type Expend = {
@@ -38,6 +39,8 @@ export type Person = {
 export type EventState = {
     events: Event[];
     addEvent: (event: Event) => void;
+    activateEvent: (eventId: string) => void;
+    deactivateEvent: (eventId: string) => void;
     addPerson: (eventId: string, person: Person) => void;
     addExpense: (eventId: string, expense: Expense) => void;
 };

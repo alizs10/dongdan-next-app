@@ -1,6 +1,6 @@
 'use client'
 
-import { CalendarCheck, Filter, MoveRight, Plus, User, UserPlus, Zap } from "lucide-react";
+import { CalendarCheck, CalendarClock, Filter, MoveRight, Plus, User, UserPlus, Zap } from "lucide-react";
 import styles from "./Event.module.css";
 import Link from "next/link";
 import { useCallback, useMemo, useState } from "react";
@@ -21,7 +21,7 @@ import SettleHintsModal from "./SettleHintsModal";
 function Event() {
 
     const { event_id } = useParams()
-    const events = useEventStore(state => state.events);
+    const { events, activateEvent, deactivateEvent } = useEventStore(state => state);
     const event = useMemo(() => events.find(e => e.id === event_id), [events, event_id]);
 
     if (!event) return null;
@@ -232,6 +232,18 @@ function Event() {
         return transactions;
     }, [debtors, creditors]);
 
+
+    function toggleEventStatus() {
+
+        if (!event) return;
+
+        if (event.status === 'active') {
+            deactivateEvent(event.id);
+        } else {
+            activateEvent(event.id);
+        }
+    }
+
     return (
         <div className={styles.event_container}>
             <div className={styles.header_container}>
@@ -415,7 +427,7 @@ function Event() {
 
                             <div className="flex w-full justify-between items-center">
                                 <h1 className="text-sm text-gray-500 font-semibold">وضعیت</h1>
-                                <span className="text-sm text-gray-500">درجریان</span>
+                                <span className="text-sm text-gray-500">{event.status === 'active' ? 'درجریان' : 'به پایان رسیده'}</span>
                             </div>
                             <div className="flex w-full justify-between items-center">
                                 <h1 className="text-sm text-gray-500">تاریخ شروع</h1>
@@ -439,13 +451,11 @@ function Event() {
                         </ul>
 
                         <Button
-                            text="پایان رویداد"
-                            color="danger"
-                            onClick={() => {
-                                console.log("Ending event...");
-                            }}
+                            text={event.status === 'active' ? 'پایان رویداد' : 'باز کردن رویداد'}
+                            color={event.status === 'active' ? 'danger' : 'success'}
+                            onClick={toggleEventStatus}
                             size="small"
-                            icon={<CalendarCheck className="size-4" />}
+                            icon={event.status === 'active' ? <CalendarCheck className="size-4" /> : <CalendarClock className="size-4" />}
                         />
 
                     </div>

@@ -58,6 +58,7 @@ var initEvents: Event[] = [
         ],
         name: "سفر شمال",
         "label": "سفر",
+        status: 'active',
         date: new Date("2024-10-22T16:04:42.751Z")
     }
 ];
@@ -65,6 +66,9 @@ var initEvents: Event[] = [
 export const useEventStore = create<EventState>((set) => ({
     events: initEvents,
     addEvent: (event: Event) => set((state) => ({ events: [...state.events, event] })),
+
+    deactivateEvent: (eventId) => set((state) => ({ events: state.events.map(e => e.id === eventId ? { ...e, status: 'inactive' } : e) })),
+    activateEvent: (eventId) => set((state) => ({ events: state.events.map(e => e.id === eventId ? { ...e, status: 'active' } : e) })),
 
     addPerson: (eventId, person) => set((state) => ({ events: state.events.map(e => e.id === eventId ? { ...e, group: [...e.group, person] } : e) })),
     addExpense: (eventId, expense) => set((state) => ({ events: state.events.map(e => e.id === eventId ? { ...e, expenses: [...e.expenses, expense] } : e) })),

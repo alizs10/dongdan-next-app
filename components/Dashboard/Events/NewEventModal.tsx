@@ -61,6 +61,7 @@ function NewEventModal({ onClose }: { onClose: () => void }) {
             id: generateUID(),
             group: [],
             expenses: [],
+            status: 'active' as const,
             ...inputs,
         }
 
