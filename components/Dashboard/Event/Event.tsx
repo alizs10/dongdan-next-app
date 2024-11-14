@@ -31,7 +31,7 @@ function Event() {
     const [isSettleHintsModalOpen, setIsSettleHintsModalOpen] = useState(false);
 
     function openNewExpenseModal() {
-        if (event?.group.length === 0) return
+        if (event?.group.length === 0 || event?.status === 'inactive') return
         setIsNewExpenseModalOpen(true);
     }
 
@@ -40,6 +40,7 @@ function Event() {
     }
 
     function openNewPersonModal() {
+        if (event?.status === 'inactive') return
         setIsNewPersonModalOpen(true);
     }
 
@@ -264,13 +265,15 @@ function Event() {
                             size="small"
                             icon={<Filter className="size-4" />}
                         />
-                        <Button
-                            text="ثبت هزینه/جابجایی پول"
-                            color="accent"
-                            onClick={openNewExpenseModal}
-                            size="small"
-                            icon={<Plus className="size-4" />}
-                        />
+                        {event.status === 'active' && (
+                            <Button
+                                text="ثبت هزینه/جابجایی پول"
+                                color="accent"
+                                onClick={openNewExpenseModal}
+                                size="small"
+                                icon={<Plus className="size-4" />}
+                            />
+                        )}
                     </div>
                 )}
             </div>
@@ -407,13 +410,16 @@ function Event() {
 
                         </ul>
 
-                        <Button
-                            text="افزودن عضو جدید"
-                            color="gray"
-                            onClick={openNewPersonModal}
-                            size="small"
-                            icon={<UserPlus className="size-4" />}
-                        />
+
+                        {event.status === 'active' && (
+                            <Button
+                                text="افزودن عضو جدید"
+                                color="gray"
+                                onClick={openNewPersonModal}
+                                size="small"
+                                icon={<UserPlus className="size-4" />}
+                            />
+                        )}
 
                     </div>
 
