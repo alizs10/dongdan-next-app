@@ -1,9 +1,11 @@
 import { Event } from '@/types/event-types';
 import styles from './Events.module.css';
-import { BriefcaseBusiness, Cake, Coffee, Ellipsis, Info, Plane, TreePalm, Utensils } from "lucide-react";
+import { BriefcaseBusiness, Cake, Coffee, Ellipsis, Info, Pencil, Plane, Trash, TreePalm, Utensils } from "lucide-react";
 import Link from 'next/link';
 import moment from 'jalali-moment';
 import Button from '@/components/Common/Button';
+import { useState } from 'react';
+import useClickOutside from '@/hooks/useOutsideClick';
 
 
 function renderIcon(label: string) {
@@ -35,7 +37,13 @@ function renderIcon(label: string) {
 }
 function EventItem({ event }: { event: Event }) {
 
+    const [isOptionsOpen, setIsOptionsOpen] = useState(false);
 
+    function toggleOptions() {
+        setIsOptionsOpen(prev => !prev);
+    }
+
+    const optionsPrentRef = useClickOutside(() => setIsOptionsOpen(false))
 
     return (
         <li key={event.id} className={styles.event_item}>
@@ -51,14 +59,35 @@ function EventItem({ event }: { event: Event }) {
             {/* <div className="flex flex-wrap items-center gap-x-2"> */}
             <div className={styles.event_item_left}>
                 <span className="text-xs text-gray-500 selft-end">{moment(event.date).locale('fa').format("DD MMM، YYYY")}</span>
-                <Button
-                    text=''
-                    icon={<Ellipsis className='size-4' />}
-                    color='gray'
-                    size='small'
-                    shape='square'
-                    onClick={() => { }}
-                />
+                <div ref={optionsPrentRef} className='relative'>
+                    <Button
+                        text=''
+                        icon={<Ellipsis className='size-4' />}
+                        color='gray'
+                        size='small'
+                        shape='square'
+                        onClick={toggleOptions}
+                    />
+
+                    {isOptionsOpen && (
+                        <div className="z-50 absolute top-full left-0 mt-4 flex flex-col gap-y-2">
+                            <Button
+                                text='ویرایش'
+                                icon={<Pencil className='size-4' />}
+                                color='warning'
+                                size='small'
+                                onClick={() => { }}
+                            />
+                            <Button
+                                text='حذف'
+                                icon={<Trash className='size-4' />}
+                                color='danger'
+                                size='small'
+                                onClick={() => { }}
+                            />
+                        </div>
+                    )}
+                </div>
                 <Link href={`/dashboard/events/${event.id}`}>
                     <Button
                         text='مشاهده جزییات'

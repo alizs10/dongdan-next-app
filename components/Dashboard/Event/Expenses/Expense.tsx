@@ -1,10 +1,12 @@
+import Button from "@/components/Common/Button";
 import { TomanPriceFormatter } from "@/helpers/helpers";
+import useClickOutside from "@/hooks/useOutsideClick";
 import { useEventStore } from "@/store/event-store";
 import { type Event, type Expense } from "@/types/event-types";
 import moment from "jalali-moment";
-import { ArrowRightLeft, DollarSign, MoveLeft } from "lucide-react";
+import { ArrowRightLeft, DollarSign, Ellipsis, MoveLeft, Pencil, Trash } from "lucide-react";
 import { useParams } from "next/navigation";
-import { useMemo, useCallback } from "react";
+import { useMemo, useCallback, useState } from "react";
 
 function Expense({ expense }: { expense: Expense }) {
     const { event_id } = useParams()
@@ -15,6 +17,16 @@ function Expense({ expense }: { expense: Expense }) {
     const getPerson = useCallback((personId: string) => {
         return event.group.find(person => person.id === personId);
     }, [event]);
+
+
+    const [isOptionsOpen, setIsOptionsOpen] = useState(false);
+
+    function toggleOptions() {
+        setIsOptionsOpen(prev => !prev);
+    }
+
+    const optionsParentRef = useClickOutside(() => setIsOptionsOpen(false))
+
 
     return (
         <div className="flex flex-wrap gap-4 justify-between border-b border-gray-200">
@@ -47,7 +59,40 @@ function Expense({ expense }: { expense: Expense }) {
 
             <div className="p-3 flex flex-col gap-y-2 items-end">
                 <span className="text-xs text-gray-500">{moment(expense.date).locale('fa').format("DD MMM، YYYY")}</span>
-                <span className="px-4 py-2 text-base font-semibold bg-indigo-100 text-indigo-900 rounded-full">{TomanPriceFormatter(expense.amount.toString())} تومان</span>
+                <div className="flex flex-row items-center gap-x-2">
+
+                    <div ref={optionsParentRef} className='relative'>
+                        <Button
+                            text=''
+                            icon={<Ellipsis className='size-4' />}
+                            color='gray'
+                            size='small'
+                            shape='square'
+                            onClick={toggleOptions}
+                        />
+
+                        {isOptionsOpen && (
+                            <div className="z-50 absolute top-full left-0 mt-4 flex flex-col gap-y-2">
+                                <Button
+                                    text='ویرایش'
+                                    icon={<Pencil className='size-4' />}
+                                    color='warning'
+                                    size='small'
+                                    onClick={() => { }}
+                                />
+                                <Button
+                                    text='حذف'
+                                    icon={<Trash className='size-4' />}
+                                    color='danger'
+                                    size='small'
+                                    onClick={() => { }}
+                                />
+                            </div>
+                        )}
+                    </div>
+
+                    <span className="px-4 py-2 text-base font-semibold bg-indigo-100 text-indigo-900 rounded-full">{TomanPriceFormatter(expense.amount.toString())} تومان</span>
+                </div>
             </div>
         </div>
     );

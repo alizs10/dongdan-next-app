@@ -1,6 +1,6 @@
 'use client'
 
-import { CalendarCheck, CalendarClock, Filter, MoveRight, Plus, User, UserPlus, Zap } from "lucide-react";
+import { CalendarCheck, CalendarClock, Ellipsis, Filter, Group, MoveRight, Pencil, Plus, Trash, User, UserPlus, Zap } from "lucide-react";
 import styles from "./Event.module.css";
 import Link from "next/link";
 import { useCallback, useMemo, useState } from "react";
@@ -17,6 +17,7 @@ import { TomanPriceFormatter } from "@/helpers/helpers";
 import { SettlePerson } from "@/types/event-types";
 
 import SettleHintsModal from "./SettleHintsModal";
+import GroupMembers from "./GroupMembers";
 
 function Event() {
 
@@ -397,18 +398,7 @@ function Event() {
                             <span className="text-sm text-gray-500">{event.group.length} نفر</span>
                         </div>
 
-                        <ul className="flex flex-col gap-y-4">
-
-                            {event.group.map(user => (
-                                <li key={user.id} className="flex flex-row gap-x-4 items-center">
-                                    <div className={`p-2 border user_avatar_${user.scheme}_border user_avatar_${user.scheme}_bg rounded-full`}>
-                                        <User className={`size-5 user_avatar_${user.scheme}_text`} />
-                                    </div>
-                                    <span className={`text-base user_avatar_${user.scheme}_text`}>{user.name}</span>
-                                </li>
-                            ))}
-
-                        </ul>
+                        <GroupMembers group={event.group} />
 
 
                         {event.status === 'active' && (

@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react"
 
 export default function useClickOutside<T>(handler: () => void) {
 
-    const domRef = useRef<HTMLDivElement & T>()
+    const domRef = useRef<HTMLDivElement & T>(null)
 
 
     useEffect(() => {
