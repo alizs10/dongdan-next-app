@@ -14,6 +14,9 @@ import NoGroupExpenses from "./Expenses/NoGroupExpenses";
 import moment from "jalali-moment";
 import Button from "@/components/Common/Button";
 import { TomanPriceFormatter } from "@/helpers/helpers";
+import { SettlePerson } from "@/types/event-types";
+
+import SettleHintsModal from "./SettleHintsModal";
 
 function Event() {
 
@@ -25,6 +28,7 @@ function Event() {
 
     const [isNewExpenseModalOpen, setIsNewExpenseModalOpen] = useState(false);
     const [isNewPersonModalOpen, setIsNewPersonModalOpen] = useState(false);
+    const [isSettleHintsModalOpen, setIsSettleHintsModalOpen] = useState(false);
 
     function openNewExpenseModal() {
         if (event?.group.length === 0) return
@@ -41,6 +45,10 @@ function Event() {
 
     function closeNewPersonModal() {
         setIsNewPersonModalOpen(false);
+    }
+
+    function toggleSettleHintsModal() {
+        setIsSettleHintsModalOpen(prev => !prev);
     }
 
     const getAllCosts = useCallback(() => {
@@ -157,7 +165,72 @@ function Event() {
         return { name: maxPayer, amount: paid };
     }, [event.expenses]);
 
+    const getPersonBalance = useCallback((personId: string) => {
+        const personDebts = getAllPersonDebts(personId);
+        const personRecieved = getAllPersonRecieved(personId);
+        const personSent = getAllPersonSent(personId);
+        const personExpends = getAllPersonExpends(personId);
+        const personBalance = (personSent + personExpends - personRecieved - personDebts);
+        return personBalance;
+    }, [event.group, event.expenses]);
 
+
+    const creditors = useMemo(() => {
+        const creditorsArr: SettlePerson[] = [];
+        event.group.forEach(person => {
+            const personBalance = getPersonBalance(person.id);
+
+            if (personBalance > 0) {
+                creditorsArr.push({
+                    name: person.name,
+                    amount: personBalance
+                });
+            }
+        })
+
+        return creditorsArr;
+    }, [event.group, event.expenses]);
+
+    const debtors = useMemo(() => {
+        const debtorsArr: SettlePerson[] = [];
+        event.group.forEach(person => {
+
+            const personBalance = parseInt(getPersonBalance(person.id).toFixed(0));
+
+            if (personBalance < 0) {
+                debtorsArr.push({
+                    name: person.name,
+                    amount: Math.abs(personBalance)
+                });
+            }
+        })
+
+        return debtorsArr;
+    }, [event.group, event.expenses]);
+
+    const transactions = useMemo(() => {
+        // Sort debtors and creditors by the amount
+        debtors.sort((a, b) => b.amount - a.amount);
+        creditors.sort((a, b) => b.amount - a.amount);
+
+
+        const transactions: string[] = [];
+        let i = 0, j = 0;
+
+        while (i < debtors.length && j < creditors.length) {
+            const debtor = debtors[i];
+            const creditor = creditors[j];
+            const transactionAmount = Math.min(debtor.amount, creditor.amount);
+            transactions.push(`${debtor.name} باید مقدار ${TomanPriceFormatter(transactionAmount.toFixed(0))} تومان به ${creditor.name} پرداخت کند.`);
+            debtor.amount -= transactionAmount;
+            creditor.amount -= transactionAmount;
+
+            if (debtor.amount === 0) i++;
+            if (creditor.amount === 0) j++;
+        }
+
+        return transactions;
+    }, [debtors, creditors]);
 
     return (
         <div className={styles.event_container}>
@@ -257,12 +330,16 @@ function Event() {
                                 </div>
 
 
-                                <button className="flex flex-row flex-nowrap gap-x-2 items-center w-fit rounded-full px-3 py-1.5 bg-indigo-50 text-indigo-700">
+                                <button onClick={toggleSettleHintsModal} className="flex flex-row flex-nowrap gap-x-2 items-center w-fit rounded-full px-3 py-1.5 bg-indigo-50 text-indigo-700">
                                     <Zap className="size-4" />
                                     <p className="text-[.7rem] font-semibold text-nowrap">
                                         راهنمای تسویه
                                     </p>
                                 </button>
+
+                                {isSettleHintsModalOpen && (
+                                    <SettleHintsModal transactions={transactions} onClose={toggleSettleHintsModal} />
+                                )}
                             </div>
 
 
@@ -272,23 +349,23 @@ function Event() {
                                     <li key={person.id} className="flex w-full justify-between items-center">
                                         <div className="flex flex-row gap-x-2 justify-center items-center">
                                             <h1 className={`user_avatar_${person.scheme}_text`}>{person.name}</h1>
-                                            {parseInt((getAllPersonExpends(person.id) - getAllPersonDebts(person.id) - getAllPersonRecieved(person.id) + getAllPersonSent(person.id)).toFixed(0)) > 0 && (
+                                            {parseInt(getPersonBalance(person.id).toFixed(0)) > 999 && (
                                                 <span className="text-[.6rem] font-semibold rounded-full px-2 py-1 bg-green-100 text-green-700">
                                                     طلبکار
                                                 </span>
                                             )}
-                                            {parseInt((getAllPersonExpends(person.id) - getAllPersonDebts(person.id) - getAllPersonRecieved(person.id) + getAllPersonSent(person.id)).toFixed(0)) < 0 && (
+                                            {parseInt(getPersonBalance(person.id).toFixed(0)) < -999 && (
                                                 <span className="text-[.6rem] font-semibold rounded-full px-2 py-1 bg-red-100 text-red-600">
                                                     بدهکار
                                                 </span>
                                             )}
-                                            {parseInt((getAllPersonExpends(person.id) - getAllPersonDebts(person.id) - getAllPersonRecieved(person.id) + getAllPersonSent(person.id)).toFixed(0)) === 0 && (
+                                            {(parseInt(getPersonBalance(person.id).toFixed(0)) > -1000 && parseInt(getPersonBalance(person.id).toFixed(0)) < 1000) && (
                                                 <span className="text-[.6rem] font-semibold rounded-full px-2 py-1 bg-gray-200 text-gray-700">
                                                     تسویه
                                                 </span>
                                             )}
                                         </div>
-                                        <span className="text-sm text-gray-500">{TomanPriceFormatter(Math.abs(getAllPersonExpends(person.id) - getAllPersonDebts(person.id) - getAllPersonRecieved(person.id) + getAllPersonSent(person.id)).toFixed(0))} تومان</span>
+                                        <span className="text-sm text-gray-500">{TomanPriceFormatter(Math.abs(getPersonBalance(person.id)).toFixed(0))} تومان</span>
                                     </li>
                                 ))}
 

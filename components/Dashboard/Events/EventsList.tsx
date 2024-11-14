@@ -6,7 +6,7 @@ function EventsList({ events }: { events: Event[] }) {
 
     return (
         <ul className={styles.events_list}>
-            {events.map(event => (<EventItem event={event} />))}
+            {events.map(event => (<EventItem key={event.id} event={event} />))}
         </ul>
     );
 }

@@ -41,3 +41,9 @@ export type EventState = {
     addPerson: (eventId: string, person: Person) => void;
     addExpense: (eventId: string, expense: Expense) => void;
 };
+
+
+export type SettlePerson = {
+    name: string;
+    amount: number;
+};
