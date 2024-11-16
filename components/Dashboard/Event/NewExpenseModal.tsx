@@ -3,11 +3,10 @@
 import TextInput from "@/components/Common/Form/TextInput";
 import ModalHeader from "@/components/Common/ModalHeader";
 import ModalWrapper from "@/components/Common/ModalWrapper";
-import { eventSchema } from "@/database/validations/event-validation";
 import { generateUID, TomanPriceFormatter, TomanPriceToNumber } from "@/helpers/helpers";
 import { zValidate } from "@/helpers/validation-helper";
-import { Ban, BriefcaseBusiness, Cake, Coffee, Plane, Save, TreePalm, User, Utensils, Zap } from "lucide-react";
-import { useState } from "react";
+import { Ban, Save, User } from "lucide-react";
+import { useCallback, useState } from "react";
 import { createPortal, useFormStatus } from "react-dom";
 import ExpensePreview from "./ExpensePreview";
 import PDatePicker from "@/components/Common/Form/PDatePicker";
@@ -84,7 +83,6 @@ function NewExpenseModal({ onClose, event }: { onClose: () => void, event: Event
     }
 
     function selectPayer(personId: string) {
-        if (personId === inputs2.to) return
         setInputs(prev => ({ ...prev, payer: prev.payer === personId ? '' : personId }))
     }
 
@@ -185,6 +183,9 @@ function NewExpenseModal({ onClose, event }: { onClose: () => void, event: Event
         onClose();
     }
 
+    const getPersonName = useCallback((personId: string) => {
+        return event.group.find(p => p.id === personId)?.name || '';
+    }, [event.group])
 
     if (typeof window === "object") {
         return createPortal(
@@ -288,7 +289,15 @@ function NewExpenseModal({ onClose, event }: { onClose: () => void, event: Event
 
                             </div>
 
-                            <ExpensePreview />
+                            {inputs.group.length > 0 && inputs.amount.length > 0 && inputs.desc.length > 0 && inputs.payer && (
+                                <ExpensePreview
+                                    type={formType === 0 ? 'expend' : 'transfer'}
+                                    group={inputs.group}
+                                    amount={inputs.amount}
+                                    desc={inputs.desc}
+                                    payer={getPersonName(inputs.payer)}
+                                />
+                            )}
                             <div className="p-5 flex justify-end">
                                 <button disabled={pending} type="submit" className="hover:bg-indigo-100 flex gap-x-2 items-center transition-all duration-300 rounded-xl text-indigo-900 text-base px-4 py-2">
                                     <span>{pending ? 'در حال ثبت' : 'ثبت'}</span>
@@ -367,8 +376,15 @@ function NewExpenseModal({ onClose, event }: { onClose: () => void, event: Event
                                 <input type="hidden" value={inputs2.to ?? ''} name="to" />
                             </div>
 
-                            <ExpensePreview />
-
+                            {inputs2.from && inputs2.amount.length > 0 && inputs2.desc.length > 0 && inputs2.to && (
+                                <ExpensePreview
+                                    type={formType === 1 ? 'transfer' : 'expend'}
+                                    amount={inputs2.amount}
+                                    desc={inputs2.desc}
+                                    from={getPersonName(inputs2.from)}
+                                    to={getPersonName(inputs2.to)}
+                                />
+                            )}
 
                             <div className="p-5 flex justify-end">
                                 <button disabled={pending} type="submit" className="hover:bg-indigo-100 flex gap-x-2 items-center transition-all duration-300 rounded-xl text-indigo-900 text-base px-4 py-2">

@@ -39,7 +39,7 @@
 }
 
 .events_list {
-    @apply flex flex-col gap-y-4;
+    @apply flex flex-col gap-y-4 min-h-[400px];
 }
 
 .event_item {
