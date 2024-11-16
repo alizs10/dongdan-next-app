@@ -3,17 +3,16 @@
 import TextInput from "@/components/Common/Form/TextInput";
 import ModalHeader from "@/components/Common/ModalHeader";
 import ModalWrapper from "@/components/Common/ModalWrapper";
-import { eventSchema } from "@/database/validations/event-validation";
 import { zValidate } from "@/helpers/validation-helper";
-import { Ban, Check, Save, User } from "lucide-react";
+import { Ban, Check, Pencil, User } from "lucide-react";
 import { useState } from "react";
 import { createPortal, useFormStatus } from "react-dom";
 import { SCHEMES } from "@/database/data/schemes";
 import { useParams } from "next/navigation";
 import { personSchema } from "@/database/validations/person-validation";
 import { useEventStore } from "@/store/event-store";
-import { generateUID } from "@/helpers/helpers";
 import { Person, SchemeType } from "@/types/event-types";
+import Button from "@/components/Common/Button";
 
 type FormInputs = {
     name: string;
@@ -107,10 +106,14 @@ function EditPersonModal({ onClose, person }: { onClose: () => void, person: Per
 
                         </div>
                         <div className="p-5 flex justify-end">
-                            <button disabled={pending} type="submit" className="hover:bg-indigo-100 flex gap-x-2 items-center transition-all duration-300 rounded-xl text-indigo-900 text-base px-4 py-2">
-                                <span>{pending ? 'در حال ثبت' : 'ثبت'}</span>
-                                <Save className="size-4" />
-                            </button>
+                            <Button
+                                disabled={pending}
+                                text={pending ? 'در حال ویرایش' : 'ویرایش'}
+                                type="submit"
+                                icon={<Pencil className="size-4" />}
+                                color="warning"
+                                size="small"
+                            />
                         </div>
                     </form>
 

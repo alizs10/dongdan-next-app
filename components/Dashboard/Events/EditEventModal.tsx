@@ -6,12 +6,10 @@ import TextInput from "@/components/Common/Form/TextInput";
 import ModalHeader from "@/components/Common/ModalHeader";
 import ModalWrapper from "@/components/Common/ModalWrapper";
 import { eventSchema } from "@/database/validations/event-validation";
-import { generateUID } from "@/helpers/helpers";
 import { zValidate } from "@/helpers/validation-helper";
 import { useEventStore } from "@/store/event-store";
 import { Event } from "@/types/event-types";
-import { Ban, BriefcaseBusiness, Cake, Coffee, Plane, Save, TreePalm, Utensils } from "lucide-react";
-import { useParams } from "next/navigation";
+import { Ban, BriefcaseBusiness, Cake, Coffee, Pencil, Plane, TreePalm, Utensils } from "lucide-react";
 import { useState } from "react";
 import { createPortal, useFormStatus } from "react-dom";
 
@@ -137,7 +135,7 @@ function EditEventModal({ onClose, event }: { onClose: () => void, event: Event 
                             disabled={pending}
                             text={pending ? 'در حال ویرایش' : 'ویرایش'}
                             type="submit"
-                            icon={<Save className="size-4" />}
+                            icon={<Pencil className="size-4" />}
                             color="warning"
                             size="small"
                         />

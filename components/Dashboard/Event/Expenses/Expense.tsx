@@ -7,10 +7,11 @@ import moment from "jalali-moment";
 import { ArrowRightLeft, DollarSign, Ellipsis, MoveLeft, Pencil, Trash } from "lucide-react";
 import { useParams } from "next/navigation";
 import { useMemo, useCallback, useState } from "react";
+import EditExpenseModal from "../EditExpenseModal";
 
 function Expense({ expense }: { expense: Expense }) {
     const { event_id } = useParams()
-    const { events, deleteExpense } = useEventStore(state => state)
+    const { events, deleteExpense, updateExpense } = useEventStore(state => state)
 
     const event = useMemo(() => events.find(event => event.id === event_id) as Event, [events, event_id]);
 
@@ -20,9 +21,15 @@ function Expense({ expense }: { expense: Expense }) {
 
 
     const [isOptionsOpen, setIsOptionsOpen] = useState(false);
+    const [isEditExpenseModalOpen, setIsEditExpenseModalOpen] = useState(false);
 
     function toggleOptions() {
         setIsOptionsOpen(prev => !prev);
+    }
+
+    function toggleModal() {
+        setIsOptionsOpen(false);
+        setIsEditExpenseModalOpen(prev => !prev);
     }
 
     const optionsParentRef = useClickOutside(() => setIsOptionsOpen(false))
@@ -81,7 +88,7 @@ function Expense({ expense }: { expense: Expense }) {
                                     icon={<Pencil className='size-4' />}
                                     color='warning'
                                     size='small'
-                                    onClick={() => { }}
+                                    onClick={toggleModal}
                                 />
                                 <Button
                                     text='حذف'
@@ -97,6 +104,14 @@ function Expense({ expense }: { expense: Expense }) {
                     <span className="px-4 py-2 text-base font-semibold bg-indigo-100 text-indigo-900 rounded-full">{TomanPriceFormatter(expense.amount.toString())} تومان</span>
                 </div>
             </div>
+
+            {isEditExpenseModalOpen && (
+                <EditExpenseModal
+                    event={event}
+                    expense={expense}
+                    onClose={toggleModal}
+                />
+            )}
         </div>
     );
 }
