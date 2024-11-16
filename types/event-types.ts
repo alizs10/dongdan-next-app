@@ -49,6 +49,7 @@ export type EventState = {
     addPerson: (eventId: string, person: Person) => void;
     deletePerson: (eventId: string, personId: string) => void;
     addExpense: (eventId: string, expense: Expense) => void;
+    deleteExpense: (eventId: string, expenseId: string) => void;
 };
 
 

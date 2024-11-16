@@ -10,7 +10,7 @@ import { useMemo, useCallback, useState } from "react";
 
 function Expense({ expense }: { expense: Expense }) {
     const { event_id } = useParams()
-    const events = useEventStore(state => state.events)
+    const { events, deleteExpense } = useEventStore(state => state)
 
     const event = useMemo(() => events.find(event => event.id === event_id) as Event, [events, event_id]);
 
@@ -27,6 +27,9 @@ function Expense({ expense }: { expense: Expense }) {
 
     const optionsParentRef = useClickOutside(() => setIsOptionsOpen(false))
 
+    function onDelete() {
+        deleteExpense(event_id as string, expense.id)
+    }
 
     return (
         <div className="flex flex-wrap gap-4 justify-between border-b border-gray-200">
@@ -85,7 +88,7 @@ function Expense({ expense }: { expense: Expense }) {
                                     icon={<Trash className='size-4' />}
                                     color='danger'
                                     size='small'
-                                    onClick={() => { }}
+                                    onClick={onDelete}
                                 />
                             </div>
                         )}
