@@ -7,8 +7,10 @@ import ModalWrapper from "@/components/Common/ModalWrapper";
 import { eventSchema } from "@/database/validations/event-validation";
 import { generateUID } from "@/helpers/helpers";
 import { zValidate } from "@/helpers/validation-helper";
+import { useContactStore } from "@/store/contact-store";
 import { useEventStore } from "@/store/event-store";
-import { Ban, BriefcaseBusiness, Cake, Coffee, Plane, Save, TreePalm, Utensils } from "lucide-react";
+import { Person } from "@/types/event-types";
+import { Ban, BriefcaseBusiness, Cake, Coffee, Plane, Save, TreePalm, User, Utensils } from "lucide-react";
 import { useParams } from "next/navigation";
 import { useState } from "react";
 import { createPortal, useFormStatus } from "react-dom";
@@ -17,17 +19,20 @@ type FormInputs = {
     name: string;
     label: string;
     date: Date;
+    group: string[];
 }
 
 function NewEventModal({ onClose }: { onClose: () => void }) {
 
-    const { event_id } = useParams()
     const addEvent = useEventStore(state => state.addEvent);
+    let contacts = useContactStore(state => state.contacts)
+    contacts = contacts.filter(c => c.deletedAt === null);
 
     const { pending, data, method, action } = useFormStatus();
     const initInputs = {
         name: '',
         label: '',
+        group: [],
         date: new Date(Date.now())
     }
     const [inputs, setInputs] = useState<FormInputs>(initInputs);
@@ -35,7 +40,8 @@ function NewEventModal({ onClose }: { onClose: () => void }) {
     const initFormErrors = {
         name: '',
         label: '',
-        date: ''
+        date: '',
+        group: ''
     }
     const [formErrors, setFormErrors] = useState(initFormErrors);
 
@@ -47,11 +53,36 @@ function NewEventModal({ onClose }: { onClose: () => void }) {
         return inputs.label === label;
     }
 
+    function isPersonSelected(personId: string) {
+        return inputs.group.includes(personId);
+    }
+
+
+    function togglePerson(personId: string) {
+
+        if (personId === 'all' && inputs.group.length === contacts.length) {
+            setInputs(prev => ({ ...prev, group: [] }))
+            return
+        }
+        if (personId === 'all' && inputs.group.length !== contacts.length) {
+            setInputs(prev => ({ ...prev, group: contacts.map(p => p.id) }))
+            return
+        }
+
+
+        if (isPersonSelected(personId)) {
+            setInputs(prev => ({ ...prev, group: prev.group.filter(id => id !== personId) }))
+        } else {
+            setInputs(prev => ({ ...prev, group: [...prev.group, personId] }))
+        }
+    }
+
     function formActionHandler(formData: FormData) {
 
         let { hasError, errors } = zValidate(eventSchema, inputs);
 
         if (hasError) {
+            console.log(errors)
             setFormErrors(errors);
             return;
         }
@@ -60,7 +91,7 @@ function NewEventModal({ onClose }: { onClose: () => void }) {
         let newEvent = {
             ...inputs,
             id: generateUID(),
-            group: [],
+            group: contacts.filter(c => inputs.group.includes(c.id)),
             expenses: [],
             status: 'active' as const,
             createdAt: new Date(Date.now()),
@@ -127,6 +158,45 @@ function NewEventModal({ onClose }: { onClose: () => void }) {
                                 </div>
                             )}
                             <input type="hidden" value={inputs.label} name="label" />
+                        </div>
+
+                        <div className="flex flex-col gap-y-2">
+
+                            <span className={`text-base ${formErrors.group ? 'text-red-500' : 'text-indigo-900'} capitalize`}>افزودن شخص از دوستان</span>
+
+                            <div className="flex flex-wrap gap-4">
+
+                                <div onClick={togglePerson.bind(null, 'all')} className={`px-4 cursor-pointer py-2 flex flex-row gap-x-4 items-center border ${inputs.group.length === contacts.length ? `user_avatar_blue_text user_avatar_blue_border user_avatar_blue_bg` : 'user_avatar_gray_text border-white'} transition-all duration-300 rounded-full`}>
+                                    <div className="">
+                                        <User className="size-5" />
+                                    </div>
+
+                                    <span className="text-base">همه</span>
+                                </div>
+
+
+                                {contacts.map(user => (
+                                    <div key={user.id} onClick={togglePerson.bind(null, user.id)} className={`px-4 cursor-pointer py-2 flex flex-row gap-x-4 items-center border ${isPersonSelected(user.id) ? `user_avatar_${user.scheme}_text user_avatar_${user.scheme}_border user_avatar_${user.scheme}_bg` : 'user_avatar_gray_text border-white'} transition-all duration-300 rounded-full`}>
+                                        <div className="">
+                                            <User className="size-5" />
+                                        </div>
+
+                                        <span className="text-base">{user.name}</span>
+                                    </div>
+                                ))}
+
+
+
+                            </div>
+
+
+                            {formErrors.group && (
+                                <div className="flex gap-x-2 items-center mt-2 text-sm text-red-500">
+                                    <Ban className="size-3.5" />
+                                    <span>{formErrors.group}</span>
+                                </div>
+                            )}
+                            <input type="hidden" value={inputs.group.toString()} name="group" />
                         </div>
                     </div>
 

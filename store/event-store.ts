@@ -103,4 +103,17 @@ export const useEventStore = create<EventState>((set) => ({
         // expenses = expenses.filter(expense => !deletableExpensesIds.includes(expense.id));
         return { events: eventsIns }
     }),
+
+    updatePersonInEvents: (personId, updatedPerson) => set((state) => {
+        let eventsIns = [...state.events];
+
+        eventsIns.forEach(event => {
+            let personIndex = event.group.findIndex(p => p.id === personId)
+            if (personIndex !== -1) {
+                event.group[personIndex] = { ...event.group[personIndex], ...updatedPerson };
+            }
+        })
+
+        return { events: eventsIns }
+    })
 }));

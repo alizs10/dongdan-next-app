@@ -14,6 +14,7 @@ import { SchemeType } from "@/types/event-types";
 import Button from "@/components/Common/Button";
 import { useContactStore } from "@/store/contact-store";
 import { Contact } from "@/types/contact-types";
+import { useEventStore } from "@/store/event-store";
 
 type FormInputs = {
     name: string;
@@ -23,6 +24,7 @@ type FormInputs = {
 function EditContactModal({ onClose, contact }: { onClose: () => void, contact: Contact }) {
 
     const updateContact = useContactStore(state => state.updateContact);
+    const updatePersonInEvents = useEventStore(state => state.updatePersonInEvents);
     const { pending, data, method, action } = useFormStatus();
     const { event_id } = useParams()
 
@@ -63,6 +65,13 @@ function EditContactModal({ onClose, contact }: { onClose: () => void, contact: 
             ...inputs
         }
 
+        let updatedPerson = {
+            id: updatedContact.id,
+            name: updatedContact.name,
+            scheme: updatedContact.scheme
+        }
+
+        updatePersonInEvents(updatedPerson.id, updatedPerson);
         updateContact(contact.id, updatedContact);
         onClose();
     }
