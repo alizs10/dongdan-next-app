@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 // import { sahel } from 'next-persian-fonts/sahel'
 // import { vazirMatn } from 'next-persian-fonts/vazirmatn'
 import { estedad, estedadFD } from 'next-persian-fonts/estedad'
-import "./globals.css";
-import Layout from "@/components/Layout/Layout";
+import "../globals.css";
+import Layout from "@/components/Auth/Layout/Layout";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -16,7 +16,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" dir="rtl">
+    <html lang="fa" dir="rtl">
       <body
         className={estedadFD.className}
       >
