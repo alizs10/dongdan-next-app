@@ -4,6 +4,9 @@ import EventItem from './EventItem';
 
 function EventsList({ events }: { events: Event[] }) {
 
+    // filter trashed events
+    events = events.filter(e => e.deletedAt === null);
+
     // sort events by date
     events.sort((a, b) => {
         return new Date(b.date).getTime() - new Date(a.date).getTime();

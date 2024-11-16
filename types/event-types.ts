@@ -8,6 +8,7 @@ export type Event = {
     status: 'active' | 'inactive';
     createdAt: Date;
     updatedAt: Date;
+    deletedAt: Date | null;
 }
 
 export type Expend = {
@@ -41,6 +42,8 @@ export type Person = {
 export type EventState = {
     events: Event[];
     addEvent: (event: Event) => void;
+    trashEvent: (eventId: string) => void;
+    deleteEvent: (eventId: string) => void;
     activateEvent: (eventId: string) => void;
     deactivateEvent: (eventId: string) => void;
     addPerson: (eventId: string, person: Person) => void;

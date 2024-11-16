@@ -6,6 +6,7 @@ import moment from 'jalali-moment';
 import Button from '@/components/Common/Button';
 import { useState } from 'react';
 import useClickOutside from '@/hooks/useOutsideClick';
+import { useEventStore } from '@/store/event-store';
 
 
 function renderIcon(label: string) {
@@ -37,6 +38,8 @@ function renderIcon(label: string) {
 }
 function EventItem({ event }: { event: Event }) {
 
+    const { trashEvent } = useEventStore(state => state)
+
     const [isOptionsOpen, setIsOptionsOpen] = useState(false);
 
     function toggleOptions() {
@@ -44,6 +47,15 @@ function EventItem({ event }: { event: Event }) {
     }
 
     const optionsPrentRef = useClickOutside(() => setIsOptionsOpen(false))
+
+    function onDelete() {
+        console.log('delete');
+    }
+
+    function onTrash() {
+        console.log('trash');
+        trashEvent(event.id)
+    }
 
     return (
         <li key={event.id} className={styles.event_item}>
@@ -83,7 +95,7 @@ function EventItem({ event }: { event: Event }) {
                                 icon={<Trash className='size-4' />}
                                 color='danger'
                                 size='small'
-                                onClick={() => { }}
+                                onClick={onTrash}
                             />
                         </div>
                     )}

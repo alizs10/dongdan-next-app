@@ -65,6 +65,7 @@ function NewEventModal({ onClose }: { onClose: () => void }) {
             status: 'active' as const,
             createdAt: new Date(Date.now()),
             updatedAt: new Date(Date.now()),
+            deletedAt: null,
         }
 
         addEvent(newEvent);
