@@ -6,6 +6,7 @@ import Button from '@/components/Common/Button';
 import { useState } from 'react';
 import useClickOutside from '@/hooks/useOutsideClick';
 import { useContactStore } from '@/store/contact-store';
+import EditContactModal from './EditContactModal';
 
 
 function renderIcon(label: string) {
@@ -115,6 +116,8 @@ function ContactItem({ contact }: { contact: Contact }) {
                 </div>
 
             </div>
+
+            {isEditContactModalOpen && (<EditContactModal onClose={toggleModal} contact={contact} />)}
         </li>
 
     );

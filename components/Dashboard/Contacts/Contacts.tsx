@@ -47,7 +47,7 @@ function Contacts() {
 
             </div>
 
-            {contacts.length > 0 ? (<ContactsList contacts={contacts} />) : <NoContacts openNewContactModal={toggleModal} />}
+            {contactsCount > 0 ? (<ContactsList contacts={contacts} />) : <NoContacts openNewContactModal={toggleModal} />}
 
 
             {isNewContactModalOpen && <NewContactModal onClose={toggleModal} />}

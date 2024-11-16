@@ -7,10 +7,14 @@ import NoEvents from "./NoEvents";
 import Button from "@/components/Common/Button";
 import EventsList from "./EventsList";
 import { useRouter } from "next/navigation";
+import { useContactStore } from "@/store/contact-store";
 
 function Events() {
 
+    const contacts = useContactStore(state => state.contacts)
     const events = useEventStore((state) => state.events);
+
+    const contactsCount = contacts.filter(c => c.deletedAt === null).length;
 
     const [newEventModalVis, setNewEventModalVis] = useState(false);
 
@@ -34,7 +38,7 @@ function Events() {
                 <div className="flex flex-row gap-x-2 items-center">
 
                     <Button
-                        text="دوستان"
+                        text={`دوستان (${contactsCount})`}
                         color="success"
                         onClick={() => {
                             router.push("/dashboard/events/contacts")
