@@ -1,6 +1,9 @@
 import { ArrowLeft, Key, Mail } from "lucide-react";
+import GoogleIcon from "./Layout/GoogleIcon";
+// import googleIcon from '../google-icon.svg';
 
 function LoginForm() {
+
     return (
         <div className="mt-6 flex flex-col gap-y-2">
             <div className="flex flex-wrap rounded-full bg-black/40 overflow-hidden">
@@ -28,14 +31,22 @@ function LoginForm() {
 
                 />
             </div>
+            <button className="text-xs transition-all duration-300 w-fit mx-auto hover:text-indigo-400 text-indigo-200 font-semibold mt-2">رمزتو فراموش کردی؟</button>
 
             <button className="flex flex-row gap-x-3 transition-all duration-300 border-2 border-transparent hover:text-indigo-600 hover:border-indigo-600 px-5 py-3 text-lg rounded-full bg-black/40 justify-center items-center text-indigo-200 w-fit mx-auto mt-4" type="button">
                 <span className="text-indigo-200">ورود</span>
                 <ArrowLeft className="size-6" />
             </button>
 
+            <span className="text-sm w-fit mx-auto text-indigo-200 font-semibold mt-6">یا</span>
 
-            <button className="text-sm transition-all duration-300 w-fit mx-auto hover:text-indigo-400 text-indigo-200 font-semibold mt-6">رمزتو فراموش کردی؟</button>
+            <button className="flex flex-row gap-x-3 transition-all duration-300 border-2 border-transparent hover:text-indigo-600 hover:border-indigo-600 px-5 py-3 text-lg rounded-full bg-black/40 justify-center items-center text-indigo-200 w-fit mx-auto mt-4" type="button">
+                <div className="size-6">
+                    <GoogleIcon />
+                </div>
+                <span className="text-indigo-200">ورود با گوگل</span>
+            </button>
+
         </div>
     );
 }
