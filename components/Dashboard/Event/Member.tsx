@@ -5,16 +5,23 @@ import { Person } from "@/types/event-types";
 import { Ellipsis, Pencil, Trash, User } from "lucide-react";
 import { useParams } from "next/navigation";
 import { useState } from "react";
+import EditPersonModal from "./EditPersonModal";
 
 function Member({ person }: { person: Person }) {
 
-    const deletePerson = useEventStore(state => state.deletePerson);
+    const { deletePerson, deletePersonExpenses } = useEventStore(state => state);
     const { event_id } = useParams()
 
     const [isOptionsOpen, setIsOptionsOpen] = useState(false);
+    const [isEditPersonModalOpen, setIsEditPersonModalOpen] = useState(false);
 
     function toggleOptions() {
         setIsOptionsOpen(prev => !prev);
+    }
+
+    function toggleModal() {
+        setIsOptionsOpen(false);
+        setIsEditPersonModalOpen(prev => !prev);
     }
 
     const parentRef = useClickOutside(() => setIsOptionsOpen(false))
@@ -24,6 +31,7 @@ function Member({ person }: { person: Person }) {
 
         if (typeof event_id !== 'string') return;
 
+        deletePersonExpenses(event_id, person.id);
         deletePerson(event_id, person.id);
     }
 
@@ -54,7 +62,7 @@ function Member({ person }: { person: Person }) {
                             icon={<Pencil className='size-4' />}
                             color='warning'
                             size='small'
-                            onClick={() => { }}
+                            onClick={toggleModal}
                         />
                         <Button
                             text='حذف'
@@ -66,7 +74,7 @@ function Member({ person }: { person: Person }) {
                     </div>
                 )}
             </div>
-
+            {isEditPersonModalOpen && <EditPersonModal person={person} onClose={toggleModal} />}
         </li>
 
     );

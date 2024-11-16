@@ -33,10 +33,12 @@ export type Transfer = {
 
 export type Expense = Expend | Transfer;
 
+export type SchemeType = 'gray' | 'blue' | 'red' | 'rose' | 'green' | 'orange' | 'yellow' | 'purple';
+
 export type Person = {
     id: string;
     name: string;
-    scheme: string;
+    scheme: SchemeType;
 }
 
 export type EventState = {
@@ -49,8 +51,10 @@ export type EventState = {
     deactivateEvent: (eventId: string) => void;
     addPerson: (eventId: string, person: Person) => void;
     deletePerson: (eventId: string, personId: string) => void;
+    updatePerson: (eventId: string, personId: string, updatedPerson: Person) => void;
     addExpense: (eventId: string, expense: Expense) => void;
     deleteExpense: (eventId: string, expenseId: string) => void;
+    deletePersonExpenses: (eventId: string, personId: string) => void;
 };
 
 

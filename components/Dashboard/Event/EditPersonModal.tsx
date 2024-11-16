@@ -3,6 +3,7 @@
 import TextInput from "@/components/Common/Form/TextInput";
 import ModalHeader from "@/components/Common/ModalHeader";
 import ModalWrapper from "@/components/Common/ModalWrapper";
+import { eventSchema } from "@/database/validations/event-validation";
 import { zValidate } from "@/helpers/validation-helper";
 import { Ban, Check, Save, User } from "lucide-react";
 import { useState } from "react";
@@ -12,7 +13,7 @@ import { useParams } from "next/navigation";
 import { personSchema } from "@/database/validations/person-validation";
 import { useEventStore } from "@/store/event-store";
 import { generateUID } from "@/helpers/helpers";
-import { SchemeType } from "@/types/event-types";
+import { Person, SchemeType } from "@/types/event-types";
 
 type FormInputs = {
     name: string;
@@ -20,15 +21,15 @@ type FormInputs = {
     eventId: string;
 }
 
-function NewPersonModal({ onClose }: { onClose: () => void }) {
+function EditPersonModal({ onClose, person }: { onClose: () => void, person: Person }) {
 
-    const addPerson = useEventStore(state => state.addPerson);
+    const updatePerson = useEventStore(state => state.updatePerson);
     const { pending, data, method, action } = useFormStatus();
     const { event_id } = useParams()
 
     const initInputs: FormInputs = {
-        name: '',
-        scheme: 'gray',
+        name: person.name,
+        scheme: person.scheme,
         eventId: typeof event_id === 'string' ? event_id : '',
     }
     const [inputs, setInputs] = useState(initInputs);
@@ -61,12 +62,12 @@ function NewPersonModal({ onClose }: { onClose: () => void }) {
 
         setFormErrors(initFormErrors);
 
-        let newPerson = {
-            id: generateUID(),
+        let updatedPerson = {
+            ...person,
             ...inputs
         }
 
-        addPerson(event_id, newPerson);
+        updatePerson(event_id, person.id, updatedPerson);
         onClose();
     }
 
@@ -123,4 +124,4 @@ function NewPersonModal({ onClose }: { onClose: () => void }) {
     return null;
 }
 
-export default NewPersonModal;
+export default EditPersonModal;

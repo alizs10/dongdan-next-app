@@ -1,4 +1,5 @@
 import { Event, EventState } from "@/types/event-types";
+import exp from "constants";
 import { create } from "zustand";
 
 var initEvents: Event[] = [
@@ -76,6 +77,29 @@ export const useEventStore = create<EventState>((set) => ({
 
     addPerson: (eventId, person) => set((state) => ({ events: state.events.map(e => e.id === eventId ? { ...e, group: [...e.group, person] } : e) })),
     deletePerson: (eventId, personId) => set((state) => ({ events: state.events.map(e => e.id === eventId ? { ...e, group: e.group.filter(p => p.id !== personId) } : e) })),
+    updatePerson: (eventId, personId, updatedPerson) => set((state) => ({ events: state.events.map(e => e.id === eventId ? { ...e, group: e.group.map(p => p.id === personId ? { ...p, ...updatedPerson, updatedAt: new Date(Date.now()) } : p), updatedAt: new Date(Date.now()) } : e) })),
     addExpense: (eventId, expense) => set((state) => ({ events: state.events.map(e => e.id === eventId ? { ...e, expenses: [...e.expenses, expense] } : e) })),
     deleteExpense: (eventId, expenseId) => set((state) => ({ events: state.events.map(e => e.id === eventId ? { ...e, expenses: e.expenses.filter(expense => expense.id !== expenseId) } : e) })),
+
+    deletePersonExpenses: (eventId, personId) => set((state) => {
+        let eventsIns = [...state.events];
+        let event = eventsIns.find(e => e.id === eventId);
+        if (!event) return { events: eventsIns };
+
+        let expenses = event.expenses;
+        let deletableExpensesIds: string[] = []
+        expenses.forEach(expense => {
+            if (expense.type === 'transfer' && (expense.from === personId || expense.to === personId)) {
+                deletableExpensesIds.push(expense.id);
+            } else if (expense.type === 'expend' && expense.group.includes(personId)) {
+                expense.group = expense.group.filter(p => p !== personId);
+            } else if (expense.type === 'expend' && expense.payer === personId) {
+                deletableExpensesIds.push(expense.id);
+            }
+        });
+
+        eventsIns = eventsIns.map(e => e.id === eventId ? { ...e, expenses: e.expenses.filter(expense => !deletableExpensesIds.includes(expense.id)) } : e);
+        // expenses = expenses.filter(expense => !deletableExpensesIds.includes(expense.id));
+        return { events: eventsIns }
+    }),
 }));
