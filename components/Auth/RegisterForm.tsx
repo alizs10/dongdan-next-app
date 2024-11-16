@@ -8,7 +8,7 @@ function RegisterForm() {
                     <Mail className="size-6 text-indigo-200" />
                 </div>
                 <input
-                    className="bg-transparent font-sans placeholder:text-gray-400 placeholder:font-[estedadFD] placeholder:font-normal text-indigo-200 px-5 py-3 text-lg font-bold focus:outline-none"
+                    className="bg-transparent font-sans placeholder:text-gray-400 placeholder:font-[estedadFD] placeholder:font-normal text-indigo-200 px-5 py-3 text-lg focus:outline-none"
                     type="text"
                     name="email"
                     dir="ltr"
@@ -20,7 +20,7 @@ function RegisterForm() {
                     <Key className="size-6 text-indigo-200" />
                 </div>
                 <input
-                    className="bg-transparent font-sans placeholder:text-gray-400 placeholder:font-[estedadFD] placeholder:font-normal text-indigo-200 px-5 py-3 text-lg font-bold focus:outline-none"
+                    className="bg-transparent font-sans placeholder:text-gray-400 placeholder:font-[estedadFD] placeholder:font-normal text-indigo-200 px-5 py-3 text-lg focus:outline-none"
                     type="password"
                     name="password"
                     dir="ltr"
@@ -32,7 +32,7 @@ function RegisterForm() {
                     <Key className="size-6 text-indigo-200" />
                 </div>
                 <input
-                    className="bg-transparent font-sans placeholder:text-gray-400 placeholder:font-[estedadFD] placeholder:font-normal text-indigo-200 px-5 py-3 text-lg font-bold focus:outline-none"
+                    className="bg-transparent font-sans placeholder:text-gray-400 placeholder:font-[estedadFD] placeholder:font-normal text-indigo-200 px-5 py-3 text-lg focus:outline-none"
                     type="password"
                     name="password"
                     dir="ltr"

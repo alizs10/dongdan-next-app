@@ -1,5 +1,6 @@
 import { ArrowLeft, Key, Mail } from "lucide-react";
 import GoogleIcon from "./Layout/GoogleIcon";
+import Link from "next/link";
 // import googleIcon from '../google-icon.svg';
 
 function LoginForm() {
@@ -11,7 +12,7 @@ function LoginForm() {
                     <Mail className="size-6 text-indigo-200" />
                 </div>
                 <input
-                    className="bg-transparent font-sans placeholder:text-gray-400 placeholder:font-[estedadFD] placeholder:font-normal text-indigo-200 px-5 py-3 text-lg font-bold focus:outline-none"
+                    className="bg-transparent font-sans placeholder:text-gray-400 placeholder:font-[estedadFD] placeholder:font-normal text-indigo-200 px-5 py-3 text-lg focus:outline-none"
                     type="text"
                     name="email"
                     dir="ltr"
@@ -23,7 +24,7 @@ function LoginForm() {
                     <Key className="size-6 text-indigo-200" />
                 </div>
                 <input
-                    className="bg-transparent font-sans placeholder:text-gray-400 placeholder:font-[estedadFD] placeholder:font-normal text-indigo-200 px-5 py-3 text-lg font-bold focus:outline-none"
+                    className="bg-transparent font-sans placeholder:text-gray-400 placeholder:font-[estedadFD] placeholder:font-normal text-indigo-200 px-5 py-3 text-lg focus:outline-none"
                     type="password"
                     name="password"
                     dir="ltr"
@@ -31,7 +32,9 @@ function LoginForm() {
 
                 />
             </div>
-            <button className="text-xs transition-all duration-300 w-fit mx-auto hover:text-indigo-400 text-indigo-200 font-semibold mt-2">رمزتو فراموش کردی؟</button>
+            <Link href={'/auth/forgot-password'}>
+                <div className="text-xs transition-all duration-300 w-fit mx-auto hover:text-indigo-400 text-indigo-200 font-semibold mt-2">رمزتو فراموش کردی؟</div>
+            </Link>
 
             <button className="flex flex-row gap-x-3 transition-all duration-300 border-2 border-transparent hover:text-indigo-600 hover:border-indigo-600 px-5 py-3 text-lg rounded-full bg-black/40 justify-center items-center text-indigo-200 w-fit mx-auto mt-4" type="button">
                 <span className="text-indigo-200">ورود</span>
