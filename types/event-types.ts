@@ -47,6 +47,7 @@ export type EventState = {
     activateEvent: (eventId: string) => void;
     deactivateEvent: (eventId: string) => void;
     addPerson: (eventId: string, person: Person) => void;
+    deletePerson: (eventId: string, personId: string) => void;
     addExpense: (eventId: string, expense: Expense) => void;
 };
 

@@ -74,5 +74,6 @@ export const useEventStore = create<EventState>((set) => ({
     activateEvent: (eventId) => set((state) => ({ events: state.events.map(e => e.id === eventId ? { ...e, status: 'active' } : e) })),
 
     addPerson: (eventId, person) => set((state) => ({ events: state.events.map(e => e.id === eventId ? { ...e, group: [...e.group, person] } : e) })),
+    deletePerson: (eventId, personId) => set((state) => ({ events: state.events.map(e => e.id === eventId ? { ...e, group: e.group.filter(p => p.id !== personId) } : e) })),
     addExpense: (eventId, expense) => set((state) => ({ events: state.events.map(e => e.id === eventId ? { ...e, expenses: [...e.expenses, expense] } : e) })),
 }));

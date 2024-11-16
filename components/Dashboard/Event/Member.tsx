@@ -1,10 +1,15 @@
 import Button from "@/components/Common/Button";
 import useClickOutside from "@/hooks/useOutsideClick";
+import { useEventStore } from "@/store/event-store";
 import { Person } from "@/types/event-types";
 import { Ellipsis, Pencil, Trash, User } from "lucide-react";
+import { useParams } from "next/navigation";
 import { useState } from "react";
 
 function Member({ person }: { person: Person }) {
+
+    const deletePerson = useEventStore(state => state.deletePerson);
+    const { event_id } = useParams()
 
     const [isOptionsOpen, setIsOptionsOpen] = useState(false);
 
@@ -13,6 +18,14 @@ function Member({ person }: { person: Person }) {
     }
 
     const parentRef = useClickOutside(() => setIsOptionsOpen(false))
+
+
+    function onDelete() {
+
+        if (typeof event_id !== 'string') return;
+
+        deletePerson(event_id, person.id);
+    }
 
     return (
 
@@ -48,7 +61,7 @@ function Member({ person }: { person: Person }) {
                             icon={<Trash className='size-4' />}
                             color='danger'
                             size='small'
-                            onClick={() => { }}
+                            onClick={onDelete}
                         />
                     </div>
                 )}
