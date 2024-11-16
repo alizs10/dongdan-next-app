@@ -7,6 +7,7 @@ import Button from '@/components/Common/Button';
 import { useState } from 'react';
 import useClickOutside from '@/hooks/useOutsideClick';
 import { useEventStore } from '@/store/event-store';
+import EditEventModal from './EditEventModal';
 
 
 function renderIcon(label: string) {
@@ -41,9 +42,16 @@ function EventItem({ event }: { event: Event }) {
     const { trashEvent } = useEventStore(state => state)
 
     const [isOptionsOpen, setIsOptionsOpen] = useState(false);
+    const [isEditEventModalOpen, setIsEditEventModalOpen] = useState(false);
 
     function toggleOptions() {
         setIsOptionsOpen(prev => !prev);
+    }
+
+    function toggleModal() {
+        // toggleOptions();
+        setIsOptionsOpen(false);
+        setIsEditEventModalOpen(prev => !prev);
     }
 
     const optionsPrentRef = useClickOutside(() => setIsOptionsOpen(false))
@@ -88,7 +96,7 @@ function EventItem({ event }: { event: Event }) {
                                 icon={<Pencil className='size-4' />}
                                 color='warning'
                                 size='small'
-                                onClick={() => { }}
+                                onClick={toggleModal}
                             />
                             <Button
                                 text='حذف'
@@ -97,6 +105,8 @@ function EventItem({ event }: { event: Event }) {
                                 size='small'
                                 onClick={onTrash}
                             />
+
+
                         </div>
                     )}
                 </div>
@@ -109,6 +119,9 @@ function EventItem({ event }: { event: Event }) {
                         onClick={() => { }}
                     />
                 </Link>
+                {isEditEventModalOpen && (
+                    <EditEventModal event={event} onClose={toggleModal} />
+                )}
             </div>
             {/* </div> */}
         </li>

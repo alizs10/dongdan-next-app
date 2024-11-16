@@ -66,6 +66,7 @@ var initEvents: Event[] = [
 export const useEventStore = create<EventState>((set) => ({
     events: initEvents,
     addEvent: (event) => set((state) => ({ events: [...state.events, event] })),
+    updateEvent: (eventId, updatedEvent) => set((state) => ({ events: state.events.map(e => e.id === eventId ? { ...e, ...updatedEvent, updatedAt: new Date(Date.now()) } : e) })),
     deleteEvent: (eventId) => set((state) => ({ events: state.events.filter(e => e.id !== eventId) })),
     trashEvent: (eventId) => set((state) => ({ events: state.events.map(e => e.id === eventId ? { ...e, deletedAt: new Date(Date.now()) } : e) })),
 
