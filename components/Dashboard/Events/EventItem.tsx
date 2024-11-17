@@ -8,6 +8,7 @@ import { useState } from 'react';
 import useClickOutside from '@/hooks/useOutsideClick';
 import { useEventStore } from '@/store/event-store';
 import EditEventModal from './EditEventModal';
+import { useDialogStore } from '@/store/dialog-store';
 
 
 function renderIcon(label: string) {
@@ -40,6 +41,7 @@ function renderIcon(label: string) {
 function EventItem({ event }: { event: Event }) {
 
     const { trashEvent } = useEventStore(state => state)
+    const { openDialog } = useDialogStore(state => state)
 
     const [isOptionsOpen, setIsOptionsOpen] = useState(false);
     const [isEditEventModalOpen, setIsEditEventModalOpen] = useState(false);
@@ -61,8 +63,8 @@ function EventItem({ event }: { event: Event }) {
     }
 
     function onTrash() {
-        console.log('trash');
-        trashEvent(event.id)
+        setIsOptionsOpen(false);
+        openDialog('حذف رویداد', 'آیا از حذف کردن رویداد اطمینان دارید؟', { ok: { text: 'حذف', onClick: () => { trashEvent(event.id) } }, cancel: { text: 'انصراف', onClick: () => { } } })
     }
 
     return (
