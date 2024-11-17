@@ -24,6 +24,8 @@ function Auth() {
     }, [form])
 
 
+    console.log(formType)
+
 
     return (
         <div className="w-4/5 lg:w-3/5 aspect-video flex flex-col gap-y-2 justify-center items-center">
@@ -40,10 +42,10 @@ function Auth() {
 
 
             <div className="mt-20 rounded-full bg-black/10 overflow-hidden backdrop-blur-sm flex flex-wrap">
-                <button onClick={() => router.push('/auth?form=register')} className={`w-24 text-sm bg-transparent transition-all duration-300 py-3 flex justify-center items-center ${formType === 0 ? 'bg-indigo-600 text-white' : 'text-indigo-200'}`} type="button">ثبت نام</button>
+                <button onClick={() => router.push('/auth?form=register')} className={`w-24 text-sm transition-all duration-300 py-3 flex justify-center items-center ${formType === 0 ? 'bg-indigo-600 text-white' : 'bg-transparent text-indigo-200'}`} type="button">ثبت نام</button>
                 <div className="flex h-full w-0.5 bg-indigo-700 justify-center items-center">
                 </div>
-                <button onClick={() => router.push('/auth?form=login')} className={`w-24 text-sm bg-transparent transition-all duration-300 py-3 flex justify-center items-center ${formType === 1 ? 'bg-indigo-600 text-white' : 'text-indigo-200'}`} type="button">ورود</button>
+                <button onClick={() => router.push('/auth?form=login')} className={`w-24 text-sm transition-all duration-300 py-3 flex justify-center items-center ${formType === 1 ? 'bg-indigo-600 text-white' : 'bg-transparent text-indigo-200'}`} type="button">ورود</button>
             </div>
 
         </div>
