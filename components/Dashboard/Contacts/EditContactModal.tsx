@@ -15,6 +15,8 @@ import Button from "@/components/Common/Button";
 import { useContactStore } from "@/store/contact-store";
 import { Contact } from "@/types/contact-types";
 import { useEventStore } from "@/store/event-store";
+import { Toast, useToastStore } from "@/store/toast-store";
+import { generateUID } from "@/helpers/helpers";
 
 type FormInputs = {
     name: string;
@@ -23,6 +25,7 @@ type FormInputs = {
 
 function EditContactModal({ onClose, contact }: { onClose: () => void, contact: Contact }) {
 
+    const addToast = useToastStore(state => state.addToast);
     const updateContact = useContactStore(state => state.updateContact);
     const updatePersonInEvents = useEventStore(state => state.updatePersonInEvents);
     const { pending, data, method, action } = useFormStatus();
@@ -73,6 +76,14 @@ function EditContactModal({ onClose, contact }: { onClose: () => void, contact: 
 
         updatePersonInEvents(updatedPerson.id, updatedPerson);
         updateContact(contact.id, updatedContact);
+        let newToast: Toast = {
+            id: generateUID(),
+            message: 'شخص ویرایش شد',
+            type: 'success'
+        }
+
+        addToast(newToast)
+
         onClose();
     }
 

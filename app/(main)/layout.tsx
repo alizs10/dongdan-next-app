@@ -25,6 +25,10 @@ export default function RootLayout({
         </Layout>
 
         <div id="modal-portal"></div>
+        <div id="modal-portal"></div>
+        <div id="dialog-portal"></div>
+        <div id="toasts-portal"></div>
+
       </body>
     </html>
   );

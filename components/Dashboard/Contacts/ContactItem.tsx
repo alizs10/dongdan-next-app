@@ -8,6 +8,8 @@ import useClickOutside from '@/hooks/useOutsideClick';
 import { useContactStore } from '@/store/contact-store';
 import EditContactModal from './EditContactModal';
 import { useDialogStore } from '@/store/dialog-store';
+import { Toast, useToastStore } from '@/store/toast-store';
+import { generateUID } from '@/helpers/helpers';
 
 
 function renderIcon(label: string) {
@@ -40,6 +42,7 @@ function renderIcon(label: string) {
 function ContactItem({ contact }: { contact: Contact }) {
 
     const openDialog = useDialogStore(state => state.openDialog)
+    const addToast = useToastStore(state => state.addToast)
     const { trashContact } = useContactStore(state => state)
 
 
@@ -62,9 +65,33 @@ function ContactItem({ contact }: { contact: Contact }) {
         console.log('delete');
     }
 
+    let newToast: Toast = {
+        id: generateUID(),
+        message: 'شخص حذف شد',
+        type: 'success'
+    }
+
     function onTrash() {
         setIsOptionsOpen(false);
-        openDialog('حذف شخص', 'آیا از حذف کردن شخص اطمینان دارید؟', { ok: { text: 'حذف', onClick: () => { trashContact(contact.id) } }, cancel: { text: 'انصراف', onClick: () => { } } })
+        openDialog(
+            'حذف شخص',
+            'آیا از حذف کردن شخص اطمینان دارید؟',
+            {
+                ok:
+                {
+                    text:
+                        'حذف',
+                    onClick: () => {
+                        trashContact(contact.id)
+                        addToast(newToast)
+                    }
+                },
+                cancel:
+                {
+                    text: 'انصراف',
+                    onClick: () => { }
+                }
+            })
     }
 
     return (

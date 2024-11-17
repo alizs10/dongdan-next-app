@@ -8,13 +8,11 @@ import { Ban, Check, Save, User } from "lucide-react";
 import { useState } from "react";
 import { createPortal, useFormStatus } from "react-dom";
 import { SCHEMES } from "@/database/data/schemes";
-import { useParams } from "next/navigation";
-import { personSchema } from "@/database/validations/person-validation";
-import { useEventStore } from "@/store/event-store";
 import { generateUID } from "@/helpers/helpers";
 import { SchemeType } from "@/types/event-types";
 import { useContactStore } from "@/store/contact-store";
 import { contactSchema } from "@/database/validations/contact-validation";
+import { Toast, useToastStore } from "@/store/toast-store";
 
 type FormInputs = {
     name: string;
@@ -24,6 +22,7 @@ type FormInputs = {
 function NewContactModal({ onClose }: { onClose: () => void }) {
 
     const addContact = useContactStore(state => state.addContact);
+    const addToast = useToastStore(state => state.addToast)
     const { pending, data, method, action } = useFormStatus();
 
     const initInputs: FormInputs = {
@@ -67,6 +66,15 @@ function NewContactModal({ onClose }: { onClose: () => void }) {
         }
 
         addContact(newContact);
+
+        let newToast: Toast = {
+            id: generateUID(),
+            message: 'شخص جدید اضافه شد',
+            type: 'success'
+        }
+
+        addToast(newToast)
+
         onClose();
     }
 

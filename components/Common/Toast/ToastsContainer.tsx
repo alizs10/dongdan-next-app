@@ -10,18 +10,22 @@ function ToastsContainer() {
 
     const { toasts } = useToastStore(state => state);
 
-    return createPortal(
-        <div className="fixed bottom-10 left-10 w-[24rem] h-24 z-[9999]">
-            <div className="relative p-3 h-full w-full">
-                <AnimatePresence>
-                    {toasts.map((toast, index) => (
-                        <Toast i={index} key={toast.id} toastId={toast.id} text={toast.message} scheme={toast.type} />
-                    ))}
-                </AnimatePresence>
-            </div>
-        </div>
-        , document.getElementById('toasts-portal')!);
+    if (typeof window === 'object') {
 
+        return createPortal(
+            <div className="fixed bottom-10 left-10 w-[24rem] h-24 z-[9999]">
+                <div className="relative p-3 h-full w-full">
+                    <AnimatePresence>
+                        {toasts.map((toast, index) => (
+                            <Toast i={index} key={toast.id} toastId={toast.id} text={toast.message} scheme={toast.type} />
+                        ))}
+                    </AnimatePresence>
+                </div>
+            </div>
+            , document.getElementById('toasts-portal')!);
+    }
+
+    return null;
 
 }
 
