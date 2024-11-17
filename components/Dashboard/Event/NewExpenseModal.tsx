@@ -14,6 +14,7 @@ import { expendSchema } from "@/database/validations/expend-validation";
 import { transferSchema } from "@/database/validations/transfer-validation";
 import { Event } from "@/types/event-types";
 import { useEventStore } from "@/store/event-store";
+import { Toast, useToastStore } from "@/store/toast-store";
 
 type FormInputs = {
     desc: string;
@@ -36,6 +37,7 @@ type FormTypes = 0 | 1;
 
 function NewExpenseModal({ onClose, event }: { onClose: () => void, event: Event }) {
 
+    const addToast = useToastStore(state => state.addToast)
     const addExpense = useEventStore(state => state.addExpense);
 
     const { pending, data, method, action } = useFormStatus();
@@ -152,7 +154,13 @@ function NewExpenseModal({ onClose, event }: { onClose: () => void, event: Event
             amount: TomanPriceToNumber(inputs.amount),
         }
 
+        let newToast: Toast = {
+            id: generateUID(),
+            message: 'هزینه جدید اضافه شد',
+            type: 'success'
+        }
         addExpense(event.id, newExpend)
+        addToast(newToast)
         onClose();
     }
 
@@ -179,7 +187,15 @@ function NewExpenseModal({ onClose, event }: { onClose: () => void, event: Event
             amount: TomanPriceToNumber(inputs2.amount)
         }
 
+
+
+        let newToast: Toast = {
+            id: generateUID(),
+            message: 'جابجایی پول جدید اضافه شد',
+            type: 'success'
+        }
         addExpense(event.id, newTransfer)
+        addToast(newToast)
         onClose();
     }
 

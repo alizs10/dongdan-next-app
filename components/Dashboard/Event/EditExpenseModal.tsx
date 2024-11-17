@@ -16,6 +16,7 @@ import { transferSchema } from "@/database/validations/transfer-validation";
 import { Event, Expense } from "@/types/event-types";
 import { useEventStore } from "@/store/event-store";
 import Button from "@/components/Common/Button";
+import { Toast, useToastStore } from "@/store/toast-store";
 
 type FormInputs = {
     desc: string;
@@ -38,6 +39,7 @@ type FormTypes = 0 | 1;
 
 function EditExpenseModal({ onClose, event, expense }: { onClose: () => void, event: Event, expense: Expense }) {
 
+    const addToast = useToastStore(state => state.addToast)
     const updateExpense = useEventStore(state => state.updateExpense);
 
     const { pending, data, method, action } = useFormStatus();
@@ -155,7 +157,14 @@ function EditExpenseModal({ onClose, event, expense }: { onClose: () => void, ev
             amount: TomanPriceToNumber(inputs.amount),
         }
 
+
+        let newToast: Toast = {
+            id: generateUID(),
+            message: 'هزینه ویرایش شد',
+            type: 'success'
+        }
         updateExpense(event.id, expense.id, updatedExpend)
+        addToast(newToast)
         onClose();
     }
 
@@ -182,7 +191,15 @@ function EditExpenseModal({ onClose, event, expense }: { onClose: () => void, ev
             amount: TomanPriceToNumber(inputs2.amount)
         }
 
+
+        let newToast: Toast = {
+            id: generateUID(),
+            message: 'جابجایی پول ویرایش شد',
+            type: 'success'
+        }
+
         updateExpense(event.id, expense.id, updatedExpense)
+        addToast(newToast)
         onClose();
     }
 

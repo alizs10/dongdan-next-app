@@ -1,5 +1,5 @@
 import Button from "@/components/Common/Button";
-import { TomanPriceFormatter } from "@/helpers/helpers";
+import { generateUID, TomanPriceFormatter } from "@/helpers/helpers";
 import useClickOutside from "@/hooks/useOutsideClick";
 import { useEventStore } from "@/store/event-store";
 import { type Event, type Expense } from "@/types/event-types";
@@ -9,10 +9,12 @@ import { useParams } from "next/navigation";
 import { useMemo, useCallback, useState } from "react";
 import EditExpenseModal from "../EditExpenseModal";
 import { useDialogStore } from "@/store/dialog-store";
+import { Toast, useToastStore } from "@/store/toast-store";
 
 function Expense({ expense }: { expense: Expense }) {
     const { event_id } = useParams()
 
+    const addToast = useToastStore(state => state.addToast)
     const openDialog = useDialogStore(state => state.openDialog);
     const { events, deleteExpense, updateExpense } = useEventStore(state => state)
 
@@ -39,7 +41,29 @@ function Expense({ expense }: { expense: Expense }) {
 
     function onDelete() {
         setIsOptionsOpen(false);
-        openDialog('حذف هزینه', 'آیا از حذف کردن هزینه اطمینان دارید؟', { ok: { text: 'حذف', onClick: () => { deleteExpense(event_id as string, expense.id) } }, cancel: { text: 'انصراف', onClick: () => { } } })
+
+        let newToast: Toast = {
+            id: generateUID(),
+            message: `${expense.type === 'expend' ? 'هزینه' : 'جابجایی پول'} حذف شد`,
+            type: 'success'
+        }
+
+        openDialog(
+            'حذف هزینه',
+            'آیا از حذف کردن هزینه اطمینان دارید؟',
+            {
+                ok: {
+                    text: 'حذف',
+                    onClick: () => {
+                        deleteExpense(event_id as string, expense.id)
+                        addToast(newToast)
+                    }
+                },
+                cancel: {
+                    text: 'انصراف',
+                    onClick: () => { }
+                }
+            })
     }
 
     return (
