@@ -158,45 +158,46 @@ function EditEventModal({ onClose, event }: { onClose: () => void, event: Event 
                             )}
                             <input type="hidden" value={inputs.label} name="label" />
                         </div>
+                        {contacts.length > 0 && (
+                            <div className="flex flex-col gap-y-2">
 
-                        <div className="flex flex-col gap-y-2">
+                                <span className={`text-base ${formErrors.group ? 'text-red-500' : 'text-indigo-900'} capitalize`}>افزودن شخص از دوستان</span>
 
-                            <span className={`text-base ${formErrors.group ? 'text-red-500' : 'text-indigo-900'} capitalize`}>افزودن شخص از دوستان</span>
+                                <div className="flex flex-wrap gap-4">
 
-                            <div className="flex flex-wrap gap-4">
-
-                                <div onClick={togglePerson.bind(null, 'all')} className={`px-4 cursor-pointer py-2 flex flex-row gap-x-4 items-center border ${inputs.group.length === contacts.length ? `user_avatar_blue_text user_avatar_blue_border user_avatar_blue_bg` : 'user_avatar_gray_text border-white'} transition-all duration-300 rounded-full`}>
-                                    <div className="">
-                                        <User className="size-5" />
-                                    </div>
-
-                                    <span className="text-base">همه</span>
-                                </div>
-
-
-                                {contacts.map(user => (
-                                    <div key={user.id} onClick={togglePerson.bind(null, user.id)} className={`px-4 cursor-pointer py-2 flex flex-row gap-x-4 items-center border ${isPersonSelected(user.id) ? `user_avatar_${user.scheme}_text user_avatar_${user.scheme}_border user_avatar_${user.scheme}_bg` : 'user_avatar_gray_text border-white'} transition-all duration-300 rounded-full`}>
+                                    <div onClick={togglePerson.bind(null, 'all')} className={`px-4 cursor-pointer py-2 flex flex-row gap-x-4 items-center border ${inputs.group.length === contacts.length ? `user_avatar_blue_text user_avatar_blue_border user_avatar_blue_bg` : 'user_avatar_gray_text border-white'} transition-all duration-300 rounded-full`}>
                                         <div className="">
                                             <User className="size-5" />
                                         </div>
 
-                                        <span className="text-base">{user.name}</span>
+                                        <span className="text-base">همه</span>
                                     </div>
-                                ))}
+
+
+                                    {contacts.map(user => (
+                                        <div key={user.id} onClick={togglePerson.bind(null, user.id)} className={`px-4 cursor-pointer py-2 flex flex-row gap-x-4 items-center border ${isPersonSelected(user.id) ? `user_avatar_${user.scheme}_text user_avatar_${user.scheme}_border user_avatar_${user.scheme}_bg` : 'user_avatar_gray_text border-white'} transition-all duration-300 rounded-full`}>
+                                            <div className="">
+                                                <User className="size-5" />
+                                            </div>
+
+                                            <span className="text-base">{user.name}</span>
+                                        </div>
+                                    ))}
 
 
 
-                            </div>
-
-
-                            {formErrors.group && (
-                                <div className="flex gap-x-2 items-center mt-2 text-sm text-red-500">
-                                    <Ban className="size-3.5" />
-                                    <span>{formErrors.group}</span>
                                 </div>
-                            )}
-                            <input type="hidden" value={inputs.group.toString()} name="group" />
-                        </div>
+
+
+                                {formErrors.group && (
+                                    <div className="flex gap-x-2 items-center mt-2 text-sm text-red-500">
+                                        <Ban className="size-3.5" />
+                                        <span>{formErrors.group}</span>
+                                    </div>
+                                )}
+                                <input type="hidden" value={inputs.group.toString()} name="group" />
+                            </div>
+                        )}
                     </div>
 
 

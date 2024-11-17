@@ -28,6 +28,7 @@ function Events() {
 
     const router = useRouter();
 
+    const eventsCount = events.filter(e => e.deletedAt === null).length;
 
     return (
         <div className={styles.events_container}>
@@ -58,7 +59,7 @@ function Events() {
             </div>
 
 
-            {events.length > 0 ? (
+            {eventsCount > 0 ? (
                 <EventsList events={events} />
             ) : (
                 <NoEvents openNewEventModal={openModal} />
