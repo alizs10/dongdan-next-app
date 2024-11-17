@@ -6,9 +6,11 @@ import TextInput from "@/components/Common/Form/TextInput";
 import ModalHeader from "@/components/Common/ModalHeader";
 import ModalWrapper from "@/components/Common/ModalWrapper";
 import { eventSchema } from "@/database/validations/event-validation";
+import { generateUID } from "@/helpers/helpers";
 import { zValidate } from "@/helpers/validation-helper";
 import { useContactStore } from "@/store/contact-store";
 import { useEventStore } from "@/store/event-store";
+import { Toast, useToastStore } from "@/store/toast-store";
 import { Event } from "@/types/event-types";
 import { Ban, BriefcaseBusiness, Cake, Coffee, Pencil, Plane, TreePalm, User, Utensils } from "lucide-react";
 import { useState } from "react";
@@ -23,6 +25,7 @@ type FormInputs = {
 
 function EditEventModal({ onClose, event }: { onClose: () => void, event: Event }) {
 
+    const addToast = useToastStore(state => state.addToast)
     const updateEvent = useEventStore(state => state.updateEvent);
     let contacts = useContactStore(state => state.contacts)
     contacts = contacts.filter(c => c.deletedAt === null);
@@ -98,7 +101,14 @@ function EditEventModal({ onClose, event }: { onClose: () => void, event: Event 
             group: contacts.filter(c => inputs.group.includes(c.id)),
         }
 
+
+        let newToast: Toast = {
+            id: generateUID(),
+            message: 'رویداد ویرایش شد',
+            type: 'success'
+        }
         updateEvent(event.id, updatedEvent);
+        addToast(newToast)
         onClose();
     }
 

@@ -9,6 +9,8 @@ import useClickOutside from '@/hooks/useOutsideClick';
 import { useEventStore } from '@/store/event-store';
 import EditEventModal from './EditEventModal';
 import { useDialogStore } from '@/store/dialog-store';
+import { Toast, useToastStore } from '@/store/toast-store';
+import { generateUID } from '@/helpers/helpers';
 
 
 function renderIcon(label: string) {
@@ -40,6 +42,7 @@ function renderIcon(label: string) {
 }
 function EventItem({ event }: { event: Event }) {
 
+    const addToast = useToastStore(state => state.addToast)
     const { trashEvent } = useEventStore(state => state)
     const { openDialog } = useDialogStore(state => state)
 
@@ -62,9 +65,33 @@ function EventItem({ event }: { event: Event }) {
         console.log('delete');
     }
 
+    let newToast: Toast = {
+        id: generateUID(),
+        message: 'رویداد حذف شد',
+        type: 'success'
+    }
+
+
     function onTrash() {
         setIsOptionsOpen(false);
-        openDialog('حذف رویداد', 'آیا از حذف کردن رویداد اطمینان دارید؟', { ok: { text: 'حذف', onClick: () => { trashEvent(event.id) } }, cancel: { text: 'انصراف', onClick: () => { } } })
+        openDialog(
+            'حذف رویداد',
+            'آیا از حذف کردن رویداد اطمینان دارید؟',
+            {
+                ok:
+                {
+                    text: 'حذف',
+                    onClick: () => {
+                        trashEvent(event.id)
+                        addToast(newToast)
+                    }
+                },
+                cancel:
+                {
+                    text: 'انصراف',
+                    onClick: () => { }
+                }
+            })
     }
 
     return (

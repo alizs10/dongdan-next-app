@@ -9,6 +9,7 @@ import { generateUID } from "@/helpers/helpers";
 import { zValidate } from "@/helpers/validation-helper";
 import { useContactStore } from "@/store/contact-store";
 import { useEventStore } from "@/store/event-store";
+import { Toast, useToastStore } from "@/store/toast-store";
 import { Person } from "@/types/event-types";
 import { Ban, BriefcaseBusiness, Cake, Coffee, Plane, Save, TreePalm, User, Utensils } from "lucide-react";
 import { useParams } from "next/navigation";
@@ -24,6 +25,7 @@ type FormInputs = {
 
 function NewEventModal({ onClose }: { onClose: () => void }) {
 
+    const addToast = useToastStore(state => state.addToast)
     const addEvent = useEventStore(state => state.addEvent);
     let contacts = useContactStore(state => state.contacts)
     contacts = contacts.filter(c => c.deletedAt === null);
@@ -99,8 +101,17 @@ function NewEventModal({ onClose }: { onClose: () => void }) {
             deletedAt: null,
         }
 
+
+        let newToast: Toast = {
+            id: generateUID(),
+            message: 'رویداد اضافه شد',
+            type: 'success'
+        }
+
         addEvent(newEvent);
+        addToast(newToast)
         onClose();
+
     }
 
     if (typeof window === "object") {
