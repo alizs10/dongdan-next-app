@@ -7,9 +7,12 @@ import { useParams } from "next/navigation";
 import { useState } from "react";
 import EditPersonModal from "./EditPersonModal";
 import { useDialogStore } from "@/store/dialog-store";
+import { Toast, useToastStore } from "@/store/toast-store";
+import { generateUID } from "@/helpers/helpers";
 
 function Member({ person }: { person: Person }) {
 
+    const addToast = useToastStore(state => state.addToast)
     const openDialog = useDialogStore(state => state.openDialog)
     const { deletePerson, deletePersonExpenses } = useEventStore(state => state);
     const { event_id } = useParams()
@@ -38,7 +41,30 @@ function Member({ person }: { person: Person }) {
     function onDelete() {
         setIsOptionsOpen(false);
 
-        openDialog('حذف شخص', 'آیا از حذف کردن شخص اطمینان دارید؟ تمام هزینه های مربوط به آن نیز حذف خواهد شد و قابل برگشت نیست.', { ok: { text: 'حذف', onClick: () => { deletePersonWithExpenses() } }, cancel: { text: 'انصراف', onClick: () => { } } })
+
+        let newToast: Toast = {
+            id: generateUID(),
+            message: 'شخص حذف شد',
+            type: 'success'
+        }
+        openDialog(
+            'حذف شخص',
+            'آیا از حذف کردن شخص اطمینان دارید؟ تمام هزینه های مربوط به آن نیز حذف خواهد شد و قابل برگشت نیست.',
+            {
+                ok:
+                {
+                    text: 'حذف',
+                    onClick: () => {
+                        deletePersonWithExpenses()
+                        addToast(newToast)
+
+                    }
+                },
+                cancel: {
+                    text: 'انصراف',
+                    onClick: () => { }
+                }
+            })
 
     }
 

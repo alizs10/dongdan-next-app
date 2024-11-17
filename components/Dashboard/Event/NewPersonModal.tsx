@@ -13,6 +13,7 @@ import { personSchema } from "@/database/validations/person-validation";
 import { useEventStore } from "@/store/event-store";
 import { generateUID } from "@/helpers/helpers";
 import { SchemeType } from "@/types/event-types";
+import { Toast, useToastStore } from "@/store/toast-store";
 
 type FormInputs = {
     name: string;
@@ -22,6 +23,7 @@ type FormInputs = {
 
 function NewPersonModal({ onClose }: { onClose: () => void }) {
 
+    const addToast = useToastStore(state => state.addToast)
     const addPerson = useEventStore(state => state.addPerson);
     const { pending, data, method, action } = useFormStatus();
     const { event_id } = useParams()
@@ -66,7 +68,15 @@ function NewPersonModal({ onClose }: { onClose: () => void }) {
             ...inputs
         }
 
+
+        let newToast: Toast = {
+            id: generateUID(),
+            message: 'شخص اضافه شد',
+            type: 'success'
+        }
+
         addPerson(event_id, newPerson);
+        addToast(newToast)
         onClose();
     }
 

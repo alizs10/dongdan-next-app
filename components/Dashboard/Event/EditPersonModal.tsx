@@ -13,6 +13,8 @@ import { personSchema } from "@/database/validations/person-validation";
 import { useEventStore } from "@/store/event-store";
 import { Person, SchemeType } from "@/types/event-types";
 import Button from "@/components/Common/Button";
+import { Toast, useToastStore } from "@/store/toast-store";
+import { generateUID } from "@/helpers/helpers";
 
 type FormInputs = {
     name: string;
@@ -22,6 +24,7 @@ type FormInputs = {
 
 function EditPersonModal({ onClose, person }: { onClose: () => void, person: Person }) {
 
+    const addToast = useToastStore(state => state.addToast)
     const updatePerson = useEventStore(state => state.updatePerson);
     const { pending, data, method, action } = useFormStatus();
     const { event_id } = useParams()
@@ -66,7 +69,15 @@ function EditPersonModal({ onClose, person }: { onClose: () => void, person: Per
             ...inputs
         }
 
+
+        let newToast: Toast = {
+            id: generateUID(),
+            message: 'شخص ویرایش شد',
+            type: 'success'
+        }
+
         updatePerson(event_id, person.id, updatedPerson);
+        addToast(newToast)
         onClose();
     }
 
