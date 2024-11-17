@@ -7,6 +7,7 @@ import { useState } from 'react';
 import useClickOutside from '@/hooks/useOutsideClick';
 import { useContactStore } from '@/store/contact-store';
 import EditContactModal from './EditContactModal';
+import { useDialogStore } from '@/store/dialog-store';
 
 
 function renderIcon(label: string) {
@@ -38,7 +39,9 @@ function renderIcon(label: string) {
 }
 function ContactItem({ contact }: { contact: Contact }) {
 
+    const openDialog = useDialogStore(state => state.openDialog)
     const { trashContact } = useContactStore(state => state)
+
 
     const [isOptionsOpen, setIsOptionsOpen] = useState(false);
     const [isEditContactModalOpen, setIsEditContactModalOpen] = useState(false);
@@ -60,8 +63,8 @@ function ContactItem({ contact }: { contact: Contact }) {
     }
 
     function onTrash() {
-        console.log('trash');
-        trashContact(contact.id)
+        setIsOptionsOpen(false);
+        openDialog('حذف شخص', 'آیا از حذف کردن شخص اطمینان دارید؟', { ok: { text: 'حذف', onClick: () => { trashContact(contact.id) } }, cancel: { text: 'انصراف', onClick: () => { } } })
     }
 
     return (

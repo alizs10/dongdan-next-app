@@ -8,9 +8,12 @@ import { ArrowRightLeft, DollarSign, Ellipsis, MoveLeft, Pencil, Trash } from "l
 import { useParams } from "next/navigation";
 import { useMemo, useCallback, useState } from "react";
 import EditExpenseModal from "../EditExpenseModal";
+import { useDialogStore } from "@/store/dialog-store";
 
 function Expense({ expense }: { expense: Expense }) {
     const { event_id } = useParams()
+
+    const openDialog = useDialogStore(state => state.openDialog);
     const { events, deleteExpense, updateExpense } = useEventStore(state => state)
 
     const event = useMemo(() => events.find(event => event.id === event_id) as Event, [events, event_id]);
@@ -35,7 +38,8 @@ function Expense({ expense }: { expense: Expense }) {
     const optionsParentRef = useClickOutside(() => setIsOptionsOpen(false))
 
     function onDelete() {
-        deleteExpense(event_id as string, expense.id)
+        setIsOptionsOpen(false);
+        openDialog('حذف هزینه', 'آیا از حذف کردن هزینه اطمینان دارید؟', { ok: { text: 'حذف', onClick: () => { deleteExpense(event_id as string, expense.id) } }, cancel: { text: 'انصراف', onClick: () => { } } })
     }
 
     return (

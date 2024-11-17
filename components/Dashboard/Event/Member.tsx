@@ -6,9 +6,11 @@ import { Ellipsis, Pencil, Trash, User } from "lucide-react";
 import { useParams } from "next/navigation";
 import { useState } from "react";
 import EditPersonModal from "./EditPersonModal";
+import { useDialogStore } from "@/store/dialog-store";
 
 function Member({ person }: { person: Person }) {
 
+    const openDialog = useDialogStore(state => state.openDialog)
     const { deletePerson, deletePersonExpenses } = useEventStore(state => state);
     const { event_id } = useParams()
 
@@ -26,13 +28,18 @@ function Member({ person }: { person: Person }) {
 
     const parentRef = useClickOutside(() => setIsOptionsOpen(false))
 
-
-    function onDelete() {
-
+    function deletePersonWithExpenses() {
         if (typeof event_id !== 'string') return;
-
         deletePersonExpenses(event_id, person.id);
         deletePerson(event_id, person.id);
+    }
+
+
+    function onDelete() {
+        setIsOptionsOpen(false);
+
+        openDialog('حذف شخص', 'آیا از حذف کردن شخص اطمینان دارید؟ تمام هزینه های مربوط به آن نیز حذف خواهد شد و قابل برگشت نیست.', { ok: { text: 'حذف', onClick: () => { deletePersonWithExpenses() } }, cancel: { text: 'انصراف', onClick: () => { } } })
+
     }
 
     return (
