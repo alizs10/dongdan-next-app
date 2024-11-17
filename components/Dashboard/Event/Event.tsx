@@ -13,14 +13,16 @@ import NoExpenses from "./Expenses/NoExpenses";
 import NoGroupExpenses from "./Expenses/NoGroupExpenses";
 import moment from "jalali-moment";
 import Button from "@/components/Common/Button";
-import { TomanPriceFormatter } from "@/helpers/helpers";
+import { generateUID, TomanPriceFormatter } from "@/helpers/helpers";
 import { SettlePerson } from "@/types/event-types";
 
 import SettleHintsModal from "./SettleHintsModal";
 import GroupMembers from "./GroupMembers";
+import { Toast, useToastStore } from "@/store/toast-store";
 
 function Event() {
 
+    const addToast = useToastStore(state => state.addToast)
     const { event_id } = useParams()
     const { events, activateEvent, deactivateEvent } = useEventStore(state => state);
     const event = useMemo(() => events.find(e => e.id === event_id), [events, event_id]);
@@ -239,10 +241,24 @@ function Event() {
 
         if (!event) return;
 
+
+
         if (event.status === 'active') {
+            let deactivateToast: Toast = {
+                id: generateUID(),
+                message: 'رویداد به پایان رسید',
+                type: 'success'
+            }
             deactivateEvent(event.id);
+            addToast(deactivateToast)
         } else {
+            let activateToast: Toast = {
+                id: generateUID(),
+                message: 'رویداد در جریان است',
+                type: 'success'
+            }
             activateEvent(event.id);
+            addToast(activateToast)
         }
     }
 
