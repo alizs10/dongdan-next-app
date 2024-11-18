@@ -1,9 +1,9 @@
 .events_container {
-    @apply p-3
+    /* @apply  */
 }
 
 .header_container {
-    @apply flex flex-row justify-between items-center pb-3 border-b border-gray-200;
+    @apply flex flex-row justify-between items-center px-5 py-3 border-b border-gray-200;
 }
 
 .header_title {
@@ -43,7 +43,7 @@
 }
 
 .event_item {
-    @apply flex flex-row justify-between items-center py-3;
+    @apply flex flex-row justify-between items-center py-3 px-5;
 }
 
 .event_item_right {

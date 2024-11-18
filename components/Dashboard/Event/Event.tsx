@@ -19,6 +19,7 @@ import { SettlePerson } from "@/types/event-types";
 import SettleHintsModal from "./SettleHintsModal";
 import GroupMembers from "./GroupMembers";
 import { Toast, useToastStore } from "@/store/toast-store";
+import NoGroupMembers from "./NoGroupMembers";
 
 function Event() {
 
@@ -28,6 +29,8 @@ function Event() {
     const event = useMemo(() => events.find(e => e.id === event_id), [events, event_id]);
 
     if (!event) return null;
+
+    // const expensesCount = event.expenses.filter(e => e.deletedAt).length;
 
     const [isNewExpenseModalOpen, setIsNewExpenseModalOpen] = useState(false);
     const [isNewPersonModalOpen, setIsNewPersonModalOpen] = useState(false);
@@ -262,223 +265,238 @@ function Event() {
         }
     }
 
+    console.log('group: ', event.group.length, 'event status: ', event.status, 'expenses: ', event.expenses);
+
     return (
         <div className={styles.event_container}>
-            <div className={styles.header_container}>
 
-                <div className={styles.header_right}>
-                    <Link href={'/dashboard/events'} className={styles.back_button}>
-                        <MoveRight className={styles.back_button_icon} />
-                    </Link>
-                    <h1 className={styles.header_title}>{event.name}</h1>
-                </div>
+
+            <aside className="col-span-1 border-l border-gray-200 flex flex-col">
+
 
                 {event.group.length > 0 && (
-                    <div className={styles.header_left}>
-                        <Button
-                            text="فیلتر"
-                            color="gray"
-                            onClick={() => { }}
-                            size="small"
-                            icon={<Filter className="size-4" />}
-                        />
-                        {event.status === 'active' && (
-                            <Button
-                                text="ثبت هزینه/جابجایی پول"
-                                color="accent"
-                                onClick={openNewExpenseModal}
-                                size="small"
-                                icon={<Plus className="size-4" />}
-                            />
-                        )}
-                    </div>
-                )}
-            </div>
 
-            <div className="grid grid-cols-4">
-
-                <div className="col-span-3">
-
-                    {event.group.length > 0 ? (
-                        <Expenses expenses={event.expenses} />
-                    ) : <NoGroupExpenses openNewPersonModal={openNewPersonModal} />}
-
-                    {(event.group.length > 0 && event.expenses.length === 0) && (
-                        <NoExpenses openNewExpenseModal={openNewExpenseModal} />
-                    )}
-
-                    {isNewExpenseModalOpen && <NewExpenseModal event={event} onClose={closeNewExpenseModal} />}
-                </div>
-
-                <aside className="col-span-1 border-r border-gray-200 flex flex-col">
-
-
-                    {event.group.length > 0 && (
-
-                        <div className="p-3 flex flex-col gap-y-8 border-b border-gray-200">
-                            <div className="flex w-full justify-between items-center">
-                                <h1 className={styles.header_title}>محاسبات</h1>
-                                {/* <span className="text-sm text-gray-500">8 نفر</span> */}
-                            </div>
-
-                            <ul className="flex flex-col gap-y-4">
-
-                                <div className="flex w-full justify-between items-center">
-                                    <h1 className="text-sm text-gray-500 font-semibold">مجموع هزینه ها</h1>
-                                    <span className="text-sm text-gray-500">{TomanPriceFormatter(getAllCosts().toString())} تومان</span>
-                                </div>
-                                <div className="flex w-full justify-between items-center">
-                                    <h1 className="text-sm text-gray-500">تعداد هزینه ها</h1>
-                                    <span className="text-sm text-gray-500">{getCostsCount()}</span>
-                                </div>
-                                <div className="flex w-full justify-between items-center">
-                                    <h1 className="text-sm text-gray-500">تعداد جابجایی پول</h1>
-                                    <span className="text-sm text-gray-500">{getTransfersCount()}</span>
-                                </div>
-
-                                <div className="flex w-full justify-between items-center">
-                                    <h1 className="text-sm text-gray-500">بیشترین هزینه</h1>
-                                    <span className="text-sm text-gray-500">{TomanPriceFormatter(getMostCost().toString())} تومان</span>
-                                </div>
-                                <div className="flex w-full justify-between items-center">
-                                    <h1 className="text-sm text-gray-500">بیشترین جابجایی پول</h1>
-                                    <span className="text-sm text-gray-500">{TomanPriceFormatter(getHighestTransfer().toString())} تومان</span>
-                                </div>
-
-
-
-                            </ul>
-                        </div>
-                    )}
-
-                    {event.group.length > 0 && (
-
-                        <div className="p-3 flex flex-col gap-y-8 border-b border-gray-200">
-                            <div className="flex flex-row justify-between items-center">
-
-                                <div className="flex w-full justify-between items-center">
-                                    <h1 className={styles.header_title}>سهم اعضا</h1>
-                                    {/* <span className="text-sm text-gray-500">8 نفر</span> */}
-                                </div>
-
-
-                                <button onClick={toggleSettleHintsModal} className="flex flex-row flex-nowrap gap-x-2 items-center w-fit rounded-full px-3 py-1.5 bg-indigo-50 text-indigo-700">
-                                    <Zap className="size-4" />
-                                    <p className="text-[.7rem] font-semibold text-nowrap">
-                                        راهنمای تسویه
-                                    </p>
-                                </button>
-
-                                {isSettleHintsModalOpen && (
-                                    <SettleHintsModal transactions={transactions} onClose={toggleSettleHintsModal} />
-                                )}
-                            </div>
-
-
-                            <ul className="flex flex-col gap-y-4">
-
-                                {event.group.map(person => (
-                                    <li key={person.id} className="flex w-full justify-between items-center">
-                                        <div className="flex flex-row gap-x-2 justify-center items-center">
-                                            <h1 className={`user_avatar_${person.scheme}_text`}>{person.name}</h1>
-                                            {parseInt(getPersonBalance(person.id).toFixed(0)) > 999 && (
-                                                <span className="text-[.6rem] font-semibold rounded-full px-2 py-1 bg-green-100 text-green-700">
-                                                    طلبکار
-                                                </span>
-                                            )}
-                                            {parseInt(getPersonBalance(person.id).toFixed(0)) < -999 && (
-                                                <span className="text-[.6rem] font-semibold rounded-full px-2 py-1 bg-red-100 text-red-600">
-                                                    بدهکار
-                                                </span>
-                                            )}
-                                            {(parseInt(getPersonBalance(person.id).toFixed(0)) > -1000 && parseInt(getPersonBalance(person.id).toFixed(0)) < 1000) && (
-                                                <span className="text-[.6rem] font-semibold rounded-full px-2 py-1 bg-gray-200 text-gray-700">
-                                                    تسویه
-                                                </span>
-                                            )}
-                                        </div>
-                                        <span className="text-sm text-gray-500">{TomanPriceFormatter(Math.abs(getPersonBalance(person.id)).toFixed(0))} تومان</span>
-                                    </li>
-                                ))}
-
-
-                            </ul>
-                        </div>
-                    )}
-
-
-
-                    <div className="h-full p-3 flex flex-col gap-y-8 border-b border-gray-200">
+                    <div className="p-3 flex flex-col gap-y-8 border-b border-gray-200">
                         <div className="flex w-full justify-between items-center">
-                            <h1 className={styles.header_title}>اعضای گروه</h1>
-                            <span className="text-sm text-gray-500">{event.group.length} نفر</span>
-                        </div>
-
-                        <GroupMembers group={event.group} />
-
-
-                        {event.status === 'active' && (
-                            <Button
-                                text="افزودن عضو جدید"
-                                color="gray"
-                                onClick={openNewPersonModal}
-                                size="small"
-                                icon={<UserPlus className="size-4" />}
-                            />
-                        )}
-
-                    </div>
-
-                    <div className="p-3 flex flex-col gap-y-8">
-                        <div className="flex w-full justify-between items-center">
-                            <h1 className={styles.header_title}>اطلاعات رویداد</h1>
+                            <h1 className={styles.header_title}>محاسبات</h1>
                             {/* <span className="text-sm text-gray-500">8 نفر</span> */}
                         </div>
 
                         <ul className="flex flex-col gap-y-4">
 
                             <div className="flex w-full justify-between items-center">
-                                <h1 className="text-sm text-gray-500 font-semibold">وضعیت</h1>
-                                <span className="text-sm text-gray-500">{event.status === 'active' ? 'درجریان' : 'به پایان رسیده'}</span>
+                                <h1 className="text-sm text-gray-500 font-semibold">مجموع هزینه ها</h1>
+                                <span className="text-sm text-gray-500">{TomanPriceFormatter(getAllCosts().toString())} تومان</span>
                             </div>
                             <div className="flex w-full justify-between items-center">
-                                <h1 className="text-sm text-gray-500">برچسب</h1>
-                                <span className="text-sm text-gray-500">{event.label}</span>
+                                <h1 className="text-sm text-gray-500">تعداد هزینه ها</h1>
+                                <span className="text-sm text-gray-500">{getCostsCount()}</span>
                             </div>
                             <div className="flex w-full justify-between items-center">
-                                <h1 className="text-sm text-gray-500">تاریخ شروع</h1>
-                                <span className="text-sm text-gray-500">{moment(event.date).locale('fa').format("DD MMM، YYYY")}</span>
+                                <h1 className="text-sm text-gray-500">تعداد جابجایی پول</h1>
+                                <span className="text-sm text-gray-500">{getTransfersCount()}</span>
+                            </div>
+
+                            <div className="flex w-full justify-between items-center">
+                                <h1 className="text-sm text-gray-500">بیشترین هزینه</h1>
+                                <span className="text-sm text-gray-500">{TomanPriceFormatter(getMostCost().toString())} تومان</span>
                             </div>
                             <div className="flex w-full justify-between items-center">
-                                <h1 className="text-sm text-gray-500">تعداد اعضا</h1>
-                                <span className="text-sm text-gray-500">{event.group.length}</span>
-                            </div>
-                            <div className="flex w-full justify-between items-center">
-                                <h1 className="text-sm text-gray-500">مادرخرج</h1>
-                                <span className="text-sm text-gray-500">{getMaxPayer().name}</span>
-                            </div>
-                            <div className="flex w-full justify-between items-center">
-                                <h1 className="text-sm text-gray-500">هزینه های مادرخرج</h1>
-                                <span className="text-sm text-gray-500">{TomanPriceFormatter(getMaxPayer().amount.toFixed(0))} تومان</span>
+                                <h1 className="text-sm text-gray-500">بیشترین جابجایی پول</h1>
+                                <span className="text-sm text-gray-500">{TomanPriceFormatter(getHighestTransfer().toString())} تومان</span>
                             </div>
 
 
 
                         </ul>
-
-                        <Button
-                            text={event.status === 'active' ? 'پایان رویداد' : 'باز کردن رویداد'}
-                            color={event.status === 'active' ? 'danger' : 'success'}
-                            onClick={toggleEventStatus}
-                            size="small"
-                            icon={event.status === 'active' ? <CalendarCheck className="size-4" /> : <CalendarClock className="size-4" />}
-                        />
-
                     </div>
-                </aside>
+                )}
 
-                {isNewPersonModalOpen && <NewPersonModal onClose={closeNewPersonModal} />}
+                {event.group.length > 0 && (
+
+                    <div className="p-3 flex flex-col gap-y-8 border-b border-gray-200">
+                        <div className="flex flex-row justify-between items-center">
+
+                            <div className="flex w-full justify-between items-center">
+                                <h1 className={styles.header_title}>سهم اعضا</h1>
+                                {/* <span className="text-sm text-gray-500">8 نفر</span> */}
+                            </div>
+
+
+                            <button onClick={toggleSettleHintsModal} className="flex flex-row flex-nowrap gap-x-2 items-center w-fit rounded-full px-3 py-1.5 bg-indigo-50 text-indigo-700">
+                                <Zap className="size-4" />
+                                <p className="text-[.7rem] font-semibold text-nowrap">
+                                    راهنمای تسویه
+                                </p>
+                            </button>
+
+                            {isSettleHintsModalOpen && (
+                                <SettleHintsModal transactions={transactions} onClose={toggleSettleHintsModal} />
+                            )}
+                        </div>
+
+
+                        <ul className="flex flex-col gap-y-4">
+
+                            {event.group.map(person => (
+                                <li key={person.id} className="flex w-full justify-between items-center">
+                                    <div className="flex flex-row gap-x-2 justify-center items-center">
+                                        <h1 className={`user_avatar_${person.scheme}_text`}>{person.name}</h1>
+                                        {parseInt(getPersonBalance(person.id).toFixed(0)) > 999 && (
+                                            <span className="text-[.6rem] font-semibold rounded-full px-2 py-1 bg-green-100 text-green-700">
+                                                طلبکار
+                                            </span>
+                                        )}
+                                        {parseInt(getPersonBalance(person.id).toFixed(0)) < -999 && (
+                                            <span className="text-[.6rem] font-semibold rounded-full px-2 py-1 bg-red-100 text-red-600">
+                                                بدهکار
+                                            </span>
+                                        )}
+                                        {(parseInt(getPersonBalance(person.id).toFixed(0)) > -1000 && parseInt(getPersonBalance(person.id).toFixed(0)) < 1000) && (
+                                            <span className="text-[.6rem] font-semibold rounded-full px-2 py-1 bg-gray-200 text-gray-700">
+                                                تسویه
+                                            </span>
+                                        )}
+                                    </div>
+                                    <span className="text-sm text-gray-500">{TomanPriceFormatter(Math.abs(getPersonBalance(person.id)).toFixed(0))} تومان</span>
+                                </li>
+                            ))}
+
+
+                        </ul>
+                    </div>
+                )}
+
+
+
+                <div className="h-fit px-3 py-5 flex flex-col gap-y-8 border-b border-gray-200">
+                    <div className="flex w-full flex-row gap-x-2 items-center">
+                        <h1 className={styles.header_title}>اعضای گروه</h1>
+                        <span className="text-sm text-gray-500">{`${event.group.length}  نفر`}</span>
+                    </div>
+
+                    {event.group.length > 0 ? (
+
+                        <GroupMembers group={event.group} />
+
+                    ) : (
+                        <NoGroupMembers eventStatus={event.status} />
+                    )}
+
+                    {event.status === 'active' && (
+                        <Button
+                            text="افزودن عضو جدید"
+                            color="gray"
+                            onClick={openNewPersonModal}
+                            size="small"
+                            icon={<UserPlus className="size-4" />}
+                        />
+                    )}
+
+                </div>
+
+                <div className="px-3 py-5 flex flex-col gap-y-8">
+                    <div className="flex w-full justify-between items-center">
+                        <h1 className={styles.header_title}>اطلاعات رویداد</h1>
+                        {/* <span className="text-sm text-gray-500">8 نفر</span> */}
+                    </div>
+
+                    <ul className="flex flex-col gap-y-4">
+
+                        <div className="flex w-full justify-between items-center">
+                            <h1 className="text-sm text-gray-500 font-semibold">وضعیت</h1>
+                            <span className="text-sm text-gray-500">{event.status === 'active' ? 'درجریان' : 'به پایان رسیده'}</span>
+                        </div>
+                        <div className="flex w-full justify-between items-center">
+                            <h1 className="text-sm text-gray-500">برچسب</h1>
+                            <span className="text-sm text-gray-500">{event.label}</span>
+                        </div>
+                        <div className="flex w-full justify-between items-center">
+                            <h1 className="text-sm text-gray-500">تاریخ شروع</h1>
+                            <span className="text-sm text-gray-500">{moment(event.date).locale('fa').format("DD MMM، YYYY")}</span>
+                        </div>
+                        <div className="flex w-full justify-between items-center">
+                            <h1 className="text-sm text-gray-500">تعداد اعضا</h1>
+                            <span className="text-sm text-gray-500">{event.group.length}</span>
+                        </div>
+                        <div className="flex w-full justify-between items-center">
+                            <h1 className="text-sm text-gray-500">مادرخرج</h1>
+                            <span className="text-sm text-gray-500">{getMaxPayer().name || '-'}</span>
+                        </div>
+                        <div className="flex w-full justify-between items-center">
+                            <h1 className="text-sm text-gray-500">هزینه های مادرخرج</h1>
+                            <span className="text-sm text-gray-500">{TomanPriceFormatter(getMaxPayer().amount.toFixed(0))} تومان</span>
+                        </div>
+
+
+
+                    </ul>
+
+                    <Button
+                        text={event.status === 'active' ? 'پایان رویداد' : 'باز کردن رویداد'}
+                        color={event.status === 'active' ? 'danger' : 'success'}
+                        onClick={toggleEventStatus}
+                        size="small"
+                        icon={event.status === 'active' ? <CalendarCheck className="size-4" /> : <CalendarClock className="size-4" />}
+                    />
+
+                </div>
+            </aside>
+
+            <div className="col-span-3">
+                <div className={styles.header_container}>
+
+                    <div className={styles.header_right}>
+                        <Link href={'/dashboard/events'} className={styles.back_button}>
+                            <MoveRight className={styles.back_button_icon} />
+                        </Link>
+                        <h1 className={styles.header_title}>{event.name}</h1>
+                    </div>
+
+                    {event.group.length > 0 && (
+                        <div className={styles.header_left}>
+                            <Button
+                                text="فیلتر"
+                                color="gray"
+                                onClick={() => { }}
+                                size="small"
+                                icon={<Filter className="size-4" />}
+                            />
+                            {event.status === 'active' && (
+                                <Button
+                                    text="ثبت هزینه/جابجایی پول"
+                                    color="accent"
+                                    onClick={openNewExpenseModal}
+                                    size="small"
+                                    icon={<Plus className="size-4" />}
+                                />
+                            )}
+                        </div>
+                    )}
+                </div>
+
+                {event.expenses.length > 0 && (
+                    <Expenses expenses={event.expenses} />
+                )}
+
+                {event.status === 'active' && event.group.length === 0 && event.expenses.length === 0 && (
+                    <NoGroupExpenses openNewPersonModal={openNewPersonModal} />
+                )}
+
+                {event.status !== 'active' && event.expenses.length === 0 && (
+                    <NoExpenses eventStatus={event.status} openNewExpenseModal={openNewExpenseModal} />
+                )}
+
+                {event.status === 'active' && event.group.length > 0 && event.expenses.length === 0 && (
+                    <NoExpenses eventStatus={event.status} openNewExpenseModal={openNewExpenseModal} />
+                )}
+
+
+                {isNewExpenseModalOpen && <NewExpenseModal event={event} onClose={closeNewExpenseModal} />}
             </div>
+
+
+            {isNewPersonModalOpen && <NewPersonModal onClose={closeNewPersonModal} />}
 
         </div>
     );

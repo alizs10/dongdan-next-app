@@ -8,7 +8,7 @@ function Layout({ children }: { children: React.ReactNode }) {
         <section>
 
             <Header />
-            <main className="w-full xl:px-72 px-5">
+            <main className="w-full">
                 {children}
             </main>
 

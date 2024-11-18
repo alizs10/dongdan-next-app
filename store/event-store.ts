@@ -92,10 +92,10 @@ export const useEventStore = create<EventState>((set) => ({
         expenses.forEach(expense => {
             if (expense.type === 'transfer' && (expense.from === personId || expense.to === personId)) {
                 deletableExpensesIds.push(expense.id);
-            } else if (expense.type === 'expend' && expense.group.includes(personId)) {
-                expense.group = expense.group.filter(p => p !== personId);
             } else if (expense.type === 'expend' && expense.payer === personId) {
                 deletableExpensesIds.push(expense.id);
+            } else if (expense.type === 'expend' && expense.payer !== personId && expense.group.includes(personId)) {
+                expense.group = expense.group.filter(p => p !== personId);
             }
         });
 

@@ -3,7 +3,7 @@ import { ReceiptText, UserPlus } from "lucide-react";
 
 function NoGroupExpenses({ openNewPersonModal }: { openNewPersonModal: () => void }) {
     return (
-        <div className="flex w-full h-full justify-center items-center flex-col gap-y-4 py-10">
+        <div className="flex w-full h-fit py-10 justify-center items-center flex-col gap-y-4 min-h-[600px]">
             <ReceiptText className="size-64 text-gray-300" />
             <span className="text-base text-gray-500">برای شروع اولین عضو گروه رو اضافه کن</span>
 

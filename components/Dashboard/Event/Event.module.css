@@ -1,9 +1,9 @@
 .event_container {
-    @apply p-3
+    @apply grid grid-cols-4
 }
 
 .header_container {
-    @apply flex flex-row justify-between items-center pb-3 border-b border-gray-200;
+    @apply flex flex-row justify-between items-center py-3 border-b border-gray-200;
 }
 
 .header_right {
