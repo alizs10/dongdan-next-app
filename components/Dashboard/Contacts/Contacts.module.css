@@ -43,7 +43,7 @@
 }
 
 .contact_item {
-    @apply flex flex-row justify-between items-center py-3;
+    @apply flex flex-row justify-between items-center py-3 px-5;
 }
 
 .contact_item_right {
