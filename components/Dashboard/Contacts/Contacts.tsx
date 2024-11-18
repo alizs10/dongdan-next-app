@@ -24,14 +24,14 @@ function Contacts() {
     const contactsCount = contacts.filter(c => c.deletedAt === null).length
 
     return (
-        <div className='p-3'>
-            <div className='flex flex-row justify-between items-center pb-3 border-b border-gray-200'>
+        <div className={styles.contacts_container}>
+            <div className={styles.header_container}>
 
                 <div className={styles.header_right}>
                     <Link href={'/dashboard/events'} className={styles.back_button}>
                         <MoveRight className={styles.back_button_icon} />
                     </Link>
-                    <h1 className='text-indigo-900 text-lg'>دوستان {`(${contactsCount})`}</h1>
+                    <h1 className={styles.header_title}>دوستان {`(${contactsCount})`}</h1>
                 </div>
 
 

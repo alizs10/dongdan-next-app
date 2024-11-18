@@ -18,7 +18,7 @@ export default function RootLayout({
   return (
     <html lang="en" dir="rtl">
       <body
-        className={estedadFD.className}
+        className={`${estedadFD.className} relative`}
       >
         <Layout>
           {children}

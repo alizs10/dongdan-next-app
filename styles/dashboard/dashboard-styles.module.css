@@ -1,10 +1,11 @@
-.event_container {
-    @apply grid grid-cols-4
+.container {
+    @apply min-h-[600px];
 }
 
 .header_container {
-    @apply flex flex-row justify-between bg-white items-center py-3 px-5 border-b border-gray-200 sticky top-0 h-fit;
+    @apply flex flex-row justify-between items-center px-5 py-3 border-b border-gray-200;
 }
+
 
 .header_right {
     @apply flex flex-row gap-x-4 items-center;
@@ -12,14 +13,6 @@
 
 .header_left {
     @apply flex flex-row gap-x-4 items-center;
-}
-
-.back_button {
-    @apply p-3
-}
-
-.back_button_icon {
-    @apply size-6 text-gray-300
 }
 
 .header_title {
@@ -31,5 +24,13 @@
 }
 
 .header_button_icon {
-    @apply size-5
+    @apply size-4
+}
+
+.back_button {
+    @apply p-2
+}
+
+.back_button_icon {
+    @apply size-6 text-gray-300
 }

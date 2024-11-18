@@ -34,28 +34,13 @@ function Events() {
         <div className={styles.events_container}>
             <div className={styles.header_container}>
                 <h1 className={styles.header_title}>رویداد ها</h1>
-
-
-                <div className="flex flex-row gap-x-2 items-center">
-
-                    <Button
-                        text={`دوستان (${contactsCount})`}
-                        color="success"
-                        onClick={() => {
-                            router.push("/dashboard/events/contacts")
-                        }}
-                        size="medium"
-                        icon={<Contact className="size-5" />}
-                    />
-                    <Button
-                        text="افزودن رویداد"
-                        color="accent"
-                        onClick={openModal}
-                        size="medium"
-                        icon={<CalendarPlus className="size-5" />}
-                    />
-                </div>
-
+                <Button
+                    text="افزودن رویداد"
+                    color="accent"
+                    onClick={openModal}
+                    size="medium"
+                    icon={<CalendarPlus className="size-5" />}
+                />
             </div>
 
 
