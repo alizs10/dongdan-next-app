@@ -1,4 +1,4 @@
-import TrashedEvents from "@/components/Dashboard/Events/TrashedEvents";
+import TrashedEvents from "@/components/Dashboard/Events/Trashed/TrashedEvents";
 
 function TrashedEventsPage() {
     return (

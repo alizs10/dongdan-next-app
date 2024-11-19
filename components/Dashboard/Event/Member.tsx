@@ -10,7 +10,7 @@ import { useDialogStore } from "@/store/dialog-store";
 import { Toast, useToastStore } from "@/store/toast-store";
 import { generateUID } from "@/helpers/helpers";
 
-function Member({ person }: { person: Person }) {
+function Member({ person, isEventDeleted }: { person: Person, isEventDeleted: boolean }) {
 
     const addToast = useToastStore(state => state.addToast)
     const openDialog = useDialogStore(state => state.openDialog)
@@ -21,10 +21,12 @@ function Member({ person }: { person: Person }) {
     const [isEditPersonModalOpen, setIsEditPersonModalOpen] = useState(false);
 
     function toggleOptions() {
+        if (isEventDeleted) return;
         setIsOptionsOpen(prev => !prev);
     }
 
     function toggleModal() {
+        if (isEventDeleted) return;
         setIsOptionsOpen(false);
         setIsEditPersonModalOpen(prev => !prev);
     }
@@ -32,13 +34,15 @@ function Member({ person }: { person: Person }) {
     const parentRef = useClickOutside(() => setIsOptionsOpen(false))
 
     function deletePersonWithExpenses() {
-        if (typeof event_id !== 'string') return;
+        if (typeof event_id !== 'string' || isEventDeleted) return;
         deletePersonExpenses(event_id, person.id);
         deletePerson(event_id, person.id);
     }
 
 
     function onDelete() {
+
+        if (isEventDeleted) return;
         setIsOptionsOpen(false);
 
 
@@ -78,36 +82,40 @@ function Member({ person }: { person: Person }) {
                 <span className={`text-base user_avatar_${person.scheme}_text`}>{person.name}</span>
             </div>
 
-            <div ref={parentRef} className="relative">
-                <Button
-                    text=''
-                    icon={<Ellipsis className='size-4' />}
-                    color='gray'
-                    size='small'
-                    shape='square'
-                    onClick={toggleOptions}
-                />
+            {!isEventDeleted && (
 
-                {isOptionsOpen && (
-                    <div className="absolute z-50 top-full left-0 mt-4 flex flex-col gap-y-2">
-                        <Button
-                            text='ویرایش'
-                            icon={<Pencil className='size-4' />}
-                            color='warning'
-                            size='small'
-                            onClick={toggleModal}
-                        />
-                        <Button
-                            text='حذف'
-                            icon={<Trash className='size-4' />}
-                            color='danger'
-                            size='small'
-                            onClick={onDelete}
-                        />
-                    </div>
-                )}
-            </div>
-            {isEditPersonModalOpen && <EditPersonModal person={person} onClose={toggleModal} />}
+                <div ref={parentRef} className="relative">
+                    <Button
+                        text=''
+                        icon={<Ellipsis className='size-4' />}
+                        color='gray'
+                        size='small'
+                        shape='square'
+                        onClick={toggleOptions}
+                    />
+
+                    {isOptionsOpen && (
+                        <div className="absolute z-50 top-full left-0 mt-4 flex flex-col gap-y-2">
+                            <Button
+                                text='ویرایش'
+                                icon={<Pencil className='size-4' />}
+                                color='warning'
+                                size='small'
+                                onClick={toggleModal}
+                            />
+                            <Button
+                                text='حذف'
+                                icon={<Trash className='size-4' />}
+                                color='danger'
+                                size='small'
+                                onClick={onDelete}
+                            />
+                        </div>
+                    )}
+                </div>
+            )}
+
+            {isEditPersonModalOpen && !isEventDeleted && <EditPersonModal person={person} onClose={toggleModal} />}
         </li>
 
     );

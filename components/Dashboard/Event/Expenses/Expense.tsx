@@ -29,10 +29,12 @@ function Expense({ expense }: { expense: Expense }) {
     const [isEditExpenseModalOpen, setIsEditExpenseModalOpen] = useState(false);
 
     function toggleOptions() {
+        if (event.deletedAt !== null) return;
         setIsOptionsOpen(prev => !prev);
     }
 
     function toggleModal() {
+        if (event.deletedAt !== null) return;
         setIsOptionsOpen(false);
         setIsEditExpenseModalOpen(prev => !prev);
     }
@@ -40,6 +42,7 @@ function Expense({ expense }: { expense: Expense }) {
     const optionsParentRef = useClickOutside(() => setIsOptionsOpen(false))
 
     function onDelete() {
+        if (event.deletedAt !== null) return;
         setIsOptionsOpen(false);
 
         let newToast: Toast = {
@@ -99,41 +102,43 @@ function Expense({ expense }: { expense: Expense }) {
                 <span className="text-xs text-gray-500">{moment(expense.date).locale('fa').format("DD MMM، YYYY")}</span>
                 <div className="flex flex-row items-center gap-x-2">
 
-                    <div ref={optionsParentRef} className='relative'>
-                        <Button
-                            text=''
-                            icon={<Ellipsis className='size-4' />}
-                            color='gray'
-                            size='small'
-                            shape='square'
-                            onClick={toggleOptions}
-                        />
+                    {event.deletedAt === null && (
+                        <div ref={optionsParentRef} className='relative'>
+                            <Button
+                                text=''
+                                icon={<Ellipsis className='size-4' />}
+                                color='gray'
+                                size='small'
+                                shape='square'
+                                onClick={toggleOptions}
+                            />
 
-                        {isOptionsOpen && (
-                            <div className="z-50 absolute top-full left-0 mt-4 flex flex-col gap-y-2">
-                                <Button
-                                    text='ویرایش'
-                                    icon={<Pencil className='size-4' />}
-                                    color='warning'
-                                    size='small'
-                                    onClick={toggleModal}
-                                />
-                                <Button
-                                    text='حذف'
-                                    icon={<Trash className='size-4' />}
-                                    color='danger'
-                                    size='small'
-                                    onClick={onDelete}
-                                />
-                            </div>
-                        )}
-                    </div>
+                            {isOptionsOpen && (
+                                <div className="z-50 absolute top-full left-0 mt-4 flex flex-col gap-y-2">
+                                    <Button
+                                        text='ویرایش'
+                                        icon={<Pencil className='size-4' />}
+                                        color='warning'
+                                        size='small'
+                                        onClick={toggleModal}
+                                    />
+                                    <Button
+                                        text='حذف'
+                                        icon={<Trash className='size-4' />}
+                                        color='danger'
+                                        size='small'
+                                        onClick={onDelete}
+                                    />
+                                </div>
+                            )}
+                        </div>
+                    )}
 
                     <span className="px-4 py-2 text-base font-semibold bg-indigo-100 text-indigo-900 rounded-full">{TomanPriceFormatter(expense.amount.toString())} تومان</span>
                 </div>
             </div>
 
-            {isEditExpenseModalOpen && (
+            {isEditExpenseModalOpen && event.deletedAt === null && (
                 <EditExpenseModal
                     event={event}
                     expense={expense}

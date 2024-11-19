@@ -45,6 +45,7 @@ export type EventState = {
     events: Event[];
     addEvent: (event: Event) => void;
     trashEvent: (eventId: string) => void;
+    restoreEvent: (eventId: string) => void;
     updateEvent: (eventId: string, updatedEvent: Event) => void;
     deleteEvent: (eventId: string) => void;
     activateEvent: (eventId: string) => void;

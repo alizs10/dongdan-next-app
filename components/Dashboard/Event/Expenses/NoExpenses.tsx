@@ -2,15 +2,15 @@ import Button from "@/components/Common/Button";
 import { Event } from "@/types/event-types";
 import { NotebookPen, ReceiptText } from "lucide-react";
 
-function NoExpenses({ openNewExpenseModal, eventStatus }: { openNewExpenseModal: () => void, eventStatus: Event['status'] }) {
+function NoExpenses({ openNewExpenseModal, eventStatus, isDeleted }: { openNewExpenseModal: () => void, eventStatus: Event['status'], isDeleted: boolean }) {
     return (
         <div className="flex w-full h-fit py-10 justify-center items-center flex-col gap-y-4 min-h-[600px]">
             <ReceiptText className="size-64 text-gray-300" />
             <span className="text-base text-gray-500">
-                {eventStatus === 'active' ? "اولین هزینه رو ثبت کن" : "هزینه ای ثبت نشده است"}
+                {eventStatus === 'active' && !isDeleted ? "اولین هزینه رو ثبت کن" : "هزینه ای ثبت نشده است"}
             </span>
 
-            {eventStatus === 'active' && (
+            {eventStatus === 'active' && !isDeleted && (
                 <Button
                     text="افزودن هزینه"
                     color="accent"
