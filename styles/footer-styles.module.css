@@ -1,0 +1,63 @@
+.container {
+  @apply px-10 md:px-14 xl:px-20 py-5 md:py-10 xl:py-20 bg-white flex flex-col gap-10 md:gap-12 xl:gap-20 md:grid md:grid-cols-2 xl:grid-cols-3 border-t border-gray-200;
+}
+
+.info {
+  @apply flex flex-col gap-y-3 md:col-span-1;
+}
+
+.about_quote {
+  @apply text-indigo-900;
+  font-size: 1.1rem;
+}
+
+.about_desc {
+  font-size: 1rem;
+  font-weight: 400;
+  text-align: justify;
+}
+
+.info_contact_desc {
+  @apply flex flex-col gap-y-2;
+}
+
+.info_contact_item {
+  @apply flex gap-x-2 items-center;
+}
+
+.info_title {
+  @apply flex items-center gap-x-2 text-indigo-900;
+}
+
+.title {
+  @apply font-bold text-lg sm:text-lg md:text-base xl:text-lg;
+  /* font-size: 1.5rem; */
+}
+
+.desc {
+  font-size: 1rem;
+  font-weight: 400;
+}
+
+.copyright {
+  @apply col-span-1 md:col-span-2 xl:col-span-3 text-center;
+  font-size: 0.75rem;
+  font-weight: 400;
+}
+
+.socials_container {
+  @apply flex flex-wrap gap-4;
+}
+
+.social_link {
+  @apply flex items-center border border-white transition-all duration-300 justify-center gap-x-2 text-base rounded-xl bg-white px-4 py-2;
+
+  &:hover {
+    @apply border-indigo-900 text-indigo-900;
+  }
+}
+
+.social_link_text {
+  font-size: 0.9rem;
+  font-weight: 400;
+}

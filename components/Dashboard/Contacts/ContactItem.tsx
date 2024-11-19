@@ -77,7 +77,7 @@ function ContactItem({ contact }: { contact: Contact }) {
                 <div ref={optionsPrentRef} className='relative'>
                     <Button
                         text=''
-                        icon={<Ellipsis className='size-4' />}
+                        icon={<Ellipsis className='size-5' />}
                         color='gray'
                         size='small'
                         shape='square'

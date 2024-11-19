@@ -1,111 +1,103 @@
 .contacts_container {
-    /* @apply  */
+  @apply flex flex-col min-h-[400px] lg:min-h-[600px];
 }
 
 .header_container {
-    @apply flex flex-row justify-between items-center px-5 py-3 border-b border-gray-200;
-}
-
-.header_title {
-    @apply text-indigo-900 text-lg;
-}
-
-.header_button {
-    @apply bg-indigo-100 text-base border border-indigo-100 w-fit px-4 py-2 rounded-xl hover:border-indigo-900 transition-all duration-300 text-indigo-900 flex flex-row gap-x-2 items-center;
-}
-
-.header_button_icon {
-    @apply size-5
-}
-
-.empty_container {
-    @apply py-10 flex flex-col gap-y-8 justify-center items-center;
-}
-
-.empty_icon {
-    @apply size-28 text-gray-300;
-}
-
-.empty_text {
-    @apply text-gray-700 text-sm;
-}
-
-.button {
-    @apply bg-indigo-100 border-[.13rem] border-indigo-100 w-fit px-10 py-5 rounded-2xl hover:border-indigo-900 transition-all duration-300 text-indigo-900 text-xl mx-auto flex flex-row gap-x-4 items-center;
-}
-
-.button_icon {
-    @apply size-6
-}
-
-.contacts_list {
-    @apply flex flex-col gap-y-4 min-h-[400px];
-}
-
-.contact_item {
-    @apply flex flex-row justify-between items-center py-3 px-5;
-}
-
-.contact_item_right {
-    @apply flex flex-row gap-x-4 items-center;
-}
-
-.contact_item_icon_container {
-    @apply flex justify-center p-3 rounded-xl items-center;
-}
-
-.contact_item_name {
-    @apply text-lg;
-}
-
-.contact_item_icon {
-    @apply size-4 text-gray-500
-}
-
-.contact_item_left {
-    @apply flex flex-row gap-x-2 items-center;
-}
-
-.contact_item_button {
-    @apply bg-white w-fit px-4 py-2 rounded-xl transition-all duration-300 text-gray-700 hover:bg-gray-200 text-sm flex flex-row gap-x-2 items-center;
-}
-
-.contact_item_button_icon {
-    @apply size-4
-}
-
-.event_container {
-    @apply p-3
-}
-
-.header_container {
-    @apply flex flex-row justify-between items-center pb-3 border-b border-gray-200;
+  @apply flex flex-row justify-between items-center px-5 py-3 border-b border-gray-200;
 }
 
 .header_right {
-    @apply flex flex-row gap-x-4 items-center;
+  @apply flex flex-row gap-x-2 lg:gap-x-4 items-center;
 }
 
 .header_left {
-    @apply flex flex-row gap-x-4 items-center;
+  @apply flex flex-row gap-x-4 items-center;
 }
 
 .back_button {
-    @apply p-2
+  @apply p-2;
 }
 
 .back_button_icon {
-    @apply size-6 text-gray-300
+  @apply size-5 lg:size-6 text-gray-300;
 }
 
 .header_title {
-    @apply text-indigo-900 text-lg;
+  @apply text-indigo-900 text-lg;
 }
 
 .header_button {
-    @apply bg-indigo-100 text-base border border-indigo-100 w-fit px-4 py-2 rounded-xl hover:border-indigo-900 transition-all duration-300 text-indigo-900 flex flex-row gap-x-2 items-center;
+  @apply bg-indigo-100 text-base border border-indigo-100 w-fit px-4 py-2 rounded-xl hover:border-indigo-900 transition-all duration-300 text-indigo-900 flex flex-row gap-x-2 items-center;
 }
 
 .header_button_icon {
-    @apply size-5
+  @apply size-5;
+}
+
+.header_title {
+  @apply text-indigo-900 text-base lg:text-lg;
+}
+
+.header_button {
+  @apply bg-indigo-100 text-base border border-indigo-100 w-fit px-4 py-2 rounded-xl hover:border-indigo-900 transition-all duration-300 text-indigo-900 flex flex-row gap-x-2 items-center;
+}
+
+.header_button_icon {
+  @apply size-5;
+}
+
+.empty_container {
+  @apply py-10 flex flex-col gap-y-8 justify-center items-center;
+}
+
+.empty_icon {
+  @apply size-28 text-gray-300;
+}
+
+.empty_text {
+  @apply text-gray-700 text-sm;
+}
+
+.button {
+  @apply bg-indigo-100 border-[.13rem] border-indigo-100 w-fit px-10 py-5 rounded-2xl hover:border-indigo-900 transition-all duration-300 text-indigo-900 text-xl mx-auto flex flex-row gap-x-4 items-center;
+}
+
+.button_icon {
+  @apply size-6;
+}
+
+.contacts_list {
+  @apply flex flex-col gap-y-4 min-h-[400px];
+}
+
+.contact_item {
+  @apply flex flex-row justify-between items-center py-3 px-5;
+}
+
+.contact_item_right {
+  @apply flex flex-row gap-x-4 items-center;
+}
+
+.contact_item_icon_container {
+  @apply flex justify-center p-3 rounded-xl items-center;
+}
+
+.contact_item_name {
+  @apply text-base lg:text-lg;
+}
+
+.contact_item_icon {
+  @apply size-4 text-gray-500;
+}
+
+.contact_item_left {
+  @apply flex flex-row gap-x-2 items-center;
+}
+
+.contact_item_button {
+  @apply bg-white w-fit px-4 py-2 rounded-xl transition-all duration-300 text-gray-700 hover:bg-gray-200 text-sm flex flex-row gap-x-2 items-center;
+}
+
+.contact_item_button_icon {
+  @apply size-4;
 }

@@ -14,7 +14,8 @@ function TrashedContacts() {
     const trashedContacts = useMemo(() => contacts.filter(e => e.deletedAt !== null), [contacts]);
 
     return (
-        <div className={styles.contacts_container}>
+        <div className={styles.container}>
+
             <div className={styles.header_container}>
                 <div className={styles.header_right}>
                     <Link href={'/dashboard/events/contacts'} className={styles.back_button}>

@@ -14,7 +14,7 @@ function TrashedEvents() {
     const trashedEvents = useMemo(() => events.filter(e => e.deletedAt !== null), [events]);
 
     return (
-        <div className={styles.events_container}>
+        <div className={styles.container}>
             <div className={styles.header_container}>
                 <div className={styles.header_right}>
                     <Link href={'/dashboard/events'} className={styles.back_button}>

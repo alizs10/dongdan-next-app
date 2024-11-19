@@ -1,4 +1,4 @@
-import { Settings } from "lucide-react";
+import { SunDim } from "lucide-react";
 
 function Header() {
     return (
@@ -9,7 +9,7 @@ function Header() {
 
             <div className="header_left">
                 <button className="header_left_button">
-                    <Settings size={30} />
+                    <SunDim className="size-6" />
                 </button>
             </div>
 

@@ -1,75 +1,75 @@
 .events_container {
-    @apply min-h-[600px];
+  @apply min-h-[400px] lg:min-h-[600px];
 }
 
 .header_container {
-    @apply flex flex-row justify-between items-center px-5 py-3 border-b border-gray-200 sticky top-0 h-fit bg-white z-50;
+  @apply flex flex-row justify-between items-center px-5 py-3 border-b border-gray-200 sticky top-0 h-fit bg-white z-50;
 }
 
 .header_title {
-    @apply text-indigo-900 text-lg;
+  @apply text-indigo-900 text-lg;
 }
 
 .header_button {
-    @apply bg-indigo-100 text-base border border-indigo-100 w-fit px-4 py-2 rounded-xl hover:border-indigo-900 transition-all duration-300 text-indigo-900 flex flex-row gap-x-2 items-center;
+  @apply bg-indigo-100 text-base border border-indigo-100 w-fit px-4 py-2 rounded-xl hover:border-indigo-900 transition-all duration-300 text-indigo-900 flex flex-row gap-x-2 items-center;
 }
 
 .header_button_icon {
-    @apply size-4
+  @apply size-4;
 }
 
 .empty_container {
-    @apply py-10 flex flex-col gap-y-8 justify-center items-center;
+  @apply py-10 flex flex-col gap-y-8 justify-center items-center;
 }
 
 .empty_icon {
-    @apply size-28 text-gray-300;
+  @apply size-28 text-gray-300;
 }
 
 .empty_text {
-    @apply text-gray-700 text-sm;
+  @apply text-gray-700 text-sm;
 }
 
 .button {
-    @apply bg-indigo-100 border-[.13rem] border-indigo-100 w-fit px-10 py-5 rounded-2xl hover:border-indigo-900 transition-all duration-300 text-indigo-900 text-xl mx-auto flex flex-row gap-x-4 items-center;
+  @apply bg-indigo-100 border-[.13rem] border-indigo-100 w-fit px-10 py-5 rounded-2xl hover:border-indigo-900 transition-all duration-300 text-indigo-900 text-xl mx-auto flex flex-row gap-x-4 items-center;
 }
 
 .button_icon {
-    @apply size-6
+  @apply size-6;
 }
 
 .events_list {
-    @apply flex flex-col gap-y-4 min-h-[400px];
+  @apply flex flex-col gap-y-4 min-h-[400px];
 }
 
 .event_item {
-    @apply flex flex-row justify-between items-center py-3 px-5;
+  @apply flex flex-row justify-between items-center py-3 px-5;
 }
 
 .event_item_right {
-    @apply flex flex-row gap-x-4 items-center;
+  @apply flex flex-row gap-x-4 items-center;
 }
 
 .event_item_icon_container {
-    @apply flex justify-center p-3 rounded-xl items-center bg-gray-200;
+  @apply flex justify-center p-3 rounded-xl items-center bg-gray-200;
 }
 
 .event_item_name {
-    @apply text-indigo-900 text-lg;
+  @apply text-indigo-900 text-base lg:text-lg whitespace-nowrap;
 }
 
 .event_item_icon {
-    @apply size-4 text-gray-500
+  @apply size-4 text-gray-500;
 }
 
 .event_item_left {
-    @apply flex flex-row gap-x-2 items-center;
+  @apply flex flex-row gap-x-2 items-center;
 }
 
 .event_item_button {
-    @apply bg-white w-fit px-4 py-2 rounded-xl transition-all duration-300 text-gray-700 hover:bg-gray-200 text-sm flex flex-row gap-x-2 items-center;
+  @apply bg-white w-fit px-4 py-2 rounded-xl transition-all duration-300 text-gray-700 hover:bg-gray-200 text-sm flex flex-row gap-x-2 items-center;
 }
 
 .event_item_button_icon {
-    @apply size-4
+  @apply size-4;
 }

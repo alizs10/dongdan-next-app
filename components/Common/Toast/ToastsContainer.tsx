@@ -15,7 +15,7 @@ function ToastsContainer() {
     if (typeof window === 'object') {
 
         return createPortal(
-            <div className="fixed bottom-10 left-10 w-[24rem] h-24 z-[9999]">
+            <div className="fixed bottom-5 lg:bottom-10 left-5 lg:left-10 right-5 md:right-auto md:w-[24rem] h-20 md:h-24 z-[9999]">
                 <div className="relative p-3 h-full w-full">
                     <AnimatePresence>
                         {toasts.map((toast, index) => (

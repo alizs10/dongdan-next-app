@@ -102,7 +102,9 @@ function EventItem({ event }: { event: Event }) {
                     {renderIcon(event.label)}
                 </div>
 
-                <h2 className={styles.event_item_name}>{event.name}</h2>
+                <Link href={`/dashboard/events/${event.id}`}>
+                    <h2 className={styles.event_item_name}>{event.name}</h2>
+                </Link>
             </div>
 
             {/* <div className="flex flex-wrap items-center gap-x-2"> */}
@@ -139,7 +141,7 @@ function EventItem({ event }: { event: Event }) {
                         </div>
                     )}
                 </div>
-                <Link href={`/dashboard/events/${event.id}`}>
+                <Link className='hidden lg:block' href={`/dashboard/events/${event.id}`}>
                     <Button
                         text='مشاهده جزییات'
                         icon={<Info className={styles.event_item_button_icon} />}

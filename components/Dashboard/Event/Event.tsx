@@ -271,7 +271,7 @@ function Event() {
         <div className={styles.event_container}>
 
 
-            <aside className="col-span-1 border-l border-gray-200 flex flex-col">
+            <aside className="col-span-1 lg:col-span-2 xl:col-span-1 border-l border-gray-200 flex flex-col">
 
 
                 {event.group.length > 0 && (
@@ -444,7 +444,7 @@ function Event() {
                 </div>
             </aside>
 
-            <div className="col-span-3">
+            <div className="flex flex-col order-first lg:order-none border-b border-gray-200 lg:border-b-0 col-span-3 min-h-[400px] lg:min-h-[600px]">
                 <div className={styles.header_container}>
 
                     <div className={styles.header_right}>

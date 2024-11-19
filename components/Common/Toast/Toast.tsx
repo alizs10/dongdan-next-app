@@ -45,7 +45,7 @@ function Toast({ toastId, scheme, text, i }: PropsTypes) {
             className={`absolute top-0 left-0 w-full h-fit rounded-full px-5 py-3 border shadow-md flex flex-wrap justify-between items-center ${schemeClasses}`}>
             <div className="flex flex-row gap-x-3 items-center">
                 {icon}
-                <span className="text-lg">{text}</span>
+                <span className="text-base md:text-lg line-clamp-1 text-ellipsis">{text}</span>
             </div>
             <button onClick={() => removeToast(toastId)} type="button" className="p-1 mr-10 transition-all duration-300 opacity-50 hover:opacity-100">
                 <X className="size-5" />

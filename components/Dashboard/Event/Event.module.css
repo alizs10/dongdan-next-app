@@ -1,29 +1,29 @@
 .event_container {
-    @apply grid grid-cols-4
+    @apply grid grid-cols-1 lg:grid-cols-5 xl:grid-cols-4
 }
 
 .header_container {
-    @apply flex flex-row justify-between bg-white items-center py-3 px-5 border-b border-gray-200 sticky top-0 h-fit;
+    @apply flex flex-wrap gap-y-2 lg:gap-0 lg:flex-row justify-between bg-white items-center py-3 px-5 border-b border-gray-200 sticky top-0 h-fit;
 }
 
 .header_right {
-    @apply flex flex-row gap-x-4 items-center;
+    @apply flex flex-row gap-x-2 lg:gap-x-4 items-center;
 }
 
 .header_left {
-    @apply flex flex-row gap-x-4 items-center;
+    @apply flex flex-row gap-x-2 mr-auto lg:mr-0 w-fit lg:w-fit lg:gap-x-4 items-center;
 }
 
 .back_button {
-    @apply p-3
+    @apply p-2 lg:p-3
 }
 
 .back_button_icon {
-    @apply size-6 text-gray-300
+    @apply size-5 lg:size-6 text-gray-300
 }
 
 .header_title {
-    @apply text-indigo-900 text-lg;
+    @apply text-indigo-900 whitespace-nowrap text-base lg:text-lg;
 }
 
 .header_button {

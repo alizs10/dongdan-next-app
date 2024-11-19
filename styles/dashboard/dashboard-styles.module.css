@@ -1,36 +1,35 @@
 .container {
-    @apply min-h-[600px];
+  @apply flex flex-col min-h-[400px] lg:min-h-[600px] h-full;
 }
 
 .header_container {
-    @apply flex flex-row justify-between items-center px-5 py-3 border-b border-gray-200 sticky top-0 h-fit bg-white;
+  @apply flex flex-row justify-between items-center px-5 py-3 border-b border-gray-200 sticky top-0 h-fit bg-white;
 }
 
-
 .header_right {
-    @apply flex flex-row gap-x-4 items-center;
+  @apply flex flex-row gap-x-2 lg:gap-x-4 items-center;
 }
 
 .header_left {
-    @apply flex flex-row gap-x-4 items-center;
+  @apply flex flex-row gap-x-2 lg:gap-x-4 items-center;
 }
 
 .header_title {
-    @apply text-indigo-900 text-lg;
+  @apply text-indigo-900 text-base lg:text-lg;
 }
 
 .header_button {
-    @apply bg-indigo-100 text-base border border-indigo-100 w-fit px-4 py-2 rounded-xl hover:border-indigo-900 transition-all duration-300 text-indigo-900 flex flex-row gap-x-2 items-center;
+  @apply bg-indigo-100 text-base border border-indigo-100 w-fit px-4 py-2 rounded-xl hover:border-indigo-900 transition-all duration-300 text-indigo-900 flex flex-row gap-x-2 items-center;
 }
 
 .header_button_icon {
-    @apply size-4
+  @apply size-4;
 }
 
 .back_button {
-    @apply p-2
+  @apply p-2;
 }
 
 .back_button_icon {
-    @apply size-6 text-gray-300
+  @apply size-5 lg:size-6 text-gray-300;
 }
