@@ -1,46 +1,38 @@
 import { Contact } from '@/types/contact-types';
-import styles from './Contacts.module.css';
-import { Ellipsis, Info, Pencil, Trash, User } from "lucide-react";
+import styles from '../Contacts.module.css';
+import { Ellipsis, RotateCw, Trash, User } from "lucide-react";
 import Button from '@/components/Common/Button';
 import { useState } from 'react';
 import useClickOutside from '@/hooks/useOutsideClick';
 import { useContactStore } from '@/store/contact-store';
-import EditContactModal from './EditContactModal';
 import { useDialogStore } from '@/store/dialog-store';
 import { Toast, useToastStore } from '@/store/toast-store';
 import { generateUID } from '@/helpers/helpers';
 
 
-function ContactItem({ contact }: { contact: Contact }) {
+function TrashedContactItem({ contact }: { contact: Contact }) {
 
     const openDialog = useDialogStore(state => state.openDialog)
     const addToast = useToastStore(state => state.addToast)
-    const { trashContact } = useContactStore(state => state)
+    const { deleteContact, restoreContact } = useContactStore(state => state)
 
 
     const [isOptionsOpen, setIsOptionsOpen] = useState(false);
-    const [isEditContactModalOpen, setIsEditContactModalOpen] = useState(false);
 
     function toggleOptions() {
         setIsOptionsOpen(prev => !prev);
     }
 
-    function toggleModal() {
-        // toggleOptions();
-        setIsOptionsOpen(false);
-        setIsEditContactModalOpen(prev => !prev);
-    }
-
     const optionsPrentRef = useClickOutside(() => setIsOptionsOpen(false))
 
-    let newToast: Toast = {
-        id: generateUID(),
-        message: 'شخص حذف شد',
-        type: 'success'
-    }
 
-    function onTrash() {
+    function onDelete() {
         setIsOptionsOpen(false);
+        let newToast: Toast = {
+            id: generateUID(),
+            message: 'شخص بصورت دائم حذف شد',
+            type: 'success'
+        }
         openDialog(
             'حذف شخص',
             'آیا از حذف کردن شخص اطمینان دارید؟',
@@ -50,7 +42,7 @@ function ContactItem({ contact }: { contact: Contact }) {
                     text:
                         'حذف',
                     onClick: () => {
-                        trashContact(contact.id)
+                        deleteContact(contact.id)
                         addToast(newToast)
                     }
                 },
@@ -61,6 +53,36 @@ function ContactItem({ contact }: { contact: Contact }) {
                 }
             })
     }
+
+    function onRestore() {
+        setIsOptionsOpen(false);
+        let newToast: Toast = {
+            id: generateUID(),
+            message: 'شخص بازیابی شد',
+            type: 'success'
+        }
+        openDialog(
+            'بازیابی شخص',
+            'آیا از بازیابی شخص اطمینان دارید؟',
+            {
+                ok:
+                {
+                    text:
+                        'بازیابی',
+                    onClick: () => {
+                        restoreContact(contact.id)
+                        addToast(newToast)
+                    }
+                },
+                cancel:
+                {
+                    text: 'انصراف',
+                    onClick: () => { }
+                }
+            })
+    }
+
+
 
     return (
         <li key={contact.id} className={styles.contact_item}>
@@ -85,27 +107,21 @@ function ContactItem({ contact }: { contact: Contact }) {
                     />
 
                     {isOptionsOpen && (
-                        <div className="z-50 absolute top-full left-0 mt-4 flex flex-col gap-y-2">
+                        <div className="z-50 absolute top-full whitespace-nowrap left-0 mt-4 flex flex-col gap-y-2">
+
                             <Button
-                                text='جزییات'
-                                icon={<Info className='size-4' />}
-                                color='gray'
+                                text='بازیابی'
+                                icon={<RotateCw className='size-4' />}
+                                color='success'
                                 size='small'
-                                onClick={toggleModal}
+                                onClick={onRestore}
                             />
                             <Button
-                                text='ویرایش'
-                                icon={<Pencil className='size-4' />}
-                                color='warning'
-                                size='small'
-                                onClick={toggleModal}
-                            />
-                            <Button
-                                text='حذف'
+                                text='حذف دائم'
                                 icon={<Trash className='size-4' />}
                                 color='danger'
                                 size='small'
-                                onClick={onTrash}
+                                onClick={onDelete}
                             />
 
 
@@ -115,10 +131,9 @@ function ContactItem({ contact }: { contact: Contact }) {
 
             </div>
 
-            {isEditContactModalOpen && (<EditContactModal onClose={toggleModal} contact={contact} />)}
         </li>
 
     );
 }
 
-export default ContactItem;
+export default TrashedContactItem;

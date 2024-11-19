@@ -32,7 +32,7 @@ function layout({ children }: { children: React.ReactNode }) {
                     </li>
 
                     {pathname.includes('/dashboard/events') && (
-                        <li className={`border-r-2 transition-all duration-300  text-base cursor-pointer ${(pathname === '/dashboard/events/trash' || pathname === '/dashboard/contacts/trash') ? 'border-indigo-800 text-indigo-800 bg-indigo-50' : 'hover:border-r-2 border-r-transparent text-gray-500  hover:border-r-indigo-800 hover:bg-indigo-50 hover:text-indigo-800'}`}>
+                        <li className={`border-r-2 transition-all duration-300  text-base cursor-pointer ${(pathname === '/dashboard/events/trash' || pathname === '/dashboard/events/contacts/trash') ? 'border-indigo-800 text-indigo-800 bg-indigo-50' : 'hover:border-r-2 border-r-transparent text-gray-500  hover:border-r-indigo-800 hover:bg-indigo-50 hover:text-indigo-800'}`}>
                             <Link className="w-full h-full flex flex-row items-center gap-x-2  px-5 py-3" href={pathname === '/dashboard/events' ? '/dashboard/events/trash' : '/dashboard/events/contacts/trash'}>
                                 <Trash className="size-5" />
                                 <span>سطل زباله</span>

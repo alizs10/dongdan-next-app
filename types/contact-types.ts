@@ -10,5 +10,7 @@ export type ContactState = {
     contacts: Contact[];
     addContact: (contact: Contact) => void;
     trashContact: (contactId: string) => void;
+    restoreContact: (contactId: string) => void;
+    deleteContact: (contactId: string) => void;
     updateContact: (contactId: string, updatedContact: Contact) => void;
 }

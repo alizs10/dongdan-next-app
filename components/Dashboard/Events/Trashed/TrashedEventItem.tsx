@@ -1,6 +1,6 @@
 import { Event } from '@/types/event-types';
 import styles from '../Events.module.css';
-import { BriefcaseBusiness, Cake, Coffee, Ellipsis, Info, Plane, RotateCcw, Trash, TreePalm, Utensils } from "lucide-react";
+import { BriefcaseBusiness, Cake, Coffee, Ellipsis, Info, Plane, RotateCw, Trash, TreePalm, Utensils } from "lucide-react";
 import Link from 'next/link';
 import moment from 'jalali-moment';
 import Button from '@/components/Common/Button';
@@ -137,7 +137,7 @@ function TrashedEventItem({ event }: { event: Event }) {
                         <div className="z-50 absolute top-full left-0 whitespace-nowrap mt-4 flex flex-col gap-y-2">
                             <Button
                                 text='بازیابی'
-                                icon={<RotateCcw className='size-4' />}
+                                icon={<RotateCw className='size-4' />}
                                 color='success'
                                 size='small'
                                 onClick={onRestore}
