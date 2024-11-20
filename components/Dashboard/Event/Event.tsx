@@ -20,6 +20,7 @@ import SettleHintsModal from "./SettleHintsModal";
 import GroupMembers from "./GroupMembers";
 import { Toast, useToastStore } from "@/store/toast-store";
 import NoGroupMembers from "./NoGroupMembers";
+import FiltersModal from "./FiltersModal";
 
 function Event() {
 
@@ -35,6 +36,7 @@ function Event() {
     const [isNewExpenseModalOpen, setIsNewExpenseModalOpen] = useState(false);
     const [isNewPersonModalOpen, setIsNewPersonModalOpen] = useState(false);
     const [isSettleHintsModalOpen, setIsSettleHintsModalOpen] = useState(false);
+    const [isFiltersModalOpen, setIsFiltersModalOpen] = useState(false);
 
     function openNewExpenseModal() {
         if (event?.group.length === 0 || event?.status === 'inactive') return
@@ -56,6 +58,10 @@ function Event() {
 
     function toggleSettleHintsModal() {
         setIsSettleHintsModalOpen(prev => !prev);
+    }
+
+    function toggleFiltersModal() {
+        setIsFiltersModalOpen(prev => !prev);
     }
 
     const getAllCosts = useCallback(() => {
@@ -459,10 +465,11 @@ function Event() {
                             <Button
                                 text="فیلتر"
                                 color="gray"
-                                onClick={() => { }}
+                                onClick={toggleFiltersModal}
                                 size="small"
                                 icon={<Filter className="size-4" />}
                             />
+                            {isFiltersModalOpen && <FiltersModal event={event} onClose={toggleFiltersModal} />}
                             {event.status === 'active' && event.deletedAt === null && (
                                 <Button
                                     text="ثبت هزینه/جابجایی پول"
