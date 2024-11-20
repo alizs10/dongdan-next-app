@@ -10,8 +10,6 @@ function ToastsContainer() {
 
     const { toasts } = useToastStore(state => state);
 
-    if (toasts.length === 0) return null;
-
     if (typeof window === 'object') {
 
         return createPortal(
