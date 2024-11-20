@@ -1,5 +1,5 @@
 import { useToastStore } from "@/store/toast-store";
-import { CircleAlert, CircleCheck, TriangleAlert, X } from "lucide-react";
+import { CircleAlert, CircleCheck, Info, TriangleAlert, X } from "lucide-react";
 import { useEffect } from "react";
 import { motion } from 'framer-motion';
 
@@ -35,7 +35,7 @@ function Toast({ toastId, scheme, text, i }: PropsTypes) {
     let schemeClasses = scheme === 'success' ? "bg-green-50 text-green-700 border-green-700" : scheme === 'danger' ? 'bg-red-50 text-red-600 border-red-600' : scheme === 'warning' ? 'bg-yellow-50 text-yellow-600 border-yellow-600' : scheme === 'accent' ? 'bg-indigo-50 text-indigo-700 border-indigo-700' : 'bg-white text-gray-500 border-gray-300';
 
 
-    let icon = scheme === 'success' ? <CircleCheck className="size-7" /> : scheme === 'danger' ? <TriangleAlert className="size-7" /> : scheme === 'warning' ? <CircleAlert className="size-7" /> : scheme === 'accent' ? <CircleCheck className="size-7" /> : <CircleCheck className="size-7" />;
+    let icon = scheme === 'success' ? <CircleCheck className="size-7" /> : scheme === 'danger' ? <TriangleAlert className="size-7" /> : scheme === 'warning' ? <CircleAlert className="size-7" /> : scheme === 'info' ? <Info className="size-7" /> : <CircleCheck className="size-7" />;
 
     return (
         <motion.div
