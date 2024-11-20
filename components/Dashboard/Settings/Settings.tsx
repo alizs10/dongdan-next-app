@@ -9,7 +9,7 @@ import { useSettingsStore } from '@/store/settings-store';
 
 function Settings() {
 
-    const { calcAccuracy, toggleCalcAccuracy } = useSettingsStore(state => state);
+    const { calcAccuracy, selfIncluding, toggleSelfIncluding, toggleCalcAccuracy } = useSettingsStore(state => state);
 
     return (
         <div className={styles.container}>
@@ -35,14 +35,17 @@ function Settings() {
 
 
             <div className="flex flex-col gap-y-2 p-5">
-                <h1 className='font-semibold text-base text-gray-500'>تنظیمات رویداد ها</h1>
+                <h1 className='text-base text-gray-500'>تنظیمات رویداد ها</h1>
 
 
                 <div className="mt-4 text-gray-700">
-
-                    <ToggleInput label='دقت محاسبات زیر 1000 تومان' name='calc_accuracy' value={calcAccuracy} handleChange={toggleCalcAccuracy} />
-
+                    <ToggleInput label='دقت محاسبات 1000 تومان باشد' name='calc_accuracy' value={calcAccuracy} handleChange={toggleCalcAccuracy} />
                 </div>
+                <div className="mt-4 text-gray-700">
+                    <ToggleInput label='لیست اشخال شامل شما باشد' name='calc_accuracy' value={selfIncluding} handleChange={toggleSelfIncluding} />
+                </div>
+
+
 
             </div>
 
