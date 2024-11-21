@@ -24,3 +24,38 @@ export function TomanPriceFormatter(price: string) {
 export function TomanPriceToNumber(price: string) {
     return Number(price.replaceAll(',', ''));
 }
+
+export const arraysHaveSameValues = (arr1: string[], arr2: string[]) => {
+    if (arr1.length !== arr2.length) return false;
+
+    const sortedArr1 = arr1.slice().sort();
+    const sortedArr2 = arr2.slice().sort();
+
+    return sortedArr1.every((value, index) => value === sortedArr2[index]);
+};
+
+
+export const isDateBetween = (date: Date, startDate: Date, endDate: Date) => {
+    const dateToCheck = new Date(date);
+    dateToCheck.setHours(23)
+    dateToCheck.setMinutes(59)
+    dateToCheck.setSeconds(59)
+    dateToCheck.setMilliseconds(59);
+
+    const start = new Date(startDate);
+    start.setHours(0o0)
+    start.setMinutes(0o0)
+    start.setSeconds(0o0)
+    start.setMilliseconds(0o1);
+
+    const end = new Date(endDate);
+    end.setHours(0o0)
+    end.setMinutes(0o0)
+    end.setSeconds(0o0)
+    end.setMilliseconds(0o1);
+
+    console.log('date is ', dateToCheck)
+    console.log('end date is ', end)
+
+    return dateToCheck >= start && dateToCheck < end;
+};

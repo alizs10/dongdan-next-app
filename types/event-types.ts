@@ -33,6 +33,33 @@ export type Transfer = {
 
 export type Expense = Expend | Transfer;
 
+export type ExpendFilters = {
+    type: 'expend'
+    dateRange: [Date, Date];
+    amountMin: string;
+    amountMax: string;
+    group: string[];
+    payer: string;
+}
+
+export type TransferFilters = {
+    type: 'transfer'
+    dateRange: [Date, Date];
+    amountMin: string;
+    amountMax: string;
+    from: string;
+    to: string;
+}
+
+export type AnyExpense = {
+    type: 'any'
+    dateRange: [Date, Date];
+    amountMin: string;
+    amountMax: string;
+}
+
+export type ExpenseFilters = ExpendFilters | TransferFilters | AnyExpense;
+
 export type SchemeType = 'gray' | 'blue' | 'red' | 'rose' | 'green' | 'orange' | 'yellow' | 'purple';
 
 export type Person = {
@@ -58,6 +85,10 @@ export type EventState = {
     deleteExpense: (eventId: string, expenseId: string) => void;
     deletePersonExpenses: (eventId: string, personId: string) => void;
     updatePersonInEvents: (personId: string, updatedPerson: Person) => void;
+    filteredExpenses: Expense[];
+    activeFilters: ExpenseFilters | null;
+    applyFilters: (filters: ExpenseFilters, eventId: string) => void;
+    clearFilters: () => void;
 };
 
 

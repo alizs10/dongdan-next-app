@@ -1,9 +1,9 @@
 'use client'
 
-import { CalendarCheck, CalendarClock, Ellipsis, Filter, Group, MoveRight, Pencil, Plus, Trash, User, UserPlus, Zap } from "lucide-react";
+import { CalendarCheck, CalendarClock, Filter, MoveRight, Plus, UserPlus, Zap } from "lucide-react";
 import styles from "./Event.module.css";
 import Link from "next/link";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import NewExpenseModal from "./NewExpenseModal";
 import NewPersonModal from "./NewPersonModal";
 import Expenses from "./Expenses/Expenses";
@@ -21,17 +21,27 @@ import GroupMembers from "./GroupMembers";
 import { Toast, useToastStore } from "@/store/toast-store";
 import NoGroupMembers from "./NoGroupMembers";
 import FiltersModal from "./FiltersModal";
+import ActiveFilters from "./ActiveFilters";
 
 function Event() {
 
     const addToast = useToastStore(state => state.addToast)
     const { event_id } = useParams()
-    const { events, activateEvent, deactivateEvent } = useEventStore(state => state);
+    const { events, activateEvent, deactivateEvent, activeFilters, filteredExpenses, applyFilters } = useEventStore(state => state);
     const event = useMemo(() => events.find(e => e.id === event_id), [events, event_id]);
 
     if (!event) return null;
 
     // const expensesCount = event.expenses.filter(e => e.deletedAt).length;
+
+    useEffect(() => {
+
+        console.log('expenses changed')
+        if (!!activeFilters) {
+            applyFilters(activeFilters, event.id)
+        }
+
+    }, [event, event.expenses, activeFilters])
 
     const [isNewExpenseModalOpen, setIsNewExpenseModalOpen] = useState(false);
     const [isNewPersonModalOpen, setIsNewPersonModalOpen] = useState(false);
@@ -271,7 +281,6 @@ function Event() {
         }
     }
 
-    console.log(event.deletedAt);
 
     return (
         <div className={styles.event_container}>
@@ -451,7 +460,7 @@ function Event() {
             </aside>
 
             <div className="flex flex-col order-first lg:order-none border-b border-gray-200 lg:border-b-0 col-span-3 min-h-[400px] lg:min-h-[600px]">
-                <div className={styles.header_container}>
+                <div className={styles.header_container + ' z-50'}>
 
                     <div className={styles.header_right}>
                         <Link href={event.deletedAt === null ? '/dashboard/events' : '/dashboard/events/trash'} className={styles.back_button}>
@@ -462,14 +471,16 @@ function Event() {
 
                     {event.group.length > 0 && (
                         <div className={styles.header_left}>
-                            <Button
-                                text="فیلتر"
-                                color="gray"
-                                onClick={toggleFiltersModal}
-                                size="small"
-                                icon={<Filter className="size-4" />}
-                            />
-                            {isFiltersModalOpen && <FiltersModal event={event} onClose={toggleFiltersModal} />}
+                            {event.expenses.length > 0 && (
+                                <Button
+                                    text="فیلتر"
+                                    color="gray"
+                                    onClick={toggleFiltersModal}
+                                    size="small"
+                                    icon={<Filter className="size-4" />}
+                                />
+                            )}
+                            {event.expenses.length > 0 && isFiltersModalOpen && <FiltersModal event={event} onClose={toggleFiltersModal} />}
                             {event.status === 'active' && event.deletedAt === null && (
                                 <Button
                                     text="ثبت هزینه/جابجایی پول"
@@ -481,11 +492,16 @@ function Event() {
                             )}
                         </div>
                     )}
+
+                    {activeFilters && (
+                        <ActiveFilters />
+                    )}
+
                 </div>
 
-                {event.expenses.length > 0 ? (
-                    <Expenses expenses={event.expenses} />
-                ) : (event.deletedAt !== null || event.status === 'inactive' || (event.status === 'active' && event.group.length > 0)) ? <NoExpenses isDeleted={event.deletedAt !== null} eventStatus={event.status} openNewExpenseModal={openNewExpenseModal} /> : (<NoGroupExpenses openNewPersonModal={openNewPersonModal} />)}
+                {(event.expenses.length > 0 && !activeFilters) || (activeFilters && filteredExpenses.length > 0) ? (
+                    <Expenses expenses={activeFilters ? filteredExpenses : event.expenses} />
+                ) : (event.deletedAt !== null || event.status === 'inactive' || (event.status === 'active' && event.group.length > 0)) ? <NoExpenses isFilterMode={!!activeFilters} isDeleted={event.deletedAt !== null} eventStatus={event.status} openNewExpenseModal={openNewExpenseModal} /> : (<NoGroupExpenses openNewPersonModal={openNewPersonModal} />)}
 
 
                 {isNewExpenseModalOpen && <NewExpenseModal event={event} onClose={closeNewExpenseModal} />}

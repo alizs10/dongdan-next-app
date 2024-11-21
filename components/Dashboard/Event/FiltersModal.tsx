@@ -1,49 +1,49 @@
 'use client'
 
+import { AnyExpense, Expend, ExpendFilters, ExpenseFilters, TransferFilters, type Event, type Expense, type SchemeType } from "@/types/event-types";
 import TextInput from "@/components/Common/Form/TextInput";
+
 import ModalHeader from "@/components/Common/ModalHeader";
 import ModalWrapper from "@/components/Common/ModalWrapper";
 import { zValidate } from "@/helpers/validation-helper";
-import { Ban, Check, Filter, Save, User } from "lucide-react";
+import { Filter } from "lucide-react";
 import { useState } from "react";
-import { createPortal, useFormStatus } from "react-dom";
-import { SCHEMES } from "@/database/data/schemes";
-import { useParams } from "next/navigation";
-import { personSchema } from "@/database/validations/person-validation";
+import { createPortal } from "react-dom";
 import { useEventStore } from "@/store/event-store";
 import { generateUID, TomanPriceFormatter } from "@/helpers/helpers";
-import { Event, SchemeType } from "@/types/event-types";
 import { Toast, useToastStore } from "@/store/toast-store";
 import Button from "@/components/Common/Button";
 import MemberSelector from "@/components/Common/Form/MemberSelector";
 import PRangeDatePicker from "@/components/Common/Form/PRangeDatePicker";
 
-type Filters = {
-    type: 'any' | 0 | 1;
-    group: string[];
-    payer: string;
-    from: string;
-    to: string;
-    amountMin: string;
-    amountMax: string;
-    dateRange: [Date, Date];
-}
-
 function FiltersModal({ onClose, event }: { onClose: () => void, event: Event }) {
 
     const addToast = useToastStore(state => state.addToast)
 
-    const initFilters: Filters = {
+    const initAnyFilters: AnyExpense = {
         type: 'any',
-        group: [],
-        payer: '',
-        from: '',
-        to: '',
         amountMin: '',
         amountMax: '',
         dateRange: [new Date(Date.now()), new Date(Date.now())]
     }
-    const [filters, setFilters] = useState(initFilters);
+    const initExpendFilters: ExpendFilters = {
+        type: 'expend',
+        amountMin: '',
+        amountMax: '',
+        payer: '',
+        group: [],
+        dateRange: [new Date(Date.now()), new Date(Date.now())]
+    }
+    const initTransferFilters: TransferFilters = {
+        type: 'transfer',
+        amountMin: '',
+        amountMax: '',
+        from: '',
+        to: '',
+        dateRange: [new Date(Date.now()), new Date(Date.now())]
+    }
+
+    const [filters, setFilters] = useState<ExpenseFilters>(initAnyFilters);
 
 
     const initFormErrors = {
@@ -58,28 +58,43 @@ function FiltersModal({ onClose, event }: { onClose: () => void, event: Event })
     }
     const [formErrors, setFormErrors] = useState(initFormErrors);
 
-    function selectType(type: 'any' | 0 | 1) {
-        setFilters(prev => ({ ...prev, type }))
+    function selectType(type: ExpenseFilters['type']) {
+
+        let newFiltersState = type === 'transfer' ? { ...initTransferFilters, type } :
+            type === 'expend' ? { ...initExpendFilters, type }
+                : { ...initAnyFilters, type }
+
+        setFilters(newFiltersState);
     }
 
     function toggleGroupMember(id: string) {
-        if (id === 'all') {
-            setFilters(prev => ({ ...prev, group: prev.group.length === event.group.length ? [] : event.group.map(m => m.id) }))
+
+        if (filters.type !== 'expend') return
+
+        if (id === 'all' && filters.type === 'expend') {
+            setFilters((prev) => ({ ...prev, group: (prev.type === 'expend' && prev.group.length === event.group.length) ? [] : event.group.map(m => m.id) }))
             return
         }
-        setFilters(prev => ({ ...prev, group: prev.group.includes(id) ? prev.group.filter(mId => mId !== id) : [...prev.group, id] }))
+
+        setFilters(prev => prev.type === 'expend' ? ({ ...prev, group: prev.group.includes(id) ? prev.group.filter(mId => mId !== id) : [...prev.group, id] }) : prev)
     }
 
     function togglePayer(id: string) {
-        setFilters(prev => ({ ...prev, payer: prev.payer === id ? '' : id }))
+        if (filters.type !== 'expend') return
+        setFilters(prev => prev.type === 'expend' ? ({ ...prev, payer: prev.payer === id ? '' : id }) : prev)
     }
+
     function toggleFrom(id: string) {
+        if (filters.type !== 'transfer') return
+
         if (id === filters.to) return
-        setFilters(prev => ({ ...prev, from: prev.from === id ? '' : id }))
+
+        setFilters(prev => prev.type === 'transfer' ? ({ ...prev, from: prev.from === id ? '' : id }) : prev)
     }
     function toggleTo(id: string) {
+        if (filters.type !== 'transfer') return
         if (id === filters.from) return
-        setFilters(prev => ({ ...prev, to: prev.to === id ? '' : id }))
+        setFilters(prev => prev.type === 'transfer' ? ({ ...prev, to: prev.to === id ? '' : id }) : prev)
     }
 
 
@@ -103,6 +118,23 @@ function FiltersModal({ onClose, event }: { onClose: () => void, event: Event })
 
     }
 
+    const { applyFilters } = useEventStore(state => state)
+
+    function handleFilterExpenses() {
+
+        let newToast: Toast = {
+            id: generateUID(),
+            message: `فیلترها با موفقیت اعمال شدند.`,
+            type: 'success',
+        }
+
+        applyFilters(filters, event.id);
+
+        addToast(newToast);
+        onClose();
+    }
+
+
     if (typeof window === "object") {
         return createPortal(
             <ModalWrapper onClose={onClose}>
@@ -116,8 +148,8 @@ function FiltersModal({ onClose, event }: { onClose: () => void, event: Event })
                             <span className={`text-base ${formErrors.type ? 'text-red-500' : 'text-indigo-900'} capitalize`}>نوع</span>
 
                             <div className="grid grid-cols-3 bg-gray-200 rounded-full">
-                                <span onClick={selectType.bind(null, 0)} className={`col-span-1 text-center text-sm rounded-full py-3 cursor-pointer ${filters.type === 0 ? 'bg-indigo-800 text-white' : 'text-gray-500 bg-gray-200 hover:bg-gray-300'} transition-all duration-300`}>هزینه</span>
-                                <span onClick={selectType.bind(null, 1)} className={`col-span-1 text-center text-sm rounded-full py-3 cursor-pointer ${filters.type === 1 ? 'bg-indigo-800 text-white' : 'text-gray-500 bg-gray-200 hover:bg-gray-300'} transition-all duration-300`}>جابجایی پول</span>
+                                <span onClick={selectType.bind(null, 'expend')} className={`col-span-1 text-center text-sm rounded-full py-3 cursor-pointer ${filters.type === 'expend' ? 'bg-indigo-800 text-white' : 'text-gray-500 bg-gray-200 hover:bg-gray-300'} transition-all duration-300`}>هزینه</span>
+                                <span onClick={selectType.bind(null, 'transfer')} className={`col-span-1 text-center text-sm rounded-full py-3 cursor-pointer ${filters.type === 'transfer' ? 'bg-indigo-800 text-white' : 'text-gray-500 bg-gray-200 hover:bg-gray-300'} transition-all duration-300`}>جابجایی پول</span>
                                 <span onClick={selectType.bind(null, 'any')} className={`col-span-1 text-center text-sm rounded-full py-3 cursor-pointer ${filters.type === 'any' ? 'bg-indigo-800 text-white' : 'text-gray-500 bg-gray-200 hover:bg-gray-300'} transition-all duration-300`}>هر دو</span>
                             </div>
                         </div>
@@ -133,11 +165,11 @@ function FiltersModal({ onClose, event }: { onClose: () => void, event: Event })
                             name="date"
                             values={filters.dateRange}
                             label="بازه تاریخی"
-                            onChange={(dates) => setFilters((prevState: Filters) => ({ ...prevState, dateRange: dates.map(date => date.toDate()) as [Date, Date] }))}
+                            onChange={(dates) => setFilters((prevState: ExpenseFilters) => ({ ...prevState, dateRange: dates.map(date => date.toDate()) as [Date, Date] }))}
                             error={formErrors.dateRange}
                         />
 
-                        {filters.type === 0 && (
+                        {filters.type === 'expend' && (
                             <>
                                 <MemberSelector
                                     label="کی پرداخت کرده؟"
@@ -157,7 +189,7 @@ function FiltersModal({ onClose, event }: { onClose: () => void, event: Event })
                             </>
                         )}
 
-                        {filters.type === 1 && (
+                        {filters.type === 'transfer' && (
                             <>
                                 <MemberSelector
                                     label="مبداء"
@@ -187,8 +219,8 @@ function FiltersModal({ onClose, event }: { onClose: () => void, event: Event })
                     <div className="p-5 flex justify-end">
                         <Button
                             text="فیلتر کن"
-                            icon={<Check className="size-5" />}
-                            onClick={() => { }}
+                            icon={<Filter className="size-5" />}
+                            onClick={handleFilterExpenses}
                             size="medium"
                             color="accent"
                             type="button"

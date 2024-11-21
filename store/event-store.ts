@@ -1,4 +1,5 @@
-import { Event, EventState } from "@/types/event-types";
+import { arraysHaveSameValues, isDateBetween, TomanPriceToNumber } from "@/helpers/helpers";
+import { Event, EventState, Expense } from "@/types/event-types";
 import exp from "constants";
 import { create } from "zustand";
 
@@ -116,5 +117,77 @@ export const useEventStore = create<EventState>((set) => ({
         })
 
         return { events: eventsIns }
-    })
+    }),
+
+
+    // filters
+
+    filteredExpenses: [],
+    activeFilters: null,
+
+    applyFilters: (filters, eventId) => set((state) => {
+
+        const event = state.events.find(e => e.id === eventId);
+        if (!event) return { filteredExpenses: [], activeFilters: null };
+
+        let results: Event['expenses'] = filters.type === 'any' ? [...event.expenses] : event.expenses.filter(exp => filters.type === exp.type);
+
+        // 1. amount filter
+        results = results.filter(exp => {
+
+            const amount = TomanPriceToNumber(exp.amount.toString());
+
+            const amountMin = TomanPriceToNumber(filters.amountMin);
+            const amountMax = TomanPriceToNumber(filters.amountMax);
+
+            console.log('amount is: ', amount)
+            console.log('amount min is: ', amountMin)
+            console.log('amount max is: ', amountMax)
+
+            if (filters.amountMin.length > 0 && filters.amountMax.length > 0 && amount >= amountMin && amount < amountMax) return true;
+
+            return false;
+        })
+
+        // 2. date filter
+        results = results.filter(exp => {
+            const startDate = filters.dateRange[0];
+            const endDate = filters.dateRange[1];
+
+            return isDateBetween(exp.date, startDate, endDate);
+        })
+
+
+        // expend
+        // 1. payer filter
+        if (filters.type === 'expend' && filters?.payer.length > 0) {
+            // activeFilters.payer = filters.payer;
+            results = results.filter((exp) => (exp.type === 'expend' && exp.payer === filters.payer));
+        }
+
+        // 2. group filter
+        if (filters.type === 'expend' && filters?.group.length > 0) {
+            // activeFilters.group = filters.group;
+            results = results.filter((exp) => (exp.type === 'expend' && arraysHaveSameValues(exp.group, filters.group)));
+        }
+
+
+        // transfer
+        // 1. from filter
+        if (filters.type === 'transfer' && filters?.from.length > 0) {
+            // activeFilters.from = filters.from;
+            results = results.filter((exp) => (exp.type === 'transfer' && exp.from === filters.from));
+        }
+
+        // 2. to filter
+        if (filters.type === 'transfer' && filters?.to.length > 0) {
+            // activeFilters.to = filters.to;
+            results = results.filter((exp) => (exp.type === 'transfer' && exp.to === filters.to));
+        }
+
+
+        return { filteredExpenses: results, activeFilters: filters }
+    }),
+    clearFilters: () => set((state) => ({ filteredExpenses: [], activeFilters: null })),
+
 }));
