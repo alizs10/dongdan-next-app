@@ -7,7 +7,7 @@ import ModalHeader from "@/components/Common/ModalHeader";
 import ModalWrapper from "@/components/Common/ModalWrapper";
 import { zValidate } from "@/helpers/validation-helper";
 import { Filter } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { useEventStore } from "@/store/event-store";
 import { generateUID, TomanPriceFormatter } from "@/helpers/helpers";
@@ -15,16 +15,21 @@ import { Toast, useToastStore } from "@/store/toast-store";
 import Button from "@/components/Common/Button";
 import MemberSelector from "@/components/Common/Form/MemberSelector";
 import PRangeDatePicker from "@/components/Common/Form/PRangeDatePicker";
+import { anyFilterSchema, expendFilterSchema, transferFilterSchema } from "@/database/validations/filters-validation";
 
 function FiltersModal({ onClose, event }: { onClose: () => void, event: Event }) {
 
     const addToast = useToastStore(state => state.addToast)
 
+
+    let tommorowDate = new Date();
+    tommorowDate.setDate(tommorowDate.getDate() + 1);
+
     const initAnyFilters: AnyExpense = {
         type: 'any',
         amountMin: '',
         amountMax: '',
-        dateRange: [new Date(Date.now()), new Date(Date.now())]
+        dateRange: [new Date(), tommorowDate]
     }
     const initExpendFilters: ExpendFilters = {
         type: 'expend',
@@ -32,7 +37,7 @@ function FiltersModal({ onClose, event }: { onClose: () => void, event: Event })
         amountMax: '',
         payer: '',
         group: [],
-        dateRange: [new Date(Date.now()), new Date(Date.now())]
+        dateRange: [new Date(), tommorowDate]
     }
     const initTransferFilters: TransferFilters = {
         type: 'transfer',
@@ -40,7 +45,7 @@ function FiltersModal({ onClose, event }: { onClose: () => void, event: Event })
         amountMax: '',
         from: '',
         to: '',
-        dateRange: [new Date(Date.now()), new Date(Date.now())]
+        dateRange: [new Date(), tommorowDate]
     }
 
     const [filters, setFilters] = useState<ExpenseFilters>(initAnyFilters);
@@ -57,6 +62,10 @@ function FiltersModal({ onClose, event }: { onClose: () => void, event: Event })
         dateRange: ''
     }
     const [formErrors, setFormErrors] = useState(initFormErrors);
+
+    useEffect(() => {
+        setFormErrors(initFormErrors)
+    }, [filters.type])
 
     function selectType(type: ExpenseFilters['type']) {
 
@@ -121,6 +130,26 @@ function FiltersModal({ onClose, event }: { onClose: () => void, event: Event })
     const { applyFilters } = useEventStore(state => state)
 
     function handleFilterExpenses() {
+
+        let validationSchema = filters.type === 'any' ? anyFilterSchema : filters.type === 'expend' ? expendFilterSchema : transferFilterSchema;
+
+        const { errors, hasError } = zValidate(validationSchema, filters);
+
+        if (hasError) {
+
+            let validationToast: Toast = {
+                id: generateUID(),
+                message: `فرم فیلتر ها نامعتبر است.`,
+                type: 'danger',
+            }
+
+
+            setFormErrors(errors);
+            addToast(validationToast);
+            return;
+        }
+        setFormErrors(initFormErrors);
+
 
         let newToast: Toast = {
             id: generateUID(),

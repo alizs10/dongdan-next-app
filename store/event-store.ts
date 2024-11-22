@@ -140,10 +140,6 @@ export const useEventStore = create<EventState>((set) => ({
             const amountMin = TomanPriceToNumber(filters.amountMin);
             const amountMax = TomanPriceToNumber(filters.amountMax);
 
-            console.log('amount is: ', amount)
-            console.log('amount min is: ', amountMin)
-            console.log('amount max is: ', amountMax)
-
             if (filters.amountMin.length > 0 && filters.amountMax.length > 0 && amount >= amountMin && amount < amountMax) return true;
 
             return false;
