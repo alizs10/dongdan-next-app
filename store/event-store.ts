@@ -1,6 +1,6 @@
 import { arraysHaveSameValues, isDateBetween, TomanPriceToNumber } from "@/helpers/helpers";
 import { Event, EventState, Expense } from "@/types/event-types";
-import exp from "constants";
+// import { batch } from 'zustand/middleware';
 import { create } from "zustand";
 
 var initEvents: Event[] = [
@@ -83,29 +83,6 @@ export const useEventStore = create<EventState>((set) => ({
     addExpense: (eventId, expense) => set((state) => ({ events: state.events.map(e => e.id === eventId ? { ...e, expenses: [...e.expenses, expense] } : e) })),
     deleteExpense: (eventId, expenseId) => set((state) => ({ events: state.events.map(e => e.id === eventId ? { ...e, expenses: e.expenses.filter(expense => expense.id !== expenseId) } : e) })),
     updateExpense: (eventId, expenseId, updatedExpense) => set((state) => ({ events: state.events.map(e => e.id === eventId ? { ...e, expenses: e.expenses.map(expense => expense.id === expenseId ? { ...expense, ...updatedExpense, updatedAt: new Date(Date.now()) } : expense), updatedAt: new Date(Date.now()) } : e) })),
-
-    deletePersonExpenses: (eventId, personId) => set((state) => {
-        let eventsIns = [...state.events];
-        let event = eventsIns.find(e => e.id === eventId);
-        if (!event) return { events: eventsIns };
-
-        let expenses = event.expenses;
-        let deletableExpensesIds: string[] = []
-        expenses.forEach(expense => {
-            if (expense.type === 'transfer' && (expense.from === personId || expense.to === personId)) {
-                deletableExpensesIds.push(expense.id);
-            } else if (expense.type === 'expend' && expense.payer === personId) {
-                deletableExpensesIds.push(expense.id);
-            } else if (expense.type === 'expend' && expense.payer !== personId && expense.group.includes(personId)) {
-                expense.group = expense.group.filter(p => p !== personId);
-            }
-        });
-
-        eventsIns = eventsIns.map(e => e.id === eventId ? { ...e, expenses: e.expenses.filter(expense => !deletableExpensesIds.includes(expense.id)) } : e);
-        // expenses = expenses.filter(expense => !deletableExpensesIds.includes(expense.id));
-        return { events: eventsIns }
-    }),
-
     updatePersonInEvents: (personId, updatedPerson) => set((state) => {
         let eventsIns = [...state.events];
 
@@ -119,10 +96,36 @@ export const useEventStore = create<EventState>((set) => ({
 
         return { events: eventsIns }
     }),
+    deleteEventMemberWithExpenses: (eventId, personId) => set((state) => {
 
+        //  delete all expenses of person
+        let eventsIns = [...state.events];
+        let eventIndex = eventsIns.findIndex(e => e.id === eventId);
+        if (eventIndex === -1) return { events: eventsIns };
+
+
+        let event = eventsIns[eventIndex];
+        let expenses = event.expenses;
+        let deletableExpensesIds: string[] = []
+        expenses.forEach(expense => {
+            if (expense.type === 'transfer' && (expense.from === personId || expense.to === personId)) {
+                deletableExpensesIds.push(expense.id);
+            } else if (expense.type === 'expend' && expense.payer === personId) {
+                deletableExpensesIds.push(expense.id);
+            } else if (expense.type === 'expend' && expense.payer !== personId && expense.group.includes(personId)) {
+                expense.group = expense.group.filter(p => p !== personId);
+            }
+        });
+
+        event.expenses = expenses.filter(expense => !deletableExpensesIds.includes(expense.id));
+
+        // delete person from event group
+        event.group = event.group.filter(p => p.id !== personId);
+
+        return { events: eventsIns }
+    }),
 
     // filters
-
     filteredExpenses: [],
     activeFilters: null,
 

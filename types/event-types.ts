@@ -84,12 +84,12 @@ export type EventState = {
     addExpense: (eventId: string, expense: Expense) => void;
     updateExpense: (eventId: string, expenseId: string, updatedExpense: Expense) => void;
     deleteExpense: (eventId: string, expenseId: string) => void;
-    deletePersonExpenses: (eventId: string, personId: string) => void;
     updatePersonInEvents: (personId: string, updatedPerson: Omit<Person, "eventId">) => void;
     filteredExpenses: Expense[];
     activeFilters: ExpenseFilters | null;
     applyFilters: (filters: ExpenseFilters, eventId: string) => void;
     clearFilters: () => void;
+    deleteEventMemberWithExpenses: (eventId: string, personId: string) => void;
 };
 
 

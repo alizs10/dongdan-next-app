@@ -14,7 +14,7 @@ function Member({ person, isEventDeleted }: { person: Person, isEventDeleted: bo
 
     const addToast = useToastStore(state => state.addToast)
     const openDialog = useDialogStore(state => state.openDialog)
-    const { deletePerson, deletePersonExpenses } = useEventStore(state => state);
+    const { deleteEventMemberWithExpenses } = useEventStore(state => state);
     const { event_id } = useParams()
 
     const [isOptionsOpen, setIsOptionsOpen] = useState(false);
@@ -35,8 +35,8 @@ function Member({ person, isEventDeleted }: { person: Person, isEventDeleted: bo
 
     function deletePersonWithExpenses() {
         if (typeof event_id !== 'string' || isEventDeleted) return;
-        deletePersonExpenses(event_id, person.id);
-        deletePerson(event_id, person.id);
+        // deletePersonExpenses(event_id, person.id);
+        deleteEventMemberWithExpenses(event_id, person.id);
     }
 
 

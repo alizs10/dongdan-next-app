@@ -27,7 +27,7 @@ type FormInputs = {
 function EditEventModal({ onClose, event }: { onClose: () => void, event: Event }) {
 
     const addToast = useToastStore(state => state.addToast)
-    const updateEvent = useEventStore(state => state.updateEvent);
+    const { updateEvent } = useEventStore(state => state);
     let contacts = useContactStore(state => state.contacts)
     contacts = contacts.filter(c => c.deletedAt === null);
 
@@ -99,14 +99,60 @@ function EditEventModal({ onClose, event }: { onClose: () => void, event: Event 
 
     function formActionHandler(formData: FormData) {
 
+        // prev group: include contacts and not contacts
+        let prevGroup = [...event.group]
+
+        // input group: include contacts only
+        let addedContactsToGroup: Event['group'] = [];
+        let deletedContactsFromGroup: Event['group'] = [];
+        let nonContactsOfGroup: Event['group'] = [];
+
+        // non contacts of group
+        event.group.forEach(member => {
+            if (!contacts.some(c => c.id === member.id)) {
+                nonContactsOfGroup.push(member)
+            }
+        })
+
+        // added contacts to group
+        inputs.group.forEach(pID => {
+            let contact = contacts.find(c => c.id === pID);
+            if (contact) {
+                addedContactsToGroup.push({ id: contact.id, name: contact.name, scheme: contact.scheme, eventId: event.id })
+            }
+        })
+
+        let updatedGroup: Event['group'] = [...nonContactsOfGroup, ...addedContactsToGroup];
+
+        // deleted contacts from group
+        prevGroup.forEach(member => {
+            if (!updatedGroup.some(m => m.id === member.id)) {
+                deletedContactsFromGroup.push(member)
+            }
+        })
+
         let updatedEvent: Event = {
             ...event,
             ...inputs,
-            group: [...event.group, ...contacts.filter(c => inputs.group.includes(c.id)).map(m => ({ id: m.id, name: m.name, scheme: m.scheme, eventId: event.id }))],
+            group: updatedGroup,
         }
 
-        console.log("hello")
-        console.log(updatedEvent.group)
+        let deletedContactsFromGroupIDs = deletedContactsFromGroup.map(p => p.id);
+
+        // delete expenses of deleted members
+        let deletableExpenses: string[] = [];
+
+        event.expenses.forEach(expense => {
+            if (expense.type === 'transfer' && (deletedContactsFromGroupIDs.includes(expense.from) || deletedContactsFromGroupIDs.includes(expense.to))) {
+                deletableExpenses.push(expense.id);
+            } else if (expense.type === 'expend' && deletedContactsFromGroupIDs.includes(expense.payer)) {
+                deletableExpenses.push(expense.id);
+            } else if (expense.type === 'expend' && !deletedContactsFromGroupIDs.includes(expense.payer) && expense.group.some(p => deletedContactsFromGroupIDs.includes(p))) {
+                expense.group = expense.group.filter(p => !deletedContactsFromGroupIDs.includes(p));
+            }
+        })
+
+        updatedEvent.expenses = updatedEvent.expenses.filter(expense => !deletableExpenses.includes(expense.id))
 
         let { hasError, errors } = zValidate(eventSchema, updatedEvent);
 
@@ -124,14 +170,17 @@ function EditEventModal({ onClose, event }: { onClose: () => void, event: Event 
             return;
         }
 
-        setFormErrors(initFormErrors);
 
+        console.log('deletedContactsFromGroup: ', deletedContactsFromGroup);
+
+        setFormErrors(initFormErrors);
 
         let newToast: Toast = {
             id: generateUID(),
             message: 'رویداد ویرایش شد',
             type: 'success'
         }
+
         updateEvent(event.id, updatedEvent);
         addToast(newToast)
         onClose();

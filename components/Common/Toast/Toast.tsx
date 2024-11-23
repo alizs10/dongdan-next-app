@@ -13,8 +13,6 @@ type PropsTypes = {
 
 function Toast({ toastId, scheme, text, i }: PropsTypes) {
 
-
-    console.log(toastId, i)
     const removeToast = useToastStore(state => state.removeToast);
 
     useEffect(() => {
@@ -28,8 +26,6 @@ function Toast({ toastId, scheme, text, i }: PropsTypes) {
         }
 
     }, [toastId])
-
-    console.log('zIndex', 1003 - i)
 
 
     let schemeClasses = scheme === 'success' ? "bg-green-50 text-green-700 border-green-700" : scheme === 'danger' ? 'bg-red-50 text-red-600 border-red-600' : scheme === 'warning' ? 'bg-yellow-50 text-yellow-600 border-yellow-600' : scheme === 'accent' ? 'bg-indigo-50 text-indigo-700 border-indigo-700' : 'bg-white text-gray-500 border-gray-300';

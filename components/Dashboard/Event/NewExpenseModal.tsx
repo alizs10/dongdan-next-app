@@ -366,7 +366,8 @@ function NewExpenseModal({ onClose, event }: { onClose: () => void, event: Event
                                     name={"date"}
                                     value={inputs2.date}
                                     error={formErrors2.date}
-                                    onChange={(date) => setInputs2((prev: FormInputs2) => ({ ...prev, date: date.toDate() }))}
+                                    onChange={handleChangeDate}
+                                    maxDate={new Date()}
                                 />
 
                                 <span className={`text-base ${formErrors2.from ? 'text-red-500' : 'text-indigo-900'} capitalize`}>مبداء</span>

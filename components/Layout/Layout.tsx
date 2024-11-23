@@ -6,9 +6,6 @@ import Header from "./Header";
 
 function Layout({ children }: { children: React.ReactNode }) {
 
-    // const { toasts } = useToastStore(state => state);
-
-    // if (toasts.length === 0) return null;
 
 
     return (
@@ -22,9 +19,7 @@ function Layout({ children }: { children: React.ReactNode }) {
             <Footer />
 
             <DialogContainer />
-            <AnimatePresence mode="wait">
-                <ToastsContainer />
-            </AnimatePresence>
+            <ToastsContainer />
         </section>
     );
 }
