@@ -13,6 +13,7 @@ import { SchemeType } from "@/types/event-types";
 import { useContactStore } from "@/store/contact-store";
 import { contactSchema } from "@/database/validations/contact-validation";
 import { Toast, useToastStore } from "@/store/toast-store";
+import { Contact } from "@/types/contact-types";
 
 type FormInputs = {
     name: string;
@@ -48,16 +49,7 @@ function NewContactModal({ onClose }: { onClose: () => void }) {
 
     function formActionHandler(formData: FormData) {
 
-        let { hasError, errors } = zValidate(contactSchema, inputs);
-
-        if (hasError) {
-            setFormErrors(errors);
-            return;
-        }
-
-        setFormErrors(initFormErrors);
-
-        let newContact = {
+        let newContact: Contact = {
             id: generateUID(),
             ...inputs,
             createdAt: new Date(),
@@ -65,7 +57,24 @@ function NewContactModal({ onClose }: { onClose: () => void }) {
             deletedAt: null,
         }
 
-        addContact(newContact);
+        let { hasError, errors } = zValidate(contactSchema, newContact);
+
+        if (hasError) {
+
+            let validationToast: Toast = {
+                id: generateUID(),
+                message: `فرم نامعتبر است.`,
+                type: 'danger',
+            }
+
+            addToast(validationToast);
+
+            setFormErrors(errors);
+            return;
+        }
+
+        setFormErrors(initFormErrors);
+
 
         let newToast: Toast = {
             id: generateUID(),
@@ -73,6 +82,7 @@ function NewContactModal({ onClose }: { onClose: () => void }) {
             type: 'success'
         }
 
+        addContact(newContact);
         addToast(newToast)
 
         onClose();

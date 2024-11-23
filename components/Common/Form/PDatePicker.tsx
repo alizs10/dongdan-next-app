@@ -13,6 +13,7 @@ type PropsTypes = {
     error?: string,
     onChange: (dateObj: DateObject) => void,
     inpProps?: React.InputHTMLAttributes<HTMLInputElement>,
+    maxDate?: Date,
 }
 
 type CustomInputProps = CustomComponentProps & {
@@ -31,7 +32,7 @@ function CustomInput({ onFocus, value, onChange, error }: CustomInputProps) {
     />
 }
 
-function PDatePicker({ name, label, value, onChange, error, hint }: PropsTypes) {
+function PDatePicker({ name, label, value, onChange, error, hint, maxDate }: PropsTypes) {
 
 
     const datePickerRef = useClickOutside<DatePickerRef>(() => datePickerRef.current?.closeCalendar())
@@ -50,6 +51,7 @@ function PDatePicker({ name, label, value, onChange, error, hint }: PropsTypes) 
                 calendarPosition="bottom-right"
                 ref={datePickerRef}
                 name={name}
+                maxDate={maxDate}
             />
 
             {error && (

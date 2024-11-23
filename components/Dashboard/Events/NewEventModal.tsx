@@ -10,11 +10,11 @@ import { zValidate } from "@/helpers/validation-helper";
 import { useContactStore } from "@/store/contact-store";
 import { useEventStore } from "@/store/event-store";
 import { Toast, useToastStore } from "@/store/toast-store";
-import { Person } from "@/types/event-types";
+import { Event } from "@/types/event-types";
 import { Ban, BriefcaseBusiness, Cake, Coffee, Plane, Save, TreePalm, User, Utensils } from "lucide-react";
-import { useParams } from "next/navigation";
 import { useState } from "react";
 import { createPortal, useFormStatus } from "react-dom";
+import { DateObject } from "react-multi-date-picker";
 
 type FormInputs = {
     name: string;
@@ -46,6 +46,18 @@ function NewEventModal({ onClose }: { onClose: () => void }) {
         group: ''
     }
     const [formErrors, setFormErrors] = useState(initFormErrors);
+
+
+    function handleChangeDate(date: DateObject) {
+
+        let selectedDate = new Date(date.toDate());
+        selectedDate.setHours(0o0)
+        selectedDate.setMinutes(0o0)
+        selectedDate.setSeconds(0o0)
+        selectedDate.setMilliseconds(1)
+
+        setInputs((prev: FormInputs) => ({ ...prev, date: selectedDate }))
+    }
 
     function selectLabelHandler(label: string) {
         setInputs(prev => ({ ...prev, label }))
@@ -81,25 +93,38 @@ function NewEventModal({ onClose }: { onClose: () => void }) {
 
     function formActionHandler(formData: FormData) {
 
-        let { hasError, errors } = zValidate(eventSchema, inputs);
+        let eventId = generateUID();
 
-        if (hasError) {
-            console.log(errors)
-            setFormErrors(errors);
-            return;
-        }
-
-        setFormErrors(initFormErrors);
-        let newEvent = {
+        let newEvent: Event = {
             ...inputs,
-            id: generateUID(),
-            group: contacts.filter(c => inputs.group.includes(c.id)),
+            id: eventId,
+            group: contacts.filter(c => inputs.group.includes(c.id)).map(m => ({ ...m, eventId: eventId })),
             expenses: [],
             status: 'active' as const,
             createdAt: new Date(Date.now()),
             updatedAt: new Date(Date.now()),
             deletedAt: null,
         }
+
+        let { hasError, errors } = zValidate(eventSchema, newEvent);
+
+        if (hasError) {
+            console.log(errors)
+            let validationToast: Toast = {
+                id: generateUID(),
+                message: `فرم نامعتبر است.`,
+                type: 'danger',
+            }
+
+
+            addToast(validationToast);
+
+            setFormErrors(errors);
+            return;
+        }
+
+        setFormErrors(initFormErrors);
+
 
 
         let newToast: Toast = {
@@ -129,7 +154,8 @@ function NewEventModal({ onClose }: { onClose: () => void }) {
                             name={"date"}
                             value={inputs.date}
                             error={formErrors.date}
-                            onChange={(date) => setInputs((prev: FormInputs) => ({ ...prev, date: date.toDate() }))}
+                            onChange={handleChangeDate}
+                            maxDate={new Date()}
                         />
 
                         <div className="flex flex-col gap-y-2">

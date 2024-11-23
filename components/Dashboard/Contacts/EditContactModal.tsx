@@ -10,7 +10,7 @@ import { createPortal, useFormStatus } from "react-dom";
 import { SCHEMES } from "@/database/data/schemes";
 import { useParams } from "next/navigation";
 import { contactSchema } from "@/database/validations/contact-validation";
-import { SchemeType } from "@/types/event-types";
+import { Person, SchemeType } from "@/types/event-types";
 import Button from "@/components/Common/Button";
 import { useContactStore } from "@/store/contact-store";
 import { Contact } from "@/types/contact-types";
@@ -54,28 +54,38 @@ function EditContactModal({ onClose, contact }: { onClose: () => void, contact: 
 
     function formActionHandler(formData: FormData) {
 
-        let { hasError, errors } = zValidate(contactSchema, inputs);
+        let updatedContact: Contact = {
+            ...contact,
+            ...inputs
+        }
+
+        let { hasError, errors } = zValidate(contactSchema, updatedContact);
 
         if (hasError) {
+
+            let validationToast: Toast = {
+                id: generateUID(),
+                message: `فرم نامعتبر است.`,
+                type: 'danger',
+            }
+
+            addToast(validationToast);
+
             setFormErrors(errors);
             return;
         }
 
         setFormErrors(initFormErrors);
 
-        let updatedContact = {
-            ...contact,
-            ...inputs
-        }
-
-        let updatedPerson = {
+        let updatedPerson: Omit<Person, 'eventId'> = {
             id: updatedContact.id,
             name: updatedContact.name,
-            scheme: updatedContact.scheme
+            scheme: updatedContact.scheme,
         }
 
         updatePersonInEvents(updatedPerson.id, updatedPerson);
         updateContact(contact.id, updatedContact);
+
         let newToast: Toast = {
             id: generateUID(),
             message: 'شخص ویرایش شد',

@@ -55,19 +55,29 @@ function EditPersonModal({ onClose, person }: { onClose: () => void, person: Per
     function formActionHandler(formData: FormData) {
 
         if (typeof event_id !== 'string') return;
-        let { hasError, errors } = zValidate(personSchema, inputs);
-
-        if (hasError) {
-            setFormErrors(errors);
-            return;
-        }
-
-        setFormErrors(initFormErrors);
 
         let updatedPerson = {
             ...person,
             ...inputs
         }
+
+        let { hasError, errors } = zValidate(personSchema, updatedPerson);
+
+        if (hasError) {
+            let validationToast: Toast = {
+                id: generateUID(),
+                message: `فرم نامعتبر است.`,
+                type: 'danger',
+            }
+
+
+            addToast(validationToast);
+
+            setFormErrors(errors);
+            return;
+        }
+
+        setFormErrors(initFormErrors);
 
 
         let newToast: Toast = {

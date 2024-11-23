@@ -33,7 +33,7 @@ export type Transfer = {
 
 export type Expense = Expend | Transfer;
 
-export type ExpendFilters = {
+export type ExpendFilter = {
     type: 'expend'
     dateRange: [Date, Date];
     amountMin: string;
@@ -42,7 +42,7 @@ export type ExpendFilters = {
     payer: string;
 }
 
-export type TransferFilters = {
+export type TransferFilter = {
     type: 'transfer'
     dateRange: [Date, Date];
     amountMin: string;
@@ -58,7 +58,7 @@ export type AnyExpense = {
     amountMax: string;
 }
 
-export type ExpenseFilters = ExpendFilters | TransferFilters | AnyExpense;
+export type ExpenseFilters = ExpendFilter | TransferFilter | AnyExpense;
 
 export type SchemeType = 'gray' | 'blue' | 'red' | 'rose' | 'green' | 'orange' | 'yellow' | 'purple';
 
@@ -66,6 +66,7 @@ export type Person = {
     id: string;
     name: string;
     scheme: SchemeType;
+    eventId: string;
 }
 
 export type EventState = {
@@ -84,7 +85,7 @@ export type EventState = {
     updateExpense: (eventId: string, expenseId: string, updatedExpense: Expense) => void;
     deleteExpense: (eventId: string, expenseId: string) => void;
     deletePersonExpenses: (eventId: string, personId: string) => void;
-    updatePersonInEvents: (personId: string, updatedPerson: Person) => void;
+    updatePersonInEvents: (personId: string, updatedPerson: Omit<Person, "eventId">) => void;
     filteredExpenses: Expense[];
     activeFilters: ExpenseFilters | null;
     applyFilters: (filters: ExpenseFilters, eventId: string) => void;

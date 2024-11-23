@@ -15,6 +15,7 @@ import { Event } from "@/types/event-types";
 import { Ban, BriefcaseBusiness, Cake, Coffee, Pencil, Plane, TreePalm, User, Utensils } from "lucide-react";
 import { useState } from "react";
 import { createPortal, useFormStatus } from "react-dom";
+import { DateObject } from "react-multi-date-picker";
 
 type FormInputs = {
     name: string;
@@ -49,6 +50,18 @@ function EditEventModal({ onClose, event }: { onClose: () => void, event: Event 
         group: ''
     }
     const [formErrors, setFormErrors] = useState(initFormErrors);
+
+
+    function handleChangeDate(date: DateObject) {
+
+        let selectedDate = new Date(date.toDate());
+        selectedDate.setHours(0o0)
+        selectedDate.setMinutes(0o0)
+        selectedDate.setSeconds(0o0)
+        selectedDate.setMilliseconds(1)
+
+        setInputs((prev: FormInputs) => ({ ...prev, date: selectedDate }))
+    }
 
     function selectLabelHandler(label: string) {
         setInputs(prev => ({ ...prev, label }))
@@ -86,20 +99,32 @@ function EditEventModal({ onClose, event }: { onClose: () => void, event: Event 
 
     function formActionHandler(formData: FormData) {
 
-        let { hasError, errors } = zValidate(eventSchema, inputs);
+        let updatedEvent: Event = {
+            ...event,
+            ...inputs,
+            group: [...event.group, ...contacts.filter(c => inputs.group.includes(c.id)).map(m => ({ id: m.id, name: m.name, scheme: m.scheme, eventId: event.id }))],
+        }
+
+        console.log("hello")
+        console.log(updatedEvent.group)
+
+        let { hasError, errors } = zValidate(eventSchema, updatedEvent);
 
         if (hasError) {
+            let validationToast: Toast = {
+                id: generateUID(),
+                message: `فرم نامعتبر است.`,
+                type: 'danger',
+            }
+
+            addToast(validationToast);
+
             console.log(errors)
             setFormErrors(errors);
             return;
         }
 
         setFormErrors(initFormErrors);
-        let updatedEvent = {
-            ...event,
-            ...inputs,
-            group: contacts.filter(c => inputs.group.includes(c.id)),
-        }
 
 
         let newToast: Toast = {
@@ -127,7 +152,8 @@ function EditEventModal({ onClose, event }: { onClose: () => void, event: Event 
                             name={"date"}
                             value={inputs.date}
                             error={formErrors.date}
-                            onChange={(date) => setInputs((prev: FormInputs) => ({ ...prev, date: date.toDate() }))}
+                            onChange={handleChangeDate}
+                            maxDate={new Date()}
                         />
 
                         <div className="flex flex-col gap-y-2">

@@ -1,6 +1,6 @@
 import { Person } from "./event-types"
 
-export type Contact = Person & {
+export type Contact = Omit<Person, 'eventId'> & {
     createdAt: Date,
     updatedAt: Date,
     deletedAt: Date | null,

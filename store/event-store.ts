@@ -111,8 +111,9 @@ export const useEventStore = create<EventState>((set) => ({
 
         eventsIns.forEach(event => {
             let personIndex = event.group.findIndex(p => p.id === personId)
+            let person = { ...updatedPerson, eventId: event.id }
             if (personIndex !== -1) {
-                event.group[personIndex] = { ...event.group[personIndex], ...updatedPerson };
+                event.group[personIndex] = { ...event.group[personIndex], ...person };
             }
         })
 

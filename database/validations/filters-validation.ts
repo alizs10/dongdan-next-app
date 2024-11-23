@@ -1,7 +1,8 @@
 import { TomanPriceToNumber } from "@/helpers/helpers";
-import { z } from "zod"
+import { AnyExpense, ExpendFilter, TransferFilter } from "@/types/event-types";
+import { z, ZodType } from "zod"
 
-export const anyFilterSchema = z.object({
+export const anyFilterSchema: ZodType<AnyExpense> = z.object({
     type: z.enum(['any']),
     amountMin: z.string().min(1, 'فیلتر هزینه الزامی می باشد'),
     amountMax: z.string().min(1, 'فیلتر هزینه الزامی می باشد'),
@@ -16,7 +17,8 @@ export const anyFilterSchema = z.object({
     message: 'حداقل هزینه باید از حداکثر هزینه کمتر باشد',
     path: ['amountMin']
 })
-export const expendFilterSchema = z.object({
+
+export const expendFilterSchema: ZodType<ExpendFilter> = z.object({
     type: z.literal('expend'),
     amountMin: z.string().min(1, 'فیلتر هزینه الزامی می باشد'),
     amountMax: z.string().min(1, 'فیلتر هزینه الزامی می باشد'),
@@ -33,7 +35,8 @@ export const expendFilterSchema = z.object({
     message: 'حداقل هزینه باید از حداکثر هزینه کمتر باشد',
     path: ['amountMin']
 })
-export const transferFilterSchema = z.object({
+
+export const transferFilterSchema: ZodType<TransferFilter> = z.object({
     type: z.literal('transfer'),
     amountMin: z.string().min(1, 'فیلتر هزینه الزامی می باشد'),
     amountMax: z.string().min(1, 'فیلتر هزینه الزامی می باشد'),
@@ -49,4 +52,12 @@ export const transferFilterSchema = z.object({
 }, {
     message: 'حداقل هزینه باید از حداکثر هزینه کمتر باشد',
     path: ['amountMin']
+}).superRefine(({ from, to }, ctx) => {
+    if (from.length > 0 && to.length > 0 && from === to) {
+        ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: 'شخص مبداء و مقصد نمیتوانند یکسان باشند',
+            path: ['to'], // Path to the field that has the issue
+        })
+    }
 })

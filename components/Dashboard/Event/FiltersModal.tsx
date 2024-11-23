@@ -1,8 +1,8 @@
 'use client'
 
-import { AnyExpense, Expend, ExpendFilters, ExpenseFilters, TransferFilters, type Event, type Expense, type SchemeType } from "@/types/event-types";
-import TextInput from "@/components/Common/Form/TextInput";
+import { AnyExpense, ExpendFilter, ExpenseFilters, TransferFilter, Event } from "@/types/event-types";
 
+import TextInput from "@/components/Common/Form/TextInput";
 import ModalHeader from "@/components/Common/ModalHeader";
 import ModalWrapper from "@/components/Common/ModalWrapper";
 import { zValidate } from "@/helpers/validation-helper";
@@ -31,7 +31,7 @@ function FiltersModal({ onClose, event }: { onClose: () => void, event: Event })
         amountMax: '',
         dateRange: [new Date(), tommorowDate]
     }
-    const initExpendFilters: ExpendFilters = {
+    const initExpendFilter: ExpendFilter = {
         type: 'expend',
         amountMin: '',
         amountMax: '',
@@ -39,7 +39,7 @@ function FiltersModal({ onClose, event }: { onClose: () => void, event: Event })
         group: [],
         dateRange: [new Date(), tommorowDate]
     }
-    const initTransferFilters: TransferFilters = {
+    const initTransferFilters: TransferFilter = {
         type: 'transfer',
         amountMin: '',
         amountMax: '',
@@ -70,7 +70,7 @@ function FiltersModal({ onClose, event }: { onClose: () => void, event: Event })
     function selectType(type: ExpenseFilters['type']) {
 
         let newFiltersState = type === 'transfer' ? { ...initTransferFilters, type } :
-            type === 'expend' ? { ...initExpendFilters, type }
+            type === 'expend' ? { ...initExpendFilter, type }
                 : { ...initAnyFilters, type }
 
         setFilters(newFiltersState);
@@ -144,8 +144,8 @@ function FiltersModal({ onClose, event }: { onClose: () => void, event: Event })
             }
 
 
-            setFormErrors(errors);
             addToast(validationToast);
+            setFormErrors(errors);
             return;
         }
         setFormErrors(initFormErrors);

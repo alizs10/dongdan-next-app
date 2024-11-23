@@ -15,6 +15,7 @@ import { transferSchema } from "@/database/validations/transfer-validation";
 import { Event } from "@/types/event-types";
 import { useEventStore } from "@/store/event-store";
 import { Toast, useToastStore } from "@/store/toast-store";
+import { DateObject } from "react-multi-date-picker";
 
 type FormInputs = {
     desc: string;
@@ -80,6 +81,22 @@ function NewExpenseModal({ onClose, event }: { onClose: () => void, event: Event
     }
     const [formErrors2, setFormErrors2] = useState(initFormErrors2);
 
+
+    function handleChangeDate(date: DateObject) {
+
+        let selectedDate = new Date(date.toDate());
+        selectedDate.setHours(0o0)
+        selectedDate.setMinutes(0o0)
+        selectedDate.setSeconds(0o0)
+        selectedDate.setMilliseconds(1)
+
+        if (formType === 0) {
+            setInputs((prev: FormInputs) => ({ ...prev, date: selectedDate }))
+        } else {
+            setInputs((prev: FormInputs) => ({ ...prev, date: selectedDate }))
+        }
+    }
+
     function isPersonSelected(personId: string) {
         return inputs.group.includes(personId);
     }
@@ -106,8 +123,6 @@ function NewExpenseModal({ onClose, event }: { onClose: () => void, event: Event
             setInputs(prev => ({ ...prev, group: [...prev.group, personId] }))
         }
     }
-
-
 
     function selectFromPerson(personId: string) {
         if (personId === inputs2.to) return
@@ -136,10 +151,25 @@ function NewExpenseModal({ onClose, event }: { onClose: () => void, event: Event
 
     function expendFormHandler(formData: FormData) {
 
-        let { hasError, errors } = zValidate(expendSchema, inputs);
+        let newExpend = {
+            id: generateUID(),
+            type: 'expend' as const,
+            ...inputs,
+            amount: TomanPriceToNumber(inputs.amount),
+        }
+
+        let { hasError, errors } = zValidate(expendSchema, newExpend);
 
         if (hasError) {
             console.log(errors)
+            let validationToast: Toast = {
+                id: generateUID(),
+                message: `فرم نامعتبر است.`,
+                type: 'danger',
+            }
+
+
+            addToast(validationToast);
 
             setFormErrors(errors);
             return;
@@ -147,12 +177,7 @@ function NewExpenseModal({ onClose, event }: { onClose: () => void, event: Event
 
         setFormErrors(initFormErrors);
 
-        let newExpend = {
-            id: generateUID(),
-            type: 'expend' as const,
-            ...inputs,
-            amount: TomanPriceToNumber(inputs.amount),
-        }
+
 
         let newToast: Toast = {
             id: generateUID(),
@@ -167,19 +192,6 @@ function NewExpenseModal({ onClose, event }: { onClose: () => void, event: Event
 
     function transferFormHandler(formData: FormData) {
 
-        let { hasError, errors } = zValidate(transferSchema, inputs2);
-
-        if (hasError) {
-            console.log(errors)
-
-            setFormErrors2(errors);
-            return;
-        }
-
-        setFormErrors2(initFormErrors2);
-
-        if (inputs2.to === inputs2.from) return;
-
         let newTransfer = {
             ...inputs2,
             id: generateUID(),
@@ -187,7 +199,24 @@ function NewExpenseModal({ onClose, event }: { onClose: () => void, event: Event
             amount: TomanPriceToNumber(inputs2.amount)
         }
 
+        let { hasError, errors } = zValidate(transferSchema, newTransfer);
 
+        if (hasError) {
+            console.log(errors)
+            let validationToast: Toast = {
+                id: generateUID(),
+                message: `فرم نامعتبر است.`,
+                type: 'danger',
+            }
+
+
+            addToast(validationToast);
+
+            setFormErrors2(errors);
+            return;
+        }
+
+        setFormErrors2(initFormErrors2);
 
         let newToast: Toast = {
             id: generateUID(),
@@ -233,8 +262,9 @@ function NewExpenseModal({ onClose, event }: { onClose: () => void, event: Event
                                     name="date"
                                     value={inputs.date}
                                     label="تاریخ"
-                                    onChange={(date) => setInputs((prev: FormInputs) => ({ ...prev, date: date.toDate() }))}
+                                    onChange={handleChangeDate}
                                     error={formErrors.date}
+                                    maxDate={new Date()}
                                 />
 
                                 <div className="flex flex-col gap-y-2">

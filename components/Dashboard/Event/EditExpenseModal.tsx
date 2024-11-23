@@ -17,6 +17,7 @@ import { Event, Expense } from "@/types/event-types";
 import { useEventStore } from "@/store/event-store";
 import Button from "@/components/Common/Button";
 import { Toast, useToastStore } from "@/store/toast-store";
+import { DateObject } from "react-multi-date-picker";
 
 type FormInputs = {
     desc: string;
@@ -82,6 +83,22 @@ function EditExpenseModal({ onClose, event, expense }: { onClose: () => void, ev
     }
     const [formErrors2, setFormErrors2] = useState(initFormErrors2);
 
+
+    function handleChangeDate(date: DateObject) {
+
+        let selectedDate = new Date(date.toDate());
+        selectedDate.setHours(0o0)
+        selectedDate.setMinutes(0o0)
+        selectedDate.setSeconds(0o0)
+        selectedDate.setMilliseconds(1)
+
+        if (formType === 0) {
+            setInputs((prev: FormInputs) => ({ ...prev, date: selectedDate }))
+        } else {
+            setInputs((prev: FormInputs) => ({ ...prev, date: selectedDate }))
+        }
+    }
+
     function isPersonSelected(personId: string) {
         return inputs.group.includes(personId);
     }
@@ -139,7 +156,14 @@ function EditExpenseModal({ onClose, event, expense }: { onClose: () => void, ev
 
     function expendFormHandler(formData: FormData) {
 
-        let { hasError, errors } = zValidate(expendSchema, inputs);
+
+        let updatedExpend = {
+            ...expense,
+            ...inputs,
+            type: 'expend' as const,
+            amount: TomanPriceToNumber(inputs.amount),
+        }
+        let { hasError, errors } = zValidate(expendSchema, updatedExpend);
 
         if (hasError) {
             console.log(errors)
@@ -149,13 +173,6 @@ function EditExpenseModal({ onClose, event, expense }: { onClose: () => void, ev
         }
 
         setFormErrors(initFormErrors);
-
-        let updatedExpend = {
-            ...expense,
-            ...inputs,
-            type: 'expend' as const,
-            amount: TomanPriceToNumber(inputs.amount),
-        }
 
 
         let newToast: Toast = {
@@ -171,9 +188,26 @@ function EditExpenseModal({ onClose, event, expense }: { onClose: () => void, ev
 
     function transferFormHandler(formData: FormData) {
 
-        let { hasError, errors } = zValidate(transferSchema, inputs2);
+        let updatedTransfer = {
+            ...expense,
+            ...inputs2,
+            type: 'transfer' as const,
+            amount: TomanPriceToNumber(inputs2.amount)
+        }
+        let { hasError, errors } = zValidate(transferSchema, updatedTransfer);
+
 
         if (hasError) {
+
+            let validationToast: Toast = {
+                id: generateUID(),
+                message: `فرم نامعتبر است.`,
+                type: 'danger',
+            }
+
+
+            addToast(validationToast);
+
             console.log(errors)
 
             setFormErrors2(errors);
@@ -182,23 +216,13 @@ function EditExpenseModal({ onClose, event, expense }: { onClose: () => void, ev
 
         setFormErrors2(initFormErrors2);
 
-        if (inputs2.to === inputs2.from) return;
-
-        let updatedExpense = {
-            ...expense,
-            ...inputs2,
-            type: 'transfer' as const,
-            amount: TomanPriceToNumber(inputs2.amount)
-        }
-
-
         let newToast: Toast = {
             id: generateUID(),
             message: 'جابجایی پول ویرایش شد',
             type: 'success'
         }
 
-        updateExpense(event.id, expense.id, updatedExpense)
+        updateExpense(event.id, expense.id, updatedTransfer)
         addToast(newToast)
         onClose();
     }
@@ -237,8 +261,9 @@ function EditExpenseModal({ onClose, event, expense }: { onClose: () => void, ev
                                     name="date"
                                     value={inputs.date}
                                     label="تاریخ"
-                                    onChange={(date) => setInputs((prev: FormInputs) => ({ ...prev, date: date.toDate() }))}
                                     error={formErrors.date}
+                                    onChange={handleChangeDate}
+                                    maxDate={new Date()}
                                 />
 
                                 <div className="flex flex-col gap-y-2">
@@ -341,7 +366,8 @@ function EditExpenseModal({ onClose, event, expense }: { onClose: () => void, ev
                                     name={"date"}
                                     value={inputs2.date}
                                     error={formErrors2.date}
-                                    onChange={(date) => setInputs2((prev: FormInputs2) => ({ ...prev, date: date.toDate() }))}
+                                    onChange={handleChangeDate}
+                                    maxDate={new Date()}
                                 />
 
                                 <span className={`text-base ${formErrors2.from ? 'text-red-500' : 'text-indigo-900'} capitalize`}>مبداء</span>
