@@ -459,7 +459,7 @@ function Event() {
                 </div>
             </aside>
 
-            <div className="flex flex-col order-first lg:order-none border-b border-gray-200 lg:border-b-0 col-span-3 min-h-[400px] lg:min-h-[600px]">
+            <div className="flex flex-col order-first lg:order-none border-b border-gray-200 lg:border-b-0 col-span-3 h-fit min-h-[400px] lg:min-h-[600px]">
                 <div className={styles.header_container + ' z-50'}>
 
                     <div className={styles.header_right}>
