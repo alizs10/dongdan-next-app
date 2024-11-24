@@ -189,7 +189,7 @@ function EditEventModal({ onClose, event }: { onClose: () => void, event: Event 
     if (typeof window === "object") {
         return createPortal(
             <ModalWrapper onClose={onClose}>
-                <form action={formActionHandler} onClick={e => e.stopPropagation()} className="w-4/5 md:w-2/3 lg:w-1/2 xl:w-1/3 bg-white rounded-2xl">
+                <form action={formActionHandler} onClick={e => e.stopPropagation()} className="w-4/5 md:w-2/3 lg:w-1/2 xl:w-1/3 app_bg_color rounded-2xl">
                     <ModalHeader title="ویرایش رویداد" onClose={onClose} />
 
                     <div className="p-5 flex flex-col gap-y-4">

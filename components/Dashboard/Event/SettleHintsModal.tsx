@@ -10,7 +10,7 @@ function SettleHintsModal({ onClose, transactions }: { onClose: () => void, tran
     if (typeof window !== 'undefined') {
         return createPortal(
             <ModalWrapper onClose={onClose} >
-                <div onClick={e => e.stopPropagation()} className="w-4/5 md:w-2/3 lg:w-1/2 xl:w-1/3 bg-white rounded-2xl">
+                <div onClick={e => e.stopPropagation()} className="w-4/5 md:w-2/3 lg:w-1/2 xl:w-1/3 app_bg_color rounded-2xl">
                     <ModalHeader title="راهنمای تسویه حساب" onClose={onClose} />
 
                     {transactions.length > 0 ? (

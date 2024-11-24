@@ -236,15 +236,15 @@ function NewExpenseModal({ onClose, event }: { onClose: () => void, event: Event
         return createPortal(
             <ModalWrapper onClose={onClose}>
 
-                <section onClick={e => e.stopPropagation()} className="w-4/5 md:w-2/3 lg:w-1/2 xl:w-1/3 max-h-[90%]  bg-white rounded-2xl">
+                <section onClick={e => e.stopPropagation()} className="w-4/5 md:w-2/3 lg:w-1/2 xl:w-1/3 max-h-[90%]  app_bg_color rounded-2xl">
                     <ModalHeader title={formType === 0 ? 'ثبت هزینه' : 'ثبت جابجایی پول'} onClose={onClose} />
 
 
                     <div className="grid grid-cols-2">
-                        <div className={`col-span-1 select-none py-3 cursor-pointer text-center hover:bg-indigo-100 ${formType === 0 ? 'bg-indigo-100 text-indigo-900' : 'bg-white text-gray-700'}`} onClick={() => setFormType(0)}>
+                        <div className={`col-span-1 select-none py-3 cursor-pointer text-center hover:bg-indigo-100 ${formType === 0 ? 'bg-indigo-100 text-indigo-900' : 'app_bg_color text-gray-700'}`} onClick={() => setFormType(0)}>
                             هزینه
                         </div>
-                        <button disabled={event.group.length < 2} className={`col-span-1 select-none py-3 cursor-pointer text-center  ${formType === 1 ? 'hover:bg-indigo-100 bg-indigo-100 text-indigo-900' : event.group.length < 2 ? 'text-gray-300 cursor-not-allowed' : 'hover:bg-indigo-100 bg-white text-gray-700'}`} onClick={() => setFormType(event.group.length < 2 ? 0 : 1)}>
+                        <button disabled={event.group.length < 2} className={`col-span-1 select-none py-3 cursor-pointer text-center  ${formType === 1 ? 'hover:bg-indigo-100 bg-indigo-100 text-indigo-900' : event.group.length < 2 ? 'text-gray-300 cursor-not-allowed' : 'hover:bg-indigo-100 app_bg_color text-gray-700'}`} onClick={() => setFormType(event.group.length < 2 ? 0 : 1)}>
                             جابجایی پول
                         </button>
                     </div>

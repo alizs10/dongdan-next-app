@@ -168,7 +168,7 @@ function FiltersModal({ onClose, event }: { onClose: () => void, event: Event })
         return createPortal(
             <ModalWrapper onClose={onClose}>
 
-                <section onClick={e => e.stopPropagation()} className="w-4/5 md:w-2/3 lg:w-1/2 xl:w-1/3 bg-white rounded-2xl">
+                <section onClick={e => e.stopPropagation()} className="w-4/5 md:w-2/3 lg:w-1/2 xl:w-1/3 app_bg_color rounded-2xl">
                     <ModalHeader title="فیلتر" onClose={onClose} />
 
                     <div className="p-5 flex flex-col gap-y-4">

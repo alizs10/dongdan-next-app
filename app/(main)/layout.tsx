@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import { estedad, estedadFD } from 'next-persian-fonts/estedad'
 import "../globals.css";
 import Layout from "@/components/Layout/Layout";
+import { ThemeProvider } from "next-themes";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -16,13 +17,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" dir="rtl">
+    <html lang="fa" dir="rtl" suppressHydrationWarning>
       <body
         className={estedadFD.className}
       >
-        <Layout>
-          {children}
-        </Layout>
+        <ThemeProvider attribute="class">
+          <Layout>
+            {children}
+          </Layout>
+        </ThemeProvider>
 
         <div id="modal-portal"></div>
         <div id="modal-portal"></div>

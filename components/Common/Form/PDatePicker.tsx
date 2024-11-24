@@ -28,7 +28,7 @@ function CustomInput({ onFocus, value, onChange, error }: CustomInputProps) {
         onFocus={onFocus}
         value={value}
         onChange={onChange}
-        className={`w-full rounded-xl px-5 py-2 border ${error ? 'border-red-500' : 'border-gray-200 focus:border-indigo-900'} p-1 text-base bg-transparent focus:outline-none text-gray-700 transition-all duration-300 outline-none placeholder:text-base`}
+        className={`rounded-xl w-full px-5 py-2 border ${error ? 'border-red-500' : 'app_border_color focus:border-indigo-800 dark:focus:border-indigo-600'} p-1 text-base bg-transparent focus:outline-none text-gray-700 dark:text-gray-300 placeholder:text-gray-600 dark:placeholder:text-gray-400 transition-all duration-300 outline-none placeholder:text-base`}
     />
 }
 
@@ -40,7 +40,7 @@ function PDatePicker({ name, label, value, onChange, error, hint, maxDate }: Pro
     return (
         <div className={`w-full flex flex-col gap-y-1`}>
 
-            <label className={`text-base ${error ? 'text-red-500' : 'text-indigo-900'} capitalize`}>{label}</label>
+            <label className={`text-base ${error ? 'text-red-500' : 'primary_text_color'} capitalize`}>{label}</label>
 
             <DatePicker
                 render={<CustomInput error={error} />}

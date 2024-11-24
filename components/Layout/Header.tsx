@@ -1,4 +1,4 @@
-import { SunDim } from "lucide-react";
+import ThemeToggle from "./ThemeToggle";
 
 function Header() {
     return (
@@ -8,9 +8,7 @@ function Header() {
             </div>
 
             <div className="header_left">
-                <button className="header_left_button">
-                    <SunDim className="size-6" />
-                </button>
+                <ThemeToggle />
             </div>
 
         </header>

@@ -1,5 +1,6 @@
 'use client'
 
+import Button from "@/components/Common/Button";
 import PDatePicker from "@/components/Common/Form/PDatePicker";
 import TextInput from "@/components/Common/Form/TextInput";
 import ModalHeader from "@/components/Common/ModalHeader";
@@ -142,7 +143,7 @@ function NewEventModal({ onClose }: { onClose: () => void }) {
     if (typeof window === "object") {
         return createPortal(
             <ModalWrapper onClose={onClose}>
-                <form action={formActionHandler} onClick={e => e.stopPropagation()} className="w-4/5 md:w-2/3 lg:w-1/2 xl:w-1/3 bg-white rounded-2xl">
+                <form action={formActionHandler} onClick={e => e.stopPropagation()} className="modal_container">
                     <ModalHeader title="ثبت رویداد" onClose={onClose} />
 
                     <div className="p-5 flex flex-col gap-y-4">
@@ -160,30 +161,30 @@ function NewEventModal({ onClose }: { onClose: () => void }) {
 
                         <div className="flex flex-col gap-y-2">
 
-                            <span className={`text-base ${formErrors.label ? 'text-red-500' : 'text-indigo-900'} capitalize`}>برچسب رویداد</span>
+                            <span className={`text-base ${formErrors.label ? 'text-red-500' : 'primary_text_color'} capitalize`}>برچسب رویداد</span>
 
                             <div className="flex flex-wrap gap-2">
-                                <div onClick={() => selectLabelHandler('سفر')} className={`${isLabelSelected('سفر') ? 'text-indigo-900 border-indigo-900' : 'border-gray-200 hover:border-indigo-900 text-gray-500 hover:text-indigo-900'} rounded-xl cursor-pointer shadow-sm flex gap-x-4 items-center px-4 py-2 border  transition-all duration-300`}>
+                                <div onClick={() => selectLabelHandler('سفر')} className={`${isLabelSelected('سفر') ? 'primary_text_color border-indigo-800 dark:border-indigo-600' : 'app_border_color hover:border-indigo-800 dark:hover:border-indigo-600 text-gray-500 hover:primary_text_color'} rounded-xl cursor-pointer shadow-sm flex gap-x-4 items-center px-4 py-2 border  transition-all duration-300`}>
                                     <span className="text-base">سفر</span>
                                     <Plane className="size-4" />
                                 </div>
-                                <div onClick={() => selectLabelHandler('کافه')} className={`${isLabelSelected('کافه') ? 'text-indigo-900 border-indigo-900' : 'border-gray-200 hover:border-indigo-900 text-gray-500 hover:text-indigo-900'} rounded-xl cursor-pointer shadow-sm flex gap-x-4 items-center px-4 py-2 border  transition-all duration-300`}>
+                                <div onClick={() => selectLabelHandler('کافه')} className={`${isLabelSelected('کافه') ? 'primary_text_color border-indigo-800 dark:border-indigo-600' : 'app_border_color hover:border-indigo-800 dark:hover:border-indigo-600 text-gray-500 hover:primary_text_color'} rounded-xl cursor-pointer shadow-sm flex gap-x-4 items-center px-4 py-2 border  transition-all duration-300`}>
                                     <span className="text-base">کافه</span>
                                     <Coffee className="size-4" />
                                 </div>
-                                <div onClick={() => selectLabelHandler('رستوران')} className={`${isLabelSelected('رستوران') ? 'text-indigo-900 border-indigo-900' : 'border-gray-200 hover:border-indigo-900 text-gray-500 hover:text-indigo-900'} rounded-xl cursor-pointer shadow-sm flex gap-x-4 items-center px-4 py-2 border  transition-all duration-300`}>
+                                <div onClick={() => selectLabelHandler('رستوران')} className={`${isLabelSelected('رستوران') ? 'primary_text_color border-indigo-800 dark:border-indigo-600' : 'app_border_color hover:border-indigo-800 dark:hover:border-indigo-600 text-gray-500 hover:primary_text_color'} rounded-xl cursor-pointer shadow-sm flex gap-x-4 items-center px-4 py-2 border  transition-all duration-300`}>
                                     <span className="text-base">رستوران</span>
                                     <Utensils className="size-4" />
                                 </div>
-                                <div onClick={() => selectLabelHandler('کار')} className={`${isLabelSelected('کار') ? 'text-indigo-900 border-indigo-900' : 'border-gray-200 hover:border-indigo-900 text-gray-500 hover:text-indigo-900'} rounded-xl cursor-pointer shadow-sm flex gap-x-4 items-center px-4 py-2 border  transition-all duration-300`}>
+                                <div onClick={() => selectLabelHandler('کار')} className={`${isLabelSelected('کار') ? 'primary_text_color border-indigo-800 dark:border-indigo-600' : 'app_border_color hover:border-indigo-800 dark:hover:border-indigo-600 text-gray-500 hover:primary_text_color'} rounded-xl cursor-pointer shadow-sm flex gap-x-4 items-center px-4 py-2 border  transition-all duration-300`}>
                                     <span className="text-base">کار</span>
                                     <BriefcaseBusiness className="size-4" />
                                 </div>
-                                <div onClick={() => selectLabelHandler('جشن')} className={`${isLabelSelected('جشن') ? 'text-indigo-900 border-indigo-900' : 'border-gray-200 hover:border-indigo-900 text-gray-500 hover:text-indigo-900'} rounded-xl cursor-pointer shadow-sm flex gap-x-4 items-center px-4 py-2 border  transition-all duration-300`}>
+                                <div onClick={() => selectLabelHandler('جشن')} className={`${isLabelSelected('جشن') ? 'primary_text_color border-indigo-800 dark:border-indigo-600' : 'app_border_color hover:border-indigo-800 dark:hover:border-indigo-600 text-gray-500 hover:primary_text_color'} rounded-xl cursor-pointer shadow-sm flex gap-x-4 items-center px-4 py-2 border  transition-all duration-300`}>
                                     <span className="text-base">جشن</span>
                                     <Cake className="size-4" />
                                 </div>
-                                <div onClick={() => selectLabelHandler('تفریح')} className={`${isLabelSelected('تفریح') ? 'text-indigo-900 border-indigo-900' : 'border-gray-200 hover:border-indigo-900 text-gray-500 hover:text-indigo-900'} rounded-xl cursor-pointer shadow-sm flex gap-x-4 items-center px-4 py-2 border  transition-all duration-300`}>
+                                <div onClick={() => selectLabelHandler('تفریح')} className={`${isLabelSelected('تفریح') ? 'primary_text_color border-indigo-800 dark:border-indigo-600' : 'app_border_color hover:border-indigo-800 dark:hover:border-indigo-600 text-gray-500 hover:primary_text_color'} rounded-xl cursor-pointer shadow-sm flex gap-x-4 items-center px-4 py-2 border  transition-all duration-300`}>
                                     <span className="text-base">تفریح</span>
                                     <TreePalm className="size-4" />
                                 </div>
@@ -200,7 +201,7 @@ function NewEventModal({ onClose }: { onClose: () => void }) {
                         {contacts.length > 0 && (
                             <div className="flex flex-col gap-y-2">
 
-                                <span className={`text-base ${formErrors.group ? 'text-red-500' : 'text-indigo-900'} capitalize`}>افزودن شخص از دوستان</span>
+                                <span className={`text-base ${formErrors.group ? 'text-red-500' : 'primary_text_color'} capitalize`}>افزودن شخص از دوستان</span>
 
                                 <div className="flex flex-wrap gap-4">
 
@@ -241,11 +242,22 @@ function NewEventModal({ onClose }: { onClose: () => void }) {
                     </div>
 
 
-                    <div className="p-5 flex justify-end">
-                        <button disabled={pending} type="submit" className="hover:bg-indigo-100 flex gap-x-2 items-center transition-all duration-300 rounded-xl text-indigo-900 text-base px-4 py-2">
+                    {/* <div className="p-5 flex justify-end">
+                        <button disabled={pending} type="submit" className="hover:bg-indigo-100 flex gap-x-2 items-center transition-all duration-300 rounded-xl primary_text_color text-base px-4 py-2">
                             <span>{pending ? 'در حال ثبت' : 'ثبت'}</span>
                             <Save className="size-4" />
                         </button>
+                    </div> */}
+
+                    <div className="p-5 flex justify-end">
+                        <Button
+                            text={pending ? 'در حال ثبت' : 'ثبت'}
+                            icon={<Save className="size-4" />}
+                            onClick={() => { }}
+                            size="medium"
+                            color="accent"
+                            type="submit"
+                        />
                     </div>
 
                 </form>

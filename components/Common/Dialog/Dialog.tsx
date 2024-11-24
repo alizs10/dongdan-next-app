@@ -21,7 +21,7 @@ function Dialog() {
 
     return createPortal(
         <ModalWrapper onClose={closeDialog}>
-            <div onClick={e => e.stopPropagation()} className="w-4/5 md:w-1/2 lg:w-1/3 p-5 rounded-2xl flex flex-col gap-y-3 bg-white shadow-md">
+            <div onClick={e => e.stopPropagation()} className="w-4/5 md:w-1/2 lg:w-1/3 p-5 rounded-2xl flex flex-col gap-y-3 app_bg_color shadow-md">
                 <h1 className="text-lg font-bold text-gray-700">{title}</h1>
                 <p className="text-base text-gray-500">{desc}</p>
 

@@ -92,7 +92,7 @@ function NewContactModal({ onClose }: { onClose: () => void }) {
         return createPortal(
             <ModalWrapper onClose={onClose}>
 
-                <section onClick={e => e.stopPropagation()} className="w-4/5 md:w-2/3 lg:w-1/2 xl:w-1/3 bg-white rounded-2xl">
+                <section onClick={e => e.stopPropagation()} className="w-4/5 md:w-2/3 lg:w-1/2 xl:w-1/3 app_bg_color rounded-2xl">
                     <ModalHeader title="افزودن دوست" onClose={onClose} />
 
                     <form action={formActionHandler} className="">
