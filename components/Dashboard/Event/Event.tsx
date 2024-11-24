@@ -1,6 +1,6 @@
 'use client'
 
-import { CalendarCheck, CalendarClock, Filter, MoveRight, Plus, UserPlus, Zap } from "lucide-react";
+import { CalendarCheck, CalendarClock, Copy, Filter, MoveRight, Plus, Share2, UserPlus, Zap } from "lucide-react";
 import styles from "./Event.module.css";
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -22,6 +22,7 @@ import { Toast, useToastStore } from "@/store/toast-store";
 import NoGroupMembers from "./NoGroupMembers";
 import FiltersModal from "./FiltersModal";
 import ActiveFilters from "./ActiveFilters";
+import ShareEventLink from "./ShareEventLink";
 
 function Event() {
 
@@ -440,6 +441,8 @@ function Event() {
                             <h1 className="text-sm text-gray-500">هزینه های مادرخرج</h1>
                             <span className="text-sm text-gray-500">{TomanPriceFormatter(getMaxPayer().amount.toFixed(0))} تومان</span>
                         </div>
+
+                        <ShareEventLink />
 
 
 
