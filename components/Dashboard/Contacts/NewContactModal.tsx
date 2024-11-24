@@ -14,6 +14,7 @@ import { useContactStore } from "@/store/contact-store";
 import { contactSchema } from "@/database/validations/contact-validation";
 import { Toast, useToastStore } from "@/store/toast-store";
 import { Contact } from "@/types/contact-types";
+import Button from "@/components/Common/Button";
 
 type FormInputs = {
     name: string;
@@ -92,7 +93,7 @@ function NewContactModal({ onClose }: { onClose: () => void }) {
         return createPortal(
             <ModalWrapper onClose={onClose}>
 
-                <section onClick={e => e.stopPropagation()} className="w-4/5 md:w-2/3 lg:w-1/2 xl:w-1/3 app_bg_color rounded-2xl">
+                <section onClick={e => e.stopPropagation()} className="modal_container">
                     <ModalHeader title="افزودن دوست" onClose={onClose} />
 
                     <form action={formActionHandler} className="">
@@ -101,7 +102,7 @@ function NewContactModal({ onClose }: { onClose: () => void }) {
 
                             <TextInput name="name" value={inputs.name} error={formErrors.name} label="نام شخص" handleChange={e => setInputs(prev => ({ ...prev, [e.target.name]: e.target.value }))} />
 
-                            <span className={`text-base ${formErrors.scheme ? 'text-red-500' : 'text-indigo-900'} capitalize`}>انتخاب آواتار</span>
+                            <span className={`text-base ${formErrors.scheme ? 'text-red-500' : 'primary_text_color'} capitalize`}>انتخاب آواتار</span>
 
                             <div className="flex flex-wrap gap-2">
                                 {SCHEMES.map(scheme => (<div key={scheme} onClick={() => selectSchemeHandler(scheme)} className={`user_avatar_${scheme}_bg user_avatar_${scheme}_border user_avatar_${scheme}_text rounded-full cursor-pointer shadow-sm flex gap-x-4 items-center p-3 border  transition-all duration-300`}>
@@ -123,12 +124,19 @@ function NewContactModal({ onClose }: { onClose: () => void }) {
 
 
                         </div>
+
                         <div className="p-5 flex justify-end">
-                            <button disabled={pending} type="submit" className="hover:bg-indigo-100 flex gap-x-2 items-center transition-all duration-300 rounded-xl text-indigo-900 text-base px-4 py-2">
-                                <span>{pending ? 'در حال ثبت' : 'ثبت'}</span>
-                                <Save className="size-4" />
-                            </button>
+                            <Button
+                                text={pending ? 'در حال ثبت' : 'ثبت'}
+                                icon={<Save className="size-4" />}
+                                onClick={() => { }}
+                                size="medium"
+                                color="accent"
+                                type="submit"
+                            />
                         </div>
+
+
                     </form>
 
                 </section>

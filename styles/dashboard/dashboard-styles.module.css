@@ -15,11 +15,11 @@
 }
 
 .header_title {
-  @apply text-indigo-900 text-base lg:text-lg;
+  @apply primary_text_color text-base lg:text-lg;
 }
 
 .header_button {
-  @apply bg-indigo-100 text-base border border-indigo-100 w-fit px-4 py-2 rounded-xl hover:border-indigo-900 transition-all duration-300 text-indigo-900 flex flex-row gap-x-2 items-center;
+  @apply bg-indigo-100 text-base border border-indigo-100 w-fit px-4 py-2 rounded-xl hover:border-indigo-900 transition-all duration-300 primary_text_color flex flex-row gap-x-2 items-center;
 }
 
 .header_button_icon {

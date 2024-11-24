@@ -1,7 +1,6 @@
 'use client'
 
 import Link from 'next/link';
-import styles from '../../../../styles/dashboard/dashboard-styles.module.css';
 import { MoveRight } from 'lucide-react';
 import NoEventsTrashed from './NoEventsTrashed';
 import { useEventStore } from '@/store/event-store';
@@ -14,13 +13,13 @@ function TrashedEvents() {
     const trashedEvents = useMemo(() => events.filter(e => e.deletedAt !== null), [events]);
 
     return (
-        <div className={styles.container}>
-            <div className={styles.header_container}>
-                <div className={styles.header_right}>
-                    <Link href={'/dashboard/events'} className={styles.back_button}>
-                        <MoveRight className={styles.back_button_icon} />
+        <div className='events_container'>
+            <div className='event_header_container'>
+                <div className='event_header_right'>
+                    <Link href={'/dashboard/events'} className='event_back_button'>
+                        <MoveRight className='event_back_button_icon' />
                     </Link>
-                    <h1 className={styles.header_title}>رویداد های حذف شده</h1>
+                    <h1 className='event_header_title'>رویداد های حذف شده</h1>
                 </div>
             </div>
 

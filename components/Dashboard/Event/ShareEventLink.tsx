@@ -31,7 +31,7 @@ function ShareEventLink() {
 
     return (
         <div className="flex w-full justify-between items-center">
-            <h1 className="text-sm text-gray-500">اشتراک گذاری رویداد</h1>
+            <h1 className="text-sm text-gray-500 dark:text-gray-400">اشتراک گذاری رویداد</h1>
             <Button
                 text={copied ? 'کپی شد' : 'کپی لینک'}
                 color={copied ? 'success' : 'gray'}

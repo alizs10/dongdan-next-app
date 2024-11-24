@@ -1,9 +1,10 @@
 import { Ban } from "lucide-react";
-import { useEffect, useState } from "react";
-import DatePicker, { CustomComponentProps, DateObject, DatePickerProps, DatePickerRef, Value } from "react-multi-date-picker";
+import DatePicker, { CustomComponentProps, DateObject, DatePickerRef } from "react-multi-date-picker";
 import persian from 'react-date-object/calendars/persian';
 import persian_fa from 'react-date-object/locales/persian_fa';
 import useClickOutside from "@/hooks/useOutsideClick";
+import "react-multi-date-picker/styles/backgrounds/bg-dark.css";
+import { useTheme } from "next-themes";
 
 type PropsTypes = {
     name: string,
@@ -34,6 +35,7 @@ function CustomInput({ onFocus, value, onChange, error }: CustomInputProps) {
 
 function PDatePicker({ name, label, value, onChange, error, hint, maxDate }: PropsTypes) {
 
+    const { theme } = useTheme()
 
     const datePickerRef = useClickOutside<DatePickerRef>(() => datePickerRef.current?.closeCalendar())
 
@@ -43,6 +45,7 @@ function PDatePicker({ name, label, value, onChange, error, hint, maxDate }: Pro
             <label className={`text-base ${error ? 'text-red-500' : 'primary_text_color'} capitalize`}>{label}</label>
 
             <DatePicker
+                className={theme === 'dark' ? 'bg-dark' : ''}
                 render={<CustomInput error={error} />}
                 value={value}
                 onChange={onChange}

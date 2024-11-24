@@ -95,7 +95,7 @@ function EditPersonModal({ onClose, person }: { onClose: () => void, person: Per
         return createPortal(
             <ModalWrapper onClose={onClose}>
 
-                <section onClick={e => e.stopPropagation()} className="w-4/5 md:w-2/3 lg:w-1/2 xl:w-1/3 app_bg_color rounded-2xl">
+                <section onClick={e => e.stopPropagation()} className="modal_container">
                     <ModalHeader title="افزودن شخص" onClose={onClose} />
 
                     <form action={formActionHandler} className="">
@@ -104,7 +104,7 @@ function EditPersonModal({ onClose, person }: { onClose: () => void, person: Per
 
                             <TextInput name="name" value={inputs.name} error={formErrors.name} label="نام شخص" handleChange={e => setInputs(prev => ({ ...prev, [e.target.name]: e.target.value }))} />
 
-                            <span className={`text-base ${formErrors.scheme ? 'text-red-500' : 'text-indigo-900'} capitalize`}>انتخاب آواتار</span>
+                            <span className={`text-base ${formErrors.scheme ? 'text-red-500' : 'primary_text_color'} capitalize`}>انتخاب آواتار</span>
 
                             <div className="flex flex-wrap gap-2">
                                 {SCHEMES.map(scheme => (<div key={scheme} onClick={() => selectSchemeHandler(scheme)} className={`user_avatar_${scheme}_bg user_avatar_${scheme}_border user_avatar_${scheme}_text rounded-full cursor-pointer shadow-sm flex gap-x-4 items-center p-3 border  transition-all duration-300`}>

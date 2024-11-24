@@ -1,7 +1,7 @@
 'use client'
 
 import { CalendarCheck, CalendarClock, Copy, Filter, MoveRight, Plus, Share2, UserPlus, Zap } from "lucide-react";
-import styles from "./Event.module.css";
+// import styles from "./Event.module.css";
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import NewExpenseModal from "./NewExpenseModal";
@@ -284,42 +284,42 @@ function Event() {
 
 
     return (
-        <div className={styles.event_container}>
+        <div className="event_container">
 
 
-            <aside className="col-span-1 lg:col-span-2 xl:col-span-1 border-l border-gray-200 flex flex-col">
+            <aside className="col-span-1 lg:col-span-2 xl:col-span-1 border-l app_border_color flex flex-col">
 
 
                 {event.group.length > 0 && (
 
-                    <div className="p-3 flex flex-col gap-y-8 border-b border-gray-200">
+                    <div className="p-3 flex flex-col gap-y-8 border-b app_border_color">
                         <div className="flex w-full justify-between items-center">
-                            <h1 className={styles.header_title}>محاسبات</h1>
-                            {/* <span className="text-sm text-gray-500">8 نفر</span> */}
+                            <h1 className="event_header_title">محاسبات</h1>
+                            {/* <span className="text-sm text-gray-500 dark:text-gray-400">8 نفر</span> */}
                         </div>
 
                         <ul className="flex flex-col gap-y-4">
 
                             <div className="flex w-full justify-between items-center">
-                                <h1 className="text-sm text-gray-500 font-semibold">مجموع هزینه ها</h1>
-                                <span className="text-sm text-gray-500">{TomanPriceFormatter(getAllCosts().toString())} تومان</span>
+                                <h1 className="text-sm text-gray-500 dark:text-gray-400 font-semibold">مجموع هزینه ها</h1>
+                                <span className="text-sm text-gray-500 dark:text-gray-400">{TomanPriceFormatter(getAllCosts().toString())} تومان</span>
                             </div>
                             <div className="flex w-full justify-between items-center">
-                                <h1 className="text-sm text-gray-500">تعداد هزینه ها</h1>
-                                <span className="text-sm text-gray-500">{getCostsCount()}</span>
+                                <h1 className="text-sm text-gray-500 dark:text-gray-400">تعداد هزینه ها</h1>
+                                <span className="text-sm text-gray-500 dark:text-gray-400">{getCostsCount()}</span>
                             </div>
                             <div className="flex w-full justify-between items-center">
-                                <h1 className="text-sm text-gray-500">تعداد جابجایی پول</h1>
-                                <span className="text-sm text-gray-500">{getTransfersCount()}</span>
+                                <h1 className="text-sm text-gray-500 dark:text-gray-400">تعداد جابجایی پول</h1>
+                                <span className="text-sm text-gray-500 dark:text-gray-400">{getTransfersCount()}</span>
                             </div>
 
                             <div className="flex w-full justify-between items-center">
-                                <h1 className="text-sm text-gray-500">بیشترین هزینه</h1>
-                                <span className="text-sm text-gray-500">{TomanPriceFormatter(getMostCost().toString())} تومان</span>
+                                <h1 className="text-sm text-gray-500 dark:text-gray-400">بیشترین هزینه</h1>
+                                <span className="text-sm text-gray-500 dark:text-gray-400">{TomanPriceFormatter(getMostCost().toString())} تومان</span>
                             </div>
                             <div className="flex w-full justify-between items-center">
-                                <h1 className="text-sm text-gray-500">بیشترین جابجایی پول</h1>
-                                <span className="text-sm text-gray-500">{TomanPriceFormatter(getHighestTransfer().toString())} تومان</span>
+                                <h1 className="text-sm text-gray-500 dark:text-gray-400">بیشترین جابجایی پول</h1>
+                                <span className="text-sm text-gray-500 dark:text-gray-400">{TomanPriceFormatter(getHighestTransfer().toString())} تومان</span>
                             </div>
 
 
@@ -330,16 +330,16 @@ function Event() {
 
                 {event.group.length > 0 && (
 
-                    <div className="p-3 flex flex-col gap-y-8 border-b border-gray-200">
+                    <div className="p-3 flex flex-col gap-y-8 border-b app_border_color">
                         <div className="flex flex-row justify-between items-center">
 
                             <div className="flex w-full justify-between items-center">
-                                <h1 className={styles.header_title}>سهم اعضا</h1>
-                                {/* <span className="text-sm text-gray-500">8 نفر</span> */}
+                                <h1 className="event_header_title">سهم اعضا</h1>
+                                {/* <span className="text-sm text-gray-500 dark:text-gray-400">8 نفر</span> */}
                             </div>
 
 
-                            <button onClick={toggleSettleHintsModal} className="flex flex-row flex-nowrap gap-x-2 items-center w-fit rounded-full px-3 py-1.5 bg-indigo-50 text-indigo-700">
+                            <button onClick={toggleSettleHintsModal} className="flex flex-row flex-nowrap gap-x-2 items-center w-fit rounded-full px-3 py-1.5 bg-indigo-50 dark:bg-indigo-950/30 text-indigo-700 dark:text-indigo-600">
                                 <Zap className="size-4" />
                                 <p className="text-[.7rem] font-semibold text-nowrap">
                                     راهنمای تسویه
@@ -359,22 +359,22 @@ function Event() {
                                     <div className="flex flex-row gap-x-2 justify-center items-center">
                                         <h1 className={`user_avatar_${person.scheme}_text`}>{person.name}</h1>
                                         {parseInt(getPersonBalance(person.id).toFixed(0)) > 999 && (
-                                            <span className="text-[.6rem] font-semibold rounded-full px-2 py-1 bg-green-100 text-green-700">
+                                            <span className="text-[.6rem] rounded-full px-2 py-1 bg-green-100 dark:bg-green-950/30 text-green-700 dark:text-green-500">
                                                 طلبکار
                                             </span>
                                         )}
                                         {parseInt(getPersonBalance(person.id).toFixed(0)) < -999 && (
-                                            <span className="text-[.6rem] font-semibold rounded-full px-2 py-1 bg-red-100 text-red-600">
+                                            <span className="text-[.6rem] rounded-full px-2 py-1 bg-red-100 dark:bg-red-950/30 text-red-600 dark:text-red-500">
                                                 بدهکار
                                             </span>
                                         )}
                                         {(parseInt(getPersonBalance(person.id).toFixed(0)) > -1000 && parseInt(getPersonBalance(person.id).toFixed(0)) < 1000) && (
-                                            <span className="text-[.6rem] font-semibold rounded-full px-2 py-1 bg-gray-200 text-gray-700">
+                                            <span className="text-[.6rem] rounded-full px-2 py-1 bg-gray-200 dark:bg-gray-800/50 text-gray-700 dark:text-gray-300">
                                                 تسویه
                                             </span>
                                         )}
                                     </div>
-                                    <span className="text-sm text-gray-500">{TomanPriceFormatter(Math.abs(getPersonBalance(person.id)).toFixed(0))} تومان</span>
+                                    <span className="text-sm text-gray-500 dark:text-gray-400">{TomanPriceFormatter(Math.abs(getPersonBalance(person.id)).toFixed(0))} تومان</span>
                                 </li>
                             ))}
 
@@ -385,10 +385,10 @@ function Event() {
 
 
 
-                <div className="h-fit px-3 py-5 flex flex-col gap-y-8 border-b border-gray-200">
+                <div className="h-fit px-3 py-5 flex flex-col gap-y-8 border-b app_border_color">
                     <div className="flex w-full flex-row gap-x-2 items-center">
-                        <h1 className={styles.header_title}>اعضای گروه</h1>
-                        <span className="text-sm text-gray-500">{`${event.group.length}  نفر`}</span>
+                        <h1 className="event_header_title">اعضای گروه</h1>
+                        <span className="text-sm text-gray-500 dark:text-gray-400">{`${event.group.length}  نفر`}</span>
                     </div>
 
                     {event.group.length > 0 ? (
@@ -411,35 +411,35 @@ function Event() {
 
                 <div className="px-3 py-5 flex flex-col gap-y-8">
                     <div className="flex w-full justify-between items-center">
-                        <h1 className={styles.header_title}>اطلاعات رویداد</h1>
-                        {/* <span className="text-sm text-gray-500">8 نفر</span> */}
+                        <h1 className="event_header_title">اطلاعات رویداد</h1>
+                        {/* <span className="text-sm text-gray-500 dark:text-gray-400">8 نفر</span> */}
                     </div>
 
                     <ul className="flex flex-col gap-y-4">
 
                         <div className="flex w-full justify-between items-center">
-                            <h1 className="text-sm text-gray-500 font-semibold">وضعیت</h1>
-                            <span className="text-sm text-gray-500">{event.status === 'active' ? 'درجریان' : 'به پایان رسیده'}</span>
+                            <h1 className="text-sm text-gray-500 dark:text-gray-400 font-semibold">وضعیت</h1>
+                            <span className="text-sm text-gray-500 dark:text-gray-400">{event.status === 'active' ? 'درجریان' : 'به پایان رسیده'}</span>
                         </div>
                         <div className="flex w-full justify-between items-center">
-                            <h1 className="text-sm text-gray-500">برچسب</h1>
-                            <span className="text-sm text-gray-500">{event.label}</span>
+                            <h1 className="text-sm text-gray-500 dark:text-gray-400">برچسب</h1>
+                            <span className="text-sm text-gray-500 dark:text-gray-400">{event.label}</span>
                         </div>
                         <div className="flex w-full justify-between items-center">
-                            <h1 className="text-sm text-gray-500">تاریخ شروع</h1>
-                            <span className="text-sm text-gray-500">{moment(event.date).locale('fa').format("DD MMM، YYYY")}</span>
+                            <h1 className="text-sm text-gray-500 dark:text-gray-400">تاریخ شروع</h1>
+                            <span className="text-sm text-gray-500 dark:text-gray-400">{moment(event.date).locale('fa').format("DD MMM، YYYY")}</span>
                         </div>
                         <div className="flex w-full justify-between items-center">
-                            <h1 className="text-sm text-gray-500">تعداد اعضا</h1>
-                            <span className="text-sm text-gray-500">{event.group.length}</span>
+                            <h1 className="text-sm text-gray-500 dark:text-gray-400">تعداد اعضا</h1>
+                            <span className="text-sm text-gray-500 dark:text-gray-400">{event.group.length}</span>
                         </div>
                         <div className="flex w-full justify-between items-center">
-                            <h1 className="text-sm text-gray-500">مادرخرج</h1>
-                            <span className="text-sm text-gray-500">{getMaxPayer().name || '-'}</span>
+                            <h1 className="text-sm text-gray-500 dark:text-gray-400">مادرخرج</h1>
+                            <span className="text-sm text-gray-500 dark:text-gray-400">{getMaxPayer().name || '-'}</span>
                         </div>
                         <div className="flex w-full justify-between items-center">
-                            <h1 className="text-sm text-gray-500">هزینه های مادرخرج</h1>
-                            <span className="text-sm text-gray-500">{TomanPriceFormatter(getMaxPayer().amount.toFixed(0))} تومان</span>
+                            <h1 className="text-sm text-gray-500 dark:text-gray-400">هزینه های مادرخرج</h1>
+                            <span className="text-sm text-gray-500 dark:text-gray-400">{TomanPriceFormatter(getMaxPayer().amount.toFixed(0))} تومان</span>
                         </div>
 
                         <ShareEventLink />
@@ -462,18 +462,18 @@ function Event() {
                 </div>
             </aside>
 
-            <div className="flex flex-col order-first lg:order-none border-b border-gray-200 lg:border-b-0 col-span-3 h-fit min-h-[400px] lg:min-h-[600px]">
-                <div className={styles.header_container + ' z-50'}>
+            <div className="flex flex-col order-first lg:order-none border-b app_border_color lg:border-b-0 col-span-3 h-fit min-h-[400px] lg:min-h-[600px]">
+                <div className="event_header_container z-50">
 
-                    <div className={styles.header_right}>
-                        <Link href={event.deletedAt === null ? '/dashboard/events' : '/dashboard/events/trash'} className={styles.back_button}>
-                            <MoveRight className={styles.back_button_icon} />
+                    <div className="event_header_right">
+                        <Link href={event.deletedAt === null ? '/dashboard/events' : '/dashboard/events/trash'} className="event_back_button">
+                            <MoveRight className="event_back_button_icon" />
                         </Link>
-                        <h1 className={styles.header_title}>{event.name}</h1>
+                        <h1 className="event_header_title">{event.name}</h1>
                     </div>
 
                     {event.group.length > 0 && (
-                        <div className={styles.header_left}>
+                        <div className="event_header_left">
                             {event.expenses.length > 0 && (
                                 <Button
                                     text="فیلتر"

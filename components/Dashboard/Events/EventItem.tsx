@@ -1,5 +1,4 @@
 import { Event } from '@/types/event-types';
-import styles from './Events.module.css';
 import { BriefcaseBusiness, Cake, Coffee, Ellipsis, Info, Pencil, Plane, Trash, TreePalm, Utensils } from "lucide-react";
 import Link from 'next/link';
 import moment from 'jalali-moment';
@@ -16,27 +15,27 @@ import { generateUID } from '@/helpers/helpers';
 function renderIcon(label: string) {
     switch (label) {
         case 'سفر':
-            return <Plane className={styles.event_item_icon} />
+            return <Plane className='event_item_icon' />
             break;
         case 'کافه':
-            return <Coffee className={styles.event_item_icon} />
+            return <Coffee className='event_item_icon' />
             break;
         case 'رستوران':
-            return <Utensils className={styles.event_item_icon} />
+            return <Utensils className='event_item_icon' />
             break;
         case 'کار':
-            return <BriefcaseBusiness className={styles.event_item_icon} />
+            return <BriefcaseBusiness className='event_item_icon' />
             break;
         case 'جشن':
-            return <Cake className={styles.event_item_icon} />
+            return <Cake className='event_item_icon' />
             break;
         case 'تفریح':
-            return <TreePalm className={styles.event_item_icon} />
+            return <TreePalm className='event_item_icon' />
             break;
 
 
         default:
-            return <Plane className={styles.event_item_icon} />
+            return <Plane className='event_item_icon' />
             break;
     }
 }
@@ -95,20 +94,19 @@ function EventItem({ event }: { event: Event }) {
     }
 
     return (
-        <li key={event.id} className={styles.event_item}>
-            <div className={styles.event_item_right}>
+        <li className='event_item'>
+            <div className='event_item_right'>
 
-                <div className={styles.event_item_icon_container}>
+                <div className='event_item_icon_container'>
                     {renderIcon(event.label)}
                 </div>
 
                 <Link href={`/dashboard/events/${event.id}`}>
-                    <h2 className={styles.event_item_name}>{event.name}</h2>
+                    <h2 className='event_item_name'>{event.name}</h2>
                 </Link>
             </div>
 
-            {/* <div className="flex flex-wrap items-center gap-x-2"> */}
-            <div className={styles.event_item_left}>
+            <div className='event_item_left'>
                 <span className="text-xs text-gray-500 selft-end">{moment(event.date).locale('fa').format("DD MMM، YYYY")}</span>
                 <div ref={optionsPrentRef} className='relative'>
                     <Button
@@ -144,7 +142,7 @@ function EventItem({ event }: { event: Event }) {
                 <Link className='hidden lg:block' href={`/dashboard/events/${event.id}`}>
                     <Button
                         text='مشاهده جزییات'
-                        icon={<Info className={styles.event_item_button_icon} />}
+                        icon={<Info className='event_item_button_icon' />}
                         color='gray'
                         size='small'
                         onClick={() => { }}
@@ -154,7 +152,6 @@ function EventItem({ event }: { event: Event }) {
                     <EditEventModal event={event} onClose={toggleModal} />
                 )}
             </div>
-            {/* </div> */}
         </li>
 
     );

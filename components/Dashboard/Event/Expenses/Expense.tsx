@@ -70,9 +70,9 @@ function Expense({ expense }: { expense: Expense }) {
     }
 
     return (
-        <div className="flex flex-wrap gap-4 justify-between border-b border-gray-200 py-3 px-5">
+        <div className="flex flex-wrap gap-4 justify-between border-b app_border_color py-3 px-5">
             <div className="flex flex-wrap gap-4">
-                <div className={`p-2 lg:p-3 rounded-full my-auto h-fit ${expense.type === 'transfer' ? 'bg-orange-50 text-orange-300' : 'bg-green-50 text-green-400'}`}>
+                <div className={`p-2 lg:p-3 rounded-full my-auto h-fit ${expense.type === 'transfer' ? 'bg-orange-50 dark:bg-orange-950/30 text-orange-300 dark:text-orange-500' : 'bg-green-50 dark:bg-green-950/30 text-green-400 dark:text-green-500'}`}>
                     {expense.type === 'transfer' ? (
                         <ArrowRightLeft className="size-5 lg:size-6" />
                     ) : (
@@ -81,10 +81,10 @@ function Expense({ expense }: { expense: Expense }) {
                 </div>
 
                 <div className="flex flex-col gap-y-2">
-                    <h2 className="text-sm lg:text-base text-gray-700">{expense.type === 'transfer' ? 'جابه جایی پول' : 'هزینه'}: {expense.desc}</h2>
+                    <h2 className="text-sm lg:text-base text-gray-700 dark:text-gray-300">{expense.type === 'transfer' ? 'جابه جایی پول' : 'هزینه'}: {expense.desc}</h2>
                     <div className="flex flex-wrap gap-x-2 lg:gap-x-4 items-center text-xs lg:text-sm">
                         <span className="user_avatar_gray_text">{expense.type === 'expend' ? getPerson(expense.payer)?.name ?? '?' : getPerson(expense.from)?.name ?? '?'}</span>
-                        <MoveLeft className="size-3.5 text-gray-500" />
+                        <MoveLeft className="size-3.5 text-gray-500 dark:text-gray-400" />
                         {expense.type === 'transfer' ? (
                             <span className={`user_avatar_${getPerson(expense.to)?.scheme ?? 'gray'}_text`}>{getPerson(expense.to)?.name ?? '?'}</span>
                         ) : expense.group.length > 3 ? (
@@ -99,7 +99,7 @@ function Expense({ expense }: { expense: Expense }) {
             </div>
 
             <div className="flex flex-col gap-y-2 items-end">
-                <span className="text-xs text-gray-500">{moment(expense.date).locale('fa').format("DD MMM، YYYY")}</span>
+                <span className="text-xs text-gray-500 dark:text-gray-400">{moment(expense.date).locale('fa').format("DD MMM، YYYY")}</span>
                 <div className="flex flex-row items-center gap-x-2">
 
                     {event.deletedAt === null && (
@@ -134,7 +134,7 @@ function Expense({ expense }: { expense: Expense }) {
                         </div>
                     )}
 
-                    <span className="px-2 lg:px-4  py-1 lg:py-2 text-sm lg:text-base font-semibold bg-indigo-100 text-indigo-900 rounded-full">{TomanPriceFormatter(expense.amount.toString())} تومان</span>
+                    <span className="px-2 lg:px-4  py-1 lg:py-2 text-sm lg:text-base font-semibold bg-indigo-100 dark:bg-indigo-950/50 primary_text_color rounded-full">{TomanPriceFormatter(expense.amount.toString())} تومان</span>
                 </div>
             </div>
 

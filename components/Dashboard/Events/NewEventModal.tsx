@@ -242,13 +242,6 @@ function NewEventModal({ onClose }: { onClose: () => void }) {
                     </div>
 
 
-                    {/* <div className="p-5 flex justify-end">
-                        <button disabled={pending} type="submit" className="hover:bg-indigo-100 flex gap-x-2 items-center transition-all duration-300 rounded-xl primary_text_color text-base px-4 py-2">
-                            <span>{pending ? 'در حال ثبت' : 'ثبت'}</span>
-                            <Save className="size-4" />
-                        </button>
-                    </div> */}
-
                     <div className="p-5 flex justify-end">
                         <Button
                             text={pending ? 'در حال ثبت' : 'ثبت'}

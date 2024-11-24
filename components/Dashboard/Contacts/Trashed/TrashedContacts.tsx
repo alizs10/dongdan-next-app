@@ -1,7 +1,6 @@
 'use client'
 
 import Link from 'next/link';
-import styles from '../../../../styles/dashboard/dashboard-styles.module.css';
 import { MoveRight } from 'lucide-react';
 import { useMemo } from 'react';
 import NoContactsTrashed from './NoContactsTrashed';
@@ -14,14 +13,14 @@ function TrashedContacts() {
     const trashedContacts = useMemo(() => contacts.filter(e => e.deletedAt !== null), [contacts]);
 
     return (
-        <div className={styles.container}>
+        <div className='events_container'>
 
-            <div className={styles.header_container}>
-                <div className={styles.header_right}>
-                    <Link href={'/dashboard/events/contacts'} className={styles.back_button}>
-                        <MoveRight className={styles.back_button_icon} />
+            <div className='event_header_container'>
+                <div className='event_header_right'>
+                    <Link href={'/dashboard/events/contacts'} className='event_back_button'>
+                        <MoveRight className='event_back_button_icon' />
                     </Link>
-                    <h1 className={styles.header_title}>دوستان حذف شده</h1>
+                    <h1 className='event_header_title'>دوستان حذف شده</h1>
                 </div>
             </div>
 

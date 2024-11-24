@@ -168,22 +168,22 @@ function FiltersModal({ onClose, event }: { onClose: () => void, event: Event })
         return createPortal(
             <ModalWrapper onClose={onClose}>
 
-                <section onClick={e => e.stopPropagation()} className="w-4/5 md:w-2/3 lg:w-1/2 xl:w-1/3 app_bg_color rounded-2xl">
+                <section onClick={e => e.stopPropagation()} className="modal_container">
                     <ModalHeader title="فیلتر" onClose={onClose} />
 
                     <div className="p-5 flex flex-col gap-y-4">
 
                         <div className="flex flex-col gap-y-2">
-                            <span className={`text-base ${formErrors.type ? 'text-red-500' : 'text-indigo-900'} capitalize`}>نوع</span>
+                            <span className={`text-base ${formErrors.type ? 'text-red-500' : 'primary_text_color'} capitalize`}>نوع</span>
 
-                            <div className="grid grid-cols-3 bg-gray-200 rounded-full">
-                                <span onClick={selectType.bind(null, 'expend')} className={`col-span-1 text-center text-sm rounded-full py-3 cursor-pointer ${filters.type === 'expend' ? 'bg-indigo-800 text-white' : 'text-gray-500 bg-gray-200 hover:bg-gray-300'} transition-all duration-300`}>هزینه</span>
-                                <span onClick={selectType.bind(null, 'transfer')} className={`col-span-1 text-center text-sm rounded-full py-3 cursor-pointer ${filters.type === 'transfer' ? 'bg-indigo-800 text-white' : 'text-gray-500 bg-gray-200 hover:bg-gray-300'} transition-all duration-300`}>جابجایی پول</span>
-                                <span onClick={selectType.bind(null, 'any')} className={`col-span-1 text-center text-sm rounded-full py-3 cursor-pointer ${filters.type === 'any' ? 'bg-indigo-800 text-white' : 'text-gray-500 bg-gray-200 hover:bg-gray-300'} transition-all duration-300`}>هر دو</span>
+                            <div className="grid grid-cols-3 bg-gray-200 dark:bg-gray-800 rounded-full">
+                                <span onClick={selectType.bind(null, 'expend')} className={`col-span-1 text-center text-sm rounded-full py-3 cursor-pointer ${filters.type === 'expend' ? 'bg-indigo-800 dark:bg-indigo-600 text-white' : 'text-gray-500 dark:text-gray-400 bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-900'} transition-all duration-300`}>هزینه</span>
+                                <span onClick={selectType.bind(null, 'transfer')} className={`col-span-1 text-center text-sm rounded-full py-3 cursor-pointer ${filters.type === 'transfer' ? 'bg-indigo-800 dark:bg-indigo-600 text-white' : 'text-gray-500 dark:text-gray-400 bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-900'} transition-all duration-300`}>جابجایی پول</span>
+                                <span onClick={selectType.bind(null, 'any')} className={`col-span-1 text-center text-sm rounded-full py-3 cursor-pointer ${filters.type === 'any' ? 'bg-indigo-800 dark:bg-indigo-600 text-white' : 'text-gray-500 dark:text-gray-400 bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-900'} transition-all duration-300`}>هر دو</span>
                             </div>
                         </div>
                         <div className="flex flex-col gap-y-2">
-                            <span className={`text-base ${formErrors.group ? 'text-red-500' : 'text-indigo-900'} capitalize`}>فیلتر هزینه {"(0 - 1200000)"}</span>
+                            <span className={`text-base ${formErrors.group ? 'text-red-500' : 'primary_text_color'} capitalize`}>فیلتر هزینه {"(0 - 1200000)"}</span>
 
                             <TextInput name="amount" value={filters.amountMin} error={formErrors.amountMin} label="از (تومان)" handleChange={changeAmountMinHandler} />
                             <TextInput name="amount" value={filters.amountMax} error={formErrors.amountMax} label="تا (تومان)" handleChange={changeAmountMaxHandler} />

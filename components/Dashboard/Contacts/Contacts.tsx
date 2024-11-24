@@ -24,18 +24,18 @@ function Contacts() {
     const contactsCount = contacts.filter(c => c.deletedAt === null).length
 
     return (
-        <div className={styles.contacts_container}>
-            <div className={styles.header_container}>
+        <div className="events_container">
+            <div className="event_header_container">
 
-                <div className={styles.header_right}>
-                    <Link href={'/dashboard/events'} className={styles.back_button}>
-                        <MoveRight className={styles.back_button_icon} />
+                <div className="event_header_right">
+                    <Link href={'/dashboard/events'} className="event_back_button">
+                        <MoveRight className="event_back_button_icon" />
                     </Link>
-                    <h1 className={styles.header_title}>دوستان {`(${contactsCount})`}</h1>
+                    <h1 className="event_header_title">دوستان {`(${contactsCount})`}</h1>
                 </div>
 
 
-                <div className="flex flex-row gap-x-2 items-center">
+                <div className="event_header_left">
                     <Button
                         text="افزودن دوست"
                         color="accent"

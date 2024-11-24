@@ -235,15 +235,15 @@ function EditExpenseModal({ onClose, event, expense }: { onClose: () => void, ev
         return createPortal(
             <ModalWrapper onClose={onClose}>
 
-                <section onClick={e => e.stopPropagation()} className="w-4/5 md:w-2/3 lg:w-1/2 xl:w-1/3 max-h-[90%]  app_bg_color rounded-2xl">
+                <section onClick={e => e.stopPropagation()} className="modal_container">
                     <ModalHeader title={formType === 0 ? 'ثبت هزینه' : 'ثبت جابجایی پول'} onClose={onClose} />
 
 
                     <div className="grid grid-cols-2">
-                        <div className={`col-span-1 select-none py-3 cursor-pointer text-center hover:bg-indigo-100 ${formType === 0 ? 'bg-indigo-100 text-indigo-900' : 'app_bg_color text-gray-700'}`} onClick={() => setFormType(0)}>
+                        <div className={`col-span-1 transition-all duration-300 select-none py-3 cursor-pointer text-center ${formType === 0 ? 'bg-indigo-100 dark:bg-indigo-600 text-indigo-800 dark:text-white' : 'bg-gray-200 dark:bg-gray-800 text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-white'}`} onClick={() => setFormType(0)}>
                             هزینه
                         </div>
-                        <button disabled={event.group.length < 2} className={`col-span-1 select-none py-3 cursor-pointer text-center  ${formType === 1 ? 'hover:bg-indigo-100 bg-indigo-100 text-indigo-900' : event.group.length < 2 ? 'text-gray-300 cursor-not-allowed' : 'hover:bg-indigo-100 app_bg_color text-gray-700'}`} onClick={() => setFormType(event.group.length < 2 ? 0 : 1)}>
+                        <button disabled={event.group.length < 2} className={`col-span-1 transition-all duration-300 select-none py-3 text-center  ${formType === 1 ? 'bg-indigo-100 dark:bg-indigo-600 text-indigo-800 dark:text-white' : event.group.length < 2 ? 'text-gray-300 dark:text-gray-700 cursor-not-allowed' : 'cursor-pointer bg-gray-200 dark:bg-gray-800 text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-white'}`} onClick={() => setFormType(event.group.length < 2 ? 0 : 1)}>
                             جابجایی پول
                         </button>
                     </div>
@@ -268,12 +268,12 @@ function EditExpenseModal({ onClose, event, expense }: { onClose: () => void, ev
 
                                 <div className="flex flex-col gap-y-2">
 
-                                    <span className={`text-base ${formErrors.payer ? 'text-red-500' : 'text-indigo-900'} capitalize`}>کی پرداخت کرده؟</span>
+                                    <span className={`text-base ${formErrors.payer ? 'text-red-500' : 'primary_text_color'} capitalize`}>کی پرداخت کرده؟</span>
 
                                     <div className="flex flex-wrap gap-4">
 
                                         {event.group.map(user => (
-                                            <div key={user.id} onClick={selectPayer.bind(null, user.id)} className={`px-4 cursor-pointer py-2 flex flex-row gap-x-4 items-center border ${user.id === inputs.payer ? `user_avatar_${user.scheme}_text user_avatar_${user.scheme}_border user_avatar_${user.scheme}_bg` : 'user_avatar_gray_text border-white'} transition-all duration-300 rounded-full`}>
+                                            <div key={user.id} onClick={selectPayer.bind(null, user.id)} className={`px-4 cursor-pointer py-2 flex flex-row gap-x-4 items-center border ${user.id === inputs.payer ? `user_avatar_${user.scheme}_text user_avatar_${user.scheme}_border user_avatar_${user.scheme}_bg` : 'user_avatar_gray_text app_border_color'} transition-all duration-300 rounded-full`}>
                                                 <div className="">
                                                     <User className="size-5" />
                                                 </div>
@@ -295,11 +295,11 @@ function EditExpenseModal({ onClose, event, expense }: { onClose: () => void, ev
                                 </div>
                                 <div className="flex flex-col gap-y-2">
 
-                                    <span className={`text-base ${formErrors.group ? 'text-red-500' : 'text-indigo-900'} capitalize`}>کیا سهیم بودن؟</span>
+                                    <span className={`text-base ${formErrors.group ? 'text-red-500' : 'primary_text_color'} capitalize`}>کیا سهیم بودن؟</span>
 
                                     <div className="flex flex-wrap gap-4">
 
-                                        <div onClick={togglePerson.bind(null, 'all')} className={`px-4 cursor-pointer py-2 flex flex-row gap-x-4 items-center border ${inputs.group.length === event.group.length ? `user_avatar_blue_text user_avatar_blue_border user_avatar_blue_bg` : 'user_avatar_gray_text border-white'} transition-all duration-300 rounded-full`}>
+                                        <div onClick={togglePerson.bind(null, 'all')} className={`px-4 cursor-pointer py-2 flex flex-row gap-x-4 items-center border ${inputs.group.length === event.group.length ? `user_avatar_blue_text user_avatar_blue_border user_avatar_blue_bg` : 'user_avatar_gray_text app_border_color'} transition-all duration-300 rounded-full`}>
                                             <div className="">
                                                 <User className="size-5" />
                                             </div>
@@ -309,7 +309,7 @@ function EditExpenseModal({ onClose, event, expense }: { onClose: () => void, ev
 
 
                                         {event.group.map(user => (
-                                            <div key={user.id} onClick={togglePerson.bind(null, user.id)} className={`px-4 cursor-pointer py-2 flex flex-row gap-x-4 items-center border ${isPersonSelected(user.id) ? `user_avatar_${user.scheme}_text user_avatar_${user.scheme}_border user_avatar_${user.scheme}_bg` : 'user_avatar_gray_text border-white'} transition-all duration-300 rounded-full`}>
+                                            <div key={user.id} onClick={togglePerson.bind(null, user.id)} className={`px-4 cursor-pointer py-2 flex flex-row gap-x-4 items-center border ${isPersonSelected(user.id) ? `user_avatar_${user.scheme}_text user_avatar_${user.scheme}_border user_avatar_${user.scheme}_bg` : 'user_avatar_gray_text app_border_color'} transition-all duration-300 rounded-full`}>
                                                 <div className="">
                                                     <User className="size-5" />
                                                 </div>
@@ -345,7 +345,7 @@ function EditExpenseModal({ onClose, event, expense }: { onClose: () => void, ev
                             )}
 
                             <div className="p-5 flex justify-end">
-                                <button disabled={pending} type="submit" className="hover:bg-indigo-100 flex gap-x-2 items-center transition-all duration-300 rounded-xl text-indigo-900 text-base px-4 py-2">
+                                <button disabled={pending} type="submit" className="hover:bg-indigo-100 flex gap-x-2 items-center transition-all duration-300 rounded-xl primary_text_color text-base px-4 py-2">
                                     <span>{pending ? 'در حال ثبت' : 'ثبت'}</span>
                                     <Save className="size-4" />
                                 </button>
@@ -370,12 +370,12 @@ function EditExpenseModal({ onClose, event, expense }: { onClose: () => void, ev
                                     maxDate={new Date()}
                                 />
 
-                                <span className={`text-base ${formErrors2.from ? 'text-red-500' : 'text-indigo-900'} capitalize`}>مبداء</span>
+                                <span className={`text-base ${formErrors2.from ? 'text-red-500' : 'primary_text_color'} capitalize`}>مبداء</span>
 
                                 <div className="flex flex-wrap gap-4">
 
                                     {event.group.map(user => (
-                                        <div key={user.id} onClick={selectFromPerson.bind(null, user.id)} className={`px-4 cursor-pointer py-2 flex flex-row gap-x-4 items-center border ${inputs2.to === user.id ? 'border-gray-300 text-gray-300' : inputs2.from === user.id ? `user_avatar_${user.scheme}_border user_avatar_${user.scheme}_text user_avatar_${user.scheme}_bg` : 'user_avatar_gray_text border-white'} transition-all duration-300 rounded-full`}>
+                                        <div key={user.id} onClick={selectFromPerson.bind(null, user.id)} className={`px-4 cursor-pointer py-2 flex flex-row gap-x-4 items-center border ${inputs2.to === user.id ? 'border-gray-300 text-gray-300 dark:text-gray-800 dark:border-gray-800' : inputs2.from === user.id ? `user_avatar_${user.scheme}_border user_avatar_${user.scheme}_text user_avatar_${user.scheme}_bg` : 'user_avatar_gray_text app_border_color'} transition-all duration-300 rounded-full`}>
                                             <div className="">
                                                 <User className="size-5" />
                                             </div>
@@ -397,12 +397,12 @@ function EditExpenseModal({ onClose, event, expense }: { onClose: () => void, ev
 
                                 <input type="hidden" value={inputs2.from ?? ''} name="from" />
 
-                                <span className={`text-base ${formErrors2.to ? 'text-red-500' : 'text-indigo-900'} capitalize`}>مقصد</span>
+                                <span className={`text-base ${formErrors2.to ? 'text-red-500' : 'primary_text_color'} capitalize`}>مقصد</span>
 
                                 <div className="flex flex-wrap gap-4">
 
                                     {event.group.map(user => (
-                                        <div key={user.id} onClick={selectToPerson.bind(null, user.id)} className={`px-4 cursor-pointer py-2 flex flex-row gap-x-4 items-center border ${inputs2.from === user.id ? 'border-gray-300 text-gray-300' : inputs2.to === user.id ? `user_avatar_${user.scheme}_border user_avatar_${user.scheme}_text user_avatar_${user.scheme}_bg` : 'user_avatar_gray_text border-white'} transition-all duration-300 rounded-full`}>
+                                        <div key={user.id} onClick={selectToPerson.bind(null, user.id)} className={`px-4 cursor-pointer py-2 flex flex-row gap-x-4 items-center border ${inputs2.from === user.id ? 'border-gray-300 text-gray-300 dark:text-gray-800 dark:border-gray-800' : inputs2.to === user.id ? `user_avatar_${user.scheme}_border user_avatar_${user.scheme}_text user_avatar_${user.scheme}_bg` : 'user_avatar_gray_text app_border_color'} transition-all duration-300 rounded-full`}>
                                             <div className="">
                                                 <User className="size-5" />
                                             </div>

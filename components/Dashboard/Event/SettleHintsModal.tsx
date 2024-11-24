@@ -10,7 +10,7 @@ function SettleHintsModal({ onClose, transactions }: { onClose: () => void, tran
     if (typeof window !== 'undefined') {
         return createPortal(
             <ModalWrapper onClose={onClose} >
-                <div onClick={e => e.stopPropagation()} className="w-4/5 md:w-2/3 lg:w-1/2 xl:w-1/3 app_bg_color rounded-2xl">
+                <div onClick={e => e.stopPropagation()} className="modal_container">
                     <ModalHeader title="راهنمای تسویه حساب" onClose={onClose} />
 
                     {transactions.length > 0 ? (
@@ -25,8 +25,8 @@ function SettleHintsModal({ onClose, transactions }: { onClose: () => void, tran
                         </ul>
                     ) : (
                         <div className="w-full py-20  px-5  justify-center items-center flex flex-col gap-y-4">
-                            <Handshake className="size-44 text-gray-300" />
-                            <span className="text-sm text-gray-500">تمام حساب ها تسویه است</span>
+                            <Handshake className="size-44 text-gray-300 dark:text-gray-800" />
+                            <span className="text-sm text-gray-500 dark:text-gray-400">تمام حساب ها تسویه است</span>
                         </div>
                     )}
 
