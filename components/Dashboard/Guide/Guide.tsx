@@ -18,7 +18,7 @@ function Guide() {
             <div className='py-5 px-5 flex flex-col gap-y-6'>
 
                 <div className="text-indigo-800">
-                    <Hash className='size-5 md:size-6 lg:size-7 float-right ml-2 mt-1' />
+                    <Hash className='size-5 md:size-6 lg:size-7 float-right ml-2' />
                     <h1 className='text-lg md:text-xl lg:text-2xl font-bold'>ایجاد رویداد</h1>
                 </div>
 
@@ -45,7 +45,7 @@ function Guide() {
                 </div>
 
                 <div className="text-indigo-800">
-                    <Hash className='size-5 md:size-6 lg:size-7 float-right ml-2 mt-1' />
+                    <Hash className='size-5 md:size-6 lg:size-7 float-right ml-2' />
                     <h1 className='text-lg md:text-xl lg:text-2xl font-bold'>ویرایش/حذف رویداد</h1>
                 </div>
 
@@ -64,7 +64,7 @@ function Guide() {
                 </div>
 
                 <div className="text-indigo-800">
-                    <Hash className='size-5 md:size-6 lg:size-7 float-right ml-2 mt-1' />
+                    <Hash className='size-5 md:size-6 lg:size-7 float-right ml-2' />
                     <h1 className='text-lg md:text-xl lg:text-2xl font-bold'>مشاهده جزییات رویداد</h1>
                 </div>
 
@@ -82,7 +82,7 @@ function Guide() {
                 </div>
 
                 <div className="text-indigo-800">
-                    <Hash className='size-5 md:size-6 lg:size-7 float-right ml-2 mt-1' />
+                    <Hash className='size-5 md:size-6 lg:size-7 float-right ml-2' />
                     <h1 className='text-lg md:text-xl lg:text-2xl font-bold'>تعریف اعضای گروه در رویداد(ایجاد عضو)</h1>
                 </div>
 
@@ -113,7 +113,7 @@ function Guide() {
                 </div>
 
                 <div className="text-indigo-800">
-                    <Hash className='size-5 md:size-6 lg:size-7 float-right ml-2 mt-1' />
+                    <Hash className='size-5 md:size-6 lg:size-7 float-right ml-2' />
                     <h1 className='text-lg md:text-xl lg:text-2xl font-bold'>ویرایش/حذف عضو از گروه</h1>
                 </div>
 
@@ -134,7 +134,7 @@ function Guide() {
                 </div>
 
                 <div className="text-indigo-800">
-                    <Hash className='size-5 md:size-6 lg:size-7 float-right ml-2 mt-1' />
+                    <Hash className='size-5 md:size-6 lg:size-7 float-right ml-2' />
                     <h1 className='text-lg md:text-xl lg:text-2xl font-bold'>ثبت هزینه یا جابجایی پول</h1>
                 </div>
 
@@ -150,7 +150,7 @@ function Guide() {
                 </div>
 
                 <div className="text-indigo-800">
-                    <Hash className='size-5 md:size-6 lg:size-7 float-right ml-2 mt-1' />
+                    <Hash className='size-5 md:size-6 lg:size-7 float-right ml-2' />
                     <h1 className='text-lg md:text-xl lg:text-2xl font-bold'>ویرایش/حذف هزینه یا جابجایی پول</h1>
                 </div>
 
@@ -169,7 +169,21 @@ function Guide() {
                 </div>
 
                 <div className="text-indigo-800">
-                    <Hash className='size-5 md:size-6 lg:size-7 float-right ml-2 mt-1' />
+                    <Hash className='size-5 md:size-6 lg:size-7 float-right ml-2' />
+                    <h1 className='text-lg md:text-xl lg:text-2xl font-bold'>فیلتر هزینه ها</h1>
+                </div>
+
+                <p className='text-base md:text-lg lg:text-xl text-gray-700 font-semibold'>فیلتر هزینه ها شامل نوع هزینه، حداقل و حداکثر مبلغ، بازه ی تاریخی و افراد گروه می باشد.</p>
+                <div className="flex flex-wrap items-center gap-2 text-gray-500 mx-auto px-10 lg:px-5 py-5 lg:py-2 rounded-full border border-gray-300">
+                    <span className='text-sm md:text-base lg:text-lg'>در صفحه رویداد</span>
+                    <MoveLeft className='size-5 text-gray-300' />
+                    <span className='text-sm md:text-base lg:text-lg'>از سربرگ</span>
+                    <MoveLeft className='size-5 text-gray-300' />
+                    <span className='text-sm md:text-base lg:text-lg'>دکمه فیلتر</span>
+                </div>
+
+                <div className="text-indigo-800">
+                    <Hash className='size-5 md:size-6 lg:size-7 float-right ml-2' />
                     <h1 className='text-lg md:text-xl lg:text-2xl font-bold'>سهم اعضا</h1>
                 </div>
 
@@ -184,7 +198,7 @@ function Guide() {
                 </div>
 
                 <div className="text-indigo-800">
-                    <Hash className='size-5 md:size-6 lg:size-7 float-right ml-2 mt-1' />
+                    <Hash className='size-5 md:size-6 lg:size-7 float-right ml-2' />
                     <h1 className='text-lg md:text-xl lg:text-2xl font-bold'>اطلاعات و وضعیت رویداد</h1>
                 </div>
 
@@ -200,7 +214,22 @@ function Guide() {
                 </div>
 
                 <div className="text-indigo-800">
-                    <Hash className='size-5 md:size-6 lg:size-7 float-right ml-2 mt-1' />
+                    <Hash className='size-5 md:size-6 lg:size-7 float-right ml-2' />
+                    <h1 className='text-lg md:text-xl lg:text-2xl font-bold'>محاسبات رویداد</h1>
+                </div>
+
+                <p className='text-base md:text-lg lg:text-xl text-gray-700 font-semibold'>در صفحه رویداد و منوی سمت راست میتوانید محاسبات مربوط به رویداد را در قسمت محاسبات مشاهده کنید.</p>
+                <div className="flex flex-wrap items-center gap-2 text-gray-500 mx-auto px-10 lg:px-5 py-5 lg:py-2 rounded-full border border-gray-300">
+                    <span className='text-sm md:text-base lg:text-lg'>در صفحه رویداد</span>
+                    <MoveLeft className='size-5 text-gray-300' />
+                    <span className='text-sm md:text-base lg:text-lg'>از منوی سمت راست</span>
+                    <MoveLeft className='size-5 text-gray-300' />
+                    <span className='text-sm md:text-base lg:text-lg'>محاسبات رویداد</span>
+                </div>
+
+
+                <div className="text-indigo-800">
+                    <Hash className='size-5 md:size-6 lg:size-7 float-right ml-2' />
                     <h1 className='text-lg md:text-xl lg:text-2xl font-bold'>لیست دوستان</h1>
                 </div>
 
@@ -212,7 +241,7 @@ function Guide() {
                 </div>
 
                 <div className="text-indigo-800">
-                    <Hash className='size-5 md:size-6 lg:size-7 float-right ml-2 mt-1' />
+                    <Hash className='size-5 md:size-6 lg:size-7 float-right ml-2' />
                     <h1 className='text-lg md:text-xl lg:text-2xl font-bold'>ایجاد دوست</h1>
                 </div>
 
@@ -237,7 +266,7 @@ function Guide() {
                 </div>
 
                 <div className="text-indigo-800">
-                    <Hash className='size-5 md:size-6 lg:size-7 float-right ml-2 mt-1' />
+                    <Hash className='size-5 md:size-6 lg:size-7 float-right ml-2' />
                     <h1 className='text-lg md:text-xl lg:text-2xl font-bold'>ویرایش/حذف دوست</h1>
                 </div>
 
@@ -256,7 +285,7 @@ function Guide() {
                 </div>
 
                 <div className="text-indigo-800">
-                    <Hash className='size-5 md:size-6 lg:size-7 float-right ml-2 mt-1' />
+                    <Hash className='size-5 md:size-6 lg:size-7 float-right ml-2' />
                     <h1 className='text-lg md:text-xl lg:text-2xl font-bold'>سطل زباله</h1>
                 </div>
 
@@ -264,7 +293,7 @@ function Guide() {
 
 
                 <div className="text-indigo-800">
-                    <Hash className='size-5 md:size-6 lg:size-7 float-right ml-2 mt-1' />
+                    <Hash className='size-5 md:size-6 lg:size-7 float-right ml-2' />
                     <h1 className='text-lg md:text-xl lg:text-2xl font-bold'>سطل زباله رویداد ها</h1>
                 </div>
 
@@ -280,7 +309,7 @@ function Guide() {
                 </div>
 
                 <div className="text-indigo-800">
-                    <Hash className='size-5 md:size-6 lg:size-7 float-right ml-2 mt-1' />
+                    <Hash className='size-5 md:size-6 lg:size-7 float-right ml-2' />
                     <h1 className='text-lg md:text-xl lg:text-2xl font-bold'>سطل زباله دوستان</h1>
                 </div>
 
@@ -296,7 +325,7 @@ function Guide() {
                 </div>
 
                 <div className="text-indigo-800">
-                    <Hash className='size-5 md:size-6 lg:size-7 float-right ml-2 mt-1' />
+                    <Hash className='size-5 md:size-6 lg:size-7 float-right ml-2' />
                     <h1 className='text-lg md:text-xl lg:text-2xl font-bold'>بازیابی یا حذف دائم رویداد/دوست</h1>
                 </div>
 
