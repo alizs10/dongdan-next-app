@@ -1,5 +1,4 @@
 import { Contact } from '@/types/contact-types';
-import styles from '../Contacts.module.css';
 import TrashedContactItem from './TrashedContactItem';
 
 function TrashedContactsList({ contacts }: { contacts: Contact[] }) {
@@ -10,7 +9,7 @@ function TrashedContactsList({ contacts }: { contacts: Contact[] }) {
     });
 
     return (
-        <ul className={styles.contacts_list}>
+        <ul className="events_list">
             {contacts.map(contact => (<TrashedContactItem key={contact.id} contact={contact} />))}
         </ul>
     );

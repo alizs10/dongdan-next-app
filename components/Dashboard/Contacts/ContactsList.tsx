@@ -1,5 +1,4 @@
 import { Contact } from '@/types/contact-types';
-import styles from './Contacts.module.css';
 import ContactItem from './ContactItem';
 
 function ContactsList({ contacts }: { contacts: Contact[] }) {
@@ -13,7 +12,7 @@ function ContactsList({ contacts }: { contacts: Contact[] }) {
     });
 
     return (
-        <ul className={styles.contacts_list}>
+        <ul className="events_list">
             {contacts.map(contact => (<ContactItem key={contact.id} contact={contact} />))}
         </ul>
     );

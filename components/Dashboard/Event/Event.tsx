@@ -1,7 +1,6 @@
 'use client'
 
 import { CalendarCheck, CalendarClock, Copy, Filter, MoveRight, Plus, Share2, UserPlus, Zap } from "lucide-react";
-// import styles from "./Event.module.css";
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import NewExpenseModal from "./NewExpenseModal";

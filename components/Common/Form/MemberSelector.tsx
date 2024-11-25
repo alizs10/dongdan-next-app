@@ -1,9 +1,10 @@
+import { Contact } from "@/types/contact-types";
 import { Person } from "@/types/event-types";
 import { Ban, User } from "lucide-react";
 
 type PropsTypes = {
     label: string;
-    members: Person[];
+    members: Person[] | Contact[];
     onSelect: (id: string) => void;
     value: string | string[];
     error?: string;

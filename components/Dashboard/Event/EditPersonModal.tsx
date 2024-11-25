@@ -4,10 +4,9 @@ import TextInput from "@/components/Common/Form/TextInput";
 import ModalHeader from "@/components/Common/ModalHeader";
 import ModalWrapper from "@/components/Common/ModalWrapper";
 import { zValidate } from "@/helpers/validation-helper";
-import { Ban, Check, Pencil, User } from "lucide-react";
+import { Pencil } from "lucide-react";
 import { useState } from "react";
 import { createPortal, useFormStatus } from "react-dom";
-import { SCHEMES } from "@/database/data/schemes";
 import { useParams } from "next/navigation";
 import { personSchema } from "@/database/validations/person-validation";
 import { useEventStore } from "@/store/event-store";
@@ -15,6 +14,7 @@ import { Person, SchemeType } from "@/types/event-types";
 import Button from "@/components/Common/Button";
 import { Toast, useToastStore } from "@/store/toast-store";
 import { generateUID } from "@/helpers/helpers";
+import AvatarSelector from "@/components/Common/Form/AvatarSelector";
 
 type FormInputs = {
     name: string;
@@ -46,10 +46,6 @@ function EditPersonModal({ onClose, person }: { onClose: () => void, person: Per
 
     function selectSchemeHandler(scheme: SchemeType) {
         setInputs(prev => ({ ...prev, scheme }))
-    }
-
-    function isSchemeSelected(scheme: SchemeType) {
-        return inputs.scheme === scheme;
     }
 
     function formActionHandler(formData: FormData) {
@@ -104,26 +100,11 @@ function EditPersonModal({ onClose, person }: { onClose: () => void, person: Per
 
                             <TextInput name="name" value={inputs.name} error={formErrors.name} label="نام شخص" handleChange={e => setInputs(prev => ({ ...prev, [e.target.name]: e.target.value }))} />
 
-                            <span className={`text-base ${formErrors.scheme ? 'text-red-500' : 'primary_text_color'} capitalize`}>انتخاب آواتار</span>
-
-                            <div className="flex flex-wrap gap-2">
-                                {SCHEMES.map(scheme => (<div key={scheme} onClick={() => selectSchemeHandler(scheme)} className={`user_avatar_${scheme}_bg user_avatar_${scheme}_border user_avatar_${scheme}_text rounded-full cursor-pointer shadow-sm flex gap-x-4 items-center p-3 border  transition-all duration-300`}>
-                                    {isSchemeSelected(scheme) ? (<Check className="size-6" />) : (<User className="size-6" />)}
-                                </div>))}
-                            </div>
-
-
-                            {formErrors.scheme && (
-                                <div className="flex gap-x-2 items-center mt-2 text-sm text-red-500">
-                                    <Ban className="size-3.5" />
-                                    <span>{formErrors.scheme}</span>
-                                </div>
-                            )}
-                            <input type="hidden" value={inputs.scheme} name="scheme" />
-
-
-
-
+                            <AvatarSelector
+                                error={formErrors.scheme}
+                                value={inputs.scheme}
+                                onSelect={selectSchemeHandler}
+                            />
 
                         </div>
                         <div className="p-5 flex justify-end">

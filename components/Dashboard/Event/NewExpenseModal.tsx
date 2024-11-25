@@ -17,6 +17,7 @@ import { useEventStore } from "@/store/event-store";
 import { Toast, useToastStore } from "@/store/toast-store";
 import { DateObject } from "react-multi-date-picker";
 import Button from "@/components/Common/Button";
+import MemberSelector from "@/components/Common/Form/MemberSelector";
 
 type FormInputs = {
     desc: string;
@@ -268,71 +269,21 @@ function NewExpenseModal({ onClose, event }: { onClose: () => void, event: Event
                                     maxDate={new Date()}
                                 />
 
-                                <div className="flex flex-col gap-y-2">
-
-                                    <span className={`text-base ${formErrors.payer ? 'text-red-500' : 'primary_text_color'} capitalize`}>کی پرداخت کرده؟</span>
-
-                                    <div className="flex flex-wrap gap-4">
-
-                                        {event.group.map(user => (
-                                            <div key={user.id} onClick={selectPayer.bind(null, user.id)} className={`px-4 cursor-pointer py-2 flex flex-row gap-x-4 items-center border ${user.id === inputs.payer ? `user_avatar_${user.scheme}_text user_avatar_${user.scheme}_border user_avatar_${user.scheme}_bg` : 'user_avatar_gray_text app_border_color'} transition-all duration-300 rounded-full`}>
-                                                <div className="">
-                                                    <User className="size-5" />
-                                                </div>
-
-                                                <span className="text-base">{user.name}</span>
-                                            </div>
-                                        ))}
-
-                                    </div>
-
-
-                                    {formErrors.payer && (
-                                        <div className="flex gap-x-2 items-center mt-2 text-sm text-red-500">
-                                            <Ban className="size-3.5" />
-                                            <span>{formErrors.payer}</span>
-                                        </div>
-                                    )}
-                                    <input type="hidden" value={inputs.payer} name="payer" />
-                                </div>
-                                <div className="flex flex-col gap-y-2">
-
-                                    <span className={`text-base ${formErrors.group ? 'text-red-500' : 'primary_text_color'} capitalize`}>کیا سهیم بودن؟</span>
-
-                                    <div className="flex flex-wrap gap-4">
-
-                                        <div onClick={togglePerson.bind(null, 'all')} className={`px-4 cursor-pointer py-2 flex flex-row gap-x-4 items-center border ${inputs.group.length === event.group.length ? `user_avatar_blue_text user_avatar_blue_border user_avatar_blue_bg` : 'user_avatar_gray_text app_border_color'} transition-all duration-300 rounded-full`}>
-                                            <div className="">
-                                                <User className="size-5" />
-                                            </div>
-
-                                            <span className="text-base">همه</span>
-                                        </div>
-
-
-                                        {event.group.map(user => (
-                                            <div key={user.id} onClick={togglePerson.bind(null, user.id)} className={`px-4 cursor-pointer py-2 flex flex-row gap-x-4 items-center border ${isPersonSelected(user.id) ? `user_avatar_${user.scheme}_text user_avatar_${user.scheme}_border user_avatar_${user.scheme}_bg` : 'user_avatar_gray_text app_border_color'} transition-all duration-300 rounded-full`}>
-                                                <div className="">
-                                                    <User className="size-5" />
-                                                </div>
-
-                                                <span className="text-base">{user.name}</span>
-                                            </div>
-                                        ))}
-
-
-
-                                    </div>
-
-
-                                    {formErrors.group && (
-                                        <div className="flex gap-x-2 items-center mt-2 text-sm text-red-500">
-                                            <Ban className="size-3.5" />
-                                            <span>{formErrors.group}</span>
-                                        </div>
-                                    )}
-                                    <input type="hidden" value={inputs.group.toString()} name="group" />
-                                </div>
+                                <MemberSelector
+                                    label="کی پرداخت کرده؟"
+                                    members={event.group}
+                                    onSelect={selectPayer}
+                                    value={inputs.payer}
+                                    error={formErrors.payer}
+                                />
+                                <MemberSelector
+                                    label="کیا سهیم بودن؟"
+                                    members={event.group}
+                                    onSelect={togglePerson}
+                                    value={inputs.group}
+                                    error={formErrors.group}
+                                    selectAllOption={true}
+                                />
 
                             </div>
 
@@ -375,57 +326,22 @@ function NewExpenseModal({ onClose, event }: { onClose: () => void, event: Event
                                     maxDate={new Date()}
                                 />
 
-                                <span className={`text-base ${formErrors2.from ? 'text-red-500' : 'primary_text_color'} capitalize`}>مبداء</span>
-
-                                <div className="flex flex-wrap gap-4">
-
-                                    {event.group.map(user => (
-                                        <div key={user.id} onClick={selectFromPerson.bind(null, user.id)} className={`px-4 cursor-pointer py-2 flex flex-row gap-x-4 items-center border ${inputs2.to === user.id ? 'border-gray-300 text-gray-300 dark:border-gray-800 dark:text-gray-800' : inputs2.from === user.id ? `user_avatar_${user.scheme}_border user_avatar_${user.scheme}_text user_avatar_${user.scheme}_bg` : 'user_avatar_gray_text app_border_color'} transition-all duration-300 rounded-full`}>
-                                            <div className="">
-                                                <User className="size-5" />
-                                            </div>
-
-                                            <span className="text-base">{user.name}</span>
-                                        </div>
-                                    ))}
-
-
-                                </div>
-
-
-                                {formErrors2.from && (
-                                    <div className="flex gap-x-2 items-center mt-2 text-sm text-red-500">
-                                        <Ban className="size-3.5" />
-                                        <span>{formErrors2.from}</span>
-                                    </div>
-                                )}
-
-                                <input type="hidden" value={inputs2.from ?? ''} name="from" />
-
-                                <span className={`text-base ${formErrors2.to ? 'text-red-500' : 'primary_text_color'} capitalize`}>مقصد</span>
-
-                                <div className="flex flex-wrap gap-4">
-
-                                    {event.group.map(user => (
-                                        <div key={user.id} onClick={selectToPerson.bind(null, user.id)} className={`px-4 cursor-pointer py-2 flex flex-row gap-x-4 items-center border ${inputs2.from === user.id ? 'border-gray-300 text-gray-300 dark:border-gray-800 dark:text-gray-800' : inputs2.to === user.id ? `user_avatar_${user.scheme}_border user_avatar_${user.scheme}_text user_avatar_${user.scheme}_bg` : 'user_avatar_gray_text app_border_color'} transition-all duration-300 rounded-full`}>
-                                            <div className="">
-                                                <User className="size-5" />
-                                            </div>
-
-                                            <span className="text-base">{user.name}</span>
-                                        </div>
-                                    ))}
-
-                                </div>
-
-
-                                {formErrors2.to && (
-                                    <div className="flex gap-x-2 items-center mt-2 text-sm text-red-500">
-                                        <Ban className="size-3.5" />
-                                        <span>{formErrors2.to}</span>
-                                    </div>
-                                )}
-                                <input type="hidden" value={inputs2.to ?? ''} name="to" />
+                                <MemberSelector
+                                    label="مبداء"
+                                    members={event.group}
+                                    onSelect={selectFromPerson}
+                                    value={inputs2.from}
+                                    error={formErrors2.from}
+                                    disalllows={inputs2.to.length > 0 ? [inputs2.to] : []}
+                                />
+                                <MemberSelector
+                                    label="مقصد"
+                                    members={event.group}
+                                    onSelect={selectToPerson}
+                                    value={inputs2.to}
+                                    error={formErrors2.to}
+                                    disalllows={inputs2.from.length > 0 ? [inputs2.from] : []}
+                                />
                             </div>
 
                             {inputs2.from && inputs2.amount.length > 0 && inputs2.desc.length > 0 && inputs2.to && (

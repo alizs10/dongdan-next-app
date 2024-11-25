@@ -1,5 +1,3 @@
-import { type ExpenseFilters } from "@/types/event-types";
-import styles from '../../../styles/dashboard/dashboard-styles.module.css';
 import Button from "@/components/Common/Button";
 import { Banknote, CalendarRange, CreditCard, DollarSign, FilterX, User, UserMinus, UserPlus, Users } from "lucide-react";
 import { useEventStore } from "@/store/event-store";
@@ -12,10 +10,10 @@ function ActiveFilters() {
     return (
         <section className="w-full flex flex-col gap-y-2 py-3">
             <div className="flex flex-row justify-between items-center">
-                <div className={styles.header_right}>
-                    <h2 className={styles.header_title}>فیلتر های اعمال شده</h2>
+                <div className="event_header_right">
+                    <h2 className="event_header_title">فیلتر های اعمال شده</h2>
                 </div>
-                <div className={styles.header_left}>
+                <div className="event_header_left">
                     <Button
                         text="حذف فیلتر ها"
                         color="danger"

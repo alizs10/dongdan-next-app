@@ -1,8 +1,6 @@
 'use client'
 
-
 import Button from "@/components/Common/Button";
-import styles from "./Contacts.module.css";
 import { MoveRight, UserPlus } from "lucide-react";
 import { useState } from "react";
 import NewContactModal from "./NewContactModal";

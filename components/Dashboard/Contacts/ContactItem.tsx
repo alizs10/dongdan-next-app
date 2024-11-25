@@ -1,5 +1,4 @@
 import { Contact } from '@/types/contact-types';
-import styles from './Contacts.module.css';
 import { Ellipsis, Info, Pencil, Trash, User } from "lucide-react";
 import Button from '@/components/Common/Button';
 import { useState } from 'react';
@@ -63,17 +62,17 @@ function ContactItem({ contact }: { contact: Contact }) {
     }
 
     return (
-        <li key={contact.id} className={styles.contact_item}>
-            <div className={styles.contact_item_right}>
+        <li className="flex flex-row justify-between items-center py-3 px-5">
+            <div className="flex flex-row gap-x-4 items-center">
 
-                <div className={`${styles.contact_item_icon_container} user_avatar_${contact.scheme}_bg user_avatar_${contact.scheme}_text`}>
+                <div className={`flex justify-center p-3 rounded-xl items-center user_avatar_${contact.scheme}_bg user_avatar_${contact.scheme}_text`}>
                     <User className='size-6' />
                 </div>
 
-                <h2 className={`${styles.contact_item_name} user_avatar_${contact.scheme}_text`}>{contact.name}</h2>
+                <h2 className={`text-base lg:text-lg user_avatar_${contact.scheme}_text`}>{contact.name}</h2>
             </div>
 
-            <div className={styles.contact_item_left}>
+            <div className="flex flex-row gap-x-2 items-center">
                 <div ref={optionsPrentRef} className='relative'>
                     <Button
                         text=''

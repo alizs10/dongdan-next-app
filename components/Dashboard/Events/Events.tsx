@@ -1,5 +1,4 @@
 import { CalendarPlus } from "lucide-react";
-// import styles from "./Events.module.css";
 import NewEventModal from "./NewEventModal";
 import { useState } from "react";
 import { useEventStore } from "@/store/event-store";
