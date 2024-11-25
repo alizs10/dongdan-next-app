@@ -8,6 +8,7 @@ import EditContactModal from './EditContactModal';
 import { useDialogStore } from '@/store/dialog-store';
 import { Toast, useToastStore } from '@/store/toast-store';
 import { generateUID } from '@/helpers/helpers';
+import ContactInfoModal from './ContactInfoModal';
 
 
 function ContactItem({ contact }: { contact: Contact }) {
@@ -19,6 +20,7 @@ function ContactItem({ contact }: { contact: Contact }) {
 
     const [isOptionsOpen, setIsOptionsOpen] = useState(false);
     const [isEditContactModalOpen, setIsEditContactModalOpen] = useState(false);
+    const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
 
     function toggleOptions() {
         setIsOptionsOpen(prev => !prev);
@@ -28,6 +30,12 @@ function ContactItem({ contact }: { contact: Contact }) {
         // toggleOptions();
         setIsOptionsOpen(false);
         setIsEditContactModalOpen(prev => !prev);
+    }
+
+    function toggleInfoModal() {
+        // toggleOptions();
+        setIsOptionsOpen(false);
+        setIsInfoModalOpen(prev => !prev);
     }
 
     const optionsPrentRef = useClickOutside(() => setIsOptionsOpen(false))
@@ -90,7 +98,7 @@ function ContactItem({ contact }: { contact: Contact }) {
                                 icon={<Info className='size-4' />}
                                 color='gray'
                                 size='small'
-                                onClick={toggleModal}
+                                onClick={toggleInfoModal}
                             />
                             <Button
                                 text='ویرایش'
@@ -115,6 +123,7 @@ function ContactItem({ contact }: { contact: Contact }) {
             </div>
 
             {isEditContactModalOpen && (<EditContactModal onClose={toggleModal} contact={contact} />)}
+            {isInfoModalOpen && (<ContactInfoModal onClose={toggleInfoModal} contact={contact} />)}
         </li>
 
     );

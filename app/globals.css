@@ -2,6 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 
+
+@layer base {
+  body {
+    @apply app_bg_color;
+    font-family: Arial, Helvetica, sans-serif;
+  }  
+}
+
 @layer components {
   .app_bg_color {
     @apply bg-white dark:bg-gray-950;
@@ -20,10 +28,6 @@
   }
 }
 
-body {
-  @apply app_bg_color;
-  font-family: Arial, Helvetica, sans-serif;
-}
 
 /* header styles */
 .header {
