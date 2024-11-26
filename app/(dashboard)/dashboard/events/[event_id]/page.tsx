@@ -1,10 +1,12 @@
 import Event from "@/components/Dashboard/Event/Event";
+import { EventContextProvider } from "@/context/EventContext";
 
-function EventPage({ params }: { params: { event_id: string } }) {
+function EventPage() {
     return (
-        <div>
+        <EventContextProvider>
             <Event />
-        </div>
+        </EventContextProvider>
+
     );
 }
 

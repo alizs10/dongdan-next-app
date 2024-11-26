@@ -2,13 +2,14 @@ import Button from "@/components/Common/Button";
 import useClickOutside from "@/hooks/useOutsideClick";
 import { useEventStore } from "@/store/event-store";
 import { Person } from "@/types/event-types";
-import { Ellipsis, Pencil, Trash, User } from "lucide-react";
+import { Ellipsis, Info, Pencil, Trash, User } from "lucide-react";
 import { useParams } from "next/navigation";
 import { useState } from "react";
 import EditPersonModal from "./EditPersonModal";
 import { useDialogStore } from "@/store/dialog-store";
 import { Toast, useToastStore } from "@/store/toast-store";
 import { generateUID } from "@/helpers/helpers";
+import MemberInfoModal from "./MemberInfoModal";
 
 function Member({ person, isEventDeleted }: { person: Person, isEventDeleted: boolean }) {
 
@@ -19,6 +20,7 @@ function Member({ person, isEventDeleted }: { person: Person, isEventDeleted: bo
 
     const [isOptionsOpen, setIsOptionsOpen] = useState(false);
     const [isEditPersonModalOpen, setIsEditPersonModalOpen] = useState(false);
+    const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
 
     function toggleOptions() {
         if (isEventDeleted) return;
@@ -29,6 +31,13 @@ function Member({ person, isEventDeleted }: { person: Person, isEventDeleted: bo
         if (isEventDeleted) return;
         setIsOptionsOpen(false);
         setIsEditPersonModalOpen(prev => !prev);
+    }
+
+
+    function toggleInfoModal() {
+        // toggleOptions();
+        setIsOptionsOpen(false);
+        setIsInfoModalOpen(prev => !prev);
     }
 
     const parentRef = useClickOutside(() => setIsOptionsOpen(false))
@@ -85,6 +94,8 @@ function Member({ person, isEventDeleted }: { person: Person, isEventDeleted: bo
             {!isEventDeleted && (
 
                 <div ref={parentRef} className="relative">
+
+
                     <Button
                         text=''
                         icon={<Ellipsis className='size-4' />}
@@ -96,6 +107,13 @@ function Member({ person, isEventDeleted }: { person: Person, isEventDeleted: bo
 
                     {isOptionsOpen && (
                         <div className="absolute z-50 top-full left-0 mt-4 flex flex-col gap-y-2">
+                            <Button
+                                text='جزییات'
+                                icon={<Info className='size-4' />}
+                                color='gray'
+                                size='small'
+                                onClick={toggleInfoModal}
+                            />
                             <Button
                                 text='ویرایش'
                                 icon={<Pencil className='size-4' />}
@@ -116,6 +134,7 @@ function Member({ person, isEventDeleted }: { person: Person, isEventDeleted: bo
             )}
 
             {isEditPersonModalOpen && !isEventDeleted && <EditPersonModal person={person} onClose={toggleModal} />}
+            {isInfoModalOpen && (<MemberInfoModal onClose={toggleInfoModal} member={person} />)}
         </li>
 
     );

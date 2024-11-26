@@ -1,20 +1,17 @@
 'use client'
 
-import { CalendarCheck, CalendarClock, Copy, Filter, MoveRight, Plus, Share2, UserPlus, Zap } from "lucide-react";
+import { CalendarCheck, CalendarClock, Filter, MoveRight, Plus, UserPlus, Zap } from "lucide-react";
 import Link from "next/link";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useContext, useState } from "react";
 import NewExpenseModal from "./NewExpenseModal";
 import NewPersonModal from "./NewPersonModal";
 import Expenses from "./Expenses/Expenses";
-import { useParams } from "next/navigation";
 import { useEventStore } from "@/store/event-store";
 import NoExpenses from "./Expenses/NoExpenses";
 import NoGroupExpenses from "./Expenses/NoGroupExpenses";
 import moment from "jalali-moment";
 import Button from "@/components/Common/Button";
 import { generateUID, TomanPriceFormatter } from "@/helpers/helpers";
-import { SettlePerson } from "@/types/event-types";
-
 import SettleHintsModal from "./SettleHintsModal";
 import GroupMembers from "./GroupMembers";
 import { Toast, useToastStore } from "@/store/toast-store";
@@ -22,26 +19,27 @@ import NoGroupMembers from "./NoGroupMembers";
 import FiltersModal from "./FiltersModal";
 import ActiveFilters from "./ActiveFilters";
 import ShareEventLink from "./ShareEventLink";
+import { EventContext } from "@/context/EventContext";
 
 function Event() {
 
     const addToast = useToastStore(state => state.addToast)
-    const { event_id } = useParams()
-    const { events, activateEvent, deactivateEvent, activeFilters, filteredExpenses, applyFilters } = useEventStore(state => state);
-    const event = useMemo(() => events.find(e => e.id === event_id), [events, event_id]);
 
-    if (!event) return null;
+    const {
+        event,
+        getAllCosts,
+        getCostsCount,
+        getTransfersCount,
+        getMostCost,
+        getHighestTransfer,
+        getMaxPayer,
+        getPersonBalance,
+        transactions,
+    } = useContext(EventContext);
 
-    // const expensesCount = event.expenses.filter(e => e.deletedAt).length;
+    if (!event) return;
 
-    useEffect(() => {
-
-        console.log('expenses changed')
-        if (!!activeFilters) {
-            applyFilters(activeFilters, event.id)
-        }
-
-    }, [event, event.expenses, activeFilters])
+    const { activateEvent, deactivateEvent, activeFilters, filteredExpenses } = useEventStore(state => state);
 
     const [isNewExpenseModalOpen, setIsNewExpenseModalOpen] = useState(false);
     const [isNewPersonModalOpen, setIsNewPersonModalOpen] = useState(false);
@@ -74,186 +72,6 @@ function Event() {
         setIsFiltersModalOpen(prev => !prev);
     }
 
-    const getAllCosts = useCallback(() => {
-        let total = 0;
-
-        event.expenses.forEach(expense => {
-            if (expense.type === 'expend') {
-                total += expense.amount;
-            }
-        });
-        return total;
-    }, [event.expenses]);
-
-    const getCostsCount = useCallback(() => {
-        return event.expenses.filter(e => e.type === 'expend').length;
-    }, [event.expenses]);
-
-    const getTransfersCount = useCallback(() => {
-        return event.expenses.filter(e => e.type === 'transfer').length;
-    }, [event.expenses]);
-
-    const getMostCost = useCallback(() => {
-
-        let max = 0;
-
-        event.expenses.forEach(expense => {
-            if (expense.type === 'expend' && expense.amount > max) {
-                max = expense.amount;
-            }
-        });
-
-        return max;
-
-    }, [event.expenses]);
-
-    const getHighestTransfer = useCallback(() => {
-        let max = 0;
-
-        event.expenses.forEach(expense => {
-            if (expense.type === 'transfer' && expense.amount > max) {
-                max = expense.amount;
-            }
-        });
-
-        return max;
-    }, [event.expenses]);
-
-    const getAllPersonExpends = useCallback((personId: string) => {
-        let total = 0;
-
-        event.expenses.forEach(expense => {
-            if (expense.type === 'expend' && expense.payer === personId) {
-                total += expense.amount;
-            }
-        });
-
-        return total;
-    }, [event.group, event.expenses]);
-
-    const getAllPersonDebts = useCallback((personId: string) => {
-        let total = 0;
-
-        event.expenses.forEach(expense => {
-            if (expense.type === 'expend' && expense.group.includes(personId)) {
-                total += expense.amount / expense.group.length;
-            }
-        });
-
-        return total;
-    }, [event.group, event.expenses]);
-
-    const getAllPersonRecieved = useCallback((personId: string) => {
-
-        let total = 0;
-
-        event.expenses.forEach(expense => {
-            if (expense.type === 'transfer' && expense.to === personId) {
-                total += expense.amount;
-            }
-        })
-
-        return total;
-
-    }, [event.group, event.expenses])
-
-    const getAllPersonSent = useCallback((personId: string) => {
-
-        let total = 0;
-
-        event.expenses.forEach(expense => {
-            if (expense.type === 'transfer' && expense.from === personId) {
-                total += expense.amount;
-            }
-        })
-
-        return total;
-
-    }, [event.group, event.expenses])
-
-
-    const getMaxPayer = useCallback(() => {
-
-        let maxPayer = '';
-        let paid = 0;
-
-        event.group.forEach(person => {
-            let personPaid = getAllPersonExpends(person.id);
-            if (personPaid > paid) {
-                paid = personPaid;
-                maxPayer = person.name;
-            }
-        })
-
-        return { name: maxPayer, amount: paid };
-    }, [event.expenses]);
-
-    const getPersonBalance = useCallback((personId: string) => {
-        const personDebts = getAllPersonDebts(personId);
-        const personRecieved = getAllPersonRecieved(personId);
-        const personSent = getAllPersonSent(personId);
-        const personExpends = getAllPersonExpends(personId);
-        const personBalance = (personSent + personExpends - personRecieved - personDebts);
-        return personBalance;
-    }, [event.group, event.expenses]);
-
-
-    const creditors = useMemo(() => {
-        const creditorsArr: SettlePerson[] = [];
-        event.group.forEach(person => {
-            const personBalance = getPersonBalance(person.id);
-
-            if (personBalance > 0) {
-                creditorsArr.push({
-                    name: person.name,
-                    amount: personBalance
-                });
-            }
-        })
-
-        return creditorsArr;
-    }, [event.group, event.expenses]);
-
-    const debtors = useMemo(() => {
-        const debtorsArr: SettlePerson[] = [];
-        event.group.forEach(person => {
-
-            const personBalance = parseInt(getPersonBalance(person.id).toFixed(0));
-
-            if (personBalance < 0) {
-                debtorsArr.push({
-                    name: person.name,
-                    amount: Math.abs(personBalance)
-                });
-            }
-        })
-
-        return debtorsArr;
-    }, [event.group, event.expenses]);
-
-    const transactions = useMemo(() => {
-        // Sort debtors and creditors by the amount
-        debtors.sort((a, b) => b.amount - a.amount);
-        creditors.sort((a, b) => b.amount - a.amount);
-
-
-        const transactions: string[] = [];
-        let i = 0, j = 0;
-
-        while (i < debtors.length && j < creditors.length) {
-            const debtor = debtors[i];
-            const creditor = creditors[j];
-            const transactionAmount = Math.min(debtor.amount, creditor.amount);
-            transactions.push(`${debtor.name} باید مقدار ${TomanPriceFormatter(transactionAmount.toFixed(0))} تومان به ${creditor.name} پرداخت کند.`);
-            debtor.amount -= transactionAmount;
-            creditor.amount -= transactionAmount;
-
-            if (debtor.amount === 0) i++;
-            if (creditor.amount === 0) j++;
-        }
-
-        return transactions;
-    }, [debtors, creditors]);
 
 
     function toggleEventStatus() {
