@@ -1,0 +1,105 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String         @id @default(cuid())
+  email        String?        @unique
+  password     String?
+  name         String?
+  avatar       String?
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  deletedAt    DateTime?
+  Events       Event[]        @relation(name: "owner")
+  Expense      Expense[]
+  ExpenseGroup ExpenseGroup[]
+  payerExpense Expense[]      @relation(name: "Payer")
+  fromExpense  Expense[]      @relation(name: "From")
+  toExpense    Expense[]      @relation(name: "To")
+  EventMember  EventMember[]
+  UserContact  UserContact[]
+
+  @@index([email])
+}
+
+model UserContact {
+  id        String    @id @default(cuid())
+  contactId String
+  userId    String
+  User      User      @relation(fields: [userId], references: [id])
+  Contact   Contact   @relation(fields: [contactId], references: [id])
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+}
+
+model Contact {
+  id       String        @id @default(cuid())
+  userId   String
+  contacts UserContact[]
+}
+
+model ExpenseGroup {
+  id        String  @id @default(cuid())
+  expenseId String
+  userId    String
+  user      User    @relation(fields: [userId], references: [id])
+  Expense   Expense @relation(fields: [expenseId], references: [id])
+}
+
+model Expense {
+  id        String         @id @default(cuid())
+  name      String
+  desc      String
+  amount    Int
+  date      DateTime
+  type      String
+  payerId   String?
+  payer     User?          @relation(name: "Payer", fields: [payerId], references: [id])
+  group     ExpenseGroup[]
+  toId      String?
+  to        User?          @relation(name: "To", fields: [toId], references: [id])
+  fromId    String?
+  from      User?          @relation(name: "From", fields: [fromId], references: [id])
+  Event     Event?         @relation(fields: [eventId], references: [id])
+  eventId   String?
+  User      User?          @relation(fields: [userId], references: [id])
+  userId    String?
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+}
+
+model EventMember {
+  id      String @id @default(cuid())
+  eventId String
+  userId  String
+  User    User   @relation(fields: [userId], references: [id])
+  Event   Event  @relation(fields: [eventId], references: [id])
+}
+
+model Event {
+  id        String        @id @default(cuid())
+  name      String
+  slug      String        @unique
+  ownerId   String
+  owner     User          @relation(name: "owner", fields: [ownerId], references: [id])
+  label     String
+  date      DateTime
+  status    Boolean       @default(true)
+  members   EventMember[]
+  expenses  Expense[]
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+  deletedAt DateTime?
+
+  @@index([slug])
+}

@@ -9,15 +9,18 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@prisma/client": "^5.22.0",
     "framer-motion": "^11.11.17",
     "jalali-moment": "^3.3.11",
     "lucide-react": "^0.456.0",
     "next": "15.0.3",
+    "next-auth": "^4.24.10",
     "next-persian-fonts": "^1.0.0",
     "next-themes": "^0.4.3",
     "react": "19.0.0-rc-66855b96-20241106",
     "react-dom": "19.0.0-rc-66855b96-20241106",
     "react-multi-date-picker": "^4.5.2",
+    "sqlite3": "^5.1.7",
     "zod": "^3.23.8",
     "zustand": "^5.0.1"
   },
@@ -28,6 +31,7 @@
     "eslint": "^8",
     "eslint-config-next": "15.0.3",
     "postcss": "^8",
+    "prisma": "^5.22.0",
     "tailwindcss": "^3.4.1",
     "typescript": "^5"
   }
