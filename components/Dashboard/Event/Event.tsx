@@ -34,6 +34,7 @@ function Event() {
         getHighestTransfer,
         getMaxPayer,
         getPersonBalance,
+        getPersonBalanceStatus,
         transactions,
     } = useContext(EventContext);
 
@@ -175,17 +176,17 @@ function Event() {
                                 <li key={person.id} className="flex w-full justify-between items-center">
                                     <div className="flex flex-row gap-x-2 justify-center items-center">
                                         <h1 className={`user_avatar_${person.scheme}_text`}>{person.name}</h1>
-                                        {parseInt(getPersonBalance(person.id).toFixed(0)) > 999 && (
+                                        {getPersonBalanceStatus(person.id) === 'طلبکار' && (
                                             <span className="text-[.6rem] rounded-full px-2 py-1 bg-green-100 dark:bg-green-950/30 text-green-700 dark:text-green-500">
                                                 طلبکار
                                             </span>
                                         )}
-                                        {parseInt(getPersonBalance(person.id).toFixed(0)) < -999 && (
+                                        {getPersonBalanceStatus(person.id) === 'بدهکار' && (
                                             <span className="text-[.6rem] rounded-full px-2 py-1 bg-red-100 dark:bg-red-950/30 text-red-600 dark:text-red-500">
                                                 بدهکار
                                             </span>
                                         )}
-                                        {(parseInt(getPersonBalance(person.id).toFixed(0)) > -1000 && parseInt(getPersonBalance(person.id).toFixed(0)) < 1000) && (
+                                        {getPersonBalanceStatus(person.id) === 'تسویه' && (
                                             <span className="text-[.6rem] rounded-full px-2 py-1 bg-gray-200 dark:bg-gray-800/50 text-gray-700 dark:text-gray-300">
                                                 تسویه
                                             </span>

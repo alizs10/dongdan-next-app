@@ -1,6 +1,6 @@
 import ModalHeader from "@/components/Common/ModalHeader";
 import ModalWrapper from "@/components/Common/ModalWrapper";
-import { Handshake, Smile, Zap } from "lucide-react";
+import { Handshake, Zap } from "lucide-react";
 import { createPortal } from "react-dom";
 
 
@@ -17,8 +17,8 @@ function SettleHintsModal({ onClose, transactions }: { onClose: () => void, tran
 
                         <ul className="py-10 px-5 flex flex-col gap-y-4">
                             {transactions.map((transaction, index) => (
-                                <li key={index} className="flex flex-wrap gap-x-2 items-center text-base text-gray-700">
-                                    <Zap className="size-4 text-indigo-700" />
+                                <li key={index} className="flex flex-wrap gap-x-2 items-center text-base text-gray-700 dark:text-gray-300">
+                                    <Zap className="size-5 text-indigo-700" />
                                     <span>{transaction}</span>
                                 </li>
                             ))}

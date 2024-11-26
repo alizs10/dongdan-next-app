@@ -82,6 +82,7 @@ function Expense({ expense }: { expense: Expense }) {
 
                 <div className="flex flex-col gap-y-2">
                     <h2 className="text-sm lg:text-base text-gray-700 dark:text-gray-300">{expense.type === 'transfer' ? 'جابه جایی پول' : 'هزینه'}: {expense.desc}</h2>
+
                     <div className="flex flex-wrap gap-x-2 lg:gap-x-4 items-center text-xs lg:text-sm">
                         <span className="user_avatar_gray_text">{expense.type === 'expend' ? getPerson(expense.payer)?.name ?? '?' : getPerson(expense.from)?.name ?? '?'}</span>
                         <MoveLeft className="size-3.5 text-gray-500 dark:text-gray-400" />
@@ -91,7 +92,7 @@ function Expense({ expense }: { expense: Expense }) {
                             <span className={`user_avatar_blue_text`}>{expense.group.length} نفر</span>
                         ) : <div className="flex flex-wrap gap-x-2">
                             {expense.group.map((person, index) => (
-                                <span key={person} className={`text-xs user_avatar_${getPerson(person)?.scheme ?? 'blue'}_text`}>{getPerson(person)?.name ?? '?'}{index < expense.group.length - 1 && '،'}</span>
+                                <span key={person} className={`user_avatar_${getPerson(person)?.scheme ?? 'blue'}_text`}>{getPerson(person)?.name ?? '?'}{index < expense.group.length - 1 && '،'}</span>
                             ))}
                         </div>}
                     </div>
