@@ -1,15 +1,28 @@
 'use client'
 
+import DashboardLoading from "@/components/Layout/DashboardLoading";
 import { BookOpenCheck, CalendarRange, Headset, Info, LogOut, Settings2, Trash, User, Users, Zap } from "lucide-react";
-import { signOut } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 function layout({ children }: { children: React.ReactNode }) {
 
-    const pathname = usePathname();
-
+    const { data: session, status } = useSession()
     const router = useRouter();
+
+    useEffect(() => {
+
+        if (status === 'loading') return
+
+        if (!session) {
+            router.push('/auth?form=login')
+        }
+
+    }, [session, status, router])
+
+    const pathname = usePathname();
 
     async function handleLogout() {
         let res = await signOut({ redirect: false })
@@ -17,6 +30,10 @@ function layout({ children }: { children: React.ReactNode }) {
         if (res.url) {
             router.replace('/')
         }
+    }
+
+    if (!session) {
+        return <DashboardLoading />
     }
 
     return (

@@ -8,6 +8,7 @@ import EventsList from "./EventsList";
 
 function Events() {
 
+
     const events = useEventStore((state) => state.events);
 
     const [newEventModalVis, setNewEventModalVis] = useState(false);
@@ -21,6 +22,9 @@ function Events() {
     }
 
     const eventsCount = events.filter(e => e.deletedAt === null).length;
+
+
+
 
     return (
         <div className='events_container'>

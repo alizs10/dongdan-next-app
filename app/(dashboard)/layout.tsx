@@ -3,8 +3,8 @@ import type { Metadata } from "next";
 // import { vazirMatn } from 'next-persian-fonts/vazirmatn'
 import { estedad, estedadFD } from 'next-persian-fonts/estedad'
 import "../globals.css";
-import Layout from "@/components/Layout/Layout";
 import { ThemeProvider } from "next-themes";
+import DashboardLayout from "@/components/Layout/DashboardLayout";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -22,9 +22,9 @@ export default function RootLayout({
         className={`${estedadFD.className} relative`}
       >
         <ThemeProvider attribute="class">
-          <Layout>
+          <DashboardLayout>
             {children}
-          </Layout>
+          </DashboardLayout>
         </ThemeProvider>
 
         <div id="modal-portal"></div>
