@@ -1,31 +1,18 @@
-'use client'
-
-import { ArrowLeft, Key, Mail, MoveLeft, User } from "lucide-react";
-import { useEffect, useState } from "react";
+import { User } from "lucide-react";
 import RegisterForm from "./RegisterForm";
 import LoginForm from "./LoginForm";
-import { useRouter, useSearchParams } from "next/navigation";
+import { redirect } from "next/navigation";
+import Link from "next/link";
 
-function Auth() {
-
-    const searchParams = useSearchParams()
-    const form = searchParams.get('form')
-    const router = useRouter()
-    const [formType, setFormType] = useState(form === 'login' ? 1 : 0) // 0 for register, 1 for login
-
-    useEffect(() => {
-
-        if (!form || (form && !['login', 'register'].includes(form))) {
-            router.replace('/auth?form=login')
-        }
-
-        setFormType(form === 'login' ? 1 : 0)
-
-    }, [form])
+function Auth({ form }: { form: string | string[] | undefined }) {
 
 
-    console.log(formType)
 
+    if (!form || (form && typeof form === 'string' && !['login', 'register'].includes(form))) {
+        redirect('/auth?form=login');
+    }
+
+    const formType = form === 'login' ? 1 : 0; // 0 for register, 1 for login
 
     return (
         <div className="w-4/5 lg:w-3/5 aspect-video flex flex-col gap-y-2 justify-center items-center">
@@ -36,16 +23,13 @@ function Auth() {
 
             <h1 className="text-xl font-bold text-indigo-100 mt-4">خوش اومدی، دوست خوب من!</h1>
 
-
             {formType === 0 ? <RegisterForm /> : <LoginForm />}
 
-
-
             <div className="mt-20 rounded-full bg-black/10 overflow-hidden backdrop-blur-sm flex flex-wrap">
-                <button onClick={() => router.push('/auth?form=register')} className={`w-24 text-sm transition-all duration-300 py-3 flex justify-center items-center ${formType === 0 ? 'bg-indigo-600 text-white' : 'bg-transparent text-indigo-200'}`} type="button">ثبت نام</button>
+                <Link href="/auth?form=register" className={`w-24 text-sm transition-all duration-300 py-3 flex justify-center items-center ${formType === 0 ? 'bg-indigo-600 text-white' : 'bg-transparent text-indigo-200'}`}>ثبت نام</Link>
                 <div className="flex h-full w-0.5 bg-indigo-700 justify-center items-center">
                 </div>
-                <button onClick={() => router.push('/auth?form=login')} className={`w-24 text-sm transition-all duration-300 py-3 flex justify-center items-center ${formType === 1 ? 'bg-indigo-600 text-white' : 'bg-transparent text-indigo-200'}`} type="button">ورود</button>
+                <Link href="/auth?form=login" className={`w-24 text-sm transition-all duration-300 py-3 flex justify-center items-center ${formType === 1 ? 'bg-indigo-600 text-white' : 'bg-transparent text-indigo-200'}`}>ورود</Link>
             </div>
 
         </div>

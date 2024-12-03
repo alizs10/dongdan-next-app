@@ -1,8 +1,14 @@
 import Auth from "@/components/Auth/Auth";
 
-function AuthPage() {
+async function AuthPage({
+    searchParams,
+}: { searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) {
+
+    const form = (await searchParams).form;
+    console.log('form:', form)
+
     return (
-        <Auth />
+        <Auth form={form} />
     );
 }
 
