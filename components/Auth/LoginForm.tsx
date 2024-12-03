@@ -4,7 +4,7 @@ import { ArrowLeft, Github, Key, Mail } from "lucide-react";
 import GoogleIcon from "./Layout/GoogleIcon";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
-import { useState } from "react";
+import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 import { zValidate } from "@/helpers/validation-helper";
 import { loginDataSchema } from "@/database/validations/auth-validation";
@@ -12,6 +12,10 @@ import { loginDataSchema } from "@/database/validations/auth-validation";
 
 function LoginForm() {
 
+    async function loginWithProvider(provider: 'google' | 'github') {
+        let res = await signIn(provider, { redirect: true, redirectTo: '/dashboard/events' })
+
+    }
     const initInputs = {
         email: '',
         password: ''
@@ -30,7 +34,9 @@ function LoginForm() {
 
     const router = useRouter()
 
-    async function handleCredentialsLogin() {
+    async function handleCredentialsLogin(event: FormEvent) {
+
+        event.preventDefault();
 
         if (loading) return
         setLoading(true)
@@ -76,7 +82,7 @@ function LoginForm() {
     }
 
     return (
-        <div className="mt-6 flex flex-col gap-y-2">
+        <form onSubmit={handleCredentialsLogin} className="mt-6 flex flex-col gap-y-2">
 
             {errorMsg && (
                 <p className="block text-center my-4 text-red-500 text-base font-semibold">{errorMsg}</p>
@@ -128,7 +134,7 @@ function LoginForm() {
                 <div className="text-xs transition-all duration-300 w-fit mx-auto hover:text-indigo-400 text-indigo-200 font-semibold mt-2">رمزتو فراموش کردی؟</div>
             </Link>
 
-            <button type="button" onClick={handleCredentialsLogin} className="flex flex-row gap-x-3 transition-all duration-300 border-2 border-transparent hover:text-indigo-600 hover:border-indigo-600 px-5 py-3 text-lg rounded-full bg-black/40 justify-center items-center text-indigo-200 w-fit mx-auto mt-4">
+            <button type="submit" className="flex flex-row gap-x-3 transition-all duration-300 border-2 border-transparent hover:text-indigo-600 hover:border-indigo-600 px-5 py-3 text-lg rounded-full bg-black/40 justify-center items-center text-indigo-200 w-fit mx-auto mt-4">
                 <span className="text-indigo-200">ورود</span>
                 <ArrowLeft className="size-6" />
             </button>
@@ -137,11 +143,11 @@ function LoginForm() {
 
             <div className="flex flex-col gap-y-2">
 
-                <button onClick={() => signIn('github')} className="flex flex-row gap-x-3 transition-all duration-300 border-2 border-transparent hover:text-indigo-600 hover:border-indigo-600 px-5 py-3 text-lg rounded-full bg-black/40 justify-center items-center text-indigo-200 w-fit mx-auto mt-4" type="button">
+                <button onClick={() => loginWithProvider('github')} className="flex flex-row gap-x-3 transition-all duration-300 border-2 border-transparent hover:text-indigo-600 hover:border-indigo-600 px-5 py-3 text-lg rounded-full bg-black/40 justify-center items-center text-indigo-200 w-fit mx-auto mt-4" type="button">
                     <Github className="size-6" />
                     <span className="text-indigo-200">ورود با گیت هاب</span>
                 </button>
-                <button onClick={() => signIn('google')} className="flex flex-row gap-x-3 transition-all duration-300 border-2 border-transparent hover:text-indigo-600 hover:border-indigo-600 px-5 py-3 text-lg rounded-full bg-black/40 justify-center items-center text-indigo-200 w-fit mx-auto mt-4" type="button">
+                <button onClick={() => loginWithProvider('google')} className="flex flex-row gap-x-3 transition-all duration-300 border-2 border-transparent hover:text-indigo-600 hover:border-indigo-600 px-5 py-3 text-lg rounded-full bg-black/40 justify-center items-center text-indigo-200 w-fit mx-auto mt-4" type="button">
                     <div className="size-6">
                         <GoogleIcon />
                     </div>
@@ -149,7 +155,7 @@ function LoginForm() {
                 </button>
 
             </div>
-        </div>
+        </form>
     );
 }
 
