@@ -1,7 +1,7 @@
 import crypto from 'crypto';
 import prisma from "@/lib/db";
 import { ResetPasswordToken } from '@prisma/client';
-import { generateHTML, sendMail } from '@/lib/nodemailer';
+import { generateResetPasswordHTML, sendMail } from '@/lib/nodemailer';
 import { zValidate } from '@/helpers/validation-helper';
 import { forgotPasswordDataSchema } from '@/database/validations/auth-validation';
 
@@ -62,7 +62,7 @@ export async function POST(req: Request) {
 
     // send email to user
     const resetLink = `${process.env.NEXT_PUBLIC_APP_URL}/auth/reset-password?email=${user.email}&token=${token}`
-    await sendMail(user.email, 'Reset Password', generateHTML(user.name ?? user.email, resetLink))
+    await sendMail(user.email, 'Reset Password', generateResetPasswordHTML(user.name ?? user.email, resetLink))
 
     let successMsg = 'ایمیل بازیابی برای شما ارسال شد'
     return Response.json({ status: true, message: successMsg }, { status: 200 })

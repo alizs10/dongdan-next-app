@@ -2,6 +2,7 @@ import { resetPasswordDataSchema } from "@/database/validations/auth-validation"
 import { zValidate } from "@/helpers/validation-helper";
 import { hashPassword } from "@/lib/bcrypt";
 import prisma from "@/lib/db";
+import { generateResetPasswordNotifyerHTML, sendMail } from "@/lib/nodemailer";
 
 
 export async function POST(req: Request) {
@@ -58,6 +59,7 @@ export async function POST(req: Request) {
     })
 
     // notify user by email that its password has been reset
+    await sendMail(user.email, 'NOTIFY: Password Changed', generateResetPasswordNotifyerHTML(user.name ?? user.email))
 
     let successMsg = "رمز عبور شما با موفقیت تغییر کرد"
     return Response.json({ status: true, message: successMsg }, { status: 200 })
