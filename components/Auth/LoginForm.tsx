@@ -8,14 +8,9 @@ import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 import { zValidate } from "@/helpers/validation-helper";
 import { loginDataSchema } from "@/database/validations/auth-validation";
-// import googleIcon from '../google-icon.svg';
 
 function LoginForm() {
 
-    async function loginWithProvider(provider: 'google' | 'github') {
-        let res = await signIn(provider, { redirect: true, redirectTo: '/dashboard/events' })
-
-    }
     const initInputs = {
         email: '',
         password: ''
@@ -33,6 +28,11 @@ function LoginForm() {
     const [errors, setErrors] = useState(initErrors)
 
     const router = useRouter()
+
+
+    async function loginWithProvider(provider: 'google' | 'github') {
+        await signIn(provider, { redirect: true, redirectTo: '/dashboard/events' })
+    }
 
     async function handleCredentialsLogin(event: FormEvent) {
 
@@ -56,25 +56,25 @@ function LoginForm() {
             }
             setErrors(initErrors)
 
-            let res = await signIn('credentials', { redirect: false, email: inputs.email, password: inputs.password })
+            let res = await signIn(
+                'credentials',
+                { email: inputs.email, password: inputs.password, redirect: false })
 
-            if (res?.ok) {
-                // show success toast
-                setSuccessMsg('ورود با موفقیت انجام شد')
+            if (res?.error === null) {
+
+                let successMessage = 'ورود با موفقیت انجام شد';
+                setSuccessMsg(successMessage)
+                setLoading(false)
+
                 router.replace('/dashboard/events')
                 return
             }
 
-            if (res?.status === 401) {
-                setErrorMsg('ایمیل یا رمز عبور اشتباه است')
-                setLoading(false)
-                return
-            }
-
-            setErrorMsg(res?.error || 'خطایی رخ داده است')
+            setErrorMsg(res?.code || 'خطایی رخ داده است')
             setLoading(false)
-        } catch (error) {
-            console.log(error)
+        } catch (err) {
+            console.log(err)
+
             setErrorMsg('خطایی رخ داده است')
             setLoading(false)
         }
@@ -92,7 +92,7 @@ function LoginForm() {
                 <p className="block text-center my-4 text-green-600 text-base font-semibold">{successMsg}</p>
             )}
 
-            <div className="flex flex-wrap rounded-full bg-black/40 overflow-hidden">
+            <div className="flex flex-row w-fit mx-auto rounded-full bg-black/40 overflow-hidden">
                 <div className="px-6 flex justify-center items-center">
                     <Mail className="size-6 text-indigo-200" />
                 </div>
@@ -111,7 +111,7 @@ function LoginForm() {
             )}
 
 
-            <div className="flex flex-wrap rounded-full bg-black/40 overflow-hidden">
+            <div className="flex flex-row w-fit mx-auto rounded-full bg-black/40 overflow-hidden">
                 <div className="px-6 flex justify-center items-center">
                     <Key className="size-6 text-indigo-200" />
                 </div>

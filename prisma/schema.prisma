@@ -30,6 +30,8 @@ model User {
   toExpense     Expense[]       @relation(name: "To")
   EventMember   EventMember[]
   UserContact   UserContact[]
+
+  @@index([email])
 }
 
 model Account {
@@ -85,6 +87,18 @@ model Authenticator {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@id([userId, credentialID])
+}
+
+// reset password token
+model ResetPasswordToken {
+  id        String   @id @default(cuid())
+  token     String
+  email     String
+  userId    String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([email])
 }
 
 model UserContact {

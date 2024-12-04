@@ -24,7 +24,7 @@ export default function RootLayout({
           {children}
         </Layout>
 
-        <div id="modal-portal"></div>
+        <div id="toasts-portal"></div>
       </body>
     </html>
   );

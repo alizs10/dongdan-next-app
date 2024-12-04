@@ -5,8 +5,20 @@ import Credentials from "next-auth/providers/credentials";
 import prisma from "./lib/db";
 import { comparePassword } from "./lib/bcrypt";
 
-class InvalidLoginError extends CredentialsSignin {
-    code = "Invalid identifier or password"
+class InvalidCredentialsError extends CredentialsSignin {
+    code = "اطلاعات وارد شده اشتباه است"
+}
+
+class NoUserExistsError extends CredentialsSignin {
+    code = "حسابی با این ایمیل وجود ندارد"
+}
+
+class InvalidPasswordError extends CredentialsSignin {
+    code = "ایمیل یا رمز عبور اشتباه است"
+}
+
+class NoPasswordError extends CredentialsSignin {
+    code = "حساب شما رمزعبوری ندارد. از طریق فراموشی رمزعبور اقدام کنید."
 }
 
 export default {
@@ -18,7 +30,7 @@ export default {
         async authorize(credentials) {
 
             if (!credentials?.email || !credentials?.password) {
-                return null;
+                throw new InvalidCredentialsError();
             }
 
             let user = await prisma.user.findUnique({
@@ -27,14 +39,18 @@ export default {
                 }
             })
 
-            if (!user || !user?.password) {
-                return null;
+            if (!user) {
+                throw new NoUserExistsError();
+            }
+
+            if (!user?.password) {
+                throw new NoPasswordError();
             }
 
             let isPasswordValid = await comparePassword(credentials.password as string, user.password)
 
             if (!isPasswordValid) {
-                return null;
+                throw new InvalidPasswordError();
             }
 
             return user;
