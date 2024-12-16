@@ -4,22 +4,17 @@ import TextInput from "@/components/Common/Form/TextInput";
 import ModalHeader from "@/components/Common/ModalHeader";
 import ModalWrapper from "@/components/Common/ModalWrapper";
 import { zValidate } from "@/helpers/validation-helper";
-import { Ban, Check, Pencil, User } from "lucide-react";
+import { Ban, Pencil } from "lucide-react";
 import { useState } from "react";
 import { createPortal, useFormStatus } from "react-dom";
-import { SCHEMES } from "@/database/data/schemes";
 import { SchemeType } from "@/types/event-types";
 import Button from "@/components/Common/Button";
 import { Toast, useToastStore } from "@/store/toast-store";
 import { generateUID } from "@/helpers/helpers";
-import { profileSchema } from "@/database/validations/profile-validation";
-
-
-type Profile = {
-    name: string,
-    email: string,
-    scheme: SchemeType;
-}
+import { updateProfileSchema } from "@/database/validations/profile-validation";
+import { useAppStore } from "@/store/app-store";
+import AvatarSelector from "@/components/Common/Form/AvatarSelector";
+import { User } from "@/types/user-types";
 
 type FormInputs = {
     name: string;
@@ -27,18 +22,18 @@ type FormInputs = {
     scheme: SchemeType;
 }
 
-function EditProfileModal({ onClose, profile }: { onClose: () => void, profile: Profile }) {
+function EditProfileModal({ onClose, profile }: { onClose: () => void, profile: User }) {
 
+    const [loading, setLoading] = useState(false);
     const addToast = useToastStore(state => state.addToast);
-    // const updateProfile = useProfileStore(state => state.updateProfile);
-    // const updatePersonInEvents = useEventStore(state => state.updatePersonInEvents);
+    const updateUser = useAppStore(state => state.updateUser);
 
     const { pending, data, method, action } = useFormStatus();
 
     const initInputs: FormInputs = {
-        name: profile.name,
-        email: profile.email,
-        scheme: profile.scheme,
+        name: profile.name ?? '',
+        email: profile.email ?? '',
+        scheme: profile.scheme ?? 'gray',
     }
     const [inputs, setInputs] = useState(initInputs);
 
@@ -54,19 +49,17 @@ function EditProfileModal({ onClose, profile }: { onClose: () => void, profile: 
         setInputs(prev => ({ ...prev, scheme }))
     }
 
-    function isSchemeSelected(scheme: SchemeType) {
-        return inputs.scheme === scheme;
-    }
+    async function formActionHandler(formData: FormData) {
 
-    function formActionHandler(formData: FormData) {
+        if (loading) return
+        setLoading(true)
 
-        let { hasError, errors } = zValidate(profileSchema, inputs);
+        let { hasError, errors } = zValidate(updateProfileSchema, inputs);
 
         if (hasError) {
             setFormErrors(errors);
             return;
         }
-
         setFormErrors(initFormErrors);
 
         let updatedProfile = {
@@ -74,23 +67,45 @@ function EditProfileModal({ onClose, profile }: { onClose: () => void, profile: 
             ...inputs
         }
 
-        // let updatedPerson = {
-        //     id: updatedProfile.id,
-        //     name: updatedProfile.name,
-        //     scheme: updatedProfile.scheme
-        // }
+        try {
 
-        // updatePersonInEvents(updatedPerson.id, updatedPerson);
-        // updateProfile(profile.id, updatedProfile);
-        let newToast: Toast = {
-            id: generateUID(),
-            message: 'پروفایل ویرایش شد',
-            type: 'success'
+            let res = await fetch('/api/profile', {
+                method: 'PUT',
+                body: JSON.stringify(updatedProfile)
+            })
+
+
+            let data = await res.json();
+            if (data.status) {
+                let successToast: Toast = {
+                    id: generateUID(),
+                    message: 'پروفایل ویرایش شد',
+                    type: 'success'
+                }
+                updateUser(data?.profile ?? {});
+                setLoading(false)
+                addToast(successToast)
+                onClose();
+            } else {
+                let errorToast: Toast = {
+                    id: generateUID(),
+                    message: data?.message ?? 'خطا در ویرایش پروفایل',
+                    type: 'danger'
+                }
+                setLoading(false)
+                addToast(errorToast)
+            }
+
+        } catch (error) {
+            let errorToast: Toast = {
+                id: generateUID(),
+                message: 'خطا',
+                type: 'danger'
+            }
+            setLoading(false)
+            addToast(errorToast)
         }
 
-        addToast(newToast)
-
-        onClose();
     }
 
     if (typeof window === "object") {
@@ -107,13 +122,11 @@ function EditProfileModal({ onClose, profile }: { onClose: () => void, profile: 
                             <TextInput name="name" value={inputs.name} error={formErrors.name} label="نام" handleChange={e => setInputs(prev => ({ ...prev, [e.target.name]: e.target.value }))} />
                             <TextInput name="email" value={inputs.email} error={formErrors.email} label="ایمیل" handleChange={e => setInputs(prev => ({ ...prev, [e.target.name]: e.target.value }))} />
 
-                            <span className={`text-base ${formErrors.scheme ? 'text-red-500' : 'primary_text_color'} capitalize`}>انتخاب آواتار</span>
-
-                            <div className="flex flex-wrap gap-2">
-                                {SCHEMES.map(scheme => (<div key={scheme} onClick={() => selectSchemeHandler(scheme)} className={`user_avatar_${scheme}_bg user_avatar_${scheme}_border user_avatar_${scheme}_text rounded-full cursor-pointer shadow-sm flex gap-x-4 items-center p-3 border  transition-all duration-300`}>
-                                    {isSchemeSelected(scheme) ? (<Check className="size-6" />) : (<User className="size-6" />)}
-                                </div>))}
-                            </div>
+                            <AvatarSelector
+                                error={formErrors.scheme}
+                                value={inputs.scheme}
+                                onSelect={selectSchemeHandler}
+                            />
 
 
                             {formErrors.scheme && (

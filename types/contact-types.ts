@@ -7,7 +7,8 @@ export type Contact = Omit<Person, 'eventId'> & {
 }
 
 export type ContactState = {
-    contacts: Contact[];
+    contacts: null | Contact[];
+    setContacts: (contacts: Contact[]) => void;
     addContact: (contact: Contact) => void;
     trashContact: (contactId: string) => void;
     restoreContact: (contactId: string) => void;

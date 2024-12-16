@@ -1,10 +1,12 @@
 'use client';
 
-import { TomanPriceFormatter } from "@/helpers/helpers";
+import DashboardLoading from "@/components/Layout/DashboardLoading";
+import { generateUID, TomanPriceFormatter } from "@/helpers/helpers";
 import { useEventStore } from "@/store/event-store";
+import { Toast, useToastStore } from "@/store/toast-store";
 import { Event, SettlePerson } from "@/types/event-types";
 import { useParams } from "next/navigation";
-import { createContext, useCallback, useEffect, useMemo } from "react";
+import { createContext, useCallback, useEffect, useMemo, useState } from "react";
 
 export type EventContextType = {
     event: Event | null;
@@ -49,12 +51,58 @@ export const EventContext = createContext<EventContextType>(EventContextInit);
 
 export function EventContextProvider({ children }: { children: React.ReactNode }) {
 
-    const { event_id } = useParams()
+    let { event_slug } = useParams()
+    if (typeof event_slug !== 'string') return;
+    event_slug = decodeURIComponent(event_slug);
+
+    const [loading, setLoading] = useState(false)
+    const [event, setEvent] = useState<Event | null>(null)
+    const addToast = useToastStore(state => state.addToast)
+
+    useEffect(() => {
+
+        async function getEvent() {
+            setLoading(true)
+            try {
+                let res = await fetch(`/api/events/${event_slug}`)
+                let data = await res.json()
+
+                if (data?.status) {
+                    setEvent(data.event)
+                } else {
+                    let errorToast: Toast = {
+                        id: generateUID(),
+                        message: "دریافت اطلاعات با خطا مواجه شد",
+                        type: "danger"
+                    }
+                    addToast(errorToast)
+                }
+                setLoading(false)
+
+            } catch (error) {
+                console.log(error)
+                let errorToast: Toast = {
+                    id: generateUID(),
+                    message: "دریافت اطلاعات با خطا مواجه شد",
+                    type: "danger"
+                }
+                addToast(errorToast)
+                setLoading(false)
+            }
+        }
+
+        getEvent()
+
+    }, [event_slug])
+
+
     const { events, activeFilters, applyFilters } = useEventStore(state => state);
-    const event = useMemo(() => events.find(e => e.id === event_id), [events, event_id]);
+    // const event = useMemo(() => events.find(e => e.slug === event_slug), [events, event_slug]);
+
+    console.log(events)
+
 
     if (!event) return null;
-
 
     useEffect(() => {
 
@@ -121,19 +169,19 @@ export function EventContextProvider({ children }: { children: React.ReactNode }
         });
 
         return total;
-    }, [event.group, event.expenses]);
+    }, [event.members, event.expenses]);
 
     const getAllPersonDebts = useCallback((personId: string) => {
         let total = 0;
 
         event.expenses.forEach(expense => {
-            if (expense.type === 'expend' && expense.group.includes(personId)) {
-                total += expense.amount / expense.group.length;
+            if (expense.type === 'expend' && expense.members.includes(personId)) {
+                total += expense.amount / expense.members.length;
             }
         });
 
         return total;
-    }, [event.group, event.expenses]);
+    }, [event.members, event.expenses]);
 
     const getAllPersonRecieved = useCallback((personId: string) => {
 
@@ -147,7 +195,7 @@ export function EventContextProvider({ children }: { children: React.ReactNode }
 
         return total;
 
-    }, [event.group, event.expenses])
+    }, [event.members, event.expenses])
 
     const getAllPersonSent = useCallback((personId: string) => {
 
@@ -161,7 +209,7 @@ export function EventContextProvider({ children }: { children: React.ReactNode }
 
         return total;
 
-    }, [event.group, event.expenses])
+    }, [event.members, event.expenses])
 
 
     const getMaxPayer = useCallback(() => {
@@ -169,7 +217,7 @@ export function EventContextProvider({ children }: { children: React.ReactNode }
         let maxPayer = '';
         let paid = 0;
 
-        event.group.forEach(person => {
+        event.members.forEach(person => {
             let personPaid = getAllPersonExpends(person.id);
             if (personPaid > paid) {
                 paid = personPaid;
@@ -187,7 +235,7 @@ export function EventContextProvider({ children }: { children: React.ReactNode }
         const personExpends = getAllPersonExpends(personId);
         const personBalance = (personSent + personExpends - personRecieved - personDebts);
         return personBalance;
-    }, [event.group, event.expenses]);
+    }, [event.members, event.expenses]);
 
     const getPersonBalanceStatus = useCallback((personId: string) => {
         const personBalance = parseInt(getPersonBalance(personId).toFixed(0));
@@ -198,11 +246,11 @@ export function EventContextProvider({ children }: { children: React.ReactNode }
         } else {
             return 'تسویه';
         }
-    }, [event.group, event.expenses]);
+    }, [event.members, event.expenses]);
 
     const creditors = useMemo(() => {
         const creditorsArr: SettlePerson[] = [];
-        event.group.forEach(person => {
+        event.members.forEach(person => {
             const personBalance = getPersonBalance(person.id);
 
             if (personBalance > 0) {
@@ -214,11 +262,11 @@ export function EventContextProvider({ children }: { children: React.ReactNode }
         })
 
         return creditorsArr;
-    }, [event.group, event.expenses]);
+    }, [event.members, event.expenses]);
 
     const debtors = useMemo(() => {
         const debtorsArr: SettlePerson[] = [];
-        event.group.forEach(person => {
+        event.members.forEach(person => {
 
             const personBalance = parseInt(getPersonBalance(person.id).toFixed(0));
 
@@ -231,7 +279,7 @@ export function EventContextProvider({ children }: { children: React.ReactNode }
         })
 
         return debtorsArr;
-    }, [event.group, event.expenses]);
+    }, [event.members, event.expenses]);
 
     const transactions = useMemo(() => {
         // Sort debtors and creditors by the amount
@@ -277,6 +325,10 @@ export function EventContextProvider({ children }: { children: React.ReactNode }
         transactions,
     }
 
+
+    if (loading) {
+        <DashboardLoading />
+    }
 
     return (
         <EventContext.Provider value={values}>

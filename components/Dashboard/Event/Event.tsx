@@ -25,6 +25,7 @@ function Event() {
 
     const addToast = useToastStore(state => state.addToast)
 
+
     const {
         event,
         getAllCosts,
@@ -48,7 +49,7 @@ function Event() {
     const [isFiltersModalOpen, setIsFiltersModalOpen] = useState(false);
 
     function openNewExpenseModal() {
-        if (event?.group.length === 0 || event?.status === 'inactive') return
+        if (event?.members.length === 0 || event?.status === 'inactive') return
         setIsNewExpenseModalOpen(true);
     }
 
@@ -108,7 +109,7 @@ function Event() {
             <aside className="col-span-1 lg:col-span-2 xl:col-span-1 border-l app_border_color flex flex-col">
 
 
-                {event.group.length > 0 && (
+                {event.members.length > 0 && (
 
                     <div className="p-3 flex flex-col gap-y-8 border-b app_border_color">
                         <div className="flex w-full justify-between items-center">
@@ -146,7 +147,7 @@ function Event() {
                     </div>
                 )}
 
-                {event.group.length > 0 && (
+                {event.members.length > 0 && (
 
                     <div className="p-3 flex flex-col gap-y-8 border-b app_border_color">
                         <div className="flex flex-row justify-between items-center">
@@ -172,7 +173,7 @@ function Event() {
 
                         <ul className="flex flex-col gap-y-4">
 
-                            {event.group.map(person => (
+                            {event.members.map(person => (
                                 <li key={person.id} className="flex w-full justify-between items-center">
                                     <div className="flex flex-row gap-x-2 justify-center items-center">
                                         <h1 className={`user_avatar_${person.scheme}_text`}>{person.name}</h1>
@@ -206,11 +207,11 @@ function Event() {
                 <div className="h-fit px-3 py-5 flex flex-col gap-y-8 border-b app_border_color">
                     <div className="flex w-full flex-row gap-x-2 items-center">
                         <h1 className="event_header_title">اعضای گروه</h1>
-                        <span className="text-sm text-gray-500 dark:text-gray-400">{`${event.group.length}  نفر`}</span>
+                        <span className="text-sm text-gray-500 dark:text-gray-400">{`${event.members.length}  نفر`}</span>
                     </div>
 
-                    {event.group.length > 0 ? (
-                        <GroupMembers group={event.group} isEventDeleted={event.deletedAt !== null} />
+                    {event.members.length > 0 ? (
+                        <GroupMembers members={event.members} isEventDeleted={event.deletedAt !== null} />
                     ) : (
                         <NoGroupMembers eventStatus={event.status} isDeleted={event.deletedAt !== null} />
                     )}
@@ -249,7 +250,7 @@ function Event() {
                         </div>
                         <div className="flex w-full justify-between items-center">
                             <h1 className="text-sm text-gray-500 dark:text-gray-400">تعداد اعضا</h1>
-                            <span className="text-sm text-gray-500 dark:text-gray-400">{event.group.length}</span>
+                            <span className="text-sm text-gray-500 dark:text-gray-400">{event.members.length}</span>
                         </div>
                         <div className="flex w-full justify-between items-center">
                             <h1 className="text-sm text-gray-500 dark:text-gray-400">مادرخرج</h1>
@@ -290,7 +291,7 @@ function Event() {
                         <h1 className="event_header_title">{event.name}</h1>
                     </div>
 
-                    {event.group.length > 0 && (
+                    {event.members.length > 0 && (
                         <div className="event_header_left">
                             {event.expenses.length > 0 && (
                                 <Button
@@ -322,7 +323,7 @@ function Event() {
 
                 {(event.expenses.length > 0 && !activeFilters) || (activeFilters && filteredExpenses.length > 0) ? (
                     <Expenses expenses={activeFilters ? filteredExpenses : event.expenses} />
-                ) : (event.deletedAt !== null || event.status === 'inactive' || (event.status === 'active' && event.group.length > 0)) ? <NoExpenses isFilterMode={!!activeFilters} isDeleted={event.deletedAt !== null} eventStatus={event.status} openNewExpenseModal={openNewExpenseModal} /> : (<NoGroupExpenses openNewPersonModal={openNewPersonModal} />)}
+                ) : (event.deletedAt !== null || event.status === 'inactive' || (event.status === 'active' && event.members.length > 0)) ? <NoExpenses isFilterMode={!!activeFilters} isDeleted={event.deletedAt !== null} eventStatus={event.status} openNewExpenseModal={openNewExpenseModal} /> : (<NoGroupExpenses openNewPersonModal={openNewPersonModal} />)}
 
 
                 {isNewExpenseModalOpen && <NewExpenseModal event={event} onClose={closeNewExpenseModal} />}

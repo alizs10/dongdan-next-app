@@ -7,7 +7,6 @@ import Link from "next/link";
 function Auth({ form }: { form: string | string[] | undefined }) {
 
 
-
     if (!form || (form && typeof form === 'string' && !['login', 'register'].includes(form))) {
         redirect('/auth?form=login');
     }

@@ -3,9 +3,6 @@ import ContactItem from './ContactItem';
 
 function ContactsList({ contacts }: { contacts: Contact[] }) {
 
-    // filter trashed contacts
-    contacts = contacts.filter(e => e.deletedAt === null);
-
     // sort contacts by date
     contacts.sort((a, b) => {
         return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();

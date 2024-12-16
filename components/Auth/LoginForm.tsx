@@ -3,13 +3,15 @@
 import { ArrowLeft, Github, Key, Mail } from "lucide-react";
 import GoogleIcon from "./Layout/GoogleIcon";
 import Link from "next/link";
-import { signIn } from "next-auth/react";
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 import { zValidate } from "@/helpers/validation-helper";
 import { loginDataSchema } from "@/database/validations/auth-validation";
+import { useAppStore } from "@/store/app-store";
 
 function LoginForm() {
+
+    const setUser = useAppStore(state => state.setUser)
 
     const initInputs = {
         email: '',
@@ -31,7 +33,7 @@ function LoginForm() {
 
 
     async function loginWithProvider(provider: 'google' | 'github') {
-        await signIn(provider, { redirect: true, redirectTo: '/dashboard/events' })
+        //login
     }
 
     async function handleCredentialsLogin(event: FormEvent) {
@@ -43,38 +45,43 @@ function LoginForm() {
         setErrorMsg('')
         setSuccessMsg('')
 
+        //validate inputs
+        let { hasError, errors } = zValidate(loginDataSchema, inputs)
+
+        if (hasError) {
+            setErrorMsg('اطلاعات وارد شده صحیح نمی باشد')
+            setErrors(errors)
+            setLoading(false)
+            return
+        }
+        setErrors(initErrors)
+
         try {
+            let res = await fetch('http://localhost:8000/api/auth/login', {
+                method: 'POST',
+                body: JSON.stringify(inputs),
+                headers: {
+                    'Content-Type': 'application/json',
+                    'accept': 'application/json',
+                }
+            })
 
-            //validate inputs
-            let { hasError, errors } = zValidate(loginDataSchema, inputs)
+            let data = await res.json()
 
-            if (hasError) {
-                setErrorMsg('اطلاعات وارد شده صحیح نمی باشد')
-                setErrors(errors)
-                setLoading(false)
-                return
-            }
-            setErrors(initErrors)
-
-            let res = await signIn(
-                'credentials',
-                { email: inputs.email, password: inputs.password, redirect: false })
-
-            if (res?.error === null) {
-
-                let successMessage = 'ورود با موفقیت انجام شد';
-                setSuccessMsg(successMessage)
-                setLoading(false)
-
-                router.replace('/dashboard/events')
-                return
+            if (data?.status) {
+                setSuccessMsg('با موفقیت وارد شدید')
+                let token = data.token;
+                localStorage.setItem('token', token)
+                let user = data.user;
+                setUser(user)
+                router.replace('/dashboard/profile')
             }
 
-            setErrorMsg(res?.code || 'خطایی رخ داده است')
+
             setLoading(false)
         } catch (err) {
-            console.log(err)
 
+            console.log(err)
             setErrorMsg('خطایی رخ داده است')
             setLoading(false)
         }

@@ -9,23 +9,17 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@auth/prisma-adapter": "^2.7.4",
-    "@prisma/client": "^5.22.0",
     "@types/bcrypt": "^5.0.2",
-    "bcrypt": "^5.1.1",
     "crypto": "^1.0.1",
     "framer-motion": "^11.11.17",
     "jalali-moment": "^3.3.11",
     "lucide-react": "^0.456.0",
     "next": "15.0.3",
-    "next-auth": "^5.0.0-beta.25",
     "next-persian-fonts": "^1.0.0",
     "next-themes": "^0.4.3",
-    "nodemailer": "^6.9.16",
     "react": "19.0.0-rc-66855b96-20241106",
     "react-dom": "19.0.0-rc-66855b96-20241106",
     "react-multi-date-picker": "^4.5.2",
-    "sqlite3": "^5.1.7",
     "zod": "^3.23.8",
     "zustand": "^5.0.1"
   },

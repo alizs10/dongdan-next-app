@@ -1,40 +1,15 @@
 'use client'
 
-import DashboardLoading from "@/components/Layout/DashboardLoading";
 import { BookOpenCheck, CalendarRange, Headset, Info, LogOut, Settings2, Trash, User, Users, Zap } from "lucide-react";
-import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect } from "react";
 
 function layout({ children }: { children: React.ReactNode }) {
 
-    const { data: session, status } = useSession()
     const router = useRouter();
 
-    useEffect(() => {
-
-        if (status === 'loading') return
-
-        if (!session) {
-            router.push('/auth?form=login')
-        }
-
-    }, [session, status, router])
 
     const pathname = usePathname();
-
-    async function handleLogout() {
-        let res = await signOut({ redirect: false })
-        console.log(res);
-        if (res.url) {
-            router.replace('/')
-        }
-    }
-
-    if (!session) {
-        return <DashboardLoading />
-    }
 
     return (
         <section className="top-0 sticky grid grid-cols-1 lg:grid-cols-5">
@@ -100,7 +75,7 @@ function layout({ children }: { children: React.ReactNode }) {
                             <span>پروفایل کاربری</span>
                         </Link>
                     </li>
-                    <li onClick={handleLogout} className={`flex flex-row items-center gap-x-2 px-5 py-3 border-r-2 transition-all duration-300 text-sm xl:text-base cursor-pointer ${pathname.includes('/dashboard/logout') ? 'border-indigo-800 dark:border-600 primary_text_color bg-indigo-50 dark:bg-indigo-600/10' : 'hover:border-r-2 border-r-transparent text-gray-500 dark:text-gray-400  hover:border-r-indigo-800 hover:bg-indigo-50 dark:hover:bg-indigo-600/10 hover:text-indigo-800 dark:hover:text-indigo-600'}`}>
+                    <li className={`flex flex-row items-center gap-x-2 px-5 py-3 border-r-2 transition-all duration-300 text-sm xl:text-base cursor-pointer ${pathname.includes('/dashboard/logout') ? 'border-indigo-800 dark:border-600 primary_text_color bg-indigo-50 dark:bg-indigo-600/10' : 'hover:border-r-2 border-r-transparent text-gray-500 dark:text-gray-400  hover:border-r-indigo-800 hover:bg-indigo-50 dark:hover:bg-indigo-600/10 hover:text-indigo-800 dark:hover:text-indigo-600'}`}>
                         <LogOut className="size-4 xl:size-5" />
                         <span>خروج از حساب</span>
                     </li>

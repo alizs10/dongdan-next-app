@@ -6,17 +6,54 @@ import Button from '@/components/Common/Button';
 import { useDialogStore } from '@/store/dialog-store';
 import { Toast, useToastStore } from '@/store/toast-store';
 import { generateUID } from '@/helpers/helpers';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import EditProfileModal from './EditProfileModal';
 import ChangePasswordModal from './ChangePasswordModal';
+import { useAppStore } from '@/store/app-store';
+import { useRouter } from 'next/navigation';
 
 function Profile() {
 
-    let profile = {
-        name: 'محمد علی عبداللهی',
-        email: 'm.aliali@gmail.com',
-        scheme: 'gray' as const
-    }
+    const { user, setUser } = useAppStore(state => state)
+    console.log(user)
+    const router = useRouter()
+
+    useEffect(() => {
+
+        async function getUserProfile() {
+
+            try {
+
+                let res = await fetch('http://localhost:8000/api/profile', {
+                    method: 'GET',
+                    headers: {
+                        'accept': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    },
+                })
+
+                let data = await res.json()
+
+                if (data?.status) {
+                    console.log(data)
+                    let user = data?.user;
+                    setUser(user);
+                }
+
+            } catch (error) {
+                console.log(error)
+            }
+
+        }
+
+        console.log(user)
+
+        if (!user) {
+            getUserProfile()
+        }
+
+
+    }, [user])
 
     const openDialog = useDialogStore(state => state.openDialog)
     const addToast = useToastStore(state => state.addToast)
@@ -71,6 +108,8 @@ function Profile() {
 
     }
 
+    if (!user) return;
+
     return (
         <div className="events_container">
             <div className="event_header_container">
@@ -98,11 +137,11 @@ function Profile() {
 
                 <div className="flex flex-row w-full max-w-[400px] justify-between items-center gap-x-4 text-base">
                     <h1 className='text-gray-700 dark:text-gray-300'>نام:</h1>
-                    <span className='text-gray-500 dark:text-gray-400 text-right w-full'>{'-'}</span>
+                    <span className='text-gray-500 dark:text-gray-400 text-right w-full'>{user.name}</span>
                 </div>
                 <div className="flex flex-row w-full max-w-[400px] justify-between items-center gap-x-4 text-base">
                     <h1 className='text-gray-700 dark:text-gray-300'>ایمیل:</h1>
-                    <span className='text-gray-500 dark:text-gray-400 text-right  w-full'>{'example@example.com'}</span>
+                    <span className='text-gray-500 dark:text-gray-400 text-right  w-full'>{user.email}</span>
                 </div>
                 <div className="mt-10 flex flex-row w-full max-w-[400px] justify-between items-center gap-x-4 text-base">
                     <Button
@@ -125,7 +164,7 @@ function Profile() {
 
             </div>
 
-            {editProfileModalVis && (<EditProfileModal profile={profile} onClose={toggleEditProfileModal} />)}
+            {editProfileModalVis && (<EditProfileModal profile={user} onClose={toggleEditProfileModal} />)}
             {changePasswordModalVis && (<ChangePasswordModal onClose={toggleChangePasswordModal} />)}
         </div>
     );

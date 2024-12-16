@@ -22,11 +22,12 @@ type FormInputs = {
     name: string;
     label: string;
     date: Date;
-    group: string[];
+    members: string[];
 }
 
 function NewEventModal({ onClose }: { onClose: () => void }) {
 
+    const [loading, setLoading] = useState(false);
     const addToast = useToastStore(state => state.addToast)
     const addEvent = useEventStore(state => state.addEvent);
     let contacts = useContactStore(state => state.contacts)
@@ -36,7 +37,7 @@ function NewEventModal({ onClose }: { onClose: () => void }) {
     const initInputs = {
         name: '',
         label: '',
-        group: [],
+        members: [],
         date: new Date(Date.now())
     }
     const [inputs, setInputs] = useState<FormInputs>(initInputs);
@@ -45,7 +46,7 @@ function NewEventModal({ onClose }: { onClose: () => void }) {
         name: '',
         label: '',
         date: '',
-        group: ''
+        members: ''
     }
     const [formErrors, setFormErrors] = useState(initFormErrors);
 
@@ -70,42 +71,44 @@ function NewEventModal({ onClose }: { onClose: () => void }) {
     }
 
     function isPersonSelected(personId: string) {
-        return inputs.group.includes(personId);
+        return inputs.members.includes(personId);
     }
 
 
     function togglePerson(personId: string) {
 
-        if (personId === 'all' && inputs.group.length === contacts.length) {
-            setInputs(prev => ({ ...prev, group: [] }))
+        if (personId === 'all' && inputs.members.length === contacts.length) {
+            setInputs(prev => ({ ...prev, members: [] }))
             return
         }
-        if (personId === 'all' && inputs.group.length !== contacts.length) {
-            setInputs(prev => ({ ...prev, group: contacts.map(p => p.id) }))
+        if (personId === 'all' && inputs.members.length !== contacts.length) {
+            setInputs(prev => ({ ...prev, members: contacts.map(p => p.id) }))
             return
         }
 
 
         if (isPersonSelected(personId)) {
-            setInputs(prev => ({ ...prev, group: prev.group.filter(id => id !== personId) }))
+            setInputs(prev => ({ ...prev, members: prev.members.filter(id => id !== personId) }))
         } else {
-            setInputs(prev => ({ ...prev, group: [...prev.group, personId] }))
+            setInputs(prev => ({ ...prev, members: [...prev.members, personId] }))
         }
     }
 
-    function formActionHandler(formData: FormData) {
+    async function formActionHandler(formData: FormData) {
+        if (loading) return;
 
-        let eventId = generateUID();
+        setLoading(true);
+
+        // let eventId = generateUID();
 
         let newEvent: Event = {
-            ...inputs,
-            id: eventId,
-            group: contacts.filter(c => inputs.group.includes(c.id)).map(m => ({ ...m, eventId: eventId })),
-            expenses: [],
-            status: 'active' as const,
-            createdAt: new Date(Date.now()),
-            updatedAt: new Date(Date.now()),
-            deletedAt: null,
+            name: inputs.name,
+            label: inputs.label,
+            date: inputs.date,
+            status: true,
+            // id: eventId,
+            // members: contacts.filter(c => inputs.members.includes(c.id)).map(m => ({ ...m, eventId: eventId })),
+            // expenses: [],
         }
 
         let { hasError, errors } = zValidate(eventSchema, newEvent);
@@ -127,17 +130,54 @@ function NewEventModal({ onClose }: { onClose: () => void }) {
 
         setFormErrors(initFormErrors);
 
+        try {
+            let res = await fetch('/api/events', {
+                method: 'POST',
+                body: JSON.stringify(newEvent)
+            })
+
+            let data = await res.json();
+
+            if (data?.status) {
+
+                let successToast: Toast = {
+                    id: generateUID(),
+                    message: data?.message ?? 'رویداد با موفقیت ثبت شد',
+                    type: 'success'
+                }
+                addToast(successToast);
+                addEvent(data?.event ?? newEvent);
+                setLoading(false);
+                onClose();
+            } else {
+
+                if (res.status === 422) {
+                    console.log(data.errors)
+                    setFormErrors(data?.errors);
+                }
 
 
-        let newToast: Toast = {
-            id: generateUID(),
-            message: 'رویداد اضافه شد',
-            type: 'success'
+                let errorToast: Toast = {
+                    id: generateUID(),
+                    message: data?.message ?? 'خطا در ثبت رویداد',
+                    type: 'danger'
+                }
+                addToast(errorToast);
+                setLoading(false);
+            }
+
+        } catch (error) {
+
+            console.log(error)
+
+            let errorToast: Toast = {
+                id: generateUID(),
+                message: 'خطا در ثبت رویداد',
+                type: 'danger'
+            }
+            addToast(errorToast);
+            setLoading(false);
         }
-
-        addEvent(newEvent);
-        addToast(newToast)
-        onClose();
 
     }
 
@@ -204,8 +244,8 @@ function NewEventModal({ onClose }: { onClose: () => void }) {
                                 label="انتخاب اعضا از دوستان"
                                 members={contacts}
                                 onSelect={togglePerson}
-                                value={inputs.group}
-                                error={formErrors.group}
+                                value={inputs.members}
+                                error={formErrors.members}
                                 selectAllOption={true}
                             />
                         )}

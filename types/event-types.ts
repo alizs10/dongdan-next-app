@@ -1,15 +1,19 @@
+// import { Event as PrismaEvent } from "@prisma/client";
+
 export type Event = {
-    id: string;
+    id?: string;
     name: string;
+    slug?: string;
     date: Date;
     label: string;
-    group: Person[];
-    expenses: Expense[];
-    status: 'active' | 'inactive';
-    createdAt: Date;
-    updatedAt: Date;
-    deletedAt: Date | null;
+    members?: Person[];
+    expenses?: Expense[];
+    status: Boolean;
+    createdAt?: Date;
+    updatedAt?: Date;
+    deletedAt?: Date | null;
 }
+
 
 export type Expend = {
     id: string;
@@ -70,26 +74,27 @@ export type Person = {
 }
 
 export type EventState = {
-    events: Event[];
-    addEvent: (event: Event) => void;
-    trashEvent: (eventId: string) => void;
-    restoreEvent: (eventId: string) => void;
-    updateEvent: (eventId: string, updatedEvent: Event) => void;
-    deleteEvent: (eventId: string) => void;
-    activateEvent: (eventId: string) => void;
-    deactivateEvent: (eventId: string) => void;
-    addPerson: (eventId: string, person: Person) => void;
-    deletePerson: (eventId: string, personId: string) => void;
-    updatePerson: (eventId: string, personId: string, updatedPerson: Person) => void;
-    addExpense: (eventId: string, expense: Expense) => void;
-    updateExpense: (eventId: string, expenseId: string, updatedExpense: Expense) => void;
-    deleteExpense: (eventId: string, expenseId: string) => void;
-    updatePersonInEvents: (personId: string, updatedPerson: Omit<Person, "eventId">) => void;
-    filteredExpenses: Expense[];
-    activeFilters: ExpenseFilters | null;
-    applyFilters: (filters: ExpenseFilters, eventId: string) => void;
-    clearFilters: () => void;
-    deleteEventMemberWithExpenses: (eventId: string, personId: string) => void;
+    events: null | Event[];
+    setEvents: (events: Event[]) => void;
+    // addEvent: (event: Event) => void;
+    // trashEvent: (eventId: string) => void;
+    // restoreEvent: (eventId: string) => void;
+    // updateEvent: (eventId: string, updatedEvent: Event) => void;
+    // deleteEvent: (eventId: string) => void;
+    // activateEvent: (eventId: string) => void;
+    // deactivateEvent: (eventId: string) => void;
+    // addPerson: (eventId: string, person: Person) => void;
+    // deletePerson: (eventId: string, personId: string) => void;
+    // updatePerson: (eventId: string, personId: string, updatedPerson: Person) => void;
+    // addExpense: (eventId: string, expense: Expense) => void;
+    // updateExpense: (eventId: string, expenseId: string, updatedExpense: Expense) => void;
+    // deleteExpense: (eventId: string, expenseId: string) => void;
+    // updatePersonInEvents: (personId: string, updatedPerson: Omit<Person, "eventId">) => void;
+    // filteredExpenses: Expense[];
+    // activeFilters: ExpenseFilters | null;
+    // applyFilters: (filters: ExpenseFilters, eventId: string) => void;
+    // clearFilters: () => void;
+    // deleteEventMemberWithExpenses: (eventId: string, personId: string) => void;
 };
 
 

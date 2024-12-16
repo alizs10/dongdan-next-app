@@ -72,6 +72,9 @@ function EventItem({ event }: { event: Event }) {
 
 
     function onTrash() {
+
+        if (!event?.id) return;
+
         setIsOptionsOpen(false);
         openDialog(
             'حذف رویداد',
@@ -81,7 +84,7 @@ function EventItem({ event }: { event: Event }) {
                 {
                     text: 'حذف',
                     onClick: () => {
-                        trashEvent(event.id)
+                        trashEvent(event.id as string)
                         addToast(newToast)
                     }
                 },
@@ -101,7 +104,7 @@ function EventItem({ event }: { event: Event }) {
                     {renderIcon(event.label)}
                 </div>
 
-                <Link href={`/dashboard/events/${event.id}`}>
+                <Link href={`/dashboard/events/${event.slug}`}>
                     <h2 className='event_item_name'>{event.name}</h2>
                 </Link>
             </div>
@@ -139,7 +142,7 @@ function EventItem({ event }: { event: Event }) {
                         </div>
                     )}
                 </div>
-                <Link className='hidden lg:block' href={`/dashboard/events/${event.id}`}>
+                <Link className='hidden lg:block' href={`/dashboard/events/${event.slug}`}>
                     <Button
                         text='مشاهده جزییات'
                         icon={<Info className='event_item_button_icon' />}
