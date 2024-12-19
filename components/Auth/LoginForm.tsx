@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import { zValidate } from "@/helpers/validation-helper";
 import { loginDataSchema } from "@/database/validations/auth-validation";
 import { useAppStore } from "@/store/app-store";
+import { login } from "@/app/actions/auth";
 
 function LoginForm() {
 
@@ -57,35 +58,25 @@ function LoginForm() {
         setErrors(initErrors)
 
         try {
-            let res = await fetch('http://localhost:8000/api/auth/login', {
-                method: 'POST',
-                body: JSON.stringify(inputs),
-                headers: {
-                    'Content-Type': 'application/json',
-                    'accept': 'application/json',
-                }
-            })
+            const result = await login(inputs);
 
-            let data = await res.json()
+            console.log("result is:", result);
 
-            if (data?.status) {
+            if (result.success) {
                 setSuccessMsg('با موفقیت وارد شدید')
-                let token = data.token;
-                localStorage.setItem('token', token)
-                let user = data.user;
-                setUser(user)
                 router.replace('/dashboard/profile')
-            }
 
+                // localStorage.setItem('token', token)
+                // let user = data.user;
+                // setUser(user)
+            }
 
             setLoading(false)
         } catch (err) {
-
             console.log(err)
             setErrorMsg('خطایی رخ داده است')
             setLoading(false)
         }
-
     }
 
     return (

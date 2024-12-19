@@ -2,15 +2,11 @@
 
 import Link from 'next/link';
 import { MoveRight } from 'lucide-react';
-import { useMemo } from 'react';
 import NoContactsTrashed from './NoContactsTrashed';
 import TrashedContactsList from './TrashedContactsList';
-import { useContactStore } from '@/store/contact-store';
+import { Contact } from '@/types/contact-types';
 
-function TrashedContacts() {
-
-    const contacts = useContactStore(state => state.contacts);
-    const trashedContacts = useMemo(() => contacts.filter(e => e.deletedAt !== null), [contacts]);
+function TrashedContacts({ items }: { items: Contact[] }) {
 
     return (
         <div className='events_container'>
@@ -24,9 +20,8 @@ function TrashedContacts() {
                 </div>
             </div>
 
-
-            {trashedContacts.length > 0 ? (
-                <TrashedContactsList contacts={trashedContacts} />
+            {items.length > 0 ? (
+                <TrashedContactsList contacts={items} />
             ) : (
                 <NoContactsTrashed />
             )}

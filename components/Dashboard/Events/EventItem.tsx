@@ -42,7 +42,7 @@ function renderIcon(label: string) {
 function EventItem({ event }: { event: Event }) {
 
     const addToast = useToastStore(state => state.addToast)
-    const { trashEvent } = useEventStore(state => state)
+    const { deleteEvent } = useEventStore(state => state)
     const { openDialog } = useDialogStore(state => state)
 
     const [isOptionsOpen, setIsOptionsOpen] = useState(false);
@@ -60,16 +60,52 @@ function EventItem({ event }: { event: Event }) {
 
     const optionsPrentRef = useClickOutside(() => setIsOptionsOpen(false))
 
-    function onDelete() {
-        console.log('delete');
+    async function trashEventRequest() {
+        try {
+
+            let res = await fetch(`http://localhost:8000/api/event/${event.id}`,
+                {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    },
+                }
+            )
+
+            let data = await res.json();
+
+            if (data?.status) {
+                return true
+            }
+
+
+            return false
+        } catch (error) {
+            return false;
+        }
     }
 
-    let newToast: Toast = {
-        id: generateUID(),
-        message: 'رویداد حذف شد',
-        type: 'success'
+    async function handleTrashEvent() {
+        let trashEventRes = await trashEventRequest();
+        if (trashEventRes) {
+            let successToast: Toast = {
+                id: generateUID(),
+                message: 'رویداد حذف شد',
+                type: 'success'
+            }
+            deleteEvent(event.id as string);
+            addToast(successToast);
+        } else {
+            let errorToast: Toast = {
+                id: generateUID(),
+                message: 'خطا در حذف رویداد',
+                type: 'danger'
+            }
+            addToast(errorToast);
+        }
     }
-
 
     function onTrash() {
 
@@ -84,8 +120,7 @@ function EventItem({ event }: { event: Event }) {
                 {
                     text: 'حذف',
                     onClick: () => {
-                        trashEvent(event.id as string)
-                        addToast(newToast)
+                        handleTrashEvent();
                     }
                 },
                 cancel:

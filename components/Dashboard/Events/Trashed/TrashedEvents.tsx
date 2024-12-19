@@ -3,14 +3,10 @@
 import Link from 'next/link';
 import { MoveRight } from 'lucide-react';
 import NoEventsTrashed from './NoEventsTrashed';
-import { useEventStore } from '@/store/event-store';
-import { useMemo } from 'react';
 import TrashedEventsList from './TrashedEventsList';
+import { Event } from '@/types/event-types';
 
-function TrashedEvents() {
-
-    const events = useEventStore(state => state.events);
-    const trashedEvents = useMemo(() => events.filter(e => e.deletedAt !== null), [events]);
+function TrashedEvents({ items }: { items: Event[] }) {
 
     return (
         <div className='events_container'>
@@ -24,8 +20,8 @@ function TrashedEvents() {
             </div>
 
 
-            {trashedEvents.length > 0 ? (
-                <TrashedEventsList events={trashedEvents} />
+            {items.length > 0 ? (
+                <TrashedEventsList events={items} />
             ) : (
 
                 <NoEventsTrashed />
