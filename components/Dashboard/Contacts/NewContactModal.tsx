@@ -10,11 +10,11 @@ import { createPortal, useFormStatus } from "react-dom";
 import { generateUID } from "@/helpers/helpers";
 import { SchemeType } from "@/types/event-types";
 import { useContactStore } from "@/store/contact-store";
-import { contactSchema } from "@/database/validations/contact-validation";
+import { newContactSchema } from "@/database/validations/contact-validation";
 import { Toast, useToastStore } from "@/store/toast-store";
-import { Contact } from "@/types/contact-types";
 import Button from "@/components/Common/Button";
 import AvatarSelector from "@/components/Common/Form/AvatarSelector";
+import { createContactReq } from "@/app/actions/contacts";
 
 type FormInputs = {
     name: string;
@@ -44,20 +44,11 @@ function NewContactModal({ onClose }: { onClose: () => void }) {
         setInputs(prev => ({ ...prev, scheme }))
     }
 
-    function formActionHandler(formData: FormData) {
+    async function formActionHandler(formData: FormData) {
 
-        let newContact: Contact = {
-            id: generateUID(),
-            ...inputs,
-            createdAt: new Date(),
-            updatedAt: new Date(),
-            deletedAt: null,
-        }
-
-        let { hasError, errors } = zValidate(contactSchema, newContact);
+        let { hasError, errors } = zValidate(newContactSchema, inputs);
 
         if (hasError) {
-
             let validationToast: Toast = {
                 id: generateUID(),
                 message: `فرم نامعتبر است.`,
@@ -65,24 +56,36 @@ function NewContactModal({ onClose }: { onClose: () => void }) {
             }
 
             addToast(validationToast);
-
             setFormErrors(errors);
             return;
         }
 
         setFormErrors(initFormErrors);
 
+        let res = await createContactReq(inputs)
 
-        let newToast: Toast = {
-            id: generateUID(),
-            message: 'شخص جدید اضافه شد',
-            type: 'success'
+        if (res.success) {
+
+            addContact(res.newContact);
+            let successToast: Toast = {
+                id: generateUID(),
+                message: 'شخص جدید اضافه شد',
+                type: 'success'
+            }
+
+            addToast(successToast)
+            onClose();
+            return;
         }
 
-        addContact(newContact);
-        addToast(newToast)
 
-        onClose();
+        let errorToast: Toast = {
+            id: generateUID(),
+            message: res.message,
+            type: 'danger'
+        }
+        addToast(errorToast)
+
     }
 
     if (typeof window === "object") {

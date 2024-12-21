@@ -9,13 +9,14 @@ import { useDialogStore } from '@/store/dialog-store';
 import { Toast, useToastStore } from '@/store/toast-store';
 import { generateUID } from '@/helpers/helpers';
 import ContactInfoModal from './ContactInfoModal';
+import { trashContactReq } from '@/app/actions/contacts';
 
 
 function ContactItem({ contact }: { contact: Contact }) {
 
     const openDialog = useDialogStore(state => state.openDialog)
     const addToast = useToastStore(state => state.addToast)
-    const { trashContact } = useContactStore(state => state)
+    const deleteContact = useContactStore(state => state.deleteContact)
 
 
     const [isOptionsOpen, setIsOptionsOpen] = useState(false);
@@ -39,11 +40,27 @@ function ContactItem({ contact }: { contact: Contact }) {
     }
 
     const optionsPrentRef = useClickOutside(() => setIsOptionsOpen(false))
+    async function handleTrashContact() {
 
-    let newToast: Toast = {
-        id: generateUID(),
-        message: 'شخص حذف شد',
-        type: 'success'
+        let res = await trashContactReq(contact.id)
+
+        if (res.success) {
+            let successToast: Toast = {
+                id: generateUID(),
+                message: 'شخص حذف شد',
+                type: 'success'
+            }
+            deleteContact(contact.id)
+            addToast(successToast)
+            return
+        }
+
+        let errorToast: Toast = {
+            id: generateUID(),
+            message: res.message,
+            type: 'danger'
+        }
+        addToast(errorToast)
     }
 
     function onTrash() {
@@ -57,8 +74,7 @@ function ContactItem({ contact }: { contact: Contact }) {
                     text:
                         'حذف',
                     onClick: () => {
-                        trashContact(contact.id)
-                        addToast(newToast)
+                        handleTrashContact()
                     }
                 },
                 cancel:
