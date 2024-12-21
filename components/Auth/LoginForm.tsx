@@ -7,12 +7,9 @@ import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 import { zValidate } from "@/helpers/validation-helper";
 import { loginDataSchema } from "@/database/validations/auth-validation";
-import { useAppStore } from "@/store/app-store";
 import { login } from "@/app/actions/auth";
 
 function LoginForm() {
-
-    const setUser = useAppStore(state => state.setUser)
 
     const initInputs = {
         email: '',

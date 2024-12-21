@@ -7,7 +7,8 @@ export async function login(credentials: { email: string; password: string }) {
         method: 'POST',
         body: JSON.stringify(credentials),
         headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
         }
     });
 
@@ -20,6 +21,25 @@ export async function login(credentials: { email: string; password: string }) {
             sameSite: 'strict',
             path: '/'
         });
+        return { success: true };
+    }
+
+    return { success: false };
+}
+
+export async function logout() {
+
+    const token = (await cookies()).get('token');
+
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/logout`, {
+        method: 'GET',
+        headers: {
+            Authorization: `Bearer ${token?.value}`,
+            'Accept': 'application/json',
+        },
+    });
+
+    if (response.ok) {
         return { success: true };
     }
 

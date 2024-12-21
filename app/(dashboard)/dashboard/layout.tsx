@@ -1,15 +1,40 @@
 'use client'
 
+import { logout } from "@/app/actions/auth";
+import { generateUID } from "@/helpers/helpers";
+import { useToastStore } from "@/store/toast-store";
 import { BookOpenCheck, CalendarRange, Headset, Info, LogOut, Settings2, Trash, User, Users, Zap } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import { useState } from "react";
 
 function layout({ children }: { children: React.ReactNode }) {
 
     const router = useRouter();
-
-
     const pathname = usePathname();
+    const [loading, setLoading] = useState(false);
+    const addToast = useToastStore((state) => state.addToast);
+
+    async function handleLogout() {
+
+        if (loading) return;
+        setLoading(true)
+
+        const response = await logout();
+
+        if (response.success) {
+            setLoading(false)
+            router.push('/');
+            return;
+        }
+
+        setLoading(false)
+        addToast({
+            id: generateUID(),
+            message: 'خطا در خروج از حساب کاربری',
+            type: 'danger',
+        })
+    }
 
     return (
         <section className="top-0 sticky grid grid-cols-1 lg:grid-cols-5">
@@ -75,10 +100,13 @@ function layout({ children }: { children: React.ReactNode }) {
                             <span>پروفایل کاربری</span>
                         </Link>
                     </li>
-                    <li className={`flex flex-row items-center gap-x-2 px-5 py-3 border-r-2 transition-all duration-300 text-sm xl:text-base cursor-pointer ${pathname.includes('/dashboard/logout') ? 'border-indigo-800 dark:border-600 primary_text_color bg-indigo-50 dark:bg-indigo-600/10' : 'hover:border-r-2 border-r-transparent text-gray-500 dark:text-gray-400  hover:border-r-indigo-800 hover:bg-indigo-50 dark:hover:bg-indigo-600/10 hover:text-indigo-800 dark:hover:text-indigo-600'}`}>
-                        <LogOut className="size-4 xl:size-5" />
-                        <span>خروج از حساب</span>
+                    <li onClick={handleLogout} className={`border-r-2 transition-all duration-300 text-sm xl:text-base cursor-pointer ${pathname === '/dashboard/logout' ? 'border-indigo-800 dark:border-600 primary_text_color bg-indigo-50 dark:bg-indigo-600/10' : 'hover:border-r-2 border-r-transparent text-gray-500 dark:text-gray-400  hover:border-r-indigo-800 hover:bg-indigo-50 dark:hover:bg-indigo-600/10 hover:text-indigo-800 dark:hover:text-indigo-600'}`}>
+                        <div className="flex flex-row items-center gap-x-2 px-5 py-3 w-full h-full">
+                            <LogOut className="size-4 xl:size-5" />
+                            <span>خروج از حساب</span>
+                        </div>
                     </li>
+
                 </ul>
 
             </aside>
