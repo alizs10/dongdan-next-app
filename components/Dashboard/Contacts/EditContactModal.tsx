@@ -7,7 +7,7 @@ import { zValidate } from "@/helpers/validation-helper";
 import { Pencil } from "lucide-react";
 import { useState } from "react";
 import { createPortal, useFormStatus } from "react-dom";
-import { contactSchema } from "@/database/validations/contact-validation";
+import { contactSchema, newContactSchema } from "@/database/validations/contact-validation";
 import { Person, SchemeType } from "@/types/event-types";
 import Button from "@/components/Common/Button";
 import { useContactStore } from "@/store/contact-store";
@@ -16,6 +16,7 @@ import { useEventStore } from "@/store/event-store";
 import { Toast, useToastStore } from "@/store/toast-store";
 import { generateUID } from "@/helpers/helpers";
 import AvatarSelector from "@/components/Common/Form/AvatarSelector";
+import { updateContactReq } from "@/app/actions/contacts";
 
 type FormInputs = {
     name: string;
@@ -26,7 +27,7 @@ function EditContactModal({ onClose, contact }: { onClose: () => void, contact: 
 
     const addToast = useToastStore(state => state.addToast);
     const updateContact = useContactStore(state => state.updateContact);
-    const updatePersonInEvents = useEventStore(state => state.updatePersonInEvents);
+
     const { pending, data, method, action } = useFormStatus();
 
     const initInputs: FormInputs = {
@@ -46,14 +47,9 @@ function EditContactModal({ onClose, contact }: { onClose: () => void, contact: 
         setInputs(prev => ({ ...prev, scheme }))
     }
 
-    function formActionHandler(formData: FormData) {
+    async function formActionHandler(formData: FormData) {
 
-        let updatedContact: Contact = {
-            ...contact,
-            ...inputs
-        }
-
-        let { hasError, errors } = zValidate(contactSchema, updatedContact);
+        let { hasError, errors } = zValidate(newContactSchema, inputs);
 
         if (hasError) {
 
@@ -71,24 +67,27 @@ function EditContactModal({ onClose, contact }: { onClose: () => void, contact: 
 
         setFormErrors(initFormErrors);
 
-        let updatedPerson: Omit<Person, 'eventId'> = {
-            id: updatedContact.id,
-            name: updatedContact.name,
-            scheme: updatedContact.scheme,
+        let res = await updateContactReq(contact.id, inputs);
+
+        if (res.success) {
+            updateContact(contact.id, res.updatedContact);
+            let successToast: Toast = {
+                id: generateUID(),
+                message: res.message,
+                type: 'success'
+            }
+            addToast(successToast)
+            onClose();
+            return
         }
 
-        updatePersonInEvents(updatedPerson.id, updatedPerson);
-        updateContact(contact.id, updatedContact);
-
-        let newToast: Toast = {
+        let errorToast: Toast = {
             id: generateUID(),
-            message: 'شخص ویرایش شد',
-            type: 'success'
+            message: res.message,
+            type: 'danger'
         }
+        addToast(errorToast)
 
-        addToast(newToast)
-
-        onClose();
     }
 
     if (typeof window === "object") {

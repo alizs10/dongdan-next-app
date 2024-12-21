@@ -15,4 +15,4 @@ export type ContactState = {
     updateContact: (contactId: string, updatedContact: Contact) => void;
 }
 
-export type NewContactInputs = Pick<Contact, 'name' | 'scheme'>
+export type ContactInputs = Pick<Contact, 'name' | 'scheme'>
