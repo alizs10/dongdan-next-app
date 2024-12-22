@@ -128,3 +128,162 @@ export async function updateContactReq(contactId: string, inputs: ContactInputs)
     }
 
 }
+
+export async function deleteContactReq(contactId: string) {
+
+    const token = (await cookies()).get('token');
+
+    try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/contact/${contactId}/delete`, {
+            method: 'DELETE',
+            headers: {
+                Authorization: `Bearer ${token?.value}`,
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+            },
+        });
+
+        let data = await response.json()
+
+        if (response.ok && data.status) {
+            return {
+                success: true,
+                message: 'دوست شما با موفقیت حذف شد'
+            }
+        }
+
+        return {
+            success: false,
+            message: data?.message ? data.message : response.statusText
+        }
+
+    } catch (error) {
+
+        return {
+            success: false,
+            message: 'خطای سرور'
+        }
+
+    }
+
+}
+
+export async function restoreContactReq(contactId: string) {
+
+    const token = (await cookies()).get('token');
+
+    try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/contact/${contactId}/restore`, {
+            method: 'PUT',
+            headers: {
+                Authorization: `Bearer ${token?.value}`,
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+            },
+        });
+
+        let data = await response.json()
+
+        if (response.ok && data.status) {
+            return {
+                success: true,
+                message: 'دوست شما با موفقیت بازیابی شد'
+            }
+        }
+
+        return {
+            success: false,
+            message: data?.message ? data.message : response.statusText
+        }
+
+    } catch (error) {
+
+        return {
+            success: false,
+            message: 'خطای سرور'
+        }
+
+    }
+
+}
+
+export async function restoreContactItemsReq(contactIds: string[]) {
+
+    const token = (await cookies()).get('token');
+
+    try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/contacts/restore/items`, {
+            method: 'PUT',
+            body: JSON.stringify({ contacts: contactIds.map(id => id.toString()) }),
+            headers: {
+                Authorization: `Bearer ${token?.value}`,
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+            },
+        });
+
+        let data = await response.json()
+        console.log(data)
+
+        if (response.ok && data.status) {
+            return {
+                success: true,
+                message: 'دوستان شما با موفقیت بازیابی شدند'
+            }
+        }
+
+        return {
+            success: false,
+            message: data?.message ? data.message : response.statusText
+        }
+
+    } catch (error) {
+
+        return {
+            success: false,
+            message: 'خطای سرور'
+        }
+
+    }
+
+}
+
+export async function deleteContactItemsReq(contactIds: string[]) {
+
+    const token = (await cookies()).get('token');
+
+    try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/contacts/delete/items`, {
+            method: 'DELETE',
+            body: JSON.stringify({ contacts: contactIds.map(id => id.toString()) }),
+            headers: {
+                Authorization: `Bearer ${token?.value}`,
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+            },
+        });
+
+        let data = await response.json()
+
+        if (response.ok && data.status) {
+            return {
+                success: true,
+                message: 'دوستان شما با موفقیت حذف شدند'
+            }
+        }
+
+        return {
+            success: false,
+            message: data?.message ? data.message : response.statusText
+        }
+
+    } catch (error) {
+
+        return {
+            success: false,
+            message: 'خطای سرور'
+        }
+
+    }
+
+}

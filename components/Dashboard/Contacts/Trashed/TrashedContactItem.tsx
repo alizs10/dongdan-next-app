@@ -8,16 +8,17 @@ import { useDialogStore } from '@/store/dialog-store';
 import { Toast, useToastStore } from '@/store/toast-store';
 import { generateUID } from '@/helpers/helpers';
 import { MultiSelectItemContext } from '@/context/MultiSelectItemContext';
+import { TrashedContactsContext } from '@/context/TrashedContactsContext';
+import { deleteContactReq, restoreContactReq } from '@/app/actions/contacts';
 
 
 function TrashedContactItem({ contact }: { contact: Contact }) {
 
+    const { deleteContact } = useContext(TrashedContactsContext);
     const { toggleItem, selectMode, selectedItems } = useContext(MultiSelectItemContext);
 
     const openDialog = useDialogStore(state => state.openDialog)
     const addToast = useToastStore(state => state.addToast)
-    const { deleteContact, restoreContact } = useContactStore(state => state)
-
 
     const [isOptionsOpen, setIsOptionsOpen] = useState(false);
 
@@ -30,11 +31,7 @@ function TrashedContactItem({ contact }: { contact: Contact }) {
 
     function onDelete() {
         setIsOptionsOpen(false);
-        let newToast: Toast = {
-            id: generateUID(),
-            message: 'شخص بصورت دائم حذف شد',
-            type: 'success'
-        }
+
         openDialog(
             'حذف شخص',
             'آیا از حذف کردن شخص اطمینان دارید؟',
@@ -44,8 +41,7 @@ function TrashedContactItem({ contact }: { contact: Contact }) {
                     text:
                         'حذف',
                     onClick: () => {
-                        deleteContact(contact.id)
-                        addToast(newToast)
+                        handleDeleteContact()
                     }
                 },
                 cancel:
@@ -58,11 +54,7 @@ function TrashedContactItem({ contact }: { contact: Contact }) {
 
     function onRestore() {
         setIsOptionsOpen(false);
-        let newToast: Toast = {
-            id: generateUID(),
-            message: 'شخص بازیابی شد',
-            type: 'success'
-        }
+
         openDialog(
             'بازیابی شخص',
             'آیا از بازیابی شخص اطمینان دارید؟',
@@ -72,8 +64,7 @@ function TrashedContactItem({ contact }: { contact: Contact }) {
                     text:
                         'بازیابی',
                     onClick: () => {
-                        restoreContact(contact.id)
-                        addToast(newToast)
+                        handleRestoreContact()
                     }
                 },
                 cancel:
@@ -84,6 +75,50 @@ function TrashedContactItem({ contact }: { contact: Contact }) {
             })
     }
 
+
+    async function handleRestoreContact() {
+        let res = await restoreContactReq(contact.id)
+
+        if (res.success) {
+            deleteContact(contact.id)
+            let successToast: Toast = {
+                id: generateUID(),
+                message: res.message,
+                type: 'success'
+            }
+            addToast(successToast)
+            return;
+        }
+
+        let errorToast: Toast = {
+            id: generateUID(),
+            message: res.message,
+            type: 'danger'
+        }
+        addToast(errorToast)
+    }
+
+    async function handleDeleteContact() {
+        let res = await deleteContactReq(contact.id)
+
+        if (res.success) {
+            deleteContact(contact.id)
+            let successToast: Toast = {
+                id: generateUID(),
+                message: res.message,
+                type: 'success'
+            }
+            addToast(successToast)
+            return;
+        }
+
+        let errorToast: Toast = {
+            id: generateUID(),
+            message: res.message,
+            type: 'danger'
+        }
+        addToast(errorToast)
+    }
 
     function onSelect() {
         if (!selectMode) return;

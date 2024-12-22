@@ -4,16 +4,20 @@ import Link from 'next/link';
 import { ListCheck, ListChecks, MoveRight, RotateCw, Trash, X } from 'lucide-react';
 import NoContactsTrashed from './NoContactsTrashed';
 import TrashedContactsList from './TrashedContactsList';
-import { Contact } from '@/types/contact-types';
 import Button from '@/components/Common/Button';
 import { useContext } from 'react';
 import { MultiSelectItemContext } from '@/context/MultiSelectItemContext';
-import { useToastStore } from '@/store/toast-store';
+import { Toast, useToastStore } from '@/store/toast-store';
 import { useDialogStore } from '@/store/dialog-store';
+import { TrashedContactsContext } from '@/context/TrashedContactsContext';
+import { deleteContactItemsReq, restoreContactItemsReq } from '@/app/actions/contacts';
+import { generateUID } from '@/helpers/helpers';
 
-function TrashedContacts({ items }: { items: Contact[] }) {
+function TrashedContacts() {
 
+    const { trashedContacts: items, deleteMultiContact } = useContext(TrashedContactsContext)
     const { enableSelectMode, selectMode, disableSelectMode, selectAllItems, selectedItems } = useContext(MultiSelectItemContext);
+
     const addToast = useToastStore(state => state.addToast)
     const openDialog = useDialogStore(state => state.openDialog)
 
@@ -26,7 +30,7 @@ function TrashedContacts({ items }: { items: Contact[] }) {
                 ok: {
                     text: 'حذف',
                     onClick: () => {
-                        // onDeleteSelectedItems()
+                        handleDeleteContactItems()
                     }
                 },
                 cancel: {
@@ -47,7 +51,7 @@ function TrashedContacts({ items }: { items: Contact[] }) {
                 ok: {
                     text: 'بازیابی',
                     onClick: () => {
-                        // onDeleteSelectedItems()
+                        handleRestoreContactItems()
                     }
                 },
                 cancel: {
@@ -59,6 +63,51 @@ function TrashedContacts({ items }: { items: Contact[] }) {
 
     }
 
+    async function handleRestoreContactItems() {
+        let res = await restoreContactItemsReq(selectedItems)
+
+        if (res.success) {
+            deleteMultiContact(selectedItems)
+            disableSelectMode()
+            let successToast: Toast = {
+                id: generateUID(),
+                message: res.message,
+                type: 'success'
+            }
+            addToast(successToast)
+            return;
+        }
+
+        let errorToast: Toast = {
+            id: generateUID(),
+            message: res.message,
+            type: 'danger'
+        }
+        addToast(errorToast)
+    }
+
+    async function handleDeleteContactItems() {
+        let res = await deleteContactItemsReq(selectedItems)
+
+        if (res.success) {
+            deleteMultiContact(selectedItems)
+            disableSelectMode()
+            let successToast: Toast = {
+                id: generateUID(),
+                message: res.message,
+                type: 'success'
+            }
+            addToast(successToast)
+            return;
+        }
+
+        let errorToast: Toast = {
+            id: generateUID(),
+            message: res.message,
+            type: 'danger'
+        }
+        addToast(errorToast)
+    }
 
     return (
         <div className='events_container'>
