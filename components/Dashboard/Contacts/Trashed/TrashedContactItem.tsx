@@ -1,15 +1,18 @@
 import { Contact } from '@/types/contact-types';
 import { Ellipsis, RotateCw, Trash, User } from "lucide-react";
 import Button from '@/components/Common/Button';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import useClickOutside from '@/hooks/useOutsideClick';
 import { useContactStore } from '@/store/contact-store';
 import { useDialogStore } from '@/store/dialog-store';
 import { Toast, useToastStore } from '@/store/toast-store';
 import { generateUID } from '@/helpers/helpers';
+import { MultiSelectItemContext } from '@/context/MultiSelectItemContext';
 
 
 function TrashedContactItem({ contact }: { contact: Contact }) {
+
+    const { toggleItem, selectMode, selectedItems } = useContext(MultiSelectItemContext);
 
     const openDialog = useDialogStore(state => state.openDialog)
     const addToast = useToastStore(state => state.addToast)
@@ -82,9 +85,16 @@ function TrashedContactItem({ contact }: { contact: Contact }) {
     }
 
 
+    function onSelect() {
+        if (!selectMode) return;
+        toggleItem(contact.id);
+    }
+
 
     return (
-        <li className="event_item">
+        <li
+            onClick={onSelect}
+            className={`event_item ${selectMode && 'cursor-pointer'} ${selectedItems.includes(contact.id) ? 'bg-gray-200 dark:bg-gray-800' : ''}`}>
             <div className="event_item_right">
 
                 <div className={`flex justify-center p-3 rounded-xl items-center user_avatar_${contact.scheme}_bg user_avatar_${contact.scheme}_text`}>
@@ -96,16 +106,19 @@ function TrashedContactItem({ contact }: { contact: Contact }) {
 
             <div className="flex flex-row gap-x-2 items-center">
                 <div ref={optionsPrentRef} className='relative'>
-                    <Button
-                        text=''
-                        icon={<Ellipsis className='size-4' />}
-                        color='gray'
-                        size='small'
-                        shape='square'
-                        onClick={toggleOptions}
-                    />
+                    {!selectMode && (
 
-                    {isOptionsOpen && (
+                        <Button
+                            text=''
+                            icon={<Ellipsis className='size-4' />}
+                            color='gray'
+                            size='small'
+                            shape='square'
+                            onClick={toggleOptions}
+                        />
+                    )}
+
+                    {!selectMode && isOptionsOpen && (
                         <div className="z-50 absolute top-full whitespace-nowrap left-0 mt-4 flex flex-col gap-y-2">
 
                             <Button

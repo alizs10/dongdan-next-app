@@ -1,4 +1,5 @@
 import TrashedContacts from "@/components/Dashboard/Contacts/Trashed/TrashedContacts";
+import { MultiSelectItemContextProvider } from "@/context/MultiSelectItemContext";
 import { cookies } from "next/headers";
 
 async function getData() {
@@ -19,7 +20,9 @@ async function TrashedContactsPage() {
     let trashedContacts = await getData();
 
     return (
-        <TrashedContacts items={trashedContacts} />
+        <MultiSelectItemContextProvider>
+            <TrashedContacts items={trashedContacts} />
+        </MultiSelectItemContextProvider>
     );
 }
 
