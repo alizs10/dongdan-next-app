@@ -64,13 +64,13 @@ export function EventContextProvider({ children }: { children: React.ReactNode }
         async function getEvent() {
             setLoading(true)
             try {
-                let res = await fetch(`/api/events/${event_slug}`)
-                let data = await res.json()
+                const res = await fetch(`/api/events/${event_slug}`)
+                const data = await res.json()
 
                 if (data?.status) {
                     setEvent(data.event)
                 } else {
-                    let errorToast: Toast = {
+                    const errorToast: Toast = {
                         id: generateUID(),
                         message: "دریافت اطلاعات با خطا مواجه شد",
                         type: "danger"
@@ -79,9 +79,9 @@ export function EventContextProvider({ children }: { children: React.ReactNode }
                 }
                 setLoading(false)
 
-            } catch (error) {
+            } catch {
                 console.log(error)
-                let errorToast: Toast = {
+                const errorToast: Toast = {
                     id: generateUID(),
                     message: "دریافت اطلاعات با خطا مواجه شد",
                     type: "danger"

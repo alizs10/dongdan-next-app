@@ -16,7 +16,7 @@ function Expense({ expense }: { expense: Expense }) {
 
     const addToast = useToastStore(state => state.addToast)
     const openDialog = useDialogStore(state => state.openDialog);
-    const { events, deleteExpense, updateExpense } = useEventStore(state => state)
+    const { events, deleteExpense } = useEventStore(state => state)
 
     const event = useMemo(() => events.find(event => event.id === event_id) as Event, [events, event_id]);
 
@@ -45,7 +45,7 @@ function Expense({ expense }: { expense: Expense }) {
         if (event.deleted_at !== null) return;
         setIsOptionsOpen(false);
 
-        let newToast: Toast = {
+        const newToast: Toast = {
             id: generateUID(),
             message: `${expense.type === 'expend' ? 'هزینه' : 'جابجایی پول'} حذف شد`,
             type: 'success'

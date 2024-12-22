@@ -10,13 +10,13 @@ async function getData() {
         }
     });
 
-    let data = await response.json();
+    const data = await response.json();
     return data.profile;
 }
 
 async function ProfilePage() {
 
-    let profile = await getData();
+    const profile = await getData();
 
     return (
         <Profile data={profile} />

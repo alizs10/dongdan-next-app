@@ -21,7 +21,7 @@ function ContactInfoModal({ onClose, contact }: PropsTypes) {
     events = useMemo(() => events.filter(e => e.deleted_at === null), [events])
 
     const getUserEvents = useCallback(() => {
-        let userEvents: Event[] = []
+        const userEvents: Event[] = []
 
         events.forEach(event => {
             if (event.group.some(m => m.id === contact.id)) {
@@ -30,7 +30,7 @@ function ContactInfoModal({ onClose, contact }: PropsTypes) {
         })
 
         return userEvents;
-    }, [events])
+    }, [events, contact.id])
 
     return (
         <ModalWrapper onClose={onClose}>

@@ -1,11 +1,9 @@
 import { Event } from '@/types/event-types';
-import { BriefcaseBusiness, Cake, Coffee, Ellipsis, Info, Plane, RotateCw, Trash, TreePalm, Utensils } from "lucide-react";
-import Link from 'next/link';
+import { BriefcaseBusiness, Cake, Coffee, Ellipsis, Plane, RotateCw, Trash, TreePalm, Utensils } from "lucide-react";
 import moment from 'jalali-moment';
 import Button from '@/components/Common/Button';
 import { useContext, useState } from 'react';
 import useClickOutside from '@/hooks/useOutsideClick';
-import { useEventStore } from '@/store/event-store';
 import { useDialogStore } from '@/store/dialog-store';
 import { Toast, useToastStore } from '@/store/toast-store';
 import { generateUID } from '@/helpers/helpers';
@@ -107,11 +105,11 @@ function TrashedEventItem({ event }: { event: Event }) {
 
 
     async function handleRestoreEvent() {
-        let res = await restoreEventReq(event.id)
+        const res = await restoreEventReq(event.id)
 
         if (res.success) {
             deleteEvent(event.id)
-            let successToast: Toast = {
+            const successToast: Toast = {
                 id: generateUID(),
                 message: res.message,
                 type: 'success'
@@ -120,7 +118,7 @@ function TrashedEventItem({ event }: { event: Event }) {
             return;
         }
 
-        let errorToast: Toast = {
+        const errorToast: Toast = {
             id: generateUID(),
             message: res.message,
             type: 'danger'
@@ -129,11 +127,11 @@ function TrashedEventItem({ event }: { event: Event }) {
     }
 
     async function handleDeleteEvent() {
-        let res = await deleteEventReq(event.id)
+        const res = await deleteEventReq(event.id)
 
         if (res.success) {
             deleteEvent(event.id)
-            let successToast: Toast = {
+            const successToast: Toast = {
                 id: generateUID(),
                 message: res.message,
                 type: 'success'
@@ -142,7 +140,7 @@ function TrashedEventItem({ event }: { event: Event }) {
             return;
         }
 
-        let errorToast: Toast = {
+        const errorToast: Toast = {
             id: generateUID(),
             message: res.message,
             type: 'danger'

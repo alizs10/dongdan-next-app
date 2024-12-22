@@ -9,10 +9,26 @@ type PropsTypes = {
     value: string | string[];
     error?: string;
     selectAllOption?: boolean;
+    selfOption?: boolean;
+    selfIncluded?: boolean;
     disalllows?: string[];
 }
 
-function MemberSelector({ label, members, onSelect, value, error, selectAllOption = false, disalllows = [] }: PropsTypes) {
+function MemberSelector({ label, members, onSelect, value, error, selfOption = true, selfIncluded = true, selectAllOption = false, disalllows = [] }: PropsTypes) {
+
+    let membersCount = members.length;
+    if (selfOption) {
+        membersCount++;
+    }
+
+    let valueMembersCount = value.length;
+    if (selfOption && selfIncluded) {
+        valueMembersCount++;
+    }
+
+    console.log("valueMembersCount: ", valueMembersCount);
+    console.log("membersCount: ", membersCount);
+
     return (
 
         <div className="flex flex-col gap-y-2">
@@ -22,12 +38,21 @@ function MemberSelector({ label, members, onSelect, value, error, selectAllOptio
             <div className="flex flex-wrap gap-4">
 
                 {selectAllOption && (
-                    <div key={'all'} onClick={onSelect.bind(null, 'all')} className={`px-4 cursor-pointer py-2 flex flex-row gap-x-4 items-center border ${value.length === members.length ? `user_avatar_blue_text user_avatar_blue_border user_avatar_blue_bg` : 'user_avatar_gray_text app_border_color'} transition-all duration-300 rounded-full`}>
+                    <div key={'all'} onClick={onSelect.bind(null, 'all')} className={`px-4 cursor-pointer py-2 flex flex-row gap-x-4 items-center border ${valueMembersCount === membersCount ? `user_avatar_blue_text user_avatar_blue_border user_avatar_blue_bg` : 'user_avatar_gray_text app_border_color'} transition-all duration-300 rounded-full`}>
                         <div className="">
                             <User className="size-5" />
                         </div>
 
                         <span className="text-base">همه</span>
+                    </div>
+                )}
+                {selfOption && (
+                    <div key={'self'} onClick={onSelect.bind(null, 'self')} className={`px-4 cursor-pointer py-2 flex flex-row gap-x-4 items-center border ${selfIncluded ? `user_avatar_blue_text user_avatar_blue_border user_avatar_blue_bg` : 'user_avatar_gray_text app_border_color'} transition-all duration-300 rounded-full`}>
+                        <div className="">
+                            <User className="size-5" />
+                        </div>
+
+                        <span className="text-base">خودم</span>
                     </div>
                 )}
 

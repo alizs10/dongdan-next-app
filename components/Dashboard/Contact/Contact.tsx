@@ -16,7 +16,7 @@ function Contact() {
 
 
             <div className="px-5 py-5 flex flex-col gap-y-8">
-                <p className="font-bold primary_text_color text-xl md:text-2xl lg:text-3xl">"در دنگ دان مستقیما با سازنده در ارتباطی!"</p>
+                <p className="font-bold primary_text_color text-xl md:text-2xl lg:text-3xl">{"در دنگ دان مستقیما با سازنده در ارتباطی!"}</p>
 
 
 

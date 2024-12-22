@@ -49,12 +49,12 @@ function Contacts() {
     }
 
     async function handleTrashContactItems() {
-        let res = await trashContactItemsReq(selectedItems)
+        const res = await trashContactItemsReq(selectedItems)
 
         if (res.success) {
             deleteMultiContact(selectedItems)
             disableSelectMode()
-            let successToast: Toast = {
+            const successToast: Toast = {
                 id: generateUID(),
                 message: res.message,
                 type: 'success'
@@ -63,7 +63,7 @@ function Contacts() {
             return;
         }
 
-        let errorToast: Toast = {
+        const errorToast: Toast = {
             id: generateUID(),
             message: res.message,
             type: 'danger'

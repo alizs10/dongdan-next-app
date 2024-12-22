@@ -1,5 +1,13 @@
 // import { Event as PrismaEvent } from "@prisma/client";
 
+export type NewEvent = {
+    name: string;
+    label: string;
+    start_date: Date;
+    self_included: 'true' | 'false';
+    contact_members: string[];
+}
+
 export type Event = {
     id: string;
     name: string;

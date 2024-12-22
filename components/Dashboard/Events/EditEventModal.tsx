@@ -13,7 +13,7 @@ import { useContactStore } from "@/store/contact-store";
 import { useEventStore } from "@/store/event-store";
 import { Toast, useToastStore } from "@/store/toast-store";
 import { Event } from "@/types/event-types";
-import { Ban, BriefcaseBusiness, Cake, Coffee, Pencil, Plane, TreePalm, User, Utensils } from "lucide-react";
+import { Ban, BriefcaseBusiness, Cake, Coffee, Pencil, Plane, TreePalm, Utensils } from "lucide-react";
 import { useState } from "react";
 import { createPortal, useFormStatus } from "react-dom";
 import { DateObject } from "react-multi-date-picker";
@@ -32,7 +32,7 @@ function EditEventModal({ onClose, event }: { onClose: () => void, event: Event 
     let contacts = useContactStore(state => state.contacts)
     contacts = contacts.filter(c => c.deleted_at === null);
 
-    const { pending, data, method, action } = useFormStatus();
+    const { pending } = useFormStatus();
 
     const contactsIds = contacts.map(c => c.id)
     const eventPersonsIds = event.group.map(person => person.id)
@@ -55,7 +55,7 @@ function EditEventModal({ onClose, event }: { onClose: () => void, event: Event 
 
     function handleChangeDate(date: DateObject) {
 
-        let selectedDate = new Date(date.toDate());
+        const selectedDate = new Date(date.toDate());
         selectedDate.setHours(0o0)
         selectedDate.setMinutes(0o0)
         selectedDate.setSeconds(0o0)
@@ -98,15 +98,15 @@ function EditEventModal({ onClose, event }: { onClose: () => void, event: Event 
     }
 
 
-    function formActionHandler(formData: FormData) {
+    function formActionHandler() {
 
         // prev group: include contacts and not contacts
-        let prevGroup = [...event.group]
+        const prevGroup = [...event.group]
 
         // input group: include contacts only
-        let addedContactsToGroup: Event['group'] = [];
-        let deletedContactsFromGroup: Event['group'] = [];
-        let nonContactsOfGroup: Event['group'] = [];
+        const addedContactsToGroup: Event['group'] = [];
+        const deletedContactsFromGroup: Event['group'] = [];
+        const nonContactsOfGroup: Event['group'] = [];
 
         // non contacts of group
         event.group.forEach(member => {
@@ -117,13 +117,13 @@ function EditEventModal({ onClose, event }: { onClose: () => void, event: Event 
 
         // added contacts to group
         inputs.group.forEach(pID => {
-            let contact = contacts.find(c => c.id === pID);
+            const contact = contacts.find(c => c.id === pID);
             if (contact) {
                 addedContactsToGroup.push({ id: contact.id, name: contact.name, scheme: contact.scheme, eventId: event.id })
             }
         })
 
-        let updatedGroup: Event['group'] = [...nonContactsOfGroup, ...addedContactsToGroup];
+        const updatedGroup: Event['group'] = [...nonContactsOfGroup, ...addedContactsToGroup];
 
         // deleted contacts from group
         prevGroup.forEach(member => {
@@ -132,16 +132,16 @@ function EditEventModal({ onClose, event }: { onClose: () => void, event: Event 
             }
         })
 
-        let updatedEvent: Event = {
+        const updatedEvent: Event = {
             ...event,
             ...inputs,
             group: updatedGroup,
         }
 
-        let deletedContactsFromGroupIDs = deletedContactsFromGroup.map(p => p.id);
+        const deletedContactsFromGroupIDs = deletedContactsFromGroup.map(p => p.id);
 
         // delete expenses of deleted members
-        let deletableExpenses: string[] = [];
+        const deletableExpenses: string[] = [];
 
         event.expenses.forEach(expense => {
             if (expense.type === 'transfer' && (deletedContactsFromGroupIDs.includes(expense.from) || deletedContactsFromGroupIDs.includes(expense.to))) {
@@ -155,10 +155,10 @@ function EditEventModal({ onClose, event }: { onClose: () => void, event: Event 
 
         updatedEvent.expenses = updatedEvent.expenses.filter(expense => !deletableExpenses.includes(expense.id))
 
-        let { hasError, errors } = zValidate(eventSchema, updatedEvent);
+        const { hasError, errors } = zValidate(eventSchema, updatedEvent);
 
         if (hasError) {
-            let validationToast: Toast = {
+            const validationToast: Toast = {
                 id: generateUID(),
                 message: `فرم نامعتبر است.`,
                 type: 'danger',
@@ -176,7 +176,7 @@ function EditEventModal({ onClose, event }: { onClose: () => void, event: Event 
 
         setFormErrors(initFormErrors);
 
-        let newToast: Toast = {
+        const newToast: Toast = {
             id: generateUID(),
             message: 'رویداد ویرایش شد',
             type: 'success'

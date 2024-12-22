@@ -49,12 +49,12 @@ function Events() {
     }
 
     async function handleTrashEventItems() {
-        let res = await trashEventItemsReq(selectedItems)
+        const res = await trashEventItemsReq(selectedItems)
 
         if (res.success) {
             deleteMultiEvent(selectedItems)
             disableSelectMode()
-            let successToast: Toast = {
+            const successToast: Toast = {
                 id: generateUID(),
                 message: res.message,
                 type: 'success'
@@ -63,7 +63,7 @@ function Events() {
             return;
         }
 
-        let errorToast: Toast = {
+        const errorToast: Toast = {
             id: generateUID(),
             message: res.message,
             type: 'danger'

@@ -7,12 +7,10 @@ import { zValidate } from "@/helpers/validation-helper";
 import { Pencil } from "lucide-react";
 import { useContext, useState } from "react";
 import { createPortal, useFormStatus } from "react-dom";
-import { contactSchema, newContactSchema } from "@/database/validations/contact-validation";
-import { Person, SchemeType } from "@/types/event-types";
+import { newContactSchema } from "@/database/validations/contact-validation";
+import { SchemeType } from "@/types/event-types";
 import Button from "@/components/Common/Button";
-import { useContactStore } from "@/store/contact-store";
 import { Contact } from "@/types/contact-types";
-import { useEventStore } from "@/store/event-store";
 import { Toast, useToastStore } from "@/store/toast-store";
 import { generateUID } from "@/helpers/helpers";
 import AvatarSelector from "@/components/Common/Form/AvatarSelector";
@@ -28,7 +26,7 @@ function EditContactModal({ onClose, contact }: { onClose: () => void, contact: 
 
     const addToast = useToastStore(state => state.addToast);
     const { updateContact } = useContext(ContactsContext)
-    const { pending, data, method, action } = useFormStatus();
+    const { pending } = useFormStatus();
 
     const initInputs: FormInputs = {
         name: contact.name,
@@ -47,13 +45,13 @@ function EditContactModal({ onClose, contact }: { onClose: () => void, contact: 
         setInputs(prev => ({ ...prev, scheme }))
     }
 
-    async function formActionHandler(formData: FormData) {
+    async function formActionHandler() {
 
-        let { hasError, errors } = zValidate(newContactSchema, inputs);
+        const { hasError, errors } = zValidate(newContactSchema, inputs);
 
         if (hasError) {
 
-            let validationToast: Toast = {
+            const validationToast: Toast = {
                 id: generateUID(),
                 message: `فرم نامعتبر است.`,
                 type: 'danger',
@@ -67,11 +65,11 @@ function EditContactModal({ onClose, contact }: { onClose: () => void, contact: 
 
         setFormErrors(initFormErrors);
 
-        let res = await updateContactReq(contact.id, inputs);
+        const res = await updateContactReq(contact.id, inputs);
 
         if (res.success) {
             updateContact(contact.id, res.updatedContact);
-            let successToast: Toast = {
+            const successToast: Toast = {
                 id: generateUID(),
                 message: res.message,
                 type: 'success'
@@ -81,7 +79,7 @@ function EditContactModal({ onClose, contact }: { onClose: () => void, contact: 
             return
         }
 
-        let errorToast: Toast = {
+        const errorToast: Toast = {
             id: generateUID(),
             message: res.message,
             type: 'danger'

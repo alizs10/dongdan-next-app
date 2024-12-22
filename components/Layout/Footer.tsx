@@ -13,7 +13,7 @@ function Footer() {
                     <Info className="size-5 md:size-7 xl:size-6" fontWeight={'bold'} />
                     <h1 className='footer_title'>درباره ما</h1>
                 </div>
-                <p className='footer_about_quote'>"دیگه از مادرخرج شدن نترس! با دنگ دان، دنگ هرکی رو بدان."</p>
+                <p className='footer_about_quote'>{"دیگه از مادرخرج شدن نترس! با دنگ دان، دنگ هرکی رو بدان."}</p>
                 <p className='footer_about_desc'>دنگ دان یک اپلیکیشن محاسبه ی دنگ هست که کاملا رایگانه و شما رو از هر ابزار محاسبه ی دیگه ای بی نیاز میکنه. واسه ی یه دو دوتا، چهارتای ساده که نیاز نیست خرج بکنی؛ فقط کافیه از دنگ دان استفاده کنی.</p>
             </div>
 

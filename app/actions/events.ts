@@ -1,6 +1,52 @@
 'use server'
 
+import { NewEvent } from "@/types/event-types";
 import { cookies } from "next/headers";
+
+
+export async function createEventReq(inputs: NewEvent) {
+
+    const token = (await cookies()).get('token');
+
+    try {
+
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/events`, {
+            method: 'POST',
+            body: JSON.stringify(inputs),
+            headers: {
+                Authorization: `Bearer ${token?.value}`,
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+            },
+        });
+
+        const data = await response.json()
+        console.log(data)
+        if (response.ok && data.status) {
+
+            return {
+                success: true,
+                newEvent: data.event,
+                message: 'رویداد جدید با موفقیت ساخته شد'
+            }
+        }
+
+        return {
+            success: false,
+            message: data?.messsage ? data.message : response.statusText
+        }
+
+    } catch {
+
+        return {
+            success: false,
+            message: 'خطای سرور'
+        }
+
+    }
+
+
+}
 
 export async function deleteEventReq(eventId: string) {
 
@@ -16,7 +62,7 @@ export async function deleteEventReq(eventId: string) {
             },
         });
 
-        let data = await response.json()
+        const data = await response.json()
 
         if (response.ok && data.status) {
             return {
@@ -30,7 +76,7 @@ export async function deleteEventReq(eventId: string) {
             message: data?.message ? data.message : response.statusText
         }
 
-    } catch (error) {
+    } catch {
 
         return {
             success: false,
@@ -55,7 +101,7 @@ export async function restoreEventReq(eventId: string) {
             },
         });
 
-        let data = await response.json()
+        const data = await response.json()
 
         if (response.ok && data.status) {
             return {
@@ -69,7 +115,7 @@ export async function restoreEventReq(eventId: string) {
             message: data?.message ? data.message : response.statusText
         }
 
-    } catch (error) {
+    } catch {
 
         return {
             success: false,
@@ -94,7 +140,7 @@ export async function trashEventReq(eventId: string) {
             },
         });
 
-        let data = await response.json()
+        const data = await response.json()
 
         if (response.ok && data.status) {
             return {
@@ -108,7 +154,7 @@ export async function trashEventReq(eventId: string) {
             message: response.statusText
         }
 
-    } catch (error) {
+    } catch {
 
         return {
             success: false,
@@ -134,7 +180,7 @@ export async function trashEventItemsReq(eventIds: string[]) {
             },
         });
 
-        let data = await response.json()
+        const data = await response.json()
 
         if (response.ok && data.status) {
             return {
@@ -148,7 +194,7 @@ export async function trashEventItemsReq(eventIds: string[]) {
             message: data?.message ? data.message : response.statusText
         }
 
-    } catch (error) {
+    } catch {
 
         return {
             success: false,
@@ -174,7 +220,7 @@ export async function restoreEventItemsReq(eventIds: string[]) {
             },
         });
 
-        let data = await response.json()
+        const data = await response.json()
         console.log(data)
 
         if (response.ok && data.status) {
@@ -189,7 +235,7 @@ export async function restoreEventItemsReq(eventIds: string[]) {
             message: data?.message ? data.message : response.statusText
         }
 
-    } catch (error) {
+    } catch {
 
         return {
             success: false,
@@ -215,7 +261,7 @@ export async function deleteEventItemsReq(eventIds: string[]) {
             },
         });
 
-        let data = await response.json()
+        const data = await response.json()
 
         if (response.ok && data.status) {
             return {
@@ -229,7 +275,7 @@ export async function deleteEventItemsReq(eventIds: string[]) {
             message: data?.message ? data.message : response.statusText
         }
 
-    } catch (error) {
+    } catch {
 
         return {
             success: false,

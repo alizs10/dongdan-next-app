@@ -65,12 +65,12 @@ function TrashedEvents() {
     }
 
     async function handleRestoreEventItems() {
-        let res = await restoreEventItemsReq(selectedItems)
+        const res = await restoreEventItemsReq(selectedItems)
 
         if (res.success) {
             deleteMultiEvent(selectedItems)
             disableSelectMode()
-            let successToast: Toast = {
+            const successToast: Toast = {
                 id: generateUID(),
                 message: res.message,
                 type: 'success'
@@ -79,7 +79,7 @@ function TrashedEvents() {
             return;
         }
 
-        let errorToast: Toast = {
+        const errorToast: Toast = {
             id: generateUID(),
             message: res.message,
             type: 'danger'
@@ -88,12 +88,12 @@ function TrashedEvents() {
     }
 
     async function handleDeleteEventItems() {
-        let res = await deleteEventItemsReq(selectedItems)
+        const res = await deleteEventItemsReq(selectedItems)
 
         if (res.success) {
             deleteMultiEvent(selectedItems)
             disableSelectMode()
-            let successToast: Toast = {
+            const successToast: Toast = {
                 id: generateUID(),
                 message: res.message,
                 type: 'success'
@@ -102,7 +102,7 @@ function TrashedEvents() {
             return;
         }
 
-        let errorToast: Toast = {
+        const errorToast: Toast = {
             id: generateUID(),
             message: res.message,
             type: 'danger'

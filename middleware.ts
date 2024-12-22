@@ -25,7 +25,7 @@ export async function middleware(request: NextRequest) {
         }
 
         return NextResponse.next();
-    } catch (error) {
+    } catch {
         // Handle network errors
         return NextResponse.redirect(new URL('/auth?form=login', request.url));
     }

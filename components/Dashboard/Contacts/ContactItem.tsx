@@ -52,10 +52,10 @@ function ContactItem({ contact }: { contact: Contact }) {
 
     async function handleTrashContact() {
 
-        let res = await trashContactReq(contact.id)
+        const res = await trashContactReq(contact.id)
 
         if (res.success) {
-            let successToast: Toast = {
+            const successToast: Toast = {
                 id: generateUID(),
                 message: res.message,
                 type: 'success'
@@ -65,7 +65,7 @@ function ContactItem({ contact }: { contact: Contact }) {
             return
         }
 
-        let errorToast: Toast = {
+        const errorToast: Toast = {
             id: generateUID(),
             message: res.message,
             type: 'danger'

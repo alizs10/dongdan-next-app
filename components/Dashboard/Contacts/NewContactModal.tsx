@@ -9,7 +9,6 @@ import { useContext, useState } from "react";
 import { createPortal, useFormStatus } from "react-dom";
 import { generateUID } from "@/helpers/helpers";
 import { SchemeType } from "@/types/event-types";
-import { useContactStore } from "@/store/contact-store";
 import { newContactSchema } from "@/database/validations/contact-validation";
 import { Toast, useToastStore } from "@/store/toast-store";
 import Button from "@/components/Common/Button";
@@ -27,7 +26,7 @@ function NewContactModal({ onClose }: { onClose: () => void }) {
     const { addContact } = useContext(ContactsContext);
 
     const addToast = useToastStore(state => state.addToast)
-    const { pending, data, method, action } = useFormStatus();
+    const { pending } = useFormStatus();
 
     const initInputs: FormInputs = {
         name: '',
@@ -46,12 +45,12 @@ function NewContactModal({ onClose }: { onClose: () => void }) {
         setInputs(prev => ({ ...prev, scheme }))
     }
 
-    async function formActionHandler(formData: FormData) {
+    async function formActionHandler() {
 
-        let { hasError, errors } = zValidate(newContactSchema, inputs);
+        const { hasError, errors } = zValidate(newContactSchema, inputs);
 
         if (hasError) {
-            let validationToast: Toast = {
+            const validationToast: Toast = {
                 id: generateUID(),
                 message: `فرم نامعتبر است.`,
                 type: 'danger',
@@ -64,12 +63,12 @@ function NewContactModal({ onClose }: { onClose: () => void }) {
 
         setFormErrors(initFormErrors);
 
-        let res = await createContactReq(inputs)
+        const res = await createContactReq(inputs)
 
         if (res.success) {
 
             addContact(res.newContact);
-            let successToast: Toast = {
+            const successToast: Toast = {
                 id: generateUID(),
                 message: 'شخص جدید اضافه شد',
                 type: 'success'
@@ -81,7 +80,7 @@ function NewContactModal({ onClose }: { onClose: () => void }) {
         }
 
 
-        let errorToast: Toast = {
+        const errorToast: Toast = {
             id: generateUID(),
             message: res.message,
             type: 'danger'

@@ -3,6 +3,41 @@
 import { ContactInputs } from "@/types/contact-types";
 import { cookies } from "next/headers";
 
+export async function getContactsReq() {
+    const token = (await cookies()).get('token');
+
+    try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/contacts`, {
+            method: 'GET',
+            headers: {
+                Authorization: `Bearer ${token?.value}`,
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+            },
+        });
+
+        const data = await response.json()
+
+        if (response.ok && data.status) {
+            return {
+                success: true,
+                contacts: data.contacts,
+                message: 'دوست ها با موفقیت بازیابی شدند'
+            }
+        }
+
+        return {
+            success: false,
+            message: data?.message ? data.message : response.statusText
+        }
+
+    } catch {
+        return {
+            success: false,
+            message: 'خطای سرور'
+        }
+    }
+}
 
 export async function createContactReq(inputs: ContactInputs) {
 
@@ -20,7 +55,7 @@ export async function createContactReq(inputs: ContactInputs) {
             },
         });
 
-        let data = await response.json()
+        const data = await response.json()
 
         if (response.ok) {
 
@@ -37,7 +72,7 @@ export async function createContactReq(inputs: ContactInputs) {
             message: response.statusText
         }
 
-    } catch (error) {
+    } catch {
 
         return {
             success: false,
@@ -63,7 +98,7 @@ export async function trashContactReq(contactId: string) {
             },
         });
 
-        let data = await response.json()
+        const data = await response.json()
 
         if (response.ok && data.status) {
             return {
@@ -77,7 +112,7 @@ export async function trashContactReq(contactId: string) {
             message: response.statusText
         }
 
-    } catch (error) {
+    } catch {
 
         return {
             success: false,
@@ -103,7 +138,7 @@ export async function updateContactReq(contactId: string, inputs: ContactInputs)
             },
         });
 
-        let data = await response.json()
+        const data = await response.json()
 
         if (response.ok) {
             return {
@@ -118,7 +153,7 @@ export async function updateContactReq(contactId: string, inputs: ContactInputs)
             message: response.statusText
         }
 
-    } catch (error) {
+    } catch {
 
         return {
             success: false,
@@ -143,7 +178,7 @@ export async function deleteContactReq(contactId: string) {
             },
         });
 
-        let data = await response.json()
+        const data = await response.json()
 
         if (response.ok && data.status) {
             return {
@@ -157,7 +192,7 @@ export async function deleteContactReq(contactId: string) {
             message: data?.message ? data.message : response.statusText
         }
 
-    } catch (error) {
+    } catch {
 
         return {
             success: false,
@@ -182,7 +217,7 @@ export async function restoreContactReq(contactId: string) {
             },
         });
 
-        let data = await response.json()
+        const data = await response.json()
 
         if (response.ok && data.status) {
             return {
@@ -196,7 +231,7 @@ export async function restoreContactReq(contactId: string) {
             message: data?.message ? data.message : response.statusText
         }
 
-    } catch (error) {
+    } catch {
 
         return {
             success: false,
@@ -222,7 +257,7 @@ export async function restoreContactItemsReq(contactIds: string[]) {
             },
         });
 
-        let data = await response.json()
+        const data = await response.json()
         console.log(data)
 
         if (response.ok && data.status) {
@@ -237,7 +272,7 @@ export async function restoreContactItemsReq(contactIds: string[]) {
             message: data?.message ? data.message : response.statusText
         }
 
-    } catch (error) {
+    } catch {
 
         return {
             success: false,
@@ -263,7 +298,7 @@ export async function deleteContactItemsReq(contactIds: string[]) {
             },
         });
 
-        let data = await response.json()
+        const data = await response.json()
 
         if (response.ok && data.status) {
             return {
@@ -277,7 +312,7 @@ export async function deleteContactItemsReq(contactIds: string[]) {
             message: data?.message ? data.message : response.statusText
         }
 
-    } catch (error) {
+    } catch {
 
         return {
             success: false,
@@ -303,7 +338,7 @@ export async function trashContactItemsReq(contactIds: string[]) {
             },
         });
 
-        let data = await response.json()
+        const data = await response.json()
 
         if (response.ok && data.status) {
             return {
@@ -317,7 +352,7 @@ export async function trashContactItemsReq(contactIds: string[]) {
             message: data?.message ? data.message : response.statusText
         }
 
-    } catch (error) {
+    } catch {
 
         return {
             success: false,

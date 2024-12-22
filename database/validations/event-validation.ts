@@ -1,4 +1,4 @@
-import { Event } from "@/types/event-types";
+import { Event, NewEvent } from "@/types/event-types";
 import { z, ZodType } from "zod";
 import { personSchema } from "./person-validation";
 import { expenseSchema } from "./expense-validation";
@@ -9,15 +9,10 @@ today.setMinutes(59);
 today.setSeconds(59);
 today.setMilliseconds(59);
 
-export const eventSchema: ZodType<Event> = z.object({
-    // id: z.string().min(1, 'شناسه رویداد نمیتواند خالی باشد'),
+export const createEventSchema: ZodType<NewEvent> = z.object({
     name: z.string().min(3, 'نام رویداد نمیتواند کمتر از 3 کاراکتر باشد'),
     label: z.string().min(1, 'انتخاب برچسب الزامی است'),
-    date: z.coerce.date({ required_error: 'تاریخ الزامی است' }).max(today, 'تاریخ نمیتواند از تاریخ کنونی بیشتر باشد'),
-    // members: z.array(personSchema),
-    // expenses: z.array(expenseSchema),
-    status: z.boolean(),
-    // created_at: z.date().max(today, 'تاریخ ساخت نمیتواند از تاریخ کنونی کمتر باشد'),
-    // updated_at: z.date().max(today, 'تاریخ بروزرسانی نمیتواند از تاریخ کنونی کمتر باشد'),
-    // deleted_at: z.date().nullable(),
+    self_included: z.enum(['true', 'false']),
+    contact_members: z.array(z.string()),
+    start_date: z.coerce.date({ required_error: 'تاریخ الزامی است' }).max(today, 'تاریخ نمیتواند از تاریخ کنونی بیشتر باشد'),
 })

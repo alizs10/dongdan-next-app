@@ -5,7 +5,6 @@ import moment from 'jalali-moment';
 import Button from '@/components/Common/Button';
 import { useContext, useState } from 'react';
 import useClickOutside from '@/hooks/useOutsideClick';
-import { useEventStore } from '@/store/event-store';
 import EditEventModal from './EditEventModal';
 import { useDialogStore } from '@/store/dialog-store';
 import { Toast, useToastStore } from '@/store/toast-store';
@@ -72,10 +71,10 @@ function EventItem({ event }: { event: Event }) {
 
     async function handleTrashEvent() {
 
-        let res = await trashEventReq(event.id)
+        const res = await trashEventReq(event.id)
 
         if (res.success) {
-            let successToast: Toast = {
+            const successToast: Toast = {
                 id: generateUID(),
                 message: res.message,
                 type: 'success'
@@ -85,7 +84,7 @@ function EventItem({ event }: { event: Event }) {
             return
         }
 
-        let errorToast: Toast = {
+        const errorToast: Toast = {
             id: generateUID(),
             message: res.message,
             type: 'danger'

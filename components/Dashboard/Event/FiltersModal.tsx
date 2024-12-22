@@ -7,7 +7,7 @@ import ModalHeader from "@/components/Common/ModalHeader";
 import ModalWrapper from "@/components/Common/ModalWrapper";
 import { zValidate } from "@/helpers/validation-helper";
 import { Filter } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 import { useEventStore } from "@/store/event-store";
 import { generateUID, TomanPriceFormatter } from "@/helpers/helpers";
@@ -22,7 +22,7 @@ function FiltersModal({ onClose, event }: { onClose: () => void, event: Event })
     const addToast = useToastStore(state => state.addToast)
 
 
-    let tommorowDate = new Date();
+    const tommorowDate = new Date();
     tommorowDate.setDate(tommorowDate.getDate() + 1);
 
     const initAnyFilters: AnyExpense = {
@@ -51,7 +51,7 @@ function FiltersModal({ onClose, event }: { onClose: () => void, event: Event })
     const [filters, setFilters] = useState<ExpenseFilters>(initAnyFilters);
 
 
-    const initFormErrors = {
+    const initFormErrors = useMemo(() => ({
         type: '',
         group: '',
         payer: '',
@@ -60,16 +60,17 @@ function FiltersModal({ onClose, event }: { onClose: () => void, event: Event })
         amountMin: '',
         amountMax: '',
         dateRange: ''
-    }
+    }), [])
+
     const [formErrors, setFormErrors] = useState(initFormErrors);
 
     useEffect(() => {
         setFormErrors(initFormErrors)
-    }, [filters.type])
+    }, [filters.type, initFormErrors])
 
     function selectType(type: ExpenseFilters['type']) {
 
-        let newFiltersState = type === 'transfer' ? { ...initTransferFilters, type } :
+        const newFiltersState = type === 'transfer' ? { ...initTransferFilters, type } :
             type === 'expend' ? { ...initExpendFilter, type }
                 : { ...initAnyFilters, type }
 
@@ -109,7 +110,7 @@ function FiltersModal({ onClose, event }: { onClose: () => void, event: Event })
 
     function changeAmountMinHandler(e: React.ChangeEvent<HTMLInputElement>) {
         const regex = /^[0-9]+$/;
-        let amount = e.target.value.replaceAll(',', '');
+        const amount = e.target.value.replaceAll(',', '');
 
         if (amount.length > 0 && !regex.test(amount)) return;
 
@@ -119,7 +120,7 @@ function FiltersModal({ onClose, event }: { onClose: () => void, event: Event })
 
     function changeAmountMaxHandler(e: React.ChangeEvent<HTMLInputElement>) {
         const regex = /^[0-9]+$/;
-        let amount = e.target.value.replaceAll(',', '');
+        const amount = e.target.value.replaceAll(',', '');
 
         if (amount.length > 0 && !regex.test(amount)) return;
 
@@ -131,13 +132,13 @@ function FiltersModal({ onClose, event }: { onClose: () => void, event: Event })
 
     function handleFilterExpenses() {
 
-        let validationSchema = filters.type === 'any' ? anyFilterSchema : filters.type === 'expend' ? expendFilterSchema : transferFilterSchema;
+        const validationSchema = filters.type === 'any' ? anyFilterSchema : filters.type === 'expend' ? expendFilterSchema : transferFilterSchema;
 
         const { errors, hasError } = zValidate(validationSchema, filters);
 
         if (hasError) {
 
-            let validationToast: Toast = {
+            const validationToast: Toast = {
                 id: generateUID(),
                 message: `فرم فیلتر ها نامعتبر است.`,
                 type: 'danger',
@@ -151,7 +152,7 @@ function FiltersModal({ onClose, event }: { onClose: () => void, event: Event })
         setFormErrors(initFormErrors);
 
 
-        let newToast: Toast = {
+        const newToast: Toast = {
             id: generateUID(),
             message: `فیلترها با موفقیت اعمال شدند.`,
             type: 'success',

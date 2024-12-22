@@ -6,7 +6,6 @@ import { useContext, useState } from "react";
 import NewExpenseModal from "./NewExpenseModal";
 import NewPersonModal from "./NewPersonModal";
 import Expenses from "./Expenses/Expenses";
-import { useEventStore } from "@/store/event-store";
 import NoExpenses from "./Expenses/NoExpenses";
 import NoGroupExpenses from "./Expenses/NoGroupExpenses";
 import moment from "jalali-moment";
@@ -39,9 +38,8 @@ function Event() {
         transactions,
     } = useContext(EventContext);
 
-    if (!event) return;
 
-    const { activateEvent, deactivateEvent, activeFilters, filteredExpenses } = useEventStore(state => state);
+    // const { activateEvent, deactivateEvent, activeFilters, filteredExpenses } = useEventStore(state => state);
 
     const [isNewExpenseModalOpen, setIsNewExpenseModalOpen] = useState(false);
     const [isNewPersonModalOpen, setIsNewPersonModalOpen] = useState(false);
@@ -83,7 +81,7 @@ function Event() {
 
 
         if (event.status === 'active') {
-            let deactivateToast: Toast = {
+            const deactivateToast: Toast = {
                 id: generateUID(),
                 message: 'رویداد به پایان رسید',
                 type: 'success'
@@ -91,7 +89,7 @@ function Event() {
             deactivateEvent(event.id);
             addToast(deactivateToast)
         } else {
-            let activateToast: Toast = {
+            const activateToast: Toast = {
                 id: generateUID(),
                 message: 'رویداد در جریان است',
                 type: 'success'

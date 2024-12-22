@@ -3,7 +3,7 @@
 export async function getTrashedEvents() {
 
     try {
-        let res = await fetch(`http://localhost:8000/api/events/trashed`, {
+        const res = await fetch(`http://localhost:8000/api/events/trashed`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -12,7 +12,7 @@ export async function getTrashedEvents() {
             },
         })
 
-        let data = await res.json();
+        const data = await res.json();
 
         console.log(data)
 
@@ -22,7 +22,7 @@ export async function getTrashedEvents() {
 
         return false;
 
-    } catch (error) {
+    } catch {
         console.log(error)
         return false;
     }

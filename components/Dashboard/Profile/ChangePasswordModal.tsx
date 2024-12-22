@@ -4,10 +4,9 @@ import TextInput from "@/components/Common/Form/TextInput";
 import ModalHeader from "@/components/Common/ModalHeader";
 import ModalWrapper from "@/components/Common/ModalWrapper";
 import { zValidate } from "@/helpers/validation-helper";
-import { Ban, Check, Pencil, User } from "lucide-react";
+import { Pencil } from "lucide-react";
 import { useState } from "react";
 import { createPortal, useFormStatus } from "react-dom";
-import { SCHEMES } from "@/database/data/schemes";
 import Button from "@/components/Common/Button";
 import { Toast, useToastStore } from "@/store/toast-store";
 import { generateUID } from "@/helpers/helpers";
@@ -26,7 +25,7 @@ function ChangePasswordModal({ onClose }: { onClose: () => void }) {
     // const updateProfile = useProfileStore(state => state.updateProfile);
     // const updatePersonInEvents = useEventStore(state => state.updatePersonInEvents);
 
-    const { pending, data, method, action } = useFormStatus();
+    const { pending } = useFormStatus();
 
     const initInputs: FormInputs = {
         password: '',
@@ -43,9 +42,9 @@ function ChangePasswordModal({ onClose }: { onClose: () => void }) {
     }
     const [formErrors, setFormErrors] = useState(initFormErrors);
 
-    function formActionHandler(formData: FormData) {
+    function formActionHandler() {
 
-        let { hasError, errors } = zValidate(profileSchema, inputs);
+        const { hasError, errors } = zValidate(profileSchema, inputs);
 
         if (hasError) {
             setFormErrors(errors);
@@ -54,9 +53,9 @@ function ChangePasswordModal({ onClose }: { onClose: () => void }) {
 
         setFormErrors(initFormErrors);
 
-        let updatedProfile = {
-            ...inputs
-        }
+        // const updatedProfile = {
+        //     ...inputs
+        // }
 
         // let updatedPerson = {
         //     id: updatedProfile.id,
@@ -66,7 +65,7 @@ function ChangePasswordModal({ onClose }: { onClose: () => void }) {
 
         // updatePersonInEvents(updatedPerson.id, updatedPerson);
         // updateProfile(profile.id, updatedProfile);
-        let newToast: Toast = {
+        const newToast: Toast = {
             id: generateUID(),
             message: 'رمز عبور با موفقیت تغییر کرد',
             type: 'success'

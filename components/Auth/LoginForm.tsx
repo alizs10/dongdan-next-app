@@ -32,6 +32,7 @@ function LoginForm() {
 
     async function loginWithProvider(provider: 'google' | 'github') {
         //login
+        console.log(provider)
     }
 
     async function handleCredentialsLogin(event: FormEvent) {
@@ -44,7 +45,7 @@ function LoginForm() {
         setSuccessMsg('')
 
         //validate inputs
-        let { hasError, errors } = zValidate(loginDataSchema, inputs)
+        const { hasError, errors } = zValidate(loginDataSchema, inputs)
 
         if (hasError) {
             setErrorMsg('اطلاعات وارد شده صحیح نمی باشد')

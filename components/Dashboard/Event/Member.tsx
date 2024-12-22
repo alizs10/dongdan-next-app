@@ -55,7 +55,7 @@ function Member({ person, isEventDeleted }: { person: Person, isEventDeleted: bo
         setIsOptionsOpen(false);
 
 
-        let newToast: Toast = {
+        const newToast: Toast = {
             id: generateUID(),
             message: 'شخص حذف شد',
             type: 'success'

@@ -27,15 +27,15 @@ function ForgotPasswordForm() {
 
         try {
 
-            let formData = new FormData;
+            const formData = new FormData;
             formData.append('email', email)
 
             // validate email
 
-            let { hasError, errors } = zValidate(forgotPasswordDataSchema, { email })
+            const { hasError, errors } = zValidate(forgotPasswordDataSchema, { email })
 
             if (hasError) {
-                let errorMsg = 'اطلاعات وارد شده معتبر نمی باشد'
+                const errorMsg = 'اطلاعات وارد شده معتبر نمی باشد'
 
                 setErrorMsg(errorMsg)
                 setErrors(errors)
@@ -43,12 +43,12 @@ function ForgotPasswordForm() {
                 return
             }
 
-            let res = await fetch('/api/auth/forgot-password', {
+            const res = await fetch('/api/auth/forgot-password', {
                 method: 'POST',
                 body: formData
             })
 
-            let data = await res.json()
+            const data = await res.json()
             if (data.status) {
                 setSuccessMsg(data.message)
             } else {

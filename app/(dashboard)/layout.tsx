@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 // import { sahel } from 'next-persian-fonts/sahel'
 // import { vazirMatn } from 'next-persian-fonts/vazirmatn'
-import { estedad, estedadFD } from 'next-persian-fonts/estedad'
+import { estedadFD } from 'next-persian-fonts/estedad'
 import "../globals.css";
 import { ThemeProvider } from "next-themes";
 import DashboardLayout from "@/components/Layout/DashboardLayout";

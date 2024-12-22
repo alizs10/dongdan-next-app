@@ -8,7 +8,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 
-function layout({ children }: { children: React.ReactNode }) {
+function Layout({ children }: { children: React.ReactNode }) {
 
     const router = useRouter();
     const pathname = usePathname();
@@ -114,4 +114,4 @@ function layout({ children }: { children: React.ReactNode }) {
     );
 }
 
-export default layout;
+export default Layout;

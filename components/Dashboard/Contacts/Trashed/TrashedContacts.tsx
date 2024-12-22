@@ -64,12 +64,12 @@ function TrashedContacts() {
     }
 
     async function handleRestoreContactItems() {
-        let res = await restoreContactItemsReq(selectedItems)
+        const res = await restoreContactItemsReq(selectedItems)
 
         if (res.success) {
             deleteMultiContact(selectedItems)
             disableSelectMode()
-            let successToast: Toast = {
+            const successToast: Toast = {
                 id: generateUID(),
                 message: res.message,
                 type: 'success'
@@ -78,7 +78,7 @@ function TrashedContacts() {
             return;
         }
 
-        let errorToast: Toast = {
+        const errorToast: Toast = {
             id: generateUID(),
             message: res.message,
             type: 'danger'
@@ -87,12 +87,12 @@ function TrashedContacts() {
     }
 
     async function handleDeleteContactItems() {
-        let res = await deleteContactItemsReq(selectedItems)
+        const res = await deleteContactItemsReq(selectedItems)
 
         if (res.success) {
             deleteMultiContact(selectedItems)
             disableSelectMode()
-            let successToast: Toast = {
+            const successToast: Toast = {
                 id: generateUID(),
                 message: res.message,
                 type: 'success'
@@ -101,7 +101,7 @@ function TrashedContacts() {
             return;
         }
 
-        let errorToast: Toast = {
+        const errorToast: Toast = {
             id: generateUID(),
             message: res.message,
             type: 'danger'

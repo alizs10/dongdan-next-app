@@ -12,13 +12,13 @@ async function getData() {
         }
     });
 
-    let data = await response.json();
+    const data = await response.json();
     return data.trashed_events;
 }
 
 async function TrashedEventsPage() {
 
-    let trashedEvents = await getData();
+    const trashedEvents = await getData();
 
     return (
         <TrashedEventsContextProvider items={trashedEvents}>

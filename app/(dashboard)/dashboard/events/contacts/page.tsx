@@ -12,13 +12,13 @@ async function getData() {
         }
     });
 
-    let data = await response.json();
+    const data = await response.json();
     return data.contacts;
 }
 
 async function ContactsPage() {
 
-    let contacts = await getData();
+    const contacts = await getData();
 
     return (
         <ContactsContextProvider items={contacts}>

@@ -26,7 +26,7 @@ function EditPersonModal({ onClose, person }: { onClose: () => void, person: Per
 
     const addToast = useToastStore(state => state.addToast)
     const updatePerson = useEventStore(state => state.updatePerson);
-    const { pending, data, method, action } = useFormStatus();
+    const { pending } = useFormStatus();
     const { event_id } = useParams()
 
     const initInputs: FormInputs = {
@@ -48,19 +48,19 @@ function EditPersonModal({ onClose, person }: { onClose: () => void, person: Per
         setInputs(prev => ({ ...prev, scheme }))
     }
 
-    function formActionHandler(formData: FormData) {
+    function formActionHandler() {
 
         if (typeof event_id !== 'string') return;
 
-        let updatedPerson = {
+        const updatedPerson = {
             ...person,
             ...inputs
         }
 
-        let { hasError, errors } = zValidate(personSchema, updatedPerson);
+        const { hasError, errors } = zValidate(personSchema, updatedPerson);
 
         if (hasError) {
-            let validationToast: Toast = {
+            const validationToast: Toast = {
                 id: generateUID(),
                 message: `فرم نامعتبر است.`,
                 type: 'danger',
@@ -76,7 +76,7 @@ function EditPersonModal({ onClose, person }: { onClose: () => void, person: Per
         setFormErrors(initFormErrors);
 
 
-        let newToast: Toast = {
+        const newToast: Toast = {
             id: generateUID(),
             message: 'شخص ویرایش شد',
             type: 'success'

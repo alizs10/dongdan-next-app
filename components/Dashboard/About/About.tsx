@@ -15,7 +15,7 @@ function About() {
             </div>
 
             <div className="px-5 py-5 flex flex-col gap-y-4 md:gap-y-6 lg:gap-y-8">
-                <p className="font-bold primary_text_color text-xl md:text-2xl lg:text-3xl">"دیگه از مادرخرج شدن نترس! با دنگ دان، دنگ هرکی رو بدان."</p>
+                <p className="font-bold primary_text_color text-xl md:text-2xl lg:text-3xl">{"دیگه از مادرخرج شدن نترس! با دنگ دان، دنگ هرکی رو بدان."}</p>
                 <p className="text-base md:text-lg lg:text-xl text-gray-700 dark:text-gray-300 leading-7 lg:leading-10">دنگ دان یک اپلیکیشن محاسبه ی دنگ هست که کاملا رایگانه و شما رو از هر ابزار محاسبه ی دیگه ای بی نیاز میکنه. واسه ی یه دو دوتا، چهارتای ساده که نیاز نیست خرج بکنی؛ فقط کافیه از دنگ دان استفاده کنی.</p>
 
 

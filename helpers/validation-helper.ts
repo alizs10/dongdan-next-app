@@ -14,7 +14,7 @@ export const zValidate = (schema: ZodSchema, data: object) => {
         let errorPaths = []
 
         for (let errorObj of errors) {
-            let errorMsg = errorObj.message;
+            const errorMsg = errorObj.message;
             let paths = errorObj.path;
 
             let existsPath = errorPaths.find(errorPath => errorPath.path === paths.join("."))

@@ -28,7 +28,7 @@ function EditProfileModal({ onClose, profile }: { onClose: () => void, profile: 
     const addToast = useToastStore(state => state.addToast);
     const updateUser = useAppStore(state => state.updateUser);
 
-    const { pending, data, method, action } = useFormStatus();
+    const { pending } = useFormStatus();
 
     const initInputs: FormInputs = {
         name: profile.name ?? '',
@@ -49,12 +49,12 @@ function EditProfileModal({ onClose, profile }: { onClose: () => void, profile: 
         setInputs(prev => ({ ...prev, scheme }))
     }
 
-    async function formActionHandler(formData: FormData) {
+    async function formActionHandler() {
 
         if (loading) return
         setLoading(true)
 
-        let { hasError, errors } = zValidate(updateProfileSchema, inputs);
+        const { hasError, errors } = zValidate(updateProfileSchema, inputs);
 
         if (hasError) {
             setFormErrors(errors);
@@ -62,22 +62,22 @@ function EditProfileModal({ onClose, profile }: { onClose: () => void, profile: 
         }
         setFormErrors(initFormErrors);
 
-        let updatedProfile = {
+        const updatedProfile = {
             ...profile,
             ...inputs
         }
 
         try {
 
-            let res = await fetch('/api/profile', {
+            const res = await fetch('/api/profile', {
                 method: 'PUT',
                 body: JSON.stringify(updatedProfile)
             })
 
 
-            let data = await res.json();
+            const data = await res.json();
             if (data.status) {
-                let successToast: Toast = {
+                const successToast: Toast = {
                     id: generateUID(),
                     message: 'پروفایل ویرایش شد',
                     type: 'success'
@@ -87,7 +87,7 @@ function EditProfileModal({ onClose, profile }: { onClose: () => void, profile: 
                 addToast(successToast)
                 onClose();
             } else {
-                let errorToast: Toast = {
+                const errorToast: Toast = {
                     id: generateUID(),
                     message: data?.message ?? 'خطا در ویرایش پروفایل',
                     type: 'danger'
@@ -96,8 +96,8 @@ function EditProfileModal({ onClose, profile }: { onClose: () => void, profile: 
                 addToast(errorToast)
             }
 
-        } catch (error) {
-            let errorToast: Toast = {
+        } catch {
+            const errorToast: Toast = {
                 id: generateUID(),
                 message: 'خطا',
                 type: 'danger'

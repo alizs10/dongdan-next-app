@@ -53,10 +53,10 @@ function ResetPasswordForm() {
 
             // validate inputs
 
-            let { hasError, errors } = zValidate(resetPasswordDataSchema, { token, ...inputs })
+            const { hasError, errors } = zValidate(resetPasswordDataSchema, { token, ...inputs })
 
             if (hasError) {
-                let errorMsg = 'اطلاعات وارد شده معتبر نمی باشد'
+                const errorMsg = 'اطلاعات وارد شده معتبر نمی باشد'
                 console.log(errors)
                 setErrorMsg(errorMsg)
                 setErrors(errors)
@@ -65,17 +65,17 @@ function ResetPasswordForm() {
             }
             setErrors(initErrors)
 
-            let formData = new FormData;
+            const formData = new FormData;
             formData.append('token', token as string)
             formData.append('password', inputs.password)
             formData.append('confirmPassword', inputs.confirmPassword)
 
-            let res = await fetch('/api/auth/reset-password', {
+            const res = await fetch('/api/auth/reset-password', {
                 method: 'POST',
                 body: formData
             })
 
-            let data = await res.json()
+            const data = await res.json()
 
             if (data.status) {
                 setSuccessMsg(data.message)

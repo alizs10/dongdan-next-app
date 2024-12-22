@@ -17,7 +17,7 @@ function Toast({ toastId, scheme, text, i }: PropsTypes) {
 
     useEffect(() => {
 
-        let timer = setTimeout(() => {
+        const timer = setTimeout(() => {
             removeToast(toastId);
         }, 5000);
 
@@ -25,13 +25,13 @@ function Toast({ toastId, scheme, text, i }: PropsTypes) {
             clearTimeout(timer);
         }
 
-    }, [toastId])
+    }, [toastId, removeToast])
 
 
-    let schemeClasses = scheme === 'success' ? "bg-green-50 dark:bg-dark-green text-green-700 dark:text-green-300 border-green-700 dark:border-green-300" : scheme === 'danger' ? 'bg-red-50 dark:bg-dark-red text-red-600 dark:text-red-300 border-red-600 dark:border-red-300' : scheme === 'warning' ? 'bg-yellow-50 dark:bg-dark-yellow text-yellow-600 dark:text-yellow-200 border-yellow-600 dark:border-yellow-200' : scheme === 'accent' ? 'bg-indigo-50 text-indigo-700 border-indigo-700' : 'app_bg_color text-gray-500 border-gray-300';
+    const schemeClasses = scheme === 'success' ? "bg-green-50 dark:bg-dark-green text-green-700 dark:text-green-300 border-green-700 dark:border-green-300" : scheme === 'danger' ? 'bg-red-50 dark:bg-dark-red text-red-600 dark:text-red-300 border-red-600 dark:border-red-300' : scheme === 'warning' ? 'bg-yellow-50 dark:bg-dark-yellow text-yellow-600 dark:text-yellow-200 border-yellow-600 dark:border-yellow-200' : scheme === 'accent' ? 'bg-indigo-50 text-indigo-700 border-indigo-700' : 'app_bg_color text-gray-500 border-gray-300';
 
 
-    let icon = scheme === 'success' ? <CircleCheck className="size-7" /> : scheme === 'danger' ? <TriangleAlert className="size-7" /> : scheme === 'warning' ? <CircleAlert className="size-7" /> : scheme === 'info' ? <Info className="size-7" /> : <CircleCheck className="size-7" />;
+    const icon = scheme === 'success' ? <CircleCheck className="size-7" /> : scheme === 'danger' ? <TriangleAlert className="size-7" /> : scheme === 'warning' ? <CircleAlert className="size-7" /> : scheme === 'info' ? <Info className="size-7" /> : <CircleCheck className="size-7" />;
 
     return (
         <motion.div

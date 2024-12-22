@@ -13,13 +13,13 @@ async function getData() {
         }
     });
 
-    let data = await response.json();
+    const data = await response.json();
     return data.events;
 }
 
 async function DashboardPage() {
 
-    let events = await getData();
+    const events = await getData();
 
     return (
         <EventsContextProvider items={events}>

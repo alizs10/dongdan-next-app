@@ -3,10 +3,9 @@
 import TextInput from "@/components/Common/Form/TextInput";
 import ModalHeader from "@/components/Common/ModalHeader";
 import ModalWrapper from "@/components/Common/ModalWrapper";
-import { eventSchema } from "@/database/validations/event-validation";
 import { generateUID, TomanPriceFormatter, TomanPriceToNumber } from "@/helpers/helpers";
 import { zValidate } from "@/helpers/validation-helper";
-import { Ban, BriefcaseBusiness, Cake, Coffee, Pencil, Plane, Save, TreePalm, User, Utensils, Zap } from "lucide-react";
+import { Pencil, Save } from "lucide-react";
 import { useCallback, useState } from "react";
 import { createPortal, useFormStatus } from "react-dom";
 import ExpensePreview from "./ExpensePreview";
@@ -44,7 +43,7 @@ function EditExpenseModal({ onClose, event, expense }: { onClose: () => void, ev
     const addToast = useToastStore(state => state.addToast)
     const updateExpense = useEventStore(state => state.updateExpense);
 
-    const { pending, data, method, action } = useFormStatus();
+    const { pending } = useFormStatus();
     const [formType, setFormType] = useState<FormTypes>(expense.type === 'expend' ? 0 : 1)
 
     const initInputs: FormInputs = {
@@ -87,7 +86,7 @@ function EditExpenseModal({ onClose, event, expense }: { onClose: () => void, ev
 
     function handleChangeDate(date: DateObject) {
 
-        let selectedDate = new Date(date.toDate());
+        const selectedDate = new Date(date.toDate());
         selectedDate.setHours(0o0)
         selectedDate.setMinutes(0o0)
         selectedDate.setSeconds(0o0)
@@ -143,7 +142,7 @@ function EditExpenseModal({ onClose, event, expense }: { onClose: () => void, ev
 
     function changeAmountHandler(e: React.ChangeEvent<HTMLInputElement>) {
         const regex = /^[0-9]+$/;
-        let amount = e.target.value.replaceAll(',', '');
+        const amount = e.target.value.replaceAll(',', '');
 
         if (amount.length > 0 && !regex.test(amount)) return;
 
@@ -155,16 +154,16 @@ function EditExpenseModal({ onClose, event, expense }: { onClose: () => void, ev
     }
 
 
-    function expendFormHandler(formData: FormData) {
+    function expendFormHandler() {
 
 
-        let updatedExpend = {
+        const updatedExpend = {
             ...expense,
             ...inputs,
             type: 'expend' as const,
             amount: TomanPriceToNumber(inputs.amount),
         }
-        let { hasError, errors } = zValidate(expendSchema, updatedExpend);
+        const { hasError, errors } = zValidate(expendSchema, updatedExpend);
 
         if (hasError) {
             console.log(errors)
@@ -176,7 +175,7 @@ function EditExpenseModal({ onClose, event, expense }: { onClose: () => void, ev
         setFormErrors(initFormErrors);
 
 
-        let newToast: Toast = {
+        const newToast: Toast = {
             id: generateUID(),
             message: 'هزینه ویرایش شد',
             type: 'success'
@@ -187,20 +186,20 @@ function EditExpenseModal({ onClose, event, expense }: { onClose: () => void, ev
     }
 
 
-    function transferFormHandler(formData: FormData) {
+    function transferFormHandler() {
 
-        let updatedTransfer = {
+        const updatedTransfer = {
             ...expense,
             ...inputs2,
             type: 'transfer' as const,
             amount: TomanPriceToNumber(inputs2.amount)
         }
-        let { hasError, errors } = zValidate(transferSchema, updatedTransfer);
+        const { hasError, errors } = zValidate(transferSchema, updatedTransfer);
 
 
         if (hasError) {
 
-            let validationToast: Toast = {
+            const validationToast: Toast = {
                 id: generateUID(),
                 message: `فرم نامعتبر است.`,
                 type: 'danger',
@@ -217,7 +216,7 @@ function EditExpenseModal({ onClose, event, expense }: { onClose: () => void, ev
 
         setFormErrors2(initFormErrors2);
 
-        let newToast: Toast = {
+        const newToast: Toast = {
             id: generateUID(),
             message: 'جابجایی پول ویرایش شد',
             type: 'success'

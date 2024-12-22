@@ -12,13 +12,13 @@ async function getData() {
         }
     });
 
-    let data = await response.json();
+    const data = await response.json();
     return data.trashed_contacts;
 }
 
 async function TrashedContactsPage() {
 
-    let trashedContacts = await getData();
+    const trashedContacts = await getData();
 
     return (
         <TrashedContactsContextProvider items={trashedContacts}>

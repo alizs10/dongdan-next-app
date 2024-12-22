@@ -1,5 +1,5 @@
 import Button from "@/components/Common/Button";
-import { Banknote, CalendarRange, CreditCard, DollarSign, FilterX, User, UserMinus, UserPlus, Users } from "lucide-react";
+import { Banknote, CalendarRange, CreditCard, DollarSign, FilterX, UserMinus, UserPlus, Users } from "lucide-react";
 import { useEventStore } from "@/store/event-store";
 import moment from "jalali-moment";
 

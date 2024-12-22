@@ -3,7 +3,6 @@ import { Ellipsis, RotateCw, Trash, User } from "lucide-react";
 import Button from '@/components/Common/Button';
 import { useContext, useState } from 'react';
 import useClickOutside from '@/hooks/useOutsideClick';
-import { useContactStore } from '@/store/contact-store';
 import { useDialogStore } from '@/store/dialog-store';
 import { Toast, useToastStore } from '@/store/toast-store';
 import { generateUID } from '@/helpers/helpers';
@@ -77,11 +76,11 @@ function TrashedContactItem({ contact }: { contact: Contact }) {
 
 
     async function handleRestoreContact() {
-        let res = await restoreContactReq(contact.id)
+        const res = await restoreContactReq(contact.id)
 
         if (res.success) {
             deleteContact(contact.id)
-            let successToast: Toast = {
+            const successToast: Toast = {
                 id: generateUID(),
                 message: res.message,
                 type: 'success'
@@ -90,7 +89,7 @@ function TrashedContactItem({ contact }: { contact: Contact }) {
             return;
         }
 
-        let errorToast: Toast = {
+        const errorToast: Toast = {
             id: generateUID(),
             message: res.message,
             type: 'danger'
@@ -99,11 +98,11 @@ function TrashedContactItem({ contact }: { contact: Contact }) {
     }
 
     async function handleDeleteContact() {
-        let res = await deleteContactReq(contact.id)
+        const res = await deleteContactReq(contact.id)
 
         if (res.success) {
             deleteContact(contact.id)
-            let successToast: Toast = {
+            const successToast: Toast = {
                 id: generateUID(),
                 message: res.message,
                 type: 'success'
@@ -112,7 +111,7 @@ function TrashedContactItem({ contact }: { contact: Contact }) {
             return;
         }
 
-        let errorToast: Toast = {
+        const errorToast: Toast = {
             id: generateUID(),
             message: res.message,
             type: 'danger'

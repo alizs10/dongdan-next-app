@@ -5,7 +5,7 @@ import ModalHeader from "@/components/Common/ModalHeader";
 import ModalWrapper from "@/components/Common/ModalWrapper";
 import { generateUID, TomanPriceFormatter, TomanPriceToNumber } from "@/helpers/helpers";
 import { zValidate } from "@/helpers/validation-helper";
-import { Ban, Save, User } from "lucide-react";
+import { Save } from "lucide-react";
 import { useCallback, useState } from "react";
 import { createPortal, useFormStatus } from "react-dom";
 import ExpensePreview from "./ExpensePreview";
@@ -43,7 +43,7 @@ function NewExpenseModal({ onClose, event }: { onClose: () => void, event: Event
     const addToast = useToastStore(state => state.addToast)
     const addExpense = useEventStore(state => state.addExpense);
 
-    const { pending, data, method, action } = useFormStatus();
+    const { pending } = useFormStatus();
     const [formType, setFormType] = useState<FormTypes>(0)
 
     const initInputs: FormInputs = {
@@ -86,7 +86,7 @@ function NewExpenseModal({ onClose, event }: { onClose: () => void, event: Event
 
     function handleChangeDate(date: DateObject) {
 
-        let selectedDate = new Date(date.toDate());
+        const selectedDate = new Date(date.toDate());
         selectedDate.setHours(0o0)
         selectedDate.setMinutes(0o0)
         selectedDate.setSeconds(0o0)
@@ -139,7 +139,7 @@ function NewExpenseModal({ onClose, event }: { onClose: () => void, event: Event
 
     function changeAmountHandler(e: React.ChangeEvent<HTMLInputElement>) {
         const regex = /^[0-9]+$/;
-        let amount = e.target.value.replaceAll(',', '');
+        const amount = e.target.value.replaceAll(',', '');
 
         if (amount.length > 0 && !regex.test(amount)) return;
 
@@ -151,20 +151,20 @@ function NewExpenseModal({ onClose, event }: { onClose: () => void, event: Event
     }
 
 
-    function expendFormHandler(formData: FormData) {
+    function expendFormHandler() {
 
-        let newExpend = {
+        const newExpend = {
             id: generateUID(),
             type: 'expend' as const,
             ...inputs,
             amount: TomanPriceToNumber(inputs.amount),
         }
 
-        let { hasError, errors } = zValidate(expendSchema, newExpend);
+        const { hasError, errors } = zValidate(expendSchema, newExpend);
 
         if (hasError) {
             console.log(errors)
-            let validationToast: Toast = {
+            const validationToast: Toast = {
                 id: generateUID(),
                 message: `فرم نامعتبر است.`,
                 type: 'danger',
@@ -181,7 +181,7 @@ function NewExpenseModal({ onClose, event }: { onClose: () => void, event: Event
 
 
 
-        let newToast: Toast = {
+        const newToast: Toast = {
             id: generateUID(),
             message: 'هزینه جدید اضافه شد',
             type: 'success'
@@ -192,20 +192,20 @@ function NewExpenseModal({ onClose, event }: { onClose: () => void, event: Event
     }
 
 
-    function transferFormHandler(formData: FormData) {
+    function transferFormHandler() {
 
-        let newTransfer = {
+        const newTransfer = {
             ...inputs2,
             id: generateUID(),
             type: 'transfer' as const,
             amount: TomanPriceToNumber(inputs2.amount)
         }
 
-        let { hasError, errors } = zValidate(transferSchema, newTransfer);
+        const { hasError, errors } = zValidate(transferSchema, newTransfer);
 
         if (hasError) {
             console.log(errors)
-            let validationToast: Toast = {
+            const validationToast: Toast = {
                 id: generateUID(),
                 message: `فرم نامعتبر است.`,
                 type: 'danger',
@@ -220,7 +220,7 @@ function NewExpenseModal({ onClose, event }: { onClose: () => void, event: Event
 
         setFormErrors2(initFormErrors2);
 
-        let newToast: Toast = {
+        const newToast: Toast = {
             id: generateUID(),
             message: 'جابجایی پول جدید اضافه شد',
             type: 'success'

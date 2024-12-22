@@ -2,7 +2,6 @@ import { useDialogStore } from "@/store/dialog-store";
 import { createPortal } from "react-dom";
 import Button from "../Button";
 import { Check, X } from "lucide-react";
-import useClickOutside from "@/hooks/useOutsideClick";
 import ModalWrapper from "../ModalWrapper";
 
 function Dialog() {

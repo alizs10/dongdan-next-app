@@ -1,51 +1,79 @@
 'use client'
 
+import { getContactsReq } from "@/app/actions/contacts";
+import { createEventReq } from "@/app/actions/events";
 import Button from "@/components/Common/Button";
 import MemberSelector from "@/components/Common/Form/MemberSelector";
 import PDatePicker from "@/components/Common/Form/PDatePicker";
 import TextInput from "@/components/Common/Form/TextInput";
 import ModalHeader from "@/components/Common/ModalHeader";
 import ModalWrapper from "@/components/Common/ModalWrapper";
-import { eventSchema } from "@/database/validations/event-validation";
+import { EventsContext } from "@/context/EventsContext";
+import { createEventSchema } from "@/database/validations/event-validation";
 import { generateUID } from "@/helpers/helpers";
 import { zValidate } from "@/helpers/validation-helper";
-import { useContactStore } from "@/store/contact-store";
-import { useEventStore } from "@/store/event-store";
 import { Toast, useToastStore } from "@/store/toast-store";
-import { Event } from "@/types/event-types";
-import { Ban, BriefcaseBusiness, Cake, Coffee, Plane, Save, TreePalm, User, Utensils } from "lucide-react";
-import { useState } from "react";
+import { Contact } from "@/types/contact-types";
+import { NewEvent } from "@/types/event-types";
+import { Ban, BriefcaseBusiness, Cake, Coffee, Loader, Plane, Save, TreePalm, Utensils } from "lucide-react";
+import { useContext, useEffect, useState } from "react";
 import { createPortal, useFormStatus } from "react-dom";
 import { DateObject } from "react-multi-date-picker";
 
 type FormInputs = {
     name: string;
     label: string;
-    date: Date;
+    start_date: Date;
+    self_included: boolean;
     members: string[];
 }
 
 function NewEventModal({ onClose }: { onClose: () => void }) {
 
     const [loading, setLoading] = useState(false);
-    const addToast = useToastStore(state => state.addToast)
-    const addEvent = useEventStore(state => state.addEvent);
-    let contacts = useContactStore(state => state.contacts)
-    contacts = contacts.filter(c => c.deleted_at === null);
+    const { addEvent } = useContext(EventsContext);
 
-    const { pending, data, method, action } = useFormStatus();
+    const [fetchingContacts, setFetchingContacts] = useState(true);
+    const [contacts, setContacts] = useState<null | Contact[]>(null);
+
+    const addToast = useToastStore(state => state.addToast)
+
+    useEffect(() => {
+        async function getUserContacts() {
+            const res = await getContactsReq()
+
+            if (res.success) {
+                setContacts(res.contacts)
+                setFetchingContacts(false);
+                return;
+            }
+
+            const errorToast: Toast = {
+                id: generateUID(),
+                message: 'خطا در دریافت دوستان',
+                type: 'danger'
+            }
+            addToast(errorToast);
+        }
+
+        getUserContacts()
+    }, [])
+
+    const { pending } = useFormStatus();
     const initInputs = {
         name: '',
         label: '',
         members: [],
-        date: new Date(Date.now())
+        self_included: true,
+        start_date: new Date(Date.now())
     }
     const [inputs, setInputs] = useState<FormInputs>(initInputs);
 
     const initFormErrors = {
         name: '',
         label: '',
-        date: '',
+        start_date: '',
+        self_included: '',
         members: ''
     }
     const [formErrors, setFormErrors] = useState(initFormErrors);
@@ -53,13 +81,13 @@ function NewEventModal({ onClose }: { onClose: () => void }) {
 
     function handleChangeDate(date: DateObject) {
 
-        let selectedDate = new Date(date.toDate());
+        const selectedDate = new Date(date.toDate());
         selectedDate.setHours(0o0)
         selectedDate.setMinutes(0o0)
         selectedDate.setSeconds(0o0)
         selectedDate.setMilliseconds(1)
 
-        setInputs((prev: FormInputs) => ({ ...prev, date: selectedDate }))
+        setInputs((prev: FormInputs) => ({ ...prev, start_date: selectedDate }))
     }
 
     function selectLabelHandler(label: string) {
@@ -77,12 +105,19 @@ function NewEventModal({ onClose }: { onClose: () => void }) {
 
     function togglePerson(personId: string) {
 
+        if (!contacts) return;
+
+        if (personId === 'self') {
+            setInputs(prevState => ({ ...prevState, self_included: !prevState.self_included }))
+            return
+        }
+
         if (personId === 'all' && inputs.members.length === contacts.length) {
-            setInputs(prev => ({ ...prev, members: [] }))
+            setInputs(prev => ({ ...prev, members: [], self_included: false }))
             return
         }
         if (personId === 'all' && inputs.members.length !== contacts.length) {
-            setInputs(prev => ({ ...prev, members: contacts.map(p => p.id) }))
+            setInputs(prev => ({ ...prev, members: contacts.map(p => p.id), self_included: true }))
             return
         }
 
@@ -94,90 +129,62 @@ function NewEventModal({ onClose }: { onClose: () => void }) {
         }
     }
 
-    async function formActionHandler(formData: FormData) {
+    async function formActionHandler() {
         if (loading) return;
 
         setLoading(true);
 
-        // let eventId = generateUID();
-
-        let newEvent: Event = {
+        const eventInputs: NewEvent = {
             name: inputs.name,
             label: inputs.label,
-            date: inputs.date,
-            status: true,
-            // id: eventId,
-            // members: contacts.filter(c => inputs.members.includes(c.id)).map(m => ({ ...m, eventId: eventId })),
-            // expenses: [],
+            start_date: inputs.start_date,
+            self_included: inputs.self_included ? 'true' : 'false',
+            contact_members: inputs.members.map(id => id.toString())
         }
 
-        let { hasError, errors } = zValidate(eventSchema, newEvent);
+        console.log(inputs.start_date, new Date())
+
+        const { hasError, errors } = zValidate(createEventSchema, eventInputs);
 
         if (hasError) {
             console.log(errors)
-            let validationToast: Toast = {
+            const validationToast: Toast = {
                 id: generateUID(),
                 message: `فرم نامعتبر است.`,
                 type: 'danger',
             }
-
-
             addToast(validationToast);
-
             setFormErrors(errors);
+            setLoading(false);
+            return;
+        }
+        setFormErrors(initFormErrors);
+
+        const res = await createEventReq(eventInputs);
+
+
+        if (res.success) {
+            addEvent(res.newEvent);
+
+            const successToast: Toast = {
+                id: generateUID(),
+                message: res.message,
+                type: 'success'
+            }
+            addToast(successToast)
+            setLoading(false);
+            onClose();
             return;
         }
 
-        setFormErrors(initFormErrors);
-
-        try {
-            let res = await fetch('/api/events', {
-                method: 'POST',
-                body: JSON.stringify(newEvent)
-            })
-
-            let data = await res.json();
-
-            if (data?.status) {
-
-                let successToast: Toast = {
-                    id: generateUID(),
-                    message: data?.message ?? 'رویداد با موفقیت ثبت شد',
-                    type: 'success'
-                }
-                addToast(successToast);
-                addEvent(data?.event ?? newEvent);
-                setLoading(false);
-                onClose();
-            } else {
-
-                if (res.status === 422) {
-                    console.log(data.errors)
-                    setFormErrors(data?.errors);
-                }
-
-
-                let errorToast: Toast = {
-                    id: generateUID(),
-                    message: data?.message ?? 'خطا در ثبت رویداد',
-                    type: 'danger'
-                }
-                addToast(errorToast);
-                setLoading(false);
-            }
-
-        } catch (error) {
-
-            console.log(error)
-
-            let errorToast: Toast = {
-                id: generateUID(),
-                message: 'خطا در ثبت رویداد',
-                type: 'danger'
-            }
-            addToast(errorToast);
-            setLoading(false);
+        const errorToast: Toast = {
+            id: generateUID(),
+            message: res.message,
+            type: 'danger'
         }
+        addToast(errorToast)
+        setLoading(false);
+
 
     }
 
@@ -194,8 +201,8 @@ function NewEventModal({ onClose }: { onClose: () => void }) {
                         <PDatePicker
                             label={'تاریخ'}
                             name={"date"}
-                            value={inputs.date}
-                            error={formErrors.date}
+                            value={inputs.start_date}
+                            error={formErrors.start_date}
                             onChange={handleChangeDate}
                             maxDate={new Date()}
                         />
@@ -239,15 +246,24 @@ function NewEventModal({ onClose }: { onClose: () => void }) {
                             <input type="hidden" value={inputs.label} name="label" />
                         </div>
 
-                        {contacts.length > 0 && (
+                        {contacts && contacts.length > 0 && (
                             <MemberSelector
-                                label="انتخاب اعضا از دوستان"
+                                label="انتخاب اعضا"
                                 members={contacts}
                                 onSelect={togglePerson}
                                 value={inputs.members}
                                 error={formErrors.members}
                                 selectAllOption={true}
+                                selfOption={true}
+                                selfIncluded={inputs.self_included}
                             />
+                        )}
+
+                        {fetchingContacts && (
+                            <div className="text-gray-500 dark:text-gray-400 py-4 flex flex-row gap-x-2 items-center justify-center">
+                                <Loader className="size-5" />
+                                <span className="text-sm">در حال دریافت اطلاعات...</span>
+                            </div>
                         )}
                     </div>
 

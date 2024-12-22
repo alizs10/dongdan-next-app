@@ -39,10 +39,10 @@ function RegisterForm() {
         try {
 
             // validate form inputs
-            let { hasError, errors } = zValidate(registerDataSchema, inputs)
+            const { hasError, errors } = zValidate(registerDataSchema, inputs)
             console.log("we are here", inputs)
             if (hasError) {
-                let errMsg = "اطلاعات وارد شده صحیح نمی باشد"
+                const errMsg = "اطلاعات وارد شده صحیح نمی باشد"
                 // or just show a error toast
                 setErrorMsg(errMsg)
                 setErrors({ ...initErrors, ...errors })
@@ -51,12 +51,12 @@ function RegisterForm() {
             }
             setErrors(initErrors)
 
-            let formData = new FormData;
-            for (let key in inputs) {
+            const formData = new FormData;
+            for (const key in inputs) {
                 formData.append(key, inputs[key as keyof typeof inputs])
             }
 
-            let result = await fetch('/api/auth/register',
+            const result = await fetch('/api/auth/register',
                 {
                     method: 'POST',
                     body: formData
@@ -65,7 +65,7 @@ function RegisterForm() {
             if (!result.ok) {
 
                 if (result.status === 409) {
-                    let errMsg = 'این ایمیل قبلا استفاده شده است'
+                    const errMsg = 'این ایمیل قبلا استفاده شده است'
                     setErrorMsg(errMsg)
                 } else {
                     setErrorMsg(result.statusText)
@@ -79,8 +79,8 @@ function RegisterForm() {
 
             // then redirect user
             router.push('/auth?form=login')
-        } catch (error) {
-            let errMsg = "خطای سرور"
+        } catch {
+            const errMsg = "خطای سرور"
             // or just show a error toast
             setErrorMsg(errMsg)
             setLoading(false)

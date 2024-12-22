@@ -24,7 +24,9 @@ function ShareEventLink() {
         }
 
         return () => {
-            timer && clearTimeout(timer);
+            if (timer) {
+                clearTimeout(timer);
+            }
         }
 
     }, [copied])
