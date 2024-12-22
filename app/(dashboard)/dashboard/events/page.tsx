@@ -1,5 +1,6 @@
 import Events from "@/components/Dashboard/Events/Events";
 import { EventsContextProvider } from "@/context/EventsContext";
+import { MultiSelectItemContextProvider } from "@/context/MultiSelectItemContext";
 import { cookies } from "next/headers";
 
 
@@ -22,7 +23,9 @@ async function DashboardPage() {
 
     return (
         <EventsContextProvider items={events}>
-            <Events />
+            <MultiSelectItemContextProvider>
+                <Events />
+            </MultiSelectItemContextProvider>
         </EventsContextProvider>
     );
 }

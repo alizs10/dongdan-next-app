@@ -5,7 +5,7 @@ function EventsList({ events }: { events: Event[] }) {
 
     // sort events by date
     events.sort((a, b) => {
-        return new Date(b.date).getTime() - new Date(a.date).getTime();
+        return new Date(b.start_date).getTime() - new Date(a.start_date).getTime();
     });
 
     return (

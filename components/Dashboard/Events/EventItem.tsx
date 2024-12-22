@@ -12,6 +12,7 @@ import { Toast, useToastStore } from '@/store/toast-store';
 import { generateUID } from '@/helpers/helpers';
 import { trashEventReq } from '@/app/actions/events';
 import { EventsContext } from '@/context/EventsContext';
+import { MultiSelectItemContext } from '@/context/MultiSelectItemContext';
 
 
 function renderIcon(label: string) {
@@ -44,6 +45,12 @@ function renderIcon(label: string) {
 function EventItem({ event }: { event: Event }) {
 
     const { deleteEvent } = useContext(EventsContext)
+    const { toggleItem, selectMode, selectedItems } = useContext(MultiSelectItemContext);
+
+    function onSelect() {
+        if (!selectMode) return;
+        toggleItem(event.id);
+    }
 
     const addToast = useToastStore(state => state.addToast)
     const { openDialog } = useDialogStore(state => state)
@@ -109,7 +116,9 @@ function EventItem({ event }: { event: Event }) {
     }
 
     return (
-        <li className='event_item'>
+        <li
+            onClick={onSelect}
+            className={`event_item ${selectMode && 'cursor-pointer'} ${selectedItems.includes(event.id) ? 'bg-gray-200 dark:bg-gray-800' : ''}`}>
             <div className='event_item_right'>
 
                 <div className='event_item_icon_container'>

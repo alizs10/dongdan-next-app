@@ -40,3 +40,44 @@ export async function trashEventReq(eventId: string) {
     }
 
 }
+
+
+export async function trashEventItemsReq(eventIds: string[]) {
+
+    const token = (await cookies()).get('token');
+
+    try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/events/trash/items`, {
+            method: 'DELETE',
+            body: JSON.stringify({ events: eventIds.map(id => id.toString()) }),
+            headers: {
+                Authorization: `Bearer ${token?.value}`,
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+            },
+        });
+
+        let data = await response.json()
+
+        if (response.ok && data.status) {
+            return {
+                success: true,
+                message: 'دوستان شما با موفقیت حذف شدند'
+            }
+        }
+
+        return {
+            success: false,
+            message: data?.message ? data.message : response.statusText
+        }
+
+    } catch (error) {
+
+        return {
+            success: false,
+            message: 'خطای سرور'
+        }
+
+    }
+
+}
