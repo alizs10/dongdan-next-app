@@ -1,14 +1,14 @@
 // import { Event as PrismaEvent } from "@prisma/client";
 
 export type Event = {
-    id?: string;
+    id: string;
     name: string;
-    slug?: string;
-    date: Date;
+    slug: string;
+    start_date: Date;
+    end_date: null | Date;
     label: string;
     members?: Person[];
     expenses?: Expense[];
-    status: Boolean;
     createdAt?: Date;
     updatedAt?: Date;
     deletedAt?: Date | null;

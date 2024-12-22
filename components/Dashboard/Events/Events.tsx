@@ -5,11 +5,12 @@ import NewEventModal from "./NewEventModal";
 import NoEvents from "./NoEvents";
 import Button from "@/components/Common/Button";
 import EventsList from "./EventsList";
-import { Event } from "@/types/event-types";
-import { useState } from "react";
+import { useContext, useState } from "react";
+import { EventsContext } from "@/context/EventsContext";
 
-function Events({ items }: { items: Event[] }) {
+function Events() {
 
+    const { events: items } = useContext(EventsContext);
     const [newEventModalVis, setNewEventModalVis] = useState(false);
 
     function openModal() {

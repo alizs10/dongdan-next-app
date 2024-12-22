@@ -1,4 +1,5 @@
 import Events from "@/components/Dashboard/Events/Events";
+import { EventsContextProvider } from "@/context/EventsContext";
 import { cookies } from "next/headers";
 
 
@@ -20,9 +21,9 @@ async function DashboardPage() {
     let events = await getData();
 
     return (
-        <div className="events">
-            <Events items={events} />
-        </div>
+        <EventsContextProvider items={events}>
+            <Events />
+        </EventsContextProvider>
     );
 }
 

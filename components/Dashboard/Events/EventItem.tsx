@@ -3,13 +3,15 @@ import { BriefcaseBusiness, Cake, Coffee, Ellipsis, Info, Pencil, Plane, Trash, 
 import Link from 'next/link';
 import moment from 'jalali-moment';
 import Button from '@/components/Common/Button';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import useClickOutside from '@/hooks/useOutsideClick';
 import { useEventStore } from '@/store/event-store';
 import EditEventModal from './EditEventModal';
 import { useDialogStore } from '@/store/dialog-store';
 import { Toast, useToastStore } from '@/store/toast-store';
 import { generateUID } from '@/helpers/helpers';
+import { trashEventReq } from '@/app/actions/events';
+import { EventsContext } from '@/context/EventsContext';
 
 
 function renderIcon(label: string) {
@@ -41,8 +43,9 @@ function renderIcon(label: string) {
 }
 function EventItem({ event }: { event: Event }) {
 
+    const { deleteEvent } = useContext(EventsContext)
+
     const addToast = useToastStore(state => state.addToast)
-    const { deleteEvent } = useEventStore(state => state)
     const { openDialog } = useDialogStore(state => state)
 
     const [isOptionsOpen, setIsOptionsOpen] = useState(false);
@@ -60,57 +63,30 @@ function EventItem({ event }: { event: Event }) {
 
     const optionsPrentRef = useClickOutside(() => setIsOptionsOpen(false))
 
-    async function trashEventRequest() {
-        try {
-
-            let res = await fetch(`http://localhost:8000/api/event/${event.id}`,
-                {
-                    method: 'DELETE',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json',
-                        'Authorization': `Bearer ${localStorage.getItem('token')}`
-                    },
-                }
-            )
-
-            let data = await res.json();
-
-            if (data?.status) {
-                return true
-            }
-
-
-            return false
-        } catch (error) {
-            return false;
-        }
-    }
-
     async function handleTrashEvent() {
-        let trashEventRes = await trashEventRequest();
-        if (trashEventRes) {
+
+        let res = await trashEventReq(event.id)
+
+        if (res.success) {
             let successToast: Toast = {
                 id: generateUID(),
-                message: 'رویداد حذف شد',
+                message: res.message,
                 type: 'success'
             }
-            deleteEvent(event.id as string);
-            addToast(successToast);
-        } else {
-            let errorToast: Toast = {
-                id: generateUID(),
-                message: 'خطا در حذف رویداد',
-                type: 'danger'
-            }
-            addToast(errorToast);
+            deleteEvent(event.id)
+            addToast(successToast)
+            return
         }
+
+        let errorToast: Toast = {
+            id: generateUID(),
+            message: res.message,
+            type: 'danger'
+        }
+        addToast(errorToast)
     }
 
     function onTrash() {
-
-        if (!event?.id) return;
-
         setIsOptionsOpen(false);
         openDialog(
             'حذف رویداد',
@@ -118,9 +94,10 @@ function EventItem({ event }: { event: Event }) {
             {
                 ok:
                 {
-                    text: 'حذف',
+                    text:
+                        'حذف',
                     onClick: () => {
-                        handleTrashEvent();
+                        handleTrashEvent()
                     }
                 },
                 cancel:
@@ -145,7 +122,7 @@ function EventItem({ event }: { event: Event }) {
             </div>
 
             <div className='event_item_left'>
-                <span className="text-xs text-gray-500 selft-end">{moment(event.date).locale('fa').format("DD MMM، YYYY")}</span>
+                <span className="text-xs text-gray-500 selft-end">{moment(event.start_date).locale('fa').format("DD MMM، YYYY")}</span>
                 <div ref={optionsPrentRef} className='relative'>
                     <Button
                         text=''
