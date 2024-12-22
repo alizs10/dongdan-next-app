@@ -31,7 +31,7 @@ function NewEventModal({ onClose }: { onClose: () => void }) {
     const addToast = useToastStore(state => state.addToast)
     const addEvent = useEventStore(state => state.addEvent);
     let contacts = useContactStore(state => state.contacts)
-    contacts = contacts.filter(c => c.deletedAt === null);
+    contacts = contacts.filter(c => c.deleted_at === null);
 
     const { pending, data, method, action } = useFormStatus();
     const initInputs = {

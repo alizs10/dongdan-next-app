@@ -18,7 +18,7 @@ type PropsTypes = {
 function ContactInfoModal({ onClose, contact }: PropsTypes) {
 
     let events = useEventStore(state => state.events)
-    events = useMemo(() => events.filter(e => e.deletedAt === null), [events])
+    events = useMemo(() => events.filter(e => e.deleted_at === null), [events])
 
     const getUserEvents = useCallback(() => {
         let userEvents: Event[] = []
@@ -53,11 +53,11 @@ function ContactInfoModal({ onClose, contact }: PropsTypes) {
 
                     <div className="col-span-1 flex flex-col gap-y-2">
                         <span className="text-sm text-gray-500 dark:text-gray-400">تاریخ افزوده شدن:</span>
-                        <span className="text-base text-gray-700 dark:text-gray-300">{moment(contact.createdAt).locale('fa').format("DD MMM، YYYY")}</span>
+                        <span className="text-base text-gray-700 dark:text-gray-300">{moment(contact.created_at).locale('fa').format("DD MMM، YYYY")}</span>
                     </div>
                     <div className="col-span-1 flex flex-col gap-y-2">
                         <span className="text-sm text-gray-500 dark:text-gray-400">آخرین بروز رسانی:</span>
-                        <span className="text-base text-gray-700 dark:text-gray-300">{moment(contact.updatedAt).locale('fa').format("DD MMM، YYYY")}</span>
+                        <span className="text-base text-gray-700 dark:text-gray-300">{moment(contact.updated_at).locale('fa').format("DD MMM، YYYY")}</span>
                     </div>
                 </div>
             </section>

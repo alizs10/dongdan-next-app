@@ -17,7 +17,7 @@ export const eventSchema: ZodType<Event> = z.object({
     // members: z.array(personSchema),
     // expenses: z.array(expenseSchema),
     status: z.boolean(),
-    // createdAt: z.date().max(today, 'تاریخ ساخت نمیتواند از تاریخ کنونی کمتر باشد'),
-    // updatedAt: z.date().max(today, 'تاریخ بروزرسانی نمیتواند از تاریخ کنونی کمتر باشد'),
-    // deletedAt: z.date().nullable(),
+    // created_at: z.date().max(today, 'تاریخ ساخت نمیتواند از تاریخ کنونی کمتر باشد'),
+    // updated_at: z.date().max(today, 'تاریخ بروزرسانی نمیتواند از تاریخ کنونی کمتر باشد'),
+    // deleted_at: z.date().nullable(),
 })

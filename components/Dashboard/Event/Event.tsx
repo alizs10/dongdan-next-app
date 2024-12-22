@@ -211,12 +211,12 @@ function Event() {
                     </div>
 
                     {event.members.length > 0 ? (
-                        <GroupMembers members={event.members} isEventDeleted={event.deletedAt !== null} />
+                        <GroupMembers members={event.members} isEventDeleted={event.deleted_at !== null} />
                     ) : (
-                        <NoGroupMembers eventStatus={event.status} isDeleted={event.deletedAt !== null} />
+                        <NoGroupMembers eventStatus={event.status} isDeleted={event.deleted_at !== null} />
                     )}
 
-                    {event.status === 'active' && event.deletedAt === null && (
+                    {event.status === 'active' && event.deleted_at === null && (
                         <Button
                             text="افزودن عضو جدید"
                             color="gray"
@@ -246,7 +246,7 @@ function Event() {
                         </div>
                         <div className="flex w-full justify-between items-center">
                             <h1 className="text-sm text-gray-500 dark:text-gray-400">تاریخ شروع</h1>
-                            <span className="text-sm text-gray-500 dark:text-gray-400">{moment(event.date).locale('fa').format("DD MMM، YYYY")}</span>
+                            <span className="text-sm text-gray-500 dark:text-gray-400">{moment(event.start_date).locale('fa').format("DD MMM، YYYY")}</span>
                         </div>
                         <div className="flex w-full justify-between items-center">
                             <h1 className="text-sm text-gray-500 dark:text-gray-400">تعداد اعضا</h1>
@@ -267,7 +267,7 @@ function Event() {
 
                     </ul>
 
-                    {event.deletedAt === null && (
+                    {event.deleted_at === null && (
 
                         <Button
                             text={event.status === 'active' ? 'پایان رویداد' : 'باز کردن رویداد'}
@@ -285,7 +285,7 @@ function Event() {
                 <div className="event_header_container z-50">
 
                     <div className="event_header_right">
-                        <Link href={event.deletedAt === null ? '/dashboard/events' : '/dashboard/events/trash'} className="event_back_button">
+                        <Link href={event.deleted_at === null ? '/dashboard/events' : '/dashboard/events/trash'} className="event_back_button">
                             <MoveRight className="event_back_button_icon" />
                         </Link>
                         <h1 className="event_header_title">{event.name}</h1>
@@ -303,7 +303,7 @@ function Event() {
                                 />
                             )}
                             {event.expenses.length > 0 && isFiltersModalOpen && <FiltersModal event={event} onClose={toggleFiltersModal} />}
-                            {event.status === 'active' && event.deletedAt === null && (
+                            {event.status === 'active' && event.deleted_at === null && (
                                 <Button
                                     text="ثبت هزینه/جابجایی پول"
                                     color="accent"
@@ -323,7 +323,7 @@ function Event() {
 
                 {(event.expenses.length > 0 && !activeFilters) || (activeFilters && filteredExpenses.length > 0) ? (
                     <Expenses expenses={activeFilters ? filteredExpenses : event.expenses} />
-                ) : (event.deletedAt !== null || event.status === 'inactive' || (event.status === 'active' && event.members.length > 0)) ? <NoExpenses isFilterMode={!!activeFilters} isDeleted={event.deletedAt !== null} eventStatus={event.status} openNewExpenseModal={openNewExpenseModal} /> : (<NoGroupExpenses openNewPersonModal={openNewPersonModal} />)}
+                ) : (event.deleted_at !== null || event.status === 'inactive' || (event.status === 'active' && event.members.length > 0)) ? <NoExpenses isFilterMode={!!activeFilters} isDeleted={event.deleted_at !== null} eventStatus={event.status} openNewExpenseModal={openNewExpenseModal} /> : (<NoGroupExpenses openNewPersonModal={openNewPersonModal} />)}
 
 
                 {isNewExpenseModalOpen && <NewExpenseModal event={event} onClose={closeNewExpenseModal} />}

@@ -7,10 +7,10 @@ export const useEventStore = create<EventState>((set) => ({
     events: null,
     setEvents: (events) => set({ events }),
     // addEvent: (event) => set((state) => ({ events: [...state.events, event] })),
-    // updateEvent: (eventId, updatedEvent) => set((state) => ({ events: state.events.map(e => e.id === eventId ? { ...e, ...updatedEvent, updatedAt: new Date(Date.now()) } : e) })),
+    // updateEvent: (eventId, updatedEvent) => set((state) => ({ events: state.events.map(e => e.id === eventId ? { ...e, ...updatedEvent, updated_at: new Date(Date.now()) } : e) })),
     // deleteEvent: (eventId) => set((state) => ({ events: state.events.filter(e => e.id !== eventId) })),
     deleteEvent: (eventId) => set((state) => ({ events: state.events?.filter(e => e.id !== eventId) })),
-    // restoreEvent: (eventId) => set((state) => ({ events: state.events.map(e => e.id === eventId ? { ...e, deletedAt: null } : e) })),
+    // restoreEvent: (eventId) => set((state) => ({ events: state.events.map(e => e.id === eventId ? { ...e, deleted_at: null } : e) })),
 
 
     // deactivateEvent: (eventId) => set((state) => ({ events: state.events.map(e => e.id === eventId ? { ...e, status: 'inactive' } : e) })),
@@ -18,10 +18,10 @@ export const useEventStore = create<EventState>((set) => ({
 
     // addPerson: (eventId, person) => set((state) => ({ events: state.events.map(e => e.id === eventId ? { ...e, group: [...e.group, person] } : e) })),
     // deletePerson: (eventId, personId) => set((state) => ({ events: state.events.map(e => e.id === eventId ? { ...e, group: e.group.filter(p => p.id !== personId) } : e) })),
-    // updatePerson: (eventId, personId, updatedPerson) => set((state) => ({ events: state.events.map(e => e.id === eventId ? { ...e, group: e.group.map(p => p.id === personId ? { ...p, ...updatedPerson, updatedAt: new Date(Date.now()) } : p), updatedAt: new Date(Date.now()) } : e) })),
+    // updatePerson: (eventId, personId, updatedPerson) => set((state) => ({ events: state.events.map(e => e.id === eventId ? { ...e, group: e.group.map(p => p.id === personId ? { ...p, ...updatedPerson, updated_at: new Date(Date.now()) } : p), updated_at: new Date(Date.now()) } : e) })),
     // addExpense: (eventId, expense) => set((state) => ({ events: state.events.map(e => e.id === eventId ? { ...e, expenses: [...e.expenses, expense] } : e) })),
     // deleteExpense: (eventId, expenseId) => set((state) => ({ events: state.events.map(e => e.id === eventId ? { ...e, expenses: e.expenses.filter(expense => expense.id !== expenseId) } : e) })),
-    // updateExpense: (eventId, expenseId, updatedExpense) => set((state) => ({ events: state.events.map(e => e.id === eventId ? { ...e, expenses: e.expenses.map(expense => expense.id === expenseId ? { ...expense, ...updatedExpense, updatedAt: new Date(Date.now()) } : expense), updatedAt: new Date(Date.now()) } : e) })),
+    // updateExpense: (eventId, expenseId, updatedExpense) => set((state) => ({ events: state.events.map(e => e.id === eventId ? { ...e, expenses: e.expenses.map(expense => expense.id === expenseId ? { ...expense, ...updatedExpense, updated_at: new Date(Date.now()) } : expense), updated_at: new Date(Date.now()) } : e) })),
     // updatePersonInEvents: (personId, updatedPerson) => set((state) => {
     //     let eventsIns = [...state.events];
 

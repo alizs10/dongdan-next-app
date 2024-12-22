@@ -4,9 +4,12 @@ import Link from 'next/link';
 import { MoveRight } from 'lucide-react';
 import NoEventsTrashed from './NoEventsTrashed';
 import TrashedEventsList from './TrashedEventsList';
-import { Event } from '@/types/event-types';
+import { useContext } from 'react';
+import { TrashedEventsContext } from '@/context/TrashedEventsContext';
 
-function TrashedEvents({ items }: { items: Event[] }) {
+function TrashedEvents() {
+
+    const { trashedEvents: items } = useContext(TrashedEventsContext);
 
     return (
         <div className='events_container'>
@@ -23,7 +26,6 @@ function TrashedEvents({ items }: { items: Event[] }) {
             {items.length > 0 ? (
                 <TrashedEventsList events={items} />
             ) : (
-
                 <NoEventsTrashed />
             )}
 

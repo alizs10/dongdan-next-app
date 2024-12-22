@@ -1,9 +1,9 @@
 import { Person } from "./event-types"
 
 export type Contact = Omit<Person, 'eventId'> & {
-    createdAt: Date,
-    updatedAt: Date,
-    deletedAt: Date | null,
+    created_at: Date,
+    updated_at: Date,
+    deleted_at: Date | null,
 }
 
 export type ContactState = {

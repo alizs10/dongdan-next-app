@@ -4,7 +4,7 @@ function TrashedEventsList({ events }: { events: Event[] }) {
 
     // sort events by date
     events.sort((a, b) => {
-        return new Date(b.deletedAt as Date).getTime() - new Date(a.deletedAt as Date).getTime();
+        return new Date(b.deleted_at as Date).getTime() - new Date(a.deleted_at as Date).getTime();
     });
 
     return (

@@ -5,7 +5,7 @@ function ContactsList({ contacts }: { contacts: Contact[] }) {
 
     // sort contacts by date
     contacts.sort((a, b) => {
-        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+        return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
     });
 
     return (

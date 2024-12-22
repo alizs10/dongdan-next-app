@@ -1,4 +1,5 @@
 import TrashedEvents from "@/components/Dashboard/Events/Trashed/TrashedEvents";
+import { TrashedEventsContextProvider } from "@/context/TrashedEventsContext";
 import { cookies } from "next/headers";
 
 async function getData() {
@@ -19,7 +20,9 @@ async function TrashedEventsPage() {
     let trashedEvents = await getData();
 
     return (
-        <TrashedEvents items={trashedEvents} />
+        <TrashedEventsContextProvider items={trashedEvents}>
+            <TrashedEvents />
+        </TrashedEventsContextProvider>
     );
 }
 

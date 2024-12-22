@@ -29,12 +29,12 @@ function Expense({ expense }: { expense: Expense }) {
     const [isEditExpenseModalOpen, setIsEditExpenseModalOpen] = useState(false);
 
     function toggleOptions() {
-        if (event.deletedAt !== null) return;
+        if (event.deleted_at !== null) return;
         setIsOptionsOpen(prev => !prev);
     }
 
     function toggleModal() {
-        if (event.deletedAt !== null) return;
+        if (event.deleted_at !== null) return;
         setIsOptionsOpen(false);
         setIsEditExpenseModalOpen(prev => !prev);
     }
@@ -42,7 +42,7 @@ function Expense({ expense }: { expense: Expense }) {
     const optionsParentRef = useClickOutside(() => setIsOptionsOpen(false))
 
     function onDelete() {
-        if (event.deletedAt !== null) return;
+        if (event.deleted_at !== null) return;
         setIsOptionsOpen(false);
 
         let newToast: Toast = {
@@ -103,7 +103,7 @@ function Expense({ expense }: { expense: Expense }) {
                 <span className="text-xs text-gray-500 dark:text-gray-400">{moment(expense.date).locale('fa').format("DD MMM، YYYY")}</span>
                 <div className="flex flex-row items-center gap-x-2">
 
-                    {event.deletedAt === null && (
+                    {event.deleted_at === null && (
                         <div ref={optionsParentRef} className='relative'>
                             <Button
                                 text=''
@@ -139,7 +139,7 @@ function Expense({ expense }: { expense: Expense }) {
                 </div>
             </div>
 
-            {isEditExpenseModalOpen && event.deletedAt === null && (
+            {isEditExpenseModalOpen && event.deleted_at === null && (
                 <EditExpenseModal
                     event={event}
                     expense={expense}

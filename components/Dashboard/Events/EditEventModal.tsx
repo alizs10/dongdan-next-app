@@ -30,7 +30,7 @@ function EditEventModal({ onClose, event }: { onClose: () => void, event: Event 
     const addToast = useToastStore(state => state.addToast)
     const { updateEvent } = useEventStore(state => state);
     let contacts = useContactStore(state => state.contacts)
-    contacts = contacts.filter(c => c.deletedAt === null);
+    contacts = contacts.filter(c => c.deleted_at === null);
 
     const { pending, data, method, action } = useFormStatus();
 
@@ -39,7 +39,7 @@ function EditEventModal({ onClose, event }: { onClose: () => void, event: Event 
     const initInputs = {
         name: event.name,
         label: event.label,
-        date: event.date,
+        date: event.start_date,
         group: eventPersonsIds.filter(personId => contactsIds.includes(personId)),
     }
     const [inputs, setInputs] = useState<FormInputs>(initInputs);

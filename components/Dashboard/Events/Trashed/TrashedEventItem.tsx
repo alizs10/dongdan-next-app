@@ -3,12 +3,14 @@ import { BriefcaseBusiness, Cake, Coffee, Ellipsis, Info, Plane, RotateCw, Trash
 import Link from 'next/link';
 import moment from 'jalali-moment';
 import Button from '@/components/Common/Button';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import useClickOutside from '@/hooks/useOutsideClick';
 import { useEventStore } from '@/store/event-store';
 import { useDialogStore } from '@/store/dialog-store';
 import { Toast, useToastStore } from '@/store/toast-store';
 import { generateUID } from '@/helpers/helpers';
+import { TrashedEventsContext } from '@/context/TrashedEventsContext';
+import { deleteEventReq, restoreEventReq } from '@/app/actions/events';
 
 
 function renderIcon(label: string) {
@@ -41,9 +43,10 @@ function renderIcon(label: string) {
 
 function TrashedEventItem({ event }: { event: Event }) {
 
+    const { deleteEvent } = useContext(TrashedEventsContext);
+
     const addToast = useToastStore(state => state.addToast)
-    const { deleteEvent, restoreEvent } = useEventStore(state => state)
-    const { openDialog } = useDialogStore(state => state)
+    const openDialog = useDialogStore(state => state.openDialog)
 
     const [isOptionsOpen, setIsOptionsOpen] = useState(false);
 
@@ -56,21 +59,17 @@ function TrashedEventItem({ event }: { event: Event }) {
 
     function onDelete() {
         setIsOptionsOpen(false);
-        let newToast: Toast = {
-            id: generateUID(),
-            message: 'رویداد بصورت دائم حذف شد',
-            type: 'success'
-        }
+
         openDialog(
-            'حذف دائم رویداد',
-            'آیا از حذف کردن دائمی رویداد اطمینان دارید؟',
+            'حذف رویداد',
+            'آیا از حذف کردن رویداد اطمینان دارید؟',
             {
                 ok:
                 {
-                    text: 'حذف',
+                    text:
+                        'حذف',
                     onClick: () => {
-                        deleteEvent(event.id)
-                        addToast(newToast)
+                        handleDeleteEvent()
                     }
                 },
                 cancel:
@@ -83,21 +82,17 @@ function TrashedEventItem({ event }: { event: Event }) {
 
     function onRestore() {
         setIsOptionsOpen(false);
-        let newToast: Toast = {
-            id: generateUID(),
-            message: 'رویداد بازیابی شد',
-            type: 'success'
-        }
+
         openDialog(
             'بازیابی رویداد',
             'آیا از بازیابی رویداد اطمینان دارید؟',
             {
                 ok:
                 {
-                    text: 'بازیابی',
+                    text:
+                        'بازیابی',
                     onClick: () => {
-                        restoreEvent(event.id)
-                        addToast(newToast)
+                        handleRestoreEvent()
                     }
                 },
                 cancel:
@@ -106,6 +101,51 @@ function TrashedEventItem({ event }: { event: Event }) {
                     onClick: () => { }
                 }
             })
+    }
+
+
+    async function handleRestoreEvent() {
+        let res = await restoreEventReq(event.id)
+
+        if (res.success) {
+            deleteEvent(event.id)
+            let successToast: Toast = {
+                id: generateUID(),
+                message: res.message,
+                type: 'success'
+            }
+            addToast(successToast)
+            return;
+        }
+
+        let errorToast: Toast = {
+            id: generateUID(),
+            message: res.message,
+            type: 'danger'
+        }
+        addToast(errorToast)
+    }
+
+    async function handleDeleteEvent() {
+        let res = await deleteEventReq(event.id)
+
+        if (res.success) {
+            deleteEvent(event.id)
+            let successToast: Toast = {
+                id: generateUID(),
+                message: res.message,
+                type: 'success'
+            }
+            addToast(successToast)
+            return;
+        }
+
+        let errorToast: Toast = {
+            id: generateUID(),
+            message: res.message,
+            type: 'danger'
+        }
+        addToast(errorToast)
     }
 
     return (
@@ -119,9 +159,8 @@ function TrashedEventItem({ event }: { event: Event }) {
                 <h2 className="event_item_name">{event.name}</h2>
             </div>
 
-            {/* <div className="flex flex-wrap items-center gap-x-2"> */}
             <div className="event_item_left">
-                <span className="text-xs text-gray-500 selft-end">{moment(event.date).locale('fa').format("DD MMM، YYYY")}</span>
+                <span className="text-xs text-gray-500 selft-end">{moment(event.start_date).locale('fa').format("DD MMM، YYYY")}</span>
                 <div ref={optionsPrentRef} className='relative'>
                     <Button
                         text=''
@@ -151,17 +190,8 @@ function TrashedEventItem({ event }: { event: Event }) {
                         </div>
                     )}
                 </div>
-                <Link href={`/dashboard/events/${event.id}`}>
-                    <Button
-                        text='مشاهده جزییات'
-                        icon={<Info className="event_item_button_icon" />}
-                        color='gray'
-                        size='small'
-                        onClick={() => { }}
-                    />
-                </Link>
+
             </div>
-            {/* </div> */}
         </li>
 
     );
