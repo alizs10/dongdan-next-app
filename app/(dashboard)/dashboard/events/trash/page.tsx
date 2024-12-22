@@ -1,4 +1,5 @@
 import TrashedEvents from "@/components/Dashboard/Events/Trashed/TrashedEvents";
+import { MultiSelectItemContextProvider } from "@/context/MultiSelectItemContext";
 import { TrashedEventsContextProvider } from "@/context/TrashedEventsContext";
 import { cookies } from "next/headers";
 
@@ -21,7 +22,9 @@ async function TrashedEventsPage() {
 
     return (
         <TrashedEventsContextProvider items={trashedEvents}>
-            <TrashedEvents />
+            <MultiSelectItemContextProvider>
+                <TrashedEvents />
+            </MultiSelectItemContextProvider>
         </TrashedEventsContextProvider>
     );
 }

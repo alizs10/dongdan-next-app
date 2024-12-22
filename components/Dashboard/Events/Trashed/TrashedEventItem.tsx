@@ -11,6 +11,7 @@ import { Toast, useToastStore } from '@/store/toast-store';
 import { generateUID } from '@/helpers/helpers';
 import { TrashedEventsContext } from '@/context/TrashedEventsContext';
 import { deleteEventReq, restoreEventReq } from '@/app/actions/events';
+import { MultiSelectItemContext } from '@/context/MultiSelectItemContext';
 
 
 function renderIcon(label: string) {
@@ -44,6 +45,7 @@ function renderIcon(label: string) {
 function TrashedEventItem({ event }: { event: Event }) {
 
     const { deleteEvent } = useContext(TrashedEventsContext);
+    const { toggleItem, selectMode, selectedItems } = useContext(MultiSelectItemContext);
 
     const addToast = useToastStore(state => state.addToast)
     const openDialog = useDialogStore(state => state.openDialog)
@@ -148,8 +150,16 @@ function TrashedEventItem({ event }: { event: Event }) {
         addToast(errorToast)
     }
 
+    function onSelect() {
+        if (!selectMode) return;
+        toggleItem(event.id);
+    }
+
+
     return (
-        <li key={event.id} className="event_item">
+        <li
+            onClick={onSelect}
+            className={`event_item ${selectMode && 'cursor-pointer'} ${selectedItems.includes(event.id) ? 'bg-gray-200 dark:bg-gray-800' : ''}`}>
             <div className="event_item_right">
 
                 <div className="event_item_icon_container">
@@ -162,16 +172,19 @@ function TrashedEventItem({ event }: { event: Event }) {
             <div className="event_item_left">
                 <span className="text-xs text-gray-500 selft-end">{moment(event.start_date).locale('fa').format("DD MMM، YYYY")}</span>
                 <div ref={optionsPrentRef} className='relative'>
-                    <Button
-                        text=''
-                        icon={<Ellipsis className='size-4' />}
-                        color='gray'
-                        size='small'
-                        shape='square'
-                        onClick={toggleOptions}
-                    />
+                    {!selectMode && (
 
-                    {isOptionsOpen && (
+                        <Button
+                            text=''
+                            icon={<Ellipsis className='size-4' />}
+                            color='gray'
+                            size='small'
+                            shape='square'
+                            onClick={toggleOptions}
+                        />
+                    )}
+
+                    {!selectMode && isOptionsOpen && (
                         <div className="z-50 absolute top-full left-0 whitespace-nowrap mt-4 flex flex-col gap-y-2">
                             <Button
                                 text='بازیابی'

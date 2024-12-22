@@ -80,7 +80,6 @@ export async function restoreEventReq(eventId: string) {
 
 }
 
-
 export async function trashEventReq(eventId: string) {
 
     const token = (await cookies()).get('token');
@@ -141,6 +140,87 @@ export async function trashEventItemsReq(eventIds: string[]) {
             return {
                 success: true,
                 message: 'رویدادان شما با موفقیت حذف شدند'
+            }
+        }
+
+        return {
+            success: false,
+            message: data?.message ? data.message : response.statusText
+        }
+
+    } catch (error) {
+
+        return {
+            success: false,
+            message: 'خطای سرور'
+        }
+
+    }
+
+}
+
+export async function restoreEventItemsReq(eventIds: string[]) {
+
+    const token = (await cookies()).get('token');
+
+    try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/events/restore/items`, {
+            method: 'PUT',
+            body: JSON.stringify({ events: eventIds.map(id => id.toString()) }),
+            headers: {
+                Authorization: `Bearer ${token?.value}`,
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+            },
+        });
+
+        let data = await response.json()
+        console.log(data)
+
+        if (response.ok && data.status) {
+            return {
+                success: true,
+                message: 'رویدادهای شما با موفقیت بازیابی شدند'
+            }
+        }
+
+        return {
+            success: false,
+            message: data?.message ? data.message : response.statusText
+        }
+
+    } catch (error) {
+
+        return {
+            success: false,
+            message: 'خطای سرور'
+        }
+
+    }
+
+}
+
+export async function deleteEventItemsReq(eventIds: string[]) {
+
+    const token = (await cookies()).get('token');
+
+    try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/events/delete/items`, {
+            method: 'DELETE',
+            body: JSON.stringify({ events: eventIds.map(id => id.toString()) }),
+            headers: {
+                Authorization: `Bearer ${token?.value}`,
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+            },
+        });
+
+        let data = await response.json()
+
+        if (response.ok && data.status) {
+            return {
+                success: true,
+                message: 'رویدادهای شما با موفقیت حذف شدند'
             }
         }
 
