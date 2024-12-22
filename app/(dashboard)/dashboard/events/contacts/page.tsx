@@ -1,4 +1,6 @@
 import Contacts from "@/components/Dashboard/Contacts/Contacts";
+import { ContactsContextProvider } from "@/context/ContactsContext";
+import { MultiSelectItemContextProvider } from "@/context/MultiSelectItemContext";
 import { cookies } from "next/headers";
 
 async function getData() {
@@ -17,8 +19,13 @@ async function getData() {
 async function ContactsPage() {
 
     let contacts = await getData();
+
     return (
-        <Contacts items={contacts} />
+        <ContactsContextProvider items={contacts}>
+            <MultiSelectItemContextProvider>
+                <Contacts />
+            </MultiSelectItemContextProvider>
+        </ContactsContextProvider>
     );
 }
 

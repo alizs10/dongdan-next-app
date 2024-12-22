@@ -1,32 +1,74 @@
 'use client'
 
 import Button from "@/components/Common/Button";
-import { MoveRight, UserPlus } from "lucide-react";
-import { useEffect, useState } from "react";
+import { ListCheck, ListChecks, MoveRight, Trash, UserPlus, X } from "lucide-react";
+import { useContext, useState } from "react";
 import NewContactModal from "./NewContactModal";
 import ContactsList from "./ContactsList";
 import NoContacts from "./NoContacts";
 import Link from "next/link";
-import { Contact } from "@/types/contact-types";
-import { useContactStore } from "@/store/contact-store";
-import DashboardLoading from "@/components/Layout/DashboardLoading";
+import { ContactsContext } from "@/context/ContactsContext";
+import { MultiSelectItemContext } from "@/context/MultiSelectItemContext";
+import { Toast, useToastStore } from "@/store/toast-store";
+import { useDialogStore } from "@/store/dialog-store";
+import { generateUID } from "@/helpers/helpers";
+import { trashContactItemsReq } from "@/app/actions/contacts";
 
-function Contacts({ items }: { items: Contact[] }) {
+function Contacts() {
+
+    const { contacts, deleteMultiContact } = useContext(ContactsContext);
+    const { enableSelectMode, selectMode, disableSelectMode, selectAllItems, selectedItems } = useContext(MultiSelectItemContext);
+
+    const addToast = useToastStore(state => state.addToast)
+    const openDialog = useDialogStore(state => state.openDialog)
+
     const [isNewContactModalOpen, setIsNewConatctModalOpen] = useState(false);
-
-    const contacts = useContactStore(state => state.contacts);
-
-    useEffect(() => {
-        useContactStore.setState({ contacts: items });
-    }, [items]);
-
     function toggleModal() {
         setIsNewConatctModalOpen(prev => !prev);
     }
 
+    function onDeleteSelectedItems() {
 
-    if (contacts === null) {
-        return <DashboardLoading />
+        openDialog(
+            'حذف موارد انتخابی',
+            'آیا از حذف موارد انتخاب شده اطمینان دارید؟ درصورت حذف، داده ها قابل بازیابی نیستند.',
+            {
+                ok: {
+                    text: 'حذف',
+                    onClick: () => {
+                        handleTrashContactItems()
+                    }
+                },
+                cancel: {
+                    text: 'انصراف',
+                    onClick: () => { }
+                }
+            }
+        )
+
+    }
+
+    async function handleTrashContactItems() {
+        let res = await trashContactItemsReq(selectedItems)
+
+        if (res.success) {
+            deleteMultiContact(selectedItems)
+            disableSelectMode()
+            let successToast: Toast = {
+                id: generateUID(),
+                message: res.message,
+                type: 'success'
+            }
+            addToast(successToast)
+            return;
+        }
+
+        let errorToast: Toast = {
+            id: generateUID(),
+            message: res.message,
+            type: 'danger'
+        }
+        addToast(errorToast)
     }
 
     return (
@@ -42,6 +84,38 @@ function Contacts({ items }: { items: Contact[] }) {
 
 
                 <div className="event_header_left">
+                    {contacts.length > 0 && (
+                        <>
+                            {selectMode && (
+                                <>
+                                    {selectedItems.length > 0 && (
+
+                                        <Button
+                                            text={"حذف" + `${selectedItems.length > 0 ? " (" + selectedItems.length + ")" : ''}`}
+                                            color="danger"
+                                            onClick={onDeleteSelectedItems}
+                                            size="small"
+                                            icon={<Trash className="size-5" />}
+                                        />
+                                    )}
+                                    <Button
+                                        text="انتخاب همه"
+                                        color="accent"
+                                        onClick={() => selectAllItems(contacts.map(item => item.id))}
+                                        size="small"
+                                        icon={<ListCheck className="size-5" />}
+                                    />
+                                </>
+                            )}
+                            <Button
+                                text=""
+                                color="accent"
+                                onClick={selectMode ? disableSelectMode : enableSelectMode}
+                                size="small"
+                                icon={selectMode ? <X className='size-5' /> : <ListChecks className="size-5" />}
+                            />
+                        </>
+                    )}
                     <Button
                         text="افزودن دوست"
                         color="accent"

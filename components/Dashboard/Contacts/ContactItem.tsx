@@ -1,22 +1,31 @@
 import { Contact } from '@/types/contact-types';
 import { Ellipsis, Info, Pencil, Trash, User } from "lucide-react";
 import Button from '@/components/Common/Button';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import useClickOutside from '@/hooks/useOutsideClick';
-import { useContactStore } from '@/store/contact-store';
 import EditContactModal from './EditContactModal';
 import { useDialogStore } from '@/store/dialog-store';
 import { Toast, useToastStore } from '@/store/toast-store';
 import { generateUID } from '@/helpers/helpers';
 import ContactInfoModal from './ContactInfoModal';
 import { trashContactReq } from '@/app/actions/contacts';
+import { ContactsContext } from '@/context/ContactsContext';
+import { MultiSelectItemContext } from '@/context/MultiSelectItemContext';
 
 
 function ContactItem({ contact }: { contact: Contact }) {
 
+    const { deleteContact } = useContext(ContactsContext);
+    const { toggleItem, selectMode, selectedItems } = useContext(MultiSelectItemContext);
+
+    function onSelect() {
+        if (!selectMode) return;
+        toggleItem(contact.id);
+    }
+
+
     const openDialog = useDialogStore(state => state.openDialog)
     const addToast = useToastStore(state => state.addToast)
-    const deleteContact = useContactStore(state => state.deleteContact)
 
 
     const [isOptionsOpen, setIsOptionsOpen] = useState(false);
@@ -40,6 +49,7 @@ function ContactItem({ contact }: { contact: Contact }) {
     }
 
     const optionsPrentRef = useClickOutside(() => setIsOptionsOpen(false))
+
     async function handleTrashContact() {
 
         let res = await trashContactReq(contact.id)
@@ -47,7 +57,7 @@ function ContactItem({ contact }: { contact: Contact }) {
         if (res.success) {
             let successToast: Toast = {
                 id: generateUID(),
-                message: 'شخص حذف شد',
+                message: res.message,
                 type: 'success'
             }
             deleteContact(contact.id)
@@ -86,7 +96,9 @@ function ContactItem({ contact }: { contact: Contact }) {
     }
 
     return (
-        <li className="flex flex-row justify-between items-center py-3 px-5">
+        <li
+            onClick={onSelect}
+            className={`event_item ${selectMode && 'cursor-pointer'} ${selectedItems.includes(contact.id) ? 'bg-gray-200 dark:bg-gray-800' : ''}`}>
             <div className="flex flex-row gap-x-4 items-center">
 
                 <div className={`flex justify-center p-3 rounded-xl items-center user_avatar_${contact.scheme}_bg user_avatar_${contact.scheme}_text`}>
@@ -98,16 +110,18 @@ function ContactItem({ contact }: { contact: Contact }) {
 
             <div className="flex flex-row gap-x-2 items-center">
                 <div ref={optionsPrentRef} className='relative'>
-                    <Button
-                        text=''
-                        icon={<Ellipsis className='size-5' />}
-                        color='gray'
-                        size='small'
-                        shape='square'
-                        onClick={toggleOptions}
-                    />
+                    {!selectMode && (
+                        <Button
+                            text=''
+                            icon={<Ellipsis className='size-4' />}
+                            color='gray'
+                            size='small'
+                            shape='square'
+                            onClick={toggleOptions}
+                        />
+                    )}
 
-                    {isOptionsOpen && (
+                    {!selectMode && isOptionsOpen && (
                         <div className="z-50 absolute top-full left-0 mt-4 flex flex-col gap-y-2">
                             <Button
                                 text='جزییات'

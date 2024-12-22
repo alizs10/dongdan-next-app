@@ -5,7 +5,7 @@ import ModalHeader from "@/components/Common/ModalHeader";
 import ModalWrapper from "@/components/Common/ModalWrapper";
 import { zValidate } from "@/helpers/validation-helper";
 import { Save } from "lucide-react";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { createPortal, useFormStatus } from "react-dom";
 import { generateUID } from "@/helpers/helpers";
 import { SchemeType } from "@/types/event-types";
@@ -15,6 +15,7 @@ import { Toast, useToastStore } from "@/store/toast-store";
 import Button from "@/components/Common/Button";
 import AvatarSelector from "@/components/Common/Form/AvatarSelector";
 import { createContactReq } from "@/app/actions/contacts";
+import { ContactsContext } from "@/context/ContactsContext";
 
 type FormInputs = {
     name: string;
@@ -23,7 +24,8 @@ type FormInputs = {
 
 function NewContactModal({ onClose }: { onClose: () => void }) {
 
-    const addContact = useContactStore(state => state.addContact);
+    const { addContact } = useContext(ContactsContext);
+
     const addToast = useToastStore(state => state.addToast)
     const { pending, data, method, action } = useFormStatus();
 

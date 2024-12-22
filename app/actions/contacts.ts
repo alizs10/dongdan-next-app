@@ -65,10 +65,10 @@ export async function trashContactReq(contactId: string) {
 
         let data = await response.json()
 
-        if (response.ok) {
+        if (response.ok && data.status) {
             return {
                 success: true,
-                message: 'دوست با موفقیت حذف شد'
+                message: 'دوست شما با موفقیت حذف شد'
             }
         }
 
@@ -109,7 +109,7 @@ export async function updateContactReq(contactId: string, inputs: ContactInputs)
             return {
                 success: true,
                 updatedContact: data.contact,
-                message: 'دوست شما با موفقیت ویرایش شد'
+                message: 'دوست شما با موفقیت بروزرسانی شد'
             }
         }
 
@@ -254,6 +254,46 @@ export async function deleteContactItemsReq(contactIds: string[]) {
 
     try {
         const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/contacts/delete/items`, {
+            method: 'DELETE',
+            body: JSON.stringify({ contacts: contactIds.map(id => id.toString()) }),
+            headers: {
+                Authorization: `Bearer ${token?.value}`,
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+            },
+        });
+
+        let data = await response.json()
+
+        if (response.ok && data.status) {
+            return {
+                success: true,
+                message: 'دوستان شما با موفقیت حذف شدند'
+            }
+        }
+
+        return {
+            success: false,
+            message: data?.message ? data.message : response.statusText
+        }
+
+    } catch (error) {
+
+        return {
+            success: false,
+            message: 'خطای سرور'
+        }
+
+    }
+
+}
+
+export async function trashContactItemsReq(contactIds: string[]) {
+
+    const token = (await cookies()).get('token');
+
+    try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/contacts/trash/items`, {
             method: 'DELETE',
             body: JSON.stringify({ contacts: contactIds.map(id => id.toString()) }),
             headers: {

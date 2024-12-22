@@ -5,7 +5,7 @@ import ModalHeader from "@/components/Common/ModalHeader";
 import ModalWrapper from "@/components/Common/ModalWrapper";
 import { zValidate } from "@/helpers/validation-helper";
 import { Pencil } from "lucide-react";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { createPortal, useFormStatus } from "react-dom";
 import { contactSchema, newContactSchema } from "@/database/validations/contact-validation";
 import { Person, SchemeType } from "@/types/event-types";
@@ -17,6 +17,7 @@ import { Toast, useToastStore } from "@/store/toast-store";
 import { generateUID } from "@/helpers/helpers";
 import AvatarSelector from "@/components/Common/Form/AvatarSelector";
 import { updateContactReq } from "@/app/actions/contacts";
+import { ContactsContext } from "@/context/ContactsContext";
 
 type FormInputs = {
     name: string;
@@ -26,8 +27,7 @@ type FormInputs = {
 function EditContactModal({ onClose, contact }: { onClose: () => void, contact: Contact }) {
 
     const addToast = useToastStore(state => state.addToast);
-    const updateContact = useContactStore(state => state.updateContact);
-
+    const { updateContact } = useContext(ContactsContext)
     const { pending, data, method, action } = useFormStatus();
 
     const initInputs: FormInputs = {

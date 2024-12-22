@@ -161,8 +161,6 @@ function TrashedContacts() {
                             />
                         </>
                     )}
-
-
                 </div>
             </div>
 
