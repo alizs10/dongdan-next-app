@@ -1,7 +1,7 @@
 'use client'
 
 import { getContactsReq } from "@/app/actions/contacts";
-import { getEventMembersReq, getEventNonMembersReq } from "@/app/actions/events";
+import { getEventMembersReq, getEventNonMembersReq, updateEventReq } from "@/app/actions/events";
 import Button from "@/components/Common/Button";
 import MemberSelector from "@/components/Common/Form/MemberSelector";
 import PDatePicker from "@/components/Common/Form/PDatePicker";
@@ -9,6 +9,7 @@ import TextInput from "@/components/Common/Form/TextInput";
 import ModalHeader from "@/components/Common/ModalHeader";
 import ModalWrapper from "@/components/Common/ModalWrapper";
 import { EventsContext } from "@/context/EventsContext";
+import { updateEventSchema } from "@/database/validations/event-validation";
 import { generateUID } from "@/helpers/helpers";
 import { zValidate } from "@/helpers/validation-helper";
 import { useAppStore } from "@/store/app-store";
@@ -64,10 +65,13 @@ function EditEventModal({ onClose, event }: { onClose: () => void, event: Event 
 
             if (res.success && res2.success) {
 
-                setEventMembers(res.members)
-                setNonMemberContacts(res2.nonMembers)
+                const members = res.members.map((member: Member) => ({ ...member, id: 'member.' + member.id }))
+                const nonMembers = res2.nonMembers.map((contact: Contact) => ({ ...contact, id: 'contact.' + contact.id }))
 
-                setInputs(prevState => ({ ...prevState, members: res.members.map((member: Member) => member.id) }))
+                setEventMembers(members)
+                setNonMemberContacts(nonMembers)
+
+                setInputs(prevState => ({ ...prevState, members: members.map((member: Member) => member.id) }))
                 setFetchingEventMembers(false);
                 return;
             }
@@ -96,7 +100,7 @@ function EditEventModal({ onClose, event }: { onClose: () => void, event: Event 
         selectedDate.setSeconds(0o0)
         selectedDate.setMilliseconds(1)
 
-        setInputs((prev: FormInputs) => ({ ...prev, date: selectedDate }))
+        setInputs((prev: FormInputs) => ({ ...prev, start_date: selectedDate }))
     }
 
     function selectLabelHandler(label: string) {
@@ -138,40 +142,70 @@ function EditEventModal({ onClose, event }: { onClose: () => void, event: Event 
     }
 
 
-    function formActionHandler() {
+    async function formActionHandler() {
+
+        let reqInputs: {
+            name: string,
+            label: string,
+            start_date: Date,
+            members: string[],
+            contacts: string[]
+        } = {
+            name: inputs.name,
+            label: inputs.label,
+            start_date: inputs.start_date,
+            members: [],
+            contacts: []
+        }
+
+        inputs.members.forEach(id => {
+            if (id.startsWith('member.')) {
+                reqInputs.members.push(id.replace('member.', ''))
+            } else {
+                reqInputs.contacts.push(id.replace('contact.', ''))
+            }
+        })
+
+        const { hasError, errors } = zValidate(updateEventSchema, reqInputs);
 
 
+        if (hasError) {
+            const validationToast: Toast = {
+                id: generateUID(),
+                message: `فرم نامعتبر است.`,
+                type: 'danger',
+            }
 
-        // const { hasError, errors } = zValidate(eventSchema, updatedEvent);
+            addToast(validationToast);
 
+            console.log(errors)
+            setFormErrors(errors);
+            return;
+        }
+        setFormErrors(initFormErrors);
 
-        // if (hasError) {
-        //     const validationToast: Toast = {
-        //         id: generateUID(),
-        //         message: `فرم نامعتبر است.`,
-        //         type: 'danger',
-        //     }
+        const res = await updateEventReq(event.id, reqInputs)
 
-        //     addToast(validationToast);
+        if (res.success) {
+            const successToast: Toast = {
+                id: generateUID(),
+                message: res.message,
+                type: 'success'
+            }
 
-        //     console.log(errors)
-        //     setFormErrors(errors);
-        //     return;
-        // }
+            updateEvent(event.id, res.updatedEvent);
+            addToast(successToast)
+            onClose();
+            return
+        }
 
+        const errorToast: Toast = {
+            id: generateUID(),
+            message: res.message,
+            type: 'danger'
+        }
+        addToast(errorToast);
 
-
-        // setFormErrors(initFormErrors);
-
-        // const newToast: Toast = {
-        //     id: generateUID(),
-        //     message: 'رویداد ویرایش شد',
-        //     type: 'success'
-        // }
-
-        // updateEvent(event.id, updatedEvent);
-        // addToast(newToast)
-        // onClose();
     }
 
     if (typeof window === "object") {

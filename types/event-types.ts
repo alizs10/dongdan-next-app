@@ -8,6 +8,14 @@ export type NewEvent = {
     contact_members: string[];
 }
 
+export type UpdateEvent = {
+    name: string;
+    label: string;
+    start_date: Date;
+    members: string[];
+    contacts: string[];
+}
+
 export type Event = {
     id: string;
     name: string;
