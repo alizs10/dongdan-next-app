@@ -17,11 +17,22 @@ export type Event = {
     label: string;
     members?: Person[];
     expenses?: Expense[];
+    members_count: number;
     created_at?: Date;
     updated_at?: Date;
     deleted_at?: Date | null;
 }
 
+export type Member = {
+    id: string;
+    name: string;
+    email?: string;
+    scheme: SchemeType;
+    eventId: string;
+    member_id?: string;
+    member_type?: string;
+    event?: Event;
+}
 
 export type Expend = {
     id: string;

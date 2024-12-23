@@ -8,8 +8,11 @@ import { useRouter } from "next/navigation";
 import { zValidate } from "@/helpers/validation-helper";
 import { loginDataSchema } from "@/database/validations/auth-validation";
 import { login } from "@/app/actions/auth";
+import { useAppStore } from "@/store/app-store";
 
 function LoginForm() {
+
+    const setUser = useAppStore(state => state.setUser)
 
     const initInputs = {
         email: '',
@@ -61,12 +64,15 @@ function LoginForm() {
             console.log("result is:", result);
 
             if (result.success) {
+                setUser(result.user)
                 setSuccessMsg('با موفقیت وارد شدید')
-                router.replace('/dashboard/profile')
+
+                router.push('/dashboard/profile')
+
+                // router.replace('/dashboard/profile')
 
                 // localStorage.setItem('token', token)
                 // let user = data.user;
-                // setUser(user)
             }
 
             setLoading(false)

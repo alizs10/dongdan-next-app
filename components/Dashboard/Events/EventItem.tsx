@@ -124,9 +124,16 @@ function EventItem({ event }: { event: Event }) {
                     {renderIcon(event.label)}
                 </div>
 
-                <Link href={`/dashboard/events/${event.slug}`}>
-                    <h2 className='event_item_name'>{event.name}</h2>
-                </Link>
+                <div className="flex flex-col gap-y-1">
+
+                    <Link href={`/dashboard/events/${event.slug}`}>
+                        <h2 className='event_item_name'>{event.name}</h2>
+                    </Link>
+
+                    <span className="text-xs text-gray-500 dark:text-gray-400">
+                        {event.members_count + ' عضو'}
+                    </span>
+                </div>
             </div>
 
             <div className='event_item_left'>

@@ -21,7 +21,7 @@ export async function login(credentials: { email: string; password: string }) {
             sameSite: 'strict',
             path: '/'
         });
-        return { success: true };
+        return { success: true, user: data.user };
     }
 
     return { success: false };
@@ -44,4 +44,33 @@ export async function logout() {
     }
 
     return { success: false };
+}
+
+export async function getLoggedInUser() {
+
+    const token = (await cookies()).get('token');
+
+    if (!token) return { success: false, message: 'User not logged in' };
+
+    try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/profile`, {
+            method: 'GET',
+            headers: {
+                Authorization: `Bearer ${token?.value}`,
+                Accept: 'application/json',
+            },
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.status) {
+            return { success: true, user: data.profile };
+        }
+
+        return { success: false, message: data?.message ?? 'Server error' };
+
+    } catch (error) {
+        return { success: false, message: "Server error" };
+
+    }
 }

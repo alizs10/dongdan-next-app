@@ -21,7 +21,7 @@ export default function RootLayout({
       <body
         className={`${estedadFD.className} relative`}
       >
-        <ThemeProvider attribute="class">
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <DashboardLayout>
             {children}
           </DashboardLayout>

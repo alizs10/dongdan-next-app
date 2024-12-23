@@ -1,56 +1,83 @@
 'use client'
 
+import { getEventMembersReq } from "@/app/actions/events";
 import Button from "@/components/Common/Button";
 import MemberSelector from "@/components/Common/Form/MemberSelector";
 import PDatePicker from "@/components/Common/Form/PDatePicker";
 import TextInput from "@/components/Common/Form/TextInput";
 import ModalHeader from "@/components/Common/ModalHeader";
 import ModalWrapper from "@/components/Common/ModalWrapper";
-import { eventSchema } from "@/database/validations/event-validation";
+import { EventsContext } from "@/context/EventsContext";
 import { generateUID } from "@/helpers/helpers";
 import { zValidate } from "@/helpers/validation-helper";
-import { useContactStore } from "@/store/contact-store";
-import { useEventStore } from "@/store/event-store";
+import { useAppStore } from "@/store/app-store";
 import { Toast, useToastStore } from "@/store/toast-store";
-import { Event } from "@/types/event-types";
-import { Ban, BriefcaseBusiness, Cake, Coffee, Pencil, Plane, TreePalm, Utensils } from "lucide-react";
-import { useState } from "react";
+import { Event, Member } from "@/types/event-types";
+import { Ban, BriefcaseBusiness, Cake, Coffee, Loader, Pencil, Plane, TreePalm, Utensils } from "lucide-react";
+import { useContext, useEffect, useState } from "react";
 import { createPortal, useFormStatus } from "react-dom";
 import { DateObject } from "react-multi-date-picker";
 
 type FormInputs = {
     name: string;
     label: string;
-    date: Date;
-    group: string[];
+    start_date: Date;
+    members: string[];
 }
 
 function EditEventModal({ onClose, event }: { onClose: () => void, event: Event }) {
 
+    const user = useAppStore(state => state.user)
+    const { updateEvent } = useContext(EventsContext)
+
+    console.log("user info: ", user)
+
     const addToast = useToastStore(state => state.addToast)
-    const { updateEvent } = useEventStore(state => state);
-    let contacts = useContactStore(state => state.contacts)
-    contacts = contacts.filter(c => c.deleted_at === null);
 
-    const { pending } = useFormStatus();
-
-    const contactsIds = contacts.map(c => c.id)
-    const eventPersonsIds = event.group.map(person => person.id)
+    const [fetchingEventMembers, setFetchingEventMembers] = useState(true);
+    const [eventMembers, setEventMembers] = useState<null | Member[]>(null)
     const initInputs = {
         name: event.name,
         label: event.label,
-        date: event.start_date,
-        group: eventPersonsIds.filter(personId => contactsIds.includes(personId)),
+        start_date: new Date(event.start_date),
+        members: [],
     }
     const [inputs, setInputs] = useState<FormInputs>(initInputs);
 
     const initFormErrors = {
         name: '',
         label: '',
-        date: '',
-        group: ''
+        start_date: '',
+        members: '',
     }
     const [formErrors, setFormErrors] = useState(initFormErrors);
+
+
+    useEffect(() => {
+        async function getEventMembers() {
+            const res = await getEventMembersReq(event.id)
+
+            if (res.success) {
+                setEventMembers(res.members)
+                setInputs(prevState => ({ ...prevState, members: res.members.map((member: Member) => member.id) }))
+                setFetchingEventMembers(false);
+                return;
+            }
+
+            const errorToast: Toast = {
+                id: generateUID(),
+                message: 'خطا در دریافت اعضای این رویداد',
+                type: 'danger'
+            }
+            addToast(errorToast);
+        }
+
+        getEventMembers()
+    }, [])
+
+
+    const { pending } = useFormStatus();
+
 
 
     function handleChangeDate(date: DateObject) {
@@ -74,117 +101,64 @@ function EditEventModal({ onClose, event }: { onClose: () => void, event: Event 
 
 
     function isPersonSelected(personId: string) {
-        return inputs.group.includes(personId);
+        return inputs.members.includes(personId);
     }
 
 
     function togglePerson(personId: string) {
 
-        if (personId === 'all' && inputs.group.length === contacts.length) {
-            setInputs(prev => ({ ...prev, group: [] }))
+        if (personId === 'all' && inputs.members.length === eventMembers?.length) {
+            setInputs(prev => ({ ...prev, members: [] }))
             return
         }
-        if (personId === 'all' && inputs.group.length !== contacts.length) {
-            setInputs(prev => ({ ...prev, group: contacts.map(p => p.id) }))
+        if (personId === 'all' && inputs.members.length !== eventMembers?.length) {
+            setInputs(prev => ({ ...prev, members: eventMembers?.map(p => p.id) ?? [] }))
             return
         }
 
 
         if (isPersonSelected(personId)) {
-            setInputs(prev => ({ ...prev, group: prev.group.filter(id => id !== personId) }))
+            setInputs(prev => ({ ...prev, members: prev.members.filter(id => id !== personId) }))
         } else {
-            setInputs(prev => ({ ...prev, group: [...prev.group, personId] }))
+            setInputs(prev => ({ ...prev, members: [...prev.members, personId] }))
         }
     }
 
 
     function formActionHandler() {
 
-        // prev group: include contacts and not contacts
-        const prevGroup = [...event.group]
-
-        // input group: include contacts only
-        const addedContactsToGroup: Event['group'] = [];
-        const deletedContactsFromGroup: Event['group'] = [];
-        const nonContactsOfGroup: Event['group'] = [];
-
-        // non contacts of group
-        event.group.forEach(member => {
-            if (!contacts.some(c => c.id === member.id)) {
-                nonContactsOfGroup.push(member)
-            }
-        })
-
-        // added contacts to group
-        inputs.group.forEach(pID => {
-            const contact = contacts.find(c => c.id === pID);
-            if (contact) {
-                addedContactsToGroup.push({ id: contact.id, name: contact.name, scheme: contact.scheme, eventId: event.id })
-            }
-        })
-
-        const updatedGroup: Event['group'] = [...nonContactsOfGroup, ...addedContactsToGroup];
-
-        // deleted contacts from group
-        prevGroup.forEach(member => {
-            if (!updatedGroup.some(m => m.id === member.id)) {
-                deletedContactsFromGroup.push(member)
-            }
-        })
-
-        const updatedEvent: Event = {
-            ...event,
-            ...inputs,
-            group: updatedGroup,
-        }
-
-        const deletedContactsFromGroupIDs = deletedContactsFromGroup.map(p => p.id);
-
-        // delete expenses of deleted members
-        const deletableExpenses: string[] = [];
-
-        event.expenses.forEach(expense => {
-            if (expense.type === 'transfer' && (deletedContactsFromGroupIDs.includes(expense.from) || deletedContactsFromGroupIDs.includes(expense.to))) {
-                deletableExpenses.push(expense.id);
-            } else if (expense.type === 'expend' && deletedContactsFromGroupIDs.includes(expense.payer)) {
-                deletableExpenses.push(expense.id);
-            } else if (expense.type === 'expend' && !deletedContactsFromGroupIDs.includes(expense.payer) && expense.group.some(p => deletedContactsFromGroupIDs.includes(p))) {
-                expense.group = expense.group.filter(p => !deletedContactsFromGroupIDs.includes(p));
-            }
-        })
-
-        updatedEvent.expenses = updatedEvent.expenses.filter(expense => !deletableExpenses.includes(expense.id))
-
-        const { hasError, errors } = zValidate(eventSchema, updatedEvent);
-
-        if (hasError) {
-            const validationToast: Toast = {
-                id: generateUID(),
-                message: `فرم نامعتبر است.`,
-                type: 'danger',
-            }
-
-            addToast(validationToast);
-
-            console.log(errors)
-            setFormErrors(errors);
-            return;
-        }
 
 
-        console.log('deletedContactsFromGroup: ', deletedContactsFromGroup);
+        // const { hasError, errors } = zValidate(eventSchema, updatedEvent);
 
-        setFormErrors(initFormErrors);
 
-        const newToast: Toast = {
-            id: generateUID(),
-            message: 'رویداد ویرایش شد',
-            type: 'success'
-        }
+        // if (hasError) {
+        //     const validationToast: Toast = {
+        //         id: generateUID(),
+        //         message: `فرم نامعتبر است.`,
+        //         type: 'danger',
+        //     }
 
-        updateEvent(event.id, updatedEvent);
-        addToast(newToast)
-        onClose();
+        //     addToast(validationToast);
+
+        //     console.log(errors)
+        //     setFormErrors(errors);
+        //     return;
+        // }
+
+
+
+        // setFormErrors(initFormErrors);
+
+        // const newToast: Toast = {
+        //     id: generateUID(),
+        //     message: 'رویداد ویرایش شد',
+        //     type: 'success'
+        // }
+
+        // updateEvent(event.id, updatedEvent);
+        // addToast(newToast)
+        // onClose();
     }
 
     if (typeof window === "object") {
@@ -200,8 +174,8 @@ function EditEventModal({ onClose, event }: { onClose: () => void, event: Event 
                         <PDatePicker
                             label={'تاریخ'}
                             name={"date"}
-                            value={inputs.date}
-                            error={formErrors.date}
+                            value={inputs.start_date}
+                            error={formErrors.start_date}
                             onChange={handleChangeDate}
                             maxDate={new Date()}
                         />
@@ -244,16 +218,24 @@ function EditEventModal({ onClose, event }: { onClose: () => void, event: Event 
                             )}
                             <input type="hidden" value={inputs.label} name="label" />
                         </div>
-                        {contacts.length > 0 && (
+                        {eventMembers && eventMembers.length > 0 && (
                             <MemberSelector
-                                label="انتخاب اعضا از دوستان"
-                                members={contacts}
+                                label="اعضای رویداد"
+                                members={eventMembers}
                                 onSelect={togglePerson}
-                                value={inputs.group}
-                                error={formErrors.group}
+                                value={inputs.members}
+                                error={formErrors.members}
                                 selectAllOption={true}
+                                selfId={user?.id.toString()}
                             />
                         )}
+                        {fetchingEventMembers && (
+                            <div className="text-gray-500 dark:text-gray-400 py-4 flex flex-row gap-x-2 items-center justify-center">
+                                <Loader className="size-5" />
+                                <span className="text-sm">در حال دریافت اطلاعات...</span>
+                            </div>
+                        )}
+
                     </div>
 
 

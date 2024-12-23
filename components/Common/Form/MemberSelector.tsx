@@ -1,33 +1,21 @@
-import { Contact } from "@/types/contact-types";
-import { Person } from "@/types/event-types";
+import { Member } from "@/types/event-types";
 import { Ban, User } from "lucide-react";
 
 type PropsTypes = {
     label: string;
-    members: Person[] | Contact[];
+    members: Member[];
     onSelect: (id: string) => void;
     value: string | string[];
     error?: string;
     selectAllOption?: boolean;
-    selfOption?: boolean;
-    selfIncluded?: boolean;
+    selfId?: string;
     disalllows?: string[];
 }
 
-function MemberSelector({ label, members, onSelect, value, error, selfOption = true, selfIncluded = true, selectAllOption = false, disalllows = [] }: PropsTypes) {
+function MemberSelector({ label, members, onSelect, value, error, selfId, selectAllOption = false, disalllows = [] }: PropsTypes) {
 
     let membersCount = members.length;
-    if (selfOption) {
-        membersCount++;
-    }
-
     let valueMembersCount = value.length;
-    if (selfOption && selfIncluded) {
-        valueMembersCount++;
-    }
-
-    console.log("valueMembersCount: ", valueMembersCount);
-    console.log("membersCount: ", membersCount);
 
     return (
 
@@ -46,15 +34,6 @@ function MemberSelector({ label, members, onSelect, value, error, selfOption = t
                         <span className="text-base">همه</span>
                     </div>
                 )}
-                {selfOption && (
-                    <div key={'self'} onClick={onSelect.bind(null, 'self')} className={`px-4 cursor-pointer py-2 flex flex-row gap-x-4 items-center border ${selfIncluded ? `user_avatar_blue_text user_avatar_blue_border user_avatar_blue_bg` : 'user_avatar_gray_text app_border_color'} transition-all duration-300 rounded-full`}>
-                        <div className="">
-                            <User className="size-5" />
-                        </div>
-
-                        <span className="text-base">خودم</span>
-                    </div>
-                )}
 
                 {members.map(member => (
                     <div key={member.id} onClick={onSelect.bind(null, member.id)} className={`px-4 py-2 flex flex-row gap-x-4 items-center border ${disalllows.includes(member.id) ? 'border-gray-300 text-gray-300 dark:text-gray-800 dark:border-gray-800 cursor-not-allowed' : (typeof value === 'string' ? member.id === value : value.includes(member.id)) ? `cursor-pointer user_avatar_${member.scheme}_text user_avatar_${member.scheme}_border user_avatar_${member.scheme}_bg` : 'cursor-pointer user_avatar_gray_text app_border_color'} transition-all duration-300 rounded-full`}>
@@ -62,7 +41,7 @@ function MemberSelector({ label, members, onSelect, value, error, selfOption = t
                             <User className="size-5" />
                         </div>
 
-                        <span className="text-base">{member.name}</span>
+                        <span className="text-base">{member.member_id?.toString() === selfId ? 'خودم' : member.name}</span>
                     </div>
                 ))}
 

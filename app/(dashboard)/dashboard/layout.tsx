@@ -1,16 +1,37 @@
 'use client'
 
-import { logout } from "@/app/actions/auth";
+import { getLoggedInUser, logout } from "@/app/actions/auth";
 import { generateUID } from "@/helpers/helpers";
+import { useAppStore } from "@/store/app-store";
 import { useToastStore } from "@/store/toast-store";
 import { BookOpenCheck, CalendarRange, Headset, Info, LogOut, Settings2, Trash, User, Users, Zap } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 function Layout({ children }: { children: React.ReactNode }) {
 
+    const setUser = useAppStore(state => state.setUser)
     const router = useRouter();
+
+    useEffect(() => {
+
+        async function getUserData() {
+
+            const res = await getLoggedInUser()
+
+            console.log(res.user)
+            if (res.success) {
+                setUser(res.user)
+                return;
+            }
+            router.push('/auth?form=login');
+        }
+
+        getUserData()
+
+    }, [])
+
     const pathname = usePathname();
     const [loading, setLoading] = useState(false);
     const addToast = useToastStore((state) => state.addToast);

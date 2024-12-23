@@ -105,7 +105,7 @@
 }
 
 .event_item_icon {
-  @apply size-4 text-gray-500;
+  @apply size-6 text-gray-500;
 }
 
 .event_item_left {
