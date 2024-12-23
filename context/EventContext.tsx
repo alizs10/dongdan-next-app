@@ -9,7 +9,7 @@ import { useParams } from "next/navigation";
 import { createContext, useCallback, useEffect, useMemo, useState } from "react";
 
 export type EventContextType = {
-    event: Event | null;
+    event: Event;
     getAllCosts: () => number;
     getCostsCount: () => number;
     getTransfersCount: () => number;
@@ -49,69 +49,24 @@ const EventContextInit = {
 
 export const EventContext = createContext<EventContextType>(EventContextInit);
 
-export function EventContextProvider({ children }: { children: React.ReactNode }) {
-
-    let { event_slug } = useParams()
-    if (typeof event_slug !== 'string') return;
-    event_slug = decodeURIComponent(event_slug);
+export function EventContextProvider({ children, eventData }: { children: React.ReactNode, eventData: Event }) {
 
     const [loading, setLoading] = useState(false)
-    const [event, setEvent] = useState<Event | null>(null)
+    const [event, setEvent] = useState<Event>(eventData)
     const addToast = useToastStore(state => state.addToast)
 
-    useEffect(() => {
 
-        async function getEvent() {
-            setLoading(true)
-            try {
-                const res = await fetch(`/api/events/${event_slug}`)
-                const data = await res.json()
-
-                if (data?.status) {
-                    setEvent(data.event)
-                } else {
-                    const errorToast: Toast = {
-                        id: generateUID(),
-                        message: "دریافت اطلاعات با خطا مواجه شد",
-                        type: "danger"
-                    }
-                    addToast(errorToast)
-                }
-                setLoading(false)
-
-            } catch {
-                console.log(error)
-                const errorToast: Toast = {
-                    id: generateUID(),
-                    message: "دریافت اطلاعات با خطا مواجه شد",
-                    type: "danger"
-                }
-                addToast(errorToast)
-                setLoading(false)
-            }
-        }
-
-        getEvent()
-
-    }, [event_slug])
-
-
-    const { events, activeFilters, applyFilters } = useEventStore(state => state);
+    // const { events, activeFilters, applyFilters } = useEventStore(state => state);
     // const event = useMemo(() => events.find(e => e.slug === event_slug), [events, event_slug]);
 
-    console.log(events)
+    // useEffect(() => {
 
+    //     console.log('expenses changed')
+    //     if (!!activeFilters) {
+    //         applyFilters(activeFilters, event.id)
+    //     }
 
-    if (!event) return null;
-
-    useEffect(() => {
-
-        console.log('expenses changed')
-        if (!!activeFilters) {
-            applyFilters(activeFilters, event.id)
-        }
-
-    }, [event, event.expenses, activeFilters])
+    // }, [event, event.expenses, activeFilters])
 
 
     const getAllCosts = useCallback(() => {
@@ -163,7 +118,7 @@ export function EventContextProvider({ children }: { children: React.ReactNode }
         let total = 0;
 
         event.expenses.forEach(expense => {
-            if (expense.type === 'expend' && expense.payer === personId) {
+            if (expense.type === 'expend' && expense.payer_id === personId) {
                 total += expense.amount;
             }
         });
@@ -174,9 +129,11 @@ export function EventContextProvider({ children }: { children: React.ReactNode }
     const getAllPersonDebts = useCallback((personId: string) => {
         let total = 0;
 
+
         event.expenses.forEach(expense => {
-            if (expense.type === 'expend' && expense.members.includes(personId)) {
-                total += expense.amount / expense.members.length;
+            let contributorIds = expense.type === 'expend' ? expense.contributors.map(c => c.id) : [];
+            if (expense.type === 'expend' && contributorIds.includes(personId)) {
+                total += expense.amount / expense.contributors.length;
             }
         });
 
@@ -188,7 +145,7 @@ export function EventContextProvider({ children }: { children: React.ReactNode }
         let total = 0;
 
         event.expenses.forEach(expense => {
-            if (expense.type === 'transfer' && expense.to === personId) {
+            if (expense.type === 'transfer' && expense.receiver_id === personId) {
                 total += expense.amount;
             }
         })
@@ -202,7 +159,7 @@ export function EventContextProvider({ children }: { children: React.ReactNode }
         let total = 0;
 
         event.expenses.forEach(expense => {
-            if (expense.type === 'transfer' && expense.from === personId) {
+            if (expense.type === 'transfer' && expense.transmitter_id === personId) {
                 total += expense.amount;
             }
         })

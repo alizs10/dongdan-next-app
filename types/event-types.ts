@@ -23,16 +23,16 @@ export type Event = {
     start_date: Date;
     end_date: null | Date;
     label: string;
-    members?: Person[];
-    expenses?: Expense[];
+    members: Member[];
+    expenses: Expense[];
     members_count: number;
-    created_at?: Date;
-    updated_at?: Date;
-    deleted_at?: Date | null;
+    created_at: Date;
+    updated_at: Date;
+    deleted_at: Date | null;
 }
 
 export type Member = {
-    id: string;
+    id: number;
     name: string;
     email?: string;
     scheme: SchemeType;
@@ -48,8 +48,9 @@ export type Expend = {
     amount: number;
     date: Date;
     type: 'expend';
-    payer: string;
-    group: string[];
+    payer_id: string;
+    payer: Member;
+    contributors: Member[]
 }
 
 export type Transfer = {
@@ -58,8 +59,10 @@ export type Transfer = {
     amount: number;
     date: Date;
     type: 'transfer';
-    to: string;
-    from: string;
+    receiver_id: string;
+    receiver: Member;
+    transmitter_id: string;
+    transmitter: Member;
 }
 
 export type Expense = Expend | Transfer;
@@ -69,8 +72,9 @@ export type ExpendFilter = {
     dateRange: [Date, Date];
     amountMin: string;
     amountMax: string;
-    group: string[];
-    payer: string;
+    contributors: Member[]
+    payer_id: string;
+    payer: Member;
 }
 
 export type TransferFilter = {
@@ -78,8 +82,10 @@ export type TransferFilter = {
     dateRange: [Date, Date];
     amountMin: string;
     amountMax: string;
-    from: string;
-    to: string;
+    transmitter_id: string;
+    transmitter: Member;
+    receiver_id: string;
+    receiver: Member;
 }
 
 export type AnyExpense = {

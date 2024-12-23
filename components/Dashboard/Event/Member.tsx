@@ -1,7 +1,7 @@
 import Button from "@/components/Common/Button";
 import useClickOutside from "@/hooks/useOutsideClick";
 import { useEventStore } from "@/store/event-store";
-import { Person } from "@/types/event-types";
+import { type Member, Person } from "@/types/event-types";
 import { Ellipsis, Info, Pencil, Trash, User } from "lucide-react";
 import { useParams } from "next/navigation";
 import { useState } from "react";
@@ -10,12 +10,15 @@ import { useDialogStore } from "@/store/dialog-store";
 import { Toast, useToastStore } from "@/store/toast-store";
 import { generateUID } from "@/helpers/helpers";
 import MemberInfoModal from "./MemberInfoModal";
+import { useAppStore } from "@/store/app-store";
 
-function Member({ person, isEventDeleted }: { person: Person, isEventDeleted: boolean }) {
+function Member({ member, isEventDeleted }: { member: Member, isEventDeleted: boolean }) {
+
+    const user = useAppStore(state => state.user)
 
     const addToast = useToastStore(state => state.addToast)
     const openDialog = useDialogStore(state => state.openDialog)
-    const { deleteEventMemberWithExpenses } = useEventStore(state => state);
+    // const { deleteEventMemberWithExpenses } = useEventStore(state => state);
     const { event_id } = useParams()
 
     const [isOptionsOpen, setIsOptionsOpen] = useState(false);
@@ -44,8 +47,8 @@ function Member({ person, isEventDeleted }: { person: Person, isEventDeleted: bo
 
     function deletePersonWithExpenses() {
         if (typeof event_id !== 'string' || isEventDeleted) return;
-        // deletePersonExpenses(event_id, person.id);
-        deleteEventMemberWithExpenses(event_id, person.id);
+        // deletePersonExpenses(event_id, member.id);
+        // deleteEventMemberWithExpenses(event_id, member.id);
     }
 
 
@@ -85,10 +88,10 @@ function Member({ person, isEventDeleted }: { person: Person, isEventDeleted: bo
 
         <li className="flex flex-row justify-between items-center">
             <div className="flex flex-row gap-x-4 items-center">
-                <div className={`p-2 border user_avatar_${person.scheme}_border user_avatar_${person.scheme}_bg rounded-full`}>
-                    <User className={`size-5 user_avatar_${person.scheme}_text`} />
+                <div className={`p-2 border user_avatar_${member.scheme}_border user_avatar_${member.scheme}_bg rounded-full`}>
+                    <User className={`size-5 user_avatar_${member.scheme}_text`} />
                 </div>
-                <span className={`text-base user_avatar_${person.scheme}_text`}>{person.name}</span>
+                <span className={`text-base user_avatar_${member.scheme}_text`}>{user?.id === member?.member_id ? 'خودم' : member.name}</span>
             </div>
 
             {!isEventDeleted && (
@@ -133,8 +136,8 @@ function Member({ person, isEventDeleted }: { person: Person, isEventDeleted: bo
                 </div>
             )}
 
-            {isEditPersonModalOpen && !isEventDeleted && <EditPersonModal person={person} onClose={toggleModal} />}
-            {isInfoModalOpen && (<MemberInfoModal onClose={toggleInfoModal} member={person} />)}
+            {/* {isEditPersonModalOpen && !isEventDeleted && <EditPersonModal member={member} onClose={toggleModal} />} */}
+            {/* {isInfoModalOpen && (<MemberInfoModal onClose={toggleInfoModal} member={member} />)} */}
         </li>
 
     );

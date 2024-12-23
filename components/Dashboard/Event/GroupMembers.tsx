@@ -1,12 +1,12 @@
-import { Person } from "@/types/event-types";
+import { type Member as TypeMember, Person } from "@/types/event-types";
 import Member from "./Member";
 
-function GroupMembers({ group, isEventDeleted }: { group: Person[], isEventDeleted: boolean }) {
+function GroupMembers({ members, isEventDeleted }: { members: TypeMember[], isEventDeleted: boolean }) {
 
     return (
         <ul className="flex flex-col gap-y-4">
 
-            {group.map(person => (<Member key={person.id} person={person} isEventDeleted={isEventDeleted} />))}
+            {members.map(member => (<Member key={member.id} member={member} isEventDeleted={isEventDeleted} />))}
 
         </ul>
     );

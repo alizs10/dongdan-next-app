@@ -19,11 +19,12 @@ import FiltersModal from "./FiltersModal";
 import ActiveFilters from "./ActiveFilters";
 import ShareEventLink from "./ShareEventLink";
 import { EventContext } from "@/context/EventContext";
+import { useAppStore } from "@/store/app-store";
 
 function Event() {
 
+    const user = useAppStore(state => state.user)
     const addToast = useToastStore(state => state.addToast)
-
 
     const {
         event,
@@ -46,8 +47,10 @@ function Event() {
     const [isSettleHintsModalOpen, setIsSettleHintsModalOpen] = useState(false);
     const [isFiltersModalOpen, setIsFiltersModalOpen] = useState(false);
 
+    const eventStatus = !event?.end_date ? 'active' : 'inactive';
+
     function openNewExpenseModal() {
-        if (event?.members.length === 0 || event?.status === 'inactive') return
+        if (event?.members.length === 0 || eventStatus === 'inactive') return
         setIsNewExpenseModalOpen(true);
     }
 
@@ -56,7 +59,7 @@ function Event() {
     }
 
     function openNewPersonModal() {
-        if (event?.status === 'inactive') return
+        if (eventStatus === 'inactive') return
         setIsNewPersonModalOpen(true);
     }
 
@@ -80,13 +83,13 @@ function Event() {
 
 
 
-        if (event.status === 'active') {
+        if (eventStatus === 'active') {
             const deactivateToast: Toast = {
                 id: generateUID(),
                 message: 'رویداد به پایان رسید',
                 type: 'success'
             }
-            deactivateEvent(event.id);
+            // deactivateEvent(event.id);
             addToast(deactivateToast)
         } else {
             const activateToast: Toast = {
@@ -94,7 +97,7 @@ function Event() {
                 message: 'رویداد در جریان است',
                 type: 'success'
             }
-            activateEvent(event.id);
+            // activateEvent(event.id);
             addToast(activateToast)
         }
     }
@@ -174,24 +177,24 @@ function Event() {
                             {event.members.map(person => (
                                 <li key={person.id} className="flex w-full justify-between items-center">
                                     <div className="flex flex-row gap-x-2 justify-center items-center">
-                                        <h1 className={`user_avatar_${person.scheme}_text`}>{person.name}</h1>
-                                        {getPersonBalanceStatus(person.id) === 'طلبکار' && (
+                                        <h1 className={`user_avatar_${person.scheme}_text`}>{person?.member_id === user?.id ? 'خودم' : person.name}</h1>
+                                        {getPersonBalanceStatus(person.id.toString()) === 'طلبکار' && (
                                             <span className="text-[.6rem] rounded-full px-2 py-1 bg-green-100 dark:bg-green-950/30 text-green-700 dark:text-green-500">
                                                 طلبکار
                                             </span>
                                         )}
-                                        {getPersonBalanceStatus(person.id) === 'بدهکار' && (
+                                        {getPersonBalanceStatus(person.id.toString()) === 'بدهکار' && (
                                             <span className="text-[.6rem] rounded-full px-2 py-1 bg-red-100 dark:bg-red-950/30 text-red-600 dark:text-red-500">
                                                 بدهکار
                                             </span>
                                         )}
-                                        {getPersonBalanceStatus(person.id) === 'تسویه' && (
+                                        {getPersonBalanceStatus(person.id.toString()) === 'تسویه' && (
                                             <span className="text-[.6rem] rounded-full px-2 py-1 bg-gray-200 dark:bg-gray-800/50 text-gray-700 dark:text-gray-300">
                                                 تسویه
                                             </span>
                                         )}
                                     </div>
-                                    <span className="text-sm text-gray-500 dark:text-gray-400">{TomanPriceFormatter(Math.abs(getPersonBalance(person.id)).toFixed(0))} تومان</span>
+                                    <span className="text-sm text-gray-500 dark:text-gray-400">{TomanPriceFormatter(Math.abs(getPersonBalance(person.id.toString())).toFixed(0))} تومان</span>
                                 </li>
                             ))}
 
@@ -211,10 +214,10 @@ function Event() {
                     {event.members.length > 0 ? (
                         <GroupMembers members={event.members} isEventDeleted={event.deleted_at !== null} />
                     ) : (
-                        <NoGroupMembers eventStatus={event.status} isDeleted={event.deleted_at !== null} />
+                        <NoGroupMembers eventStatus={eventStatus} isDeleted={event.deleted_at !== null} />
                     )}
 
-                    {event.status === 'active' && event.deleted_at === null && (
+                    {eventStatus === 'active' && (
                         <Button
                             text="افزودن عضو جدید"
                             color="gray"
@@ -236,7 +239,7 @@ function Event() {
 
                         <div className="flex w-full justify-between items-center">
                             <h1 className="text-sm text-gray-500 dark:text-gray-400 font-semibold">وضعیت</h1>
-                            <span className="text-sm text-gray-500 dark:text-gray-400">{event.status === 'active' ? 'درجریان' : 'به پایان رسیده'}</span>
+                            <span className="text-sm text-gray-500 dark:text-gray-400">{eventStatus === 'active' ? 'درجریان' : 'به پایان رسیده'}</span>
                         </div>
                         <div className="flex w-full justify-between items-center">
                             <h1 className="text-sm text-gray-500 dark:text-gray-400">برچسب</h1>
@@ -268,11 +271,11 @@ function Event() {
                     {event.deleted_at === null && (
 
                         <Button
-                            text={event.status === 'active' ? 'پایان رویداد' : 'باز کردن رویداد'}
-                            color={event.status === 'active' ? 'danger' : 'success'}
+                            text={eventStatus === 'active' ? 'پایان رویداد' : 'باز کردن رویداد'}
+                            color={eventStatus === 'active' ? 'danger' : 'success'}
                             onClick={toggleEventStatus}
                             size="small"
-                            icon={event.status === 'active' ? <CalendarCheck className="size-4" /> : <CalendarClock className="size-4" />}
+                            icon={eventStatus === 'active' ? <CalendarCheck className="size-4" /> : <CalendarClock className="size-4" />}
                         />
                     )}
 
@@ -301,7 +304,7 @@ function Event() {
                                 />
                             )}
                             {event.expenses.length > 0 && isFiltersModalOpen && <FiltersModal event={event} onClose={toggleFiltersModal} />}
-                            {event.status === 'active' && event.deleted_at === null && (
+                            {eventStatus === 'active' && event.deleted_at === null && (
                                 <Button
                                     text="ثبت هزینه/جابجایی پول"
                                     color="accent"
@@ -313,15 +316,15 @@ function Event() {
                         </div>
                     )}
 
-                    {activeFilters && (
+                    {/* {activeFilters && (
                         <ActiveFilters />
-                    )}
+                    )} */}
 
                 </div>
 
-                {(event.expenses.length > 0 && !activeFilters) || (activeFilters && filteredExpenses.length > 0) ? (
+                {/* {(event.expenses.length > 0 && !activeFilters) || (activeFilters && filteredExpenses.length > 0) ? (
                     <Expenses expenses={activeFilters ? filteredExpenses : event.expenses} />
-                ) : (event.deleted_at !== null || event.status === 'inactive' || (event.status === 'active' && event.members.length > 0)) ? <NoExpenses isFilterMode={!!activeFilters} isDeleted={event.deleted_at !== null} eventStatus={event.status} openNewExpenseModal={openNewExpenseModal} /> : (<NoGroupExpenses openNewPersonModal={openNewPersonModal} />)}
+                ) : (event.deleted_at !== null || eventStatus === 'inactive' || (eventStatus === 'active' && event.members.length > 0)) ? <NoExpenses isFilterMode={!!activeFilters} isDeleted={event.deleted_at !== null} eventStatus={eventStatus} openNewExpenseModal={openNewExpenseModal} /> : (<NoGroupExpenses openNewPersonModal={openNewPersonModal} />)} */}
 
 
                 {isNewExpenseModalOpen && <NewExpenseModal event={event} onClose={closeNewExpenseModal} />}
