@@ -1,5 +1,6 @@
 'use client';
 
+import { updateEventStatusReq } from "@/app/actions/events";
 import DashboardLoading from "@/components/Layout/DashboardLoading";
 import { generateUID, TomanPriceFormatter } from "@/helpers/helpers";
 import { useEventStore } from "@/store/event-store";
@@ -9,7 +10,7 @@ import { useParams } from "next/navigation";
 import { createContext, useCallback, useEffect, useMemo, useState } from "react";
 
 export type EventContextType = {
-    event: Event;
+    event: Event | null;
     getAllCosts: () => number;
     getCostsCount: () => number;
     getTransfersCount: () => number;
@@ -22,6 +23,7 @@ export type EventContextType = {
     getMaxPayer: () => { name: string, amount: number };
     getPersonBalance: (personId: string) => number;
     getPersonBalanceStatus: (personId: string) => string;
+    toggleEventStatus: () => void;
     creditors: SettlePerson[];
     debtors: SettlePerson[];
     transactions: string[];
@@ -41,6 +43,7 @@ const EventContextInit = {
     getMaxPayer: () => ({ name: '', amount: 0 }),
     getPersonBalance: () => 0,
     getPersonBalanceStatus: () => 'تسویه',
+    toggleEventStatus: () => { },
     creditors: [],
     debtors: [],
     transactions: [],
@@ -131,7 +134,7 @@ export function EventContextProvider({ children, eventData }: { children: React.
 
 
         event.expenses.forEach(expense => {
-            let contributorIds = expense.type === 'expend' ? expense.contributors.map(c => c.id) : [];
+            let contributorIds = expense.type === 'expend' ? expense.contributors.map(c => c.id.toString()) : [];
             if (expense.type === 'expend' && contributorIds.includes(personId)) {
                 total += expense.amount / expense.contributors.length;
             }
@@ -175,7 +178,7 @@ export function EventContextProvider({ children, eventData }: { children: React.
         let paid = 0;
 
         event.members.forEach(person => {
-            let personPaid = getAllPersonExpends(person.id);
+            let personPaid = getAllPersonExpends(person.id.toString());
             if (personPaid > paid) {
                 paid = personPaid;
                 maxPayer = person.name;
@@ -208,7 +211,7 @@ export function EventContextProvider({ children, eventData }: { children: React.
     const creditors = useMemo(() => {
         const creditorsArr: SettlePerson[] = [];
         event.members.forEach(person => {
-            const personBalance = getPersonBalance(person.id);
+            const personBalance = getPersonBalance(person.id.toString());
 
             if (personBalance > 0) {
                 creditorsArr.push({
@@ -225,7 +228,7 @@ export function EventContextProvider({ children, eventData }: { children: React.
         const debtorsArr: SettlePerson[] = [];
         event.members.forEach(person => {
 
-            const personBalance = parseInt(getPersonBalance(person.id).toFixed(0));
+            const personBalance = parseInt(getPersonBalance(person.id.toString().toString()).toFixed(0));
 
             if (personBalance < 0) {
                 debtorsArr.push({
@@ -263,6 +266,41 @@ export function EventContextProvider({ children, eventData }: { children: React.
     }, [debtors, creditors]);
 
 
+    async function toggleEventStatus() {
+
+        const res = await updateEventStatusReq(event.id)
+
+        if (res.success) {
+            const event_end_date = res.end_date;
+            const eventStatus = !event_end_date ? 'active' : 'inactive';
+            setEvent(prevState => ({ ...prevState, end_date: event_end_date }));
+            if (eventStatus === 'inactive') {
+                const deactivateToast: Toast = {
+                    id: generateUID(),
+                    message: 'رویداد به پایان رسید',
+                    type: 'success'
+                }
+                addToast(deactivateToast)
+            } else {
+                const activateToast: Toast = {
+                    id: generateUID(),
+                    message: 'رویداد در جریان است',
+                    type: 'success'
+                }
+                addToast(activateToast)
+            }
+            return;
+        }
+
+        const errorToast: Toast = {
+            id: generateUID(),
+            message: res.message,
+            type: 'danger'
+        }
+        addToast(errorToast)
+
+    }
+
     let values: EventContextType = {
         event,
         getAllCosts,
@@ -277,6 +315,7 @@ export function EventContextProvider({ children, eventData }: { children: React.
         getMaxPayer,
         getPersonBalance,
         getPersonBalanceStatus,
+        toggleEventStatus,
         creditors,
         debtors,
         transactions,

@@ -36,9 +36,11 @@ function Event() {
         getMaxPayer,
         getPersonBalance,
         getPersonBalanceStatus,
+        toggleEventStatus,
         transactions,
     } = useContext(EventContext);
 
+    if (!event) return;
 
     // const { activateEvent, deactivateEvent, activeFilters, filteredExpenses } = useEventStore(state => state);
 
@@ -73,33 +75,6 @@ function Event() {
 
     function toggleFiltersModal() {
         setIsFiltersModalOpen(prev => !prev);
-    }
-
-
-
-    function toggleEventStatus() {
-
-        if (!event) return;
-
-
-
-        if (eventStatus === 'active') {
-            const deactivateToast: Toast = {
-                id: generateUID(),
-                message: 'رویداد به پایان رسید',
-                type: 'success'
-            }
-            // deactivateEvent(event.id);
-            addToast(deactivateToast)
-        } else {
-            const activateToast: Toast = {
-                id: generateUID(),
-                message: 'رویداد در جریان است',
-                type: 'success'
-            }
-            // activateEvent(event.id);
-            addToast(activateToast)
-        }
     }
 
 
