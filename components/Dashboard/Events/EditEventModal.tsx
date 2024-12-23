@@ -1,6 +1,7 @@
 'use client'
 
-import { getEventMembersReq } from "@/app/actions/events";
+import { getContactsReq } from "@/app/actions/contacts";
+import { getEventMembersReq, getEventNonMembersReq } from "@/app/actions/events";
 import Button from "@/components/Common/Button";
 import MemberSelector from "@/components/Common/Form/MemberSelector";
 import PDatePicker from "@/components/Common/Form/PDatePicker";
@@ -12,6 +13,7 @@ import { generateUID } from "@/helpers/helpers";
 import { zValidate } from "@/helpers/validation-helper";
 import { useAppStore } from "@/store/app-store";
 import { Toast, useToastStore } from "@/store/toast-store";
+import { Contact } from "@/types/contact-types";
 import { Event, Member } from "@/types/event-types";
 import { Ban, BriefcaseBusiness, Cake, Coffee, Loader, Pencil, Plane, TreePalm, Utensils } from "lucide-react";
 import { useContext, useEffect, useState } from "react";
@@ -36,6 +38,8 @@ function EditEventModal({ onClose, event }: { onClose: () => void, event: Event 
 
     const [fetchingEventMembers, setFetchingEventMembers] = useState(true);
     const [eventMembers, setEventMembers] = useState<null | Member[]>(null)
+    const [nonMemberContacts, setNonMemberContacts] = useState<null | Contact[]>(null)
+
     const initInputs = {
         name: event.name,
         label: event.label,
@@ -56,9 +60,13 @@ function EditEventModal({ onClose, event }: { onClose: () => void, event: Event 
     useEffect(() => {
         async function getEventMembers() {
             const res = await getEventMembersReq(event.id)
+            const res2 = await getEventNonMembersReq(event.id)
 
-            if (res.success) {
+            if (res.success && res2.success) {
+
                 setEventMembers(res.members)
+                setNonMemberContacts(res2.nonMembers)
+
                 setInputs(prevState => ({ ...prevState, members: res.members.map((member: Member) => member.id) }))
                 setFetchingEventMembers(false);
                 return;
@@ -107,12 +115,17 @@ function EditEventModal({ onClose, event }: { onClose: () => void, event: Event 
 
     function togglePerson(personId: string) {
 
-        if (personId === 'all' && inputs.members.length === eventMembers?.length) {
+        const allPossibleMembers = [...(eventMembers || []), ...(nonMemberContacts || [])]
+
+        if (personId === 'all' && inputs.members.length === allPossibleMembers.length) {
             setInputs(prev => ({ ...prev, members: [] }))
             return
         }
-        if (personId === 'all' && inputs.members.length !== eventMembers?.length) {
-            setInputs(prev => ({ ...prev, members: eventMembers?.map(p => p.id) ?? [] }))
+        if (personId === 'all' && inputs.members.length !== allPossibleMembers.length) {
+
+
+
+            setInputs(prev => ({ ...prev, members: allPossibleMembers.map(p => p.id) ?? [] }))
             return
         }
 
@@ -221,12 +234,12 @@ function EditEventModal({ onClose, event }: { onClose: () => void, event: Event 
                         {eventMembers && eventMembers.length > 0 && (
                             <MemberSelector
                                 label="اعضای رویداد"
-                                members={eventMembers}
+                                members={[...(eventMembers || []), ...(nonMemberContacts || [])]}
                                 onSelect={togglePerson}
                                 value={inputs.members}
                                 error={formErrors.members}
                                 selectAllOption={true}
-                                selfId={user?.id.toString()}
+                                self={user ? { id: user.id.toString(), scheme: user.scheme, include: false } : undefined}
                             />
                         )}
                         {fetchingEventMembers && (

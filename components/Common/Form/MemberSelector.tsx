@@ -1,5 +1,13 @@
-import { Member } from "@/types/event-types";
-import { Ban, User } from "lucide-react";
+import { SchemeType } from "@/types/event-types";
+import { Ban, User, Users } from "lucide-react";
+
+type Member = {
+    id: string;
+    name: string;
+    scheme: SchemeType;
+    member_id?: string;
+    member_type?: string;
+}
 
 type PropsTypes = {
     label: string;
@@ -8,14 +16,32 @@ type PropsTypes = {
     value: string | string[];
     error?: string;
     selectAllOption?: boolean;
-    selfId?: string;
+    self?: {
+        id: string;
+        scheme: SchemeType;
+        include: boolean;
+        value?: boolean;
+    };
     disalllows?: string[];
 }
 
-function MemberSelector({ label, members, onSelect, value, error, selfId, selectAllOption = false, disalllows = [] }: PropsTypes) {
+function MemberSelector({ label, members, onSelect, value, error, self, selectAllOption = false, disalllows = [] }: PropsTypes) {
 
     let membersCount = members.length;
+    if (self && self.include) {
+        membersCount++;
+    }
+
     let valueMembersCount = value.length;
+    if (self && self.include) {
+        valueMembersCount++;
+    }
+
+    members = members.sort(((a, b) => {
+        if (a.member_type?.includes("User")) return -1;
+        if (b.member_type?.includes("User")) return 1;
+        return 0;
+    }));
 
     return (
 
@@ -28,10 +54,20 @@ function MemberSelector({ label, members, onSelect, value, error, selfId, select
                 {selectAllOption && (
                     <div key={'all'} onClick={onSelect.bind(null, 'all')} className={`px-4 cursor-pointer py-2 flex flex-row gap-x-4 items-center border ${valueMembersCount === membersCount ? `user_avatar_blue_text user_avatar_blue_border user_avatar_blue_bg` : 'user_avatar_gray_text app_border_color'} transition-all duration-300 rounded-full`}>
                         <div className="">
-                            <User className="size-5" />
+                            <Users className="size-5" />
                         </div>
 
                         <span className="text-base">همه</span>
+                    </div>
+                )}
+
+                {self && self.include && (
+                    <div key={'self'} onClick={onSelect.bind(null, 'self')} className={`px-4 cursor-pointer py-2 flex flex-row gap-x-4 items-center border ${self.value ? `user_avatar_${self.scheme}_text user_avatar_${self.scheme}_border user_avatar_${self.scheme}_bg` : 'user_avatar_gray_text app_border_color'} transition-all duration-300 rounded-full`}>
+                        <div className="">
+                            <User className="size-5" />
+                        </div>
+
+                        <span className="text-base">خودم</span>
                     </div>
                 )}
 
@@ -41,7 +77,7 @@ function MemberSelector({ label, members, onSelect, value, error, selfId, select
                             <User className="size-5" />
                         </div>
 
-                        <span className="text-base">{member.member_id?.toString() === selfId ? 'خودم' : member.name}</span>
+                        <span className="text-base">{member.member_id?.toString() === self?.id ? 'خودم' : member.name}</span>
                     </div>
                 ))}
 

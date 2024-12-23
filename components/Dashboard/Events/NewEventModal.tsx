@@ -12,6 +12,7 @@ import { EventsContext } from "@/context/EventsContext";
 import { createEventSchema } from "@/database/validations/event-validation";
 import { generateUID } from "@/helpers/helpers";
 import { zValidate } from "@/helpers/validation-helper";
+import { useAppStore } from "@/store/app-store";
 import { Toast, useToastStore } from "@/store/toast-store";
 import { Contact } from "@/types/contact-types";
 import { NewEvent } from "@/types/event-types";
@@ -30,12 +31,13 @@ type FormInputs = {
 
 function NewEventModal({ onClose }: { onClose: () => void }) {
 
+    const user = useAppStore(state => state.user);
+
     const [loading, setLoading] = useState(false);
     const { addEvent } = useContext(EventsContext);
 
     const [fetchingContacts, setFetchingContacts] = useState(true);
     const [contacts, setContacts] = useState<null | Contact[]>(null);
-
     const addToast = useToastStore(state => state.addToast)
 
     useEffect(() => {
@@ -254,8 +256,7 @@ function NewEventModal({ onClose }: { onClose: () => void }) {
                                 value={inputs.members}
                                 error={formErrors.members}
                                 selectAllOption={true}
-                                selfOption={true}
-                                selfIncluded={inputs.self_included}
+                                self={user ? { id: user.id.toString(), include: true, scheme: user.scheme, value: inputs.self_included } : undefined}
                             />
                         )}
 
