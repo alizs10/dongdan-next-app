@@ -185,7 +185,7 @@ function Event() {
                     </div>
 
                     {event.members.length > 0 ? (
-                        <GroupMembers members={event.members} isEventDeleted={event.deleted_at !== null} />
+                        <GroupMembers members={event.members} />
                     ) : (
                         <NoGroupMembers eventStatus={eventStatus} isDeleted={event.deleted_at !== null} />
                     )}

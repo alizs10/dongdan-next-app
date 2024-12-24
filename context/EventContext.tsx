@@ -1,5 +1,6 @@
 'use client';
 
+import { deleteMemberReq } from "@/app/actions/event";
 import { updateEventStatusReq } from "@/app/actions/events";
 import DashboardLoading from "@/components/Layout/DashboardLoading";
 import { generateUID, TomanPriceFormatter } from "@/helpers/helpers";
@@ -26,6 +27,7 @@ export type EventContextType = {
     toggleEventStatus: () => void;
     addMember: (member: Member) => void;
     setMembers: (members: Member[]) => void;
+    deleteMember: (memberId: number) => void;
     creditors: SettlePerson[];
     debtors: SettlePerson[];
     transactions: string[];
@@ -48,6 +50,7 @@ const EventContextInit = {
     toggleEventStatus: () => { },
     addMember: () => { },
     setMembers: () => { },
+    deleteMember: () => { },
     creditors: [],
     debtors: [],
     transactions: [],
@@ -83,6 +86,65 @@ export function EventContextProvider({ children, eventData }: { children: React.
         setEvent(prevState => ({ ...prevState, members: members }))
     }
 
+    async function deleteMember(memberId: number) {
+
+        const res = await deleteMemberReq(event.id.toString(), memberId)
+
+        if (res.success) {
+            setEvent(prevState => ({ ...prevState, members: prevState.members.filter(m => m.id !== memberId) }));
+
+
+            const successToast = {
+                message: res.message,
+                type: 'success' as const,
+            }
+            addToast(successToast)
+
+            return;
+        }
+
+        const errorToast = {
+            message: res.message,
+            type: 'danger' as const,
+        }
+        addToast(errorToast)
+
+    }
+
+    async function toggleEventStatus() {
+
+        const res = await updateEventStatusReq(event.id.toString())
+
+        if (res.success) {
+            const event_end_date = res.end_date;
+            const eventStatus = !event_end_date ? 'active' : 'inactive';
+            setEvent(prevState => ({ ...prevState, end_date: event_end_date }));
+            if (eventStatus === 'inactive') {
+                const deactivateToast = {
+
+                    message: 'رویداد به پایان رسید',
+                    type: 'success' as const,
+                }
+                addToast(deactivateToast)
+            } else {
+                const activateToast = {
+
+                    message: 'رویداد در جریان است',
+                    type: 'success' as const,
+                }
+                addToast(activateToast)
+            }
+            return;
+        }
+
+        const errorToast = {
+
+            message: res.message,
+            type: 'danger' as const,
+        }
+        addToast(errorToast)
+
+    }
 
     const getAllCosts = useCallback(() => {
         let total = 0;
@@ -278,41 +340,6 @@ export function EventContextProvider({ children, eventData }: { children: React.
     }, [debtors, creditors]);
 
 
-    async function toggleEventStatus() {
-
-        const res = await updateEventStatusReq(event.id)
-
-        if (res.success) {
-            const event_end_date = res.end_date;
-            const eventStatus = !event_end_date ? 'active' : 'inactive';
-            setEvent(prevState => ({ ...prevState, end_date: event_end_date }));
-            if (eventStatus === 'inactive') {
-                const deactivateToast = {
-
-                    message: 'رویداد به پایان رسید',
-                    type: 'success' as const,
-                }
-                addToast(deactivateToast)
-            } else {
-                const activateToast = {
-
-                    message: 'رویداد در جریان است',
-                    type: 'success' as const,
-                }
-                addToast(activateToast)
-            }
-            return;
-        }
-
-        const errorToast = {
-
-            message: res.message,
-            type: 'danger' as const,
-        }
-        addToast(errorToast)
-
-    }
-
     let values: EventContextType = {
         event,
         getAllCosts,
@@ -330,6 +357,7 @@ export function EventContextProvider({ children, eventData }: { children: React.
         toggleEventStatus,
         addMember,
         setMembers,
+        deleteMember,
         creditors,
         debtors,
         transactions,
