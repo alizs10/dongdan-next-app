@@ -58,6 +58,7 @@ export async function getEventNonMembersReq(eventId: string) {
             return {
                 success: true,
                 nonMembers: data.non_members,
+                selfIncluded: data.self_included,
                 message: 'اعضا با موفقیت دریافت شدند'
             }
         }
@@ -91,7 +92,7 @@ export async function updateEventReq(eventId: string, inputs: UpdateEvent) {
         });
 
         const data = await response.json()
-        console.log(data)
+
         if (response.ok) {
             return {
                 success: true,

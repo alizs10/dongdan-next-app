@@ -45,10 +45,10 @@ function Expense({ expense }: { expense: Expense }) {
         if (event.deleted_at !== null) return;
         setIsOptionsOpen(false);
 
-        const newToast: Toast = {
-            id: generateUID(),
+        const newToast = {
+
             message: `${expense.type === 'expend' ? 'هزینه' : 'جابجایی پول'} حذف شد`,
-            type: 'success'
+            type: 'success' as const,
         }
 
         openDialog(

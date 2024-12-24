@@ -4,7 +4,6 @@ import { CalendarCheck, CalendarClock, Filter, MoveRight, Plus, UserPlus, Zap } 
 import Link from "next/link";
 import { useContext, useState } from "react";
 import NewExpenseModal from "./NewExpenseModal";
-import NewPersonModal from "./NewPersonModal";
 import Expenses from "./Expenses/Expenses";
 import NoExpenses from "./Expenses/NoExpenses";
 import NoGroupExpenses from "./Expenses/NoGroupExpenses";
@@ -20,6 +19,7 @@ import ActiveFilters from "./ActiveFilters";
 import ShareEventLink from "./ShareEventLink";
 import { EventContext } from "@/context/EventContext";
 import { useAppStore } from "@/store/app-store";
+import NewMemberModal from "./NewMemberModal";
 
 function Event() {
 
@@ -40,12 +40,10 @@ function Event() {
         transactions,
     } = useContext(EventContext);
 
-    if (!event) return;
-
     // const { activateEvent, deactivateEvent, activeFilters, filteredExpenses } = useEventStore(state => state);
 
     const [isNewExpenseModalOpen, setIsNewExpenseModalOpen] = useState(false);
-    const [isNewPersonModalOpen, setIsNewPersonModalOpen] = useState(false);
+    const [isNewMemberModalOpen, setIsNewMemberModalOpen] = useState(false);
     const [isSettleHintsModalOpen, setIsSettleHintsModalOpen] = useState(false);
     const [isFiltersModalOpen, setIsFiltersModalOpen] = useState(false);
 
@@ -60,13 +58,13 @@ function Event() {
         setIsNewExpenseModalOpen(false);
     }
 
-    function openNewPersonModal() {
+    function openNewMemberModal() {
         if (eventStatus === 'inactive') return
-        setIsNewPersonModalOpen(true);
+        setIsNewMemberModalOpen(true);
     }
 
-    function closeNewPersonModal() {
-        setIsNewPersonModalOpen(false);
+    function closeNewMemberModal() {
+        setIsNewMemberModalOpen(false);
     }
 
     function toggleSettleHintsModal() {
@@ -196,7 +194,7 @@ function Event() {
                         <Button
                             text="افزودن عضو جدید"
                             color="gray"
-                            onClick={openNewPersonModal}
+                            onClick={openNewMemberModal}
                             size="small"
                             icon={<UserPlus className="size-4" />}
                         />
@@ -299,14 +297,14 @@ function Event() {
 
                 {/* {(event.expenses.length > 0 && !activeFilters) || (activeFilters && filteredExpenses.length > 0) ? (
                     <Expenses expenses={activeFilters ? filteredExpenses : event.expenses} />
-                ) : (event.deleted_at !== null || eventStatus === 'inactive' || (eventStatus === 'active' && event.members.length > 0)) ? <NoExpenses isFilterMode={!!activeFilters} isDeleted={event.deleted_at !== null} eventStatus={eventStatus} openNewExpenseModal={openNewExpenseModal} /> : (<NoGroupExpenses openNewPersonModal={openNewPersonModal} />)} */}
+                ) : (event.deleted_at !== null || eventStatus === 'inactive' || (eventStatus === 'active' && event.members.length > 0)) ? <NoExpenses isFilterMode={!!activeFilters} isDeleted={event.deleted_at !== null} eventStatus={eventStatus} openNewExpenseModal={openNewExpenseModal} /> : (<NoGroupExpenses openNewMemberModal={openNewMemberModal} />)} */}
 
 
                 {isNewExpenseModalOpen && <NewExpenseModal event={event} onClose={closeNewExpenseModal} />}
             </div>
 
 
-            {isNewPersonModalOpen && <NewPersonModal onClose={closeNewPersonModal} />}
+            {isNewMemberModalOpen && <NewMemberModal onClose={closeNewMemberModal} />}
 
         </div>
     );

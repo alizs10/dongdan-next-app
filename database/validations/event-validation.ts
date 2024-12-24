@@ -22,6 +22,7 @@ export const updateEventSchema: ZodType<UpdateEvent> = z.object({
     label: z.string().min(1, 'انتخاب برچسب الزامی است'),
     members: z.array(z.string()),
     contacts: z.array(z.string()),
+    self_included: z.enum(['true', 'false']),
     start_date: z.coerce.date({ required_error: 'تاریخ الزامی است' }).max(today, 'تاریخ نمیتواند از تاریخ کنونی بیشتر باشد'),
 })
 

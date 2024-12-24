@@ -60,10 +60,10 @@ function EditPersonModal({ onClose, person }: { onClose: () => void, person: Per
         const { hasError, errors } = zValidate(personSchema, updatedPerson);
 
         if (hasError) {
-            const validationToast: Toast = {
-                id: generateUID(),
+            const validationToast = {
+
                 message: `فرم نامعتبر است.`,
-                type: 'danger',
+                type: 'danger' as const,
             }
 
 
@@ -76,10 +76,10 @@ function EditPersonModal({ onClose, person }: { onClose: () => void, person: Per
         setFormErrors(initFormErrors);
 
 
-        const newToast: Toast = {
-            id: generateUID(),
+        const newToast = {
+
             message: 'شخص ویرایش شد',
-            type: 'success'
+            type: 'success' as const,
         }
 
         updatePerson(event_id, person.id, updatedPerson);

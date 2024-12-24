@@ -109,19 +109,19 @@ function TrashedEventItem({ event }: { event: Event }) {
 
         if (res.success) {
             deleteEvent(event.id)
-            const successToast: Toast = {
-                id: generateUID(),
+            const successToast = {
+
                 message: res.message,
-                type: 'success'
+                type: 'success' as const,
             }
             addToast(successToast)
             return;
         }
 
-        const errorToast: Toast = {
-            id: generateUID(),
+        const errorToast = {
+
             message: res.message,
-            type: 'danger'
+            type: 'danger' as const,
         }
         addToast(errorToast)
     }
@@ -131,19 +131,19 @@ function TrashedEventItem({ event }: { event: Event }) {
 
         if (res.success) {
             deleteEvent(event.id)
-            const successToast: Toast = {
-                id: generateUID(),
+            const successToast = {
+
                 message: res.message,
-                type: 'success'
+                type: 'success' as const,
             }
             addToast(successToast)
             return;
         }
 
-        const errorToast: Toast = {
-            id: generateUID(),
+        const errorToast = {
+
             message: res.message,
-            type: 'danger'
+            type: 'danger' as const,
         }
         addToast(errorToast)
     }

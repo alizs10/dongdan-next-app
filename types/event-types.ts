@@ -14,10 +14,11 @@ export type UpdateEvent = {
     start_date: Date;
     members: string[];
     contacts: string[];
+    self_included: 'true' | 'false';
 }
 
 export type Event = {
-    id: string;
+    id: number;
     name: string;
     slug: string;
     start_date: Date;
@@ -40,6 +41,14 @@ export type Member = {
     member_id?: string;
     member_type?: string;
     event?: Event;
+}
+
+export type CreateMemberInputs = {
+    name: string;
+    email?: string;
+    scheme: SchemeType;
+    member_id?: string;
+    member_type?: string;
 }
 
 export type Expend = {

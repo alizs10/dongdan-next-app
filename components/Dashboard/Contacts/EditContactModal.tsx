@@ -51,10 +51,10 @@ function EditContactModal({ onClose, contact }: { onClose: () => void, contact: 
 
         if (hasError) {
 
-            const validationToast: Toast = {
-                id: generateUID(),
+            const validationToast = {
+
                 message: `فرم نامعتبر است.`,
-                type: 'danger',
+                type: 'danger' as const,
             }
 
             addToast(validationToast);
@@ -69,20 +69,20 @@ function EditContactModal({ onClose, contact }: { onClose: () => void, contact: 
 
         if (res.success) {
             updateContact(contact.id, res.updatedContact);
-            const successToast: Toast = {
-                id: generateUID(),
+            const successToast = {
+
                 message: res.message,
-                type: 'success'
+                type: 'success' as const,
             }
             addToast(successToast)
             onClose();
             return
         }
 
-        const errorToast: Toast = {
-            id: generateUID(),
+        const errorToast = {
+
             message: res.message,
-            type: 'danger'
+            type: 'danger' as const,
         }
         addToast(errorToast)
 

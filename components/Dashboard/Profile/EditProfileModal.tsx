@@ -77,30 +77,30 @@ function EditProfileModal({ onClose, profile }: { onClose: () => void, profile: 
 
             const data = await res.json();
             if (data.status) {
-                const successToast: Toast = {
-                    id: generateUID(),
+                const successToast = {
+
                     message: 'پروفایل ویرایش شد',
-                    type: 'success'
+                    type: 'success' as const,
                 }
                 updateUser(data?.profile ?? {});
                 setLoading(false)
                 addToast(successToast)
                 onClose();
             } else {
-                const errorToast: Toast = {
-                    id: generateUID(),
+                const errorToast = {
+
                     message: data?.message ?? 'خطا در ویرایش پروفایل',
-                    type: 'danger'
+                    type: 'danger' as const,
                 }
                 setLoading(false)
                 addToast(errorToast)
             }
 
         } catch {
-            const errorToast: Toast = {
-                id: generateUID(),
+            const errorToast = {
+
                 message: 'خطا',
-                type: 'danger'
+                type: 'danger' as const,
             }
             setLoading(false)
             addToast(errorToast)

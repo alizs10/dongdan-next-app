@@ -5,12 +5,12 @@ import DashboardLoading from "@/components/Layout/DashboardLoading";
 import { generateUID, TomanPriceFormatter } from "@/helpers/helpers";
 import { useEventStore } from "@/store/event-store";
 import { Toast, useToastStore } from "@/store/toast-store";
-import { Event, SettlePerson } from "@/types/event-types";
+import { Event, Member, SettlePerson } from "@/types/event-types";
 import { useParams } from "next/navigation";
 import { createContext, useCallback, useEffect, useMemo, useState } from "react";
 
 export type EventContextType = {
-    event: Event | null;
+    event: Event;
     getAllCosts: () => number;
     getCostsCount: () => number;
     getTransfersCount: () => number;
@@ -24,13 +24,15 @@ export type EventContextType = {
     getPersonBalance: (personId: string) => number;
     getPersonBalanceStatus: (personId: string) => string;
     toggleEventStatus: () => void;
+    addMember: (member: Member) => void;
+    setMembers: (members: Member[]) => void;
     creditors: SettlePerson[];
     debtors: SettlePerson[];
     transactions: string[];
 }
 
 const EventContextInit = {
-    event: null,
+    event: {} as Event,
     getAllCosts: () => 0,
     getCostsCount: () => 0,
     getTransfersCount: () => 0,
@@ -44,6 +46,8 @@ const EventContextInit = {
     getPersonBalance: () => 0,
     getPersonBalanceStatus: () => 'تسویه',
     toggleEventStatus: () => { },
+    addMember: () => { },
+    setMembers: () => { },
     creditors: [],
     debtors: [],
     transactions: [],
@@ -70,6 +74,14 @@ export function EventContextProvider({ children, eventData }: { children: React.
     //     }
 
     // }, [event, event.expenses, activeFilters])
+
+    function addMember(member: Member) {
+        setEvent(prevState => ({ ...prevState, members: [...prevState.members, member] }))
+    }
+
+    function setMembers(members: Member[]) {
+        setEvent(prevState => ({ ...prevState, members: members }))
+    }
 
 
     const getAllCosts = useCallback(() => {
@@ -275,27 +287,27 @@ export function EventContextProvider({ children, eventData }: { children: React.
             const eventStatus = !event_end_date ? 'active' : 'inactive';
             setEvent(prevState => ({ ...prevState, end_date: event_end_date }));
             if (eventStatus === 'inactive') {
-                const deactivateToast: Toast = {
-                    id: generateUID(),
+                const deactivateToast = {
+
                     message: 'رویداد به پایان رسید',
-                    type: 'success'
+                    type: 'success' as const,
                 }
                 addToast(deactivateToast)
             } else {
-                const activateToast: Toast = {
-                    id: generateUID(),
+                const activateToast = {
+
                     message: 'رویداد در جریان است',
-                    type: 'success'
+                    type: 'success' as const,
                 }
                 addToast(activateToast)
             }
             return;
         }
 
-        const errorToast: Toast = {
-            id: generateUID(),
+        const errorToast = {
+
             message: res.message,
-            type: 'danger'
+            type: 'danger' as const,
         }
         addToast(errorToast)
 
@@ -316,6 +328,8 @@ export function EventContextProvider({ children, eventData }: { children: React.
         getPersonBalance,
         getPersonBalanceStatus,
         toggleEventStatus,
+        addMember,
+        setMembers,
         creditors,
         debtors,
         transactions,

@@ -80,19 +80,19 @@ function TrashedContactItem({ contact }: { contact: Contact }) {
 
         if (res.success) {
             deleteContact(contact.id)
-            const successToast: Toast = {
-                id: generateUID(),
+            const successToast = {
+
                 message: res.message,
-                type: 'success'
+                type: 'success' as const,
             }
             addToast(successToast)
             return;
         }
 
-        const errorToast: Toast = {
-            id: generateUID(),
+        const errorToast = {
+
             message: res.message,
-            type: 'danger'
+            type: 'danger' as const,
         }
         addToast(errorToast)
     }
@@ -102,19 +102,19 @@ function TrashedContactItem({ contact }: { contact: Contact }) {
 
         if (res.success) {
             deleteContact(contact.id)
-            const successToast: Toast = {
-                id: generateUID(),
+            const successToast = {
+
                 message: res.message,
-                type: 'success'
+                type: 'success' as const,
             }
             addToast(successToast)
             return;
         }
 
-        const errorToast: Toast = {
-            id: generateUID(),
+        const errorToast = {
+
             message: res.message,
-            type: 'danger'
+            type: 'danger' as const,
         }
         addToast(errorToast)
     }

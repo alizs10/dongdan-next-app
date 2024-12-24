@@ -50,10 +50,10 @@ function NewContactModal({ onClose }: { onClose: () => void }) {
         const { hasError, errors } = zValidate(newContactSchema, inputs);
 
         if (hasError) {
-            const validationToast: Toast = {
-                id: generateUID(),
+            const validationToast = {
+
                 message: `فرم نامعتبر است.`,
-                type: 'danger',
+                type: 'danger' as const,
             }
 
             addToast(validationToast);
@@ -68,10 +68,10 @@ function NewContactModal({ onClose }: { onClose: () => void }) {
         if (res.success) {
 
             addContact(res.newContact);
-            const successToast: Toast = {
-                id: generateUID(),
+            const successToast = {
+
                 message: 'شخص جدید اضافه شد',
-                type: 'success'
+                type: 'success' as const,
             }
 
             addToast(successToast)
@@ -80,10 +80,10 @@ function NewContactModal({ onClose }: { onClose: () => void }) {
         }
 
 
-        const errorToast: Toast = {
-            id: generateUID(),
+        const errorToast = {
+
             message: res.message,
-            type: 'danger'
+            type: 'danger' as const,
         }
         addToast(errorToast)
 

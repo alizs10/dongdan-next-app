@@ -175,10 +175,10 @@ function EditExpenseModal({ onClose, event, expense }: { onClose: () => void, ev
         setFormErrors(initFormErrors);
 
 
-        const newToast: Toast = {
-            id: generateUID(),
+        const newToast = {
+
             message: 'هزینه ویرایش شد',
-            type: 'success'
+            type: 'success' as const,
         }
         updateExpense(event.id, expense.id, updatedExpend)
         addToast(newToast)
@@ -199,10 +199,10 @@ function EditExpenseModal({ onClose, event, expense }: { onClose: () => void, ev
 
         if (hasError) {
 
-            const validationToast: Toast = {
-                id: generateUID(),
+            const validationToast = {
+
                 message: `فرم نامعتبر است.`,
-                type: 'danger',
+                type: 'danger' as const,
             }
 
 
@@ -216,10 +216,10 @@ function EditExpenseModal({ onClose, event, expense }: { onClose: () => void, ev
 
         setFormErrors2(initFormErrors2);
 
-        const newToast: Toast = {
-            id: generateUID(),
+        const newToast = {
+
             message: 'جابجایی پول ویرایش شد',
-            type: 'success'
+            type: 'success' as const,
         }
 
         updateExpense(event.id, expense.id, updatedTransfer)

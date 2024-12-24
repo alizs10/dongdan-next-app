@@ -65,10 +65,10 @@ function ChangePasswordModal({ onClose }: { onClose: () => void }) {
 
         // updatePersonInEvents(updatedPerson.id, updatedPerson);
         // updateProfile(profile.id, updatedProfile);
-        const newToast: Toast = {
-            id: generateUID(),
+        const newToast = {
+
             message: 'رمز عبور با موفقیت تغییر کرد',
-            type: 'success'
+            type: 'success' as const,
         }
 
         addToast(newToast)

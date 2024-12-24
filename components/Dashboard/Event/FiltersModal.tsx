@@ -138,10 +138,10 @@ function FiltersModal({ onClose, event }: { onClose: () => void, event: Event })
 
         if (hasError) {
 
-            const validationToast: Toast = {
-                id: generateUID(),
+            const validationToast = {
+
                 message: `فرم فیلتر ها نامعتبر است.`,
-                type: 'danger',
+                type: 'danger' as const,
             }
 
 
@@ -152,10 +152,10 @@ function FiltersModal({ onClose, event }: { onClose: () => void, event: Event })
         setFormErrors(initFormErrors);
 
 
-        const newToast: Toast = {
-            id: generateUID(),
+        const newToast = {
+
             message: `فیلترها با موفقیت اعمال شدند.`,
-            type: 'success',
+            type: 'success' as const,
         }
 
         applyFilters(filters, event.id);

@@ -29,13 +29,13 @@ function Profile({ data }: { data: User }) {
     function onDeleteAccClick() {
         console.log('delete account');
 
-        const okToast: Toast = {
-            id: generateUID(),
+        const okToast = {
+
             message: 'اکانت شما با موفقیت حذف شد',
-            type: 'success'
+            type: 'success' as const,
         }
-        const cancelToast: Toast = {
-            id: generateUID(),
+        const cancelToast = {
+
             message: 'انصراف',
             type: 'info'
         }

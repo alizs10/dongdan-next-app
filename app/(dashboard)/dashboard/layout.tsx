@@ -51,9 +51,9 @@ function Layout({ children }: { children: React.ReactNode }) {
 
         setLoading(false)
         addToast({
-            id: generateUID(),
+
             message: 'خطا در خروج از حساب کاربری',
-            type: 'danger',
+            type: 'danger' as const,
         })
     }
 

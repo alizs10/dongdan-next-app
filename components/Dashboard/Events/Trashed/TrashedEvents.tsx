@@ -70,19 +70,19 @@ function TrashedEvents() {
         if (res.success) {
             deleteMultiEvent(selectedItems)
             disableSelectMode()
-            const successToast: Toast = {
-                id: generateUID(),
+            const successToast = {
+
                 message: res.message,
-                type: 'success'
+                type: 'success' as const,
             }
             addToast(successToast)
             return;
         }
 
-        const errorToast: Toast = {
-            id: generateUID(),
+        const errorToast = {
+
             message: res.message,
-            type: 'danger'
+            type: 'danger' as const,
         }
         addToast(errorToast)
     }
@@ -93,19 +93,19 @@ function TrashedEvents() {
         if (res.success) {
             deleteMultiEvent(selectedItems)
             disableSelectMode()
-            const successToast: Toast = {
-                id: generateUID(),
+            const successToast = {
+
                 message: res.message,
-                type: 'success'
+                type: 'success' as const,
             }
             addToast(successToast)
             return;
         }
 
-        const errorToast: Toast = {
-            id: generateUID(),
+        const errorToast = {
+
             message: res.message,
-            type: 'danger'
+            type: 'danger' as const,
         }
         addToast(errorToast)
     }

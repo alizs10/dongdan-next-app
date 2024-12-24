@@ -58,10 +58,10 @@ function Member({ member, isEventDeleted }: { member: Member, isEventDeleted: bo
         setIsOptionsOpen(false);
 
 
-        const newToast: Toast = {
-            id: generateUID(),
+        const newToast = {
+
             message: 'شخص حذف شد',
-            type: 'success'
+            type: 'success' as const,
         }
         openDialog(
             'حذف شخص',

@@ -154,7 +154,7 @@ function NewExpenseModal({ onClose, event }: { onClose: () => void, event: Event
     function expendFormHandler() {
 
         const newExpend = {
-            id: generateUID(),
+
             type: 'expend' as const,
             ...inputs,
             amount: TomanPriceToNumber(inputs.amount),
@@ -164,10 +164,10 @@ function NewExpenseModal({ onClose, event }: { onClose: () => void, event: Event
 
         if (hasError) {
             console.log(errors)
-            const validationToast: Toast = {
-                id: generateUID(),
+            const validationToast = {
+
                 message: `فرم نامعتبر است.`,
-                type: 'danger',
+                type: 'danger' as const,
             }
 
 
@@ -181,10 +181,10 @@ function NewExpenseModal({ onClose, event }: { onClose: () => void, event: Event
 
 
 
-        const newToast: Toast = {
-            id: generateUID(),
+        const newToast = {
+
             message: 'هزینه جدید اضافه شد',
-            type: 'success'
+            type: 'success' as const,
         }
         addExpense(event.id, newExpend)
         addToast(newToast)
@@ -196,7 +196,7 @@ function NewExpenseModal({ onClose, event }: { onClose: () => void, event: Event
 
         const newTransfer = {
             ...inputs2,
-            id: generateUID(),
+
             type: 'transfer' as const,
             amount: TomanPriceToNumber(inputs2.amount)
         }
@@ -205,10 +205,10 @@ function NewExpenseModal({ onClose, event }: { onClose: () => void, event: Event
 
         if (hasError) {
             console.log(errors)
-            const validationToast: Toast = {
-                id: generateUID(),
+            const validationToast = {
+
                 message: `فرم نامعتبر است.`,
-                type: 'danger',
+                type: 'danger' as const,
             }
 
 
@@ -220,10 +220,10 @@ function NewExpenseModal({ onClose, event }: { onClose: () => void, event: Event
 
         setFormErrors2(initFormErrors2);
 
-        const newToast: Toast = {
-            id: generateUID(),
+        const newToast = {
+
             message: 'جابجایی پول جدید اضافه شد',
-            type: 'success'
+            type: 'success' as const,
         }
         addExpense(event.id, newTransfer)
         addToast(newToast)

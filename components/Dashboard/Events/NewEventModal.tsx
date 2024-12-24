@@ -50,10 +50,10 @@ function NewEventModal({ onClose }: { onClose: () => void }) {
                 return;
             }
 
-            const errorToast: Toast = {
-                id: generateUID(),
+            const errorToast = {
+
                 message: 'خطا در دریافت دوستان',
-                type: 'danger'
+                type: 'danger' as const,
             }
             addToast(errorToast);
         }
@@ -150,10 +150,10 @@ function NewEventModal({ onClose }: { onClose: () => void }) {
 
         if (hasError) {
             console.log(errors)
-            const validationToast: Toast = {
-                id: generateUID(),
+            const validationToast = {
+
                 message: `فرم نامعتبر است.`,
-                type: 'danger',
+                type: 'danger' as const,
             }
             addToast(validationToast);
             setFormErrors(errors);
@@ -168,10 +168,10 @@ function NewEventModal({ onClose }: { onClose: () => void }) {
         if (res.success) {
             addEvent(res.newEvent);
 
-            const successToast: Toast = {
-                id: generateUID(),
+            const successToast = {
+
                 message: res.message,
-                type: 'success'
+                type: 'success' as const,
             }
             addToast(successToast)
             setLoading(false);
@@ -179,10 +179,10 @@ function NewEventModal({ onClose }: { onClose: () => void }) {
             return;
         }
 
-        const errorToast: Toast = {
-            id: generateUID(),
+        const errorToast = {
+
             message: res.message,
-            type: 'danger'
+            type: 'danger' as const,
         }
         addToast(errorToast)
         setLoading(false);

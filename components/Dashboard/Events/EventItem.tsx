@@ -74,20 +74,20 @@ function EventItem({ event }: { event: Event }) {
         const res = await trashEventReq(event.id)
 
         if (res.success) {
-            const successToast: Toast = {
-                id: generateUID(),
+            const successToast = {
+
                 message: res.message,
-                type: 'success'
+                type: 'success' as const,
             }
             deleteEvent(event.id)
             addToast(successToast)
             return
         }
 
-        const errorToast: Toast = {
-            id: generateUID(),
+        const errorToast = {
+
             message: res.message,
-            type: 'danger'
+            type: 'danger' as const,
         }
         addToast(errorToast)
     }

@@ -26,6 +26,7 @@ type FormInputs = {
     label: string;
     start_date: Date;
     members: string[];
+    selfIncluded: boolean;
 }
 
 function EditEventModal({ onClose, event }: { onClose: () => void, event: Event }) {
@@ -33,19 +34,19 @@ function EditEventModal({ onClose, event }: { onClose: () => void, event: Event 
     const user = useAppStore(state => state.user)
     const { updateEvent } = useContext(EventsContext)
 
-    console.log("user info: ", user)
-
     const addToast = useToastStore(state => state.addToast)
 
     const [fetchingEventMembers, setFetchingEventMembers] = useState(true);
     const [eventMembers, setEventMembers] = useState<null | Member[]>(null)
     const [nonMemberContacts, setNonMemberContacts] = useState<null | Contact[]>(null)
+    const [selfIncluded, setSelfIncluded] = useState(false);
 
     const initInputs = {
         name: event.name,
         label: event.label,
         start_date: new Date(event.start_date),
         members: [],
+        selfIncluded: false
     }
     const [inputs, setInputs] = useState<FormInputs>(initInputs);
 
@@ -63,23 +64,33 @@ function EditEventModal({ onClose, event }: { onClose: () => void, event: Event 
             const res = await getEventMembersReq(event.id)
             const res2 = await getEventNonMembersReq(event.id)
 
-            if (res.success && res2.success) {
+            if (res.success && res2.success && user) {
 
-                const members = res.members.map((member: Member) => ({ ...member, id: 'member.' + member.id }))
+                let members = res.members.map((member: Member) => ({ ...member, id: 'member.' + member.id }))
+                let isUserAMember = res.members.find((member: Member) => member.member_id === user.id)
+
+                if (isUserAMember) {
+                    members = members.filter((member: Member) => member.member_id !== user.id)
+                    setInputs(prev => ({ ...prev, selfIncluded: true }))
+                } else {
+                    setSelfIncluded(res2.selfIncluded)
+                }
+
                 const nonMembers = res2.nonMembers.map((contact: Contact) => ({ ...contact, id: 'contact.' + contact.id }))
 
                 setEventMembers(members)
                 setNonMemberContacts(nonMembers)
+
 
                 setInputs(prevState => ({ ...prevState, members: members.map((member: Member) => member.id) }))
                 setFetchingEventMembers(false);
                 return;
             }
 
-            const errorToast: Toast = {
-                id: generateUID(),
+            const errorToast = {
+
                 message: 'خطا در دریافت اعضای این رویداد',
-                type: 'danger'
+                type: 'danger' as const,
             }
             addToast(errorToast);
         }
@@ -112,32 +123,44 @@ function EditEventModal({ onClose, event }: { onClose: () => void, event: Event 
     }
 
 
-    function isPersonSelected(personId: string) {
+    function isMemberSelected(personId: string) {
         return inputs.members.includes(personId);
     }
 
-
-    function togglePerson(personId: string) {
-
+    function toggleAllMembers() {
         const allPossibleMembers = [...(eventMembers || []), ...(nonMemberContacts || [])]
 
-        if (personId === 'all' && inputs.members.length === allPossibleMembers.length) {
-            setInputs(prev => ({ ...prev, members: [] }))
+        const allPossibleMembersCount = (eventMembers?.length ?? 0) + (!selfIncluded ? 1 : 0) + (nonMemberContacts?.length ?? 0);
+
+        const membersCount = inputs.members.length + (inputs.selfIncluded ? 1 : 0)
+
+        console.log(allPossibleMembersCount, membersCount)
+
+        if (membersCount === allPossibleMembersCount) {
+            setInputs(prev => ({ ...prev, selfIncluded: false, members: [] }))
             return
         }
-        if (personId === 'all' && inputs.members.length !== allPossibleMembers.length) {
 
+        setInputs(prev => ({ ...prev, selfIncluded: true, members: allPossibleMembers.map(p => p.id) ?? [] }))
 
+    }
 
-            setInputs(prev => ({ ...prev, members: allPossibleMembers.map(p => p.id) ?? [] }))
+    function toggleMember(actionKey: string) {
+
+        if (actionKey === 'all') {
+            toggleAllMembers()
             return
         }
 
+        if (actionKey === 'self') {
+            setInputs(prev => ({ ...prev, selfIncluded: !prev.selfIncluded }))
+            return
+        }
 
-        if (isPersonSelected(personId)) {
-            setInputs(prev => ({ ...prev, members: prev.members.filter(id => id !== personId) }))
+        if (isMemberSelected(actionKey)) {
+            setInputs(prev => ({ ...prev, members: prev.members.filter(id => id !== actionKey) }))
         } else {
-            setInputs(prev => ({ ...prev, members: [...prev.members, personId] }))
+            setInputs(prev => ({ ...prev, members: [...prev.members, actionKey] }))
         }
     }
 
@@ -149,13 +172,15 @@ function EditEventModal({ onClose, event }: { onClose: () => void, event: Event 
             label: string,
             start_date: Date,
             members: string[],
-            contacts: string[]
+            contacts: string[],
+            self_included: 'true' | 'false';
         } = {
             name: inputs.name,
             label: inputs.label,
             start_date: inputs.start_date,
             members: [],
-            contacts: []
+            contacts: [],
+            self_included: inputs.selfIncluded ? 'true' : 'false'
         }
 
         inputs.members.forEach(id => {
@@ -170,10 +195,10 @@ function EditEventModal({ onClose, event }: { onClose: () => void, event: Event 
 
 
         if (hasError) {
-            const validationToast: Toast = {
-                id: generateUID(),
+            const validationToast = {
+
                 message: `فرم نامعتبر است.`,
-                type: 'danger',
+                type: 'danger' as const,
             }
 
             addToast(validationToast);
@@ -187,10 +212,10 @@ function EditEventModal({ onClose, event }: { onClose: () => void, event: Event 
         const res = await updateEventReq(event.id, reqInputs)
 
         if (res.success) {
-            const successToast: Toast = {
-                id: generateUID(),
+            const successToast = {
+
                 message: res.message,
-                type: 'success'
+                type: 'success' as const,
             }
 
             updateEvent(event.id, res.updatedEvent);
@@ -199,10 +224,10 @@ function EditEventModal({ onClose, event }: { onClose: () => void, event: Event 
             return
         }
 
-        const errorToast: Toast = {
-            id: generateUID(),
+        const errorToast = {
+
             message: res.message,
-            type: 'danger'
+            type: 'danger' as const,
         }
         addToast(errorToast);
 
@@ -265,18 +290,23 @@ function EditEventModal({ onClose, event }: { onClose: () => void, event: Event 
                             )}
                             <input type="hidden" value={inputs.label} name="label" />
                         </div>
-                        {eventMembers && eventMembers.length > 0 && (
+                        {user && eventMembers && eventMembers.length > 0 && (
                             <MemberSelector
                                 label="اعضای رویداد"
                                 members={[...(eventMembers || []), ...(nonMemberContacts || [])]}
-                                onSelect={togglePerson}
+                                onSelect={toggleMember}
                                 value={inputs.members}
                                 error={formErrors.members}
                                 selectAllOption={true}
-                                self={user ? { id: user.id.toString(), scheme: user.scheme, include: false } : undefined}
+                                self={{
+                                    id: user.id.toString(),
+                                    scheme: user.scheme,
+                                    include: !selfIncluded,
+                                    value: inputs.selfIncluded
+                                }}
                             />
                         )}
-                        {fetchingEventMembers && (
+                        {!user || fetchingEventMembers && (
                             <div className="text-gray-500 dark:text-gray-400 py-4 flex flex-row gap-x-2 items-center justify-center">
                                 <Loader className="size-5" />
                                 <span className="text-sm">در حال دریافت اطلاعات...</span>
