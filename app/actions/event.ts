@@ -108,3 +108,48 @@ export async function deleteMemberReq(eventId: string, memberId: string | number
 
 
 }
+
+export async function updateMemberReq(eventId: string | number, memberId: string | number, inputs: CreateMemberInputs) {
+
+    const token = (await cookies()).get('token');
+
+    try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/event/${eventId}/member/${memberId}`, {
+            method: 'PUT',
+            body: JSON.stringify(inputs),
+            headers: {
+                Authorization: `Bearer ${token?.value}`,
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+            },
+        });
+
+        const data = await response.json()
+
+        console.log(data)
+
+        if (response.ok && data.status) {
+
+            return {
+                success: true,
+                member: data.member,
+                message: 'عضو با موفقیت بروزرسانی شد'
+            }
+        }
+
+        return {
+            success: false,
+            message: response.statusText
+        }
+
+    } catch {
+
+        return {
+            success: false,
+            message: 'خطای سرور'
+        }
+
+    }
+
+
+}

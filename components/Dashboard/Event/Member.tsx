@@ -3,7 +3,7 @@ import useClickOutside from "@/hooks/useOutsideClick";
 import { type Member } from "@/types/event-types";
 import { Ellipsis, Info, Pencil, Trash, User } from "lucide-react";
 import { useContext, useState } from "react";
-import EditPersonModal from "./EditPersonModal";
+import EditMemberModal from "./EditMemberModal";
 import { useDialogStore } from "@/store/dialog-store";
 import MemberInfoModal from "./MemberInfoModal";
 import { useAppStore } from "@/store/app-store";
@@ -17,7 +17,7 @@ function Member({ member }: { member: Member }) {
     const { deleteMember } = useContext(EventContext)
 
     const [isOptionsOpen, setIsOptionsOpen] = useState(false);
-    const [isEditPersonModalOpen, setIsEditPersonModalOpen] = useState(false);
+    const [isEditMemberModalOpen, setIsEditMemberModalOpen] = useState(false);
     const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
 
     function toggleOptions() {
@@ -26,7 +26,7 @@ function Member({ member }: { member: Member }) {
 
     function toggleModal() {
         setIsOptionsOpen(false);
-        setIsEditPersonModalOpen(prev => !prev);
+        setIsEditMemberModalOpen(prev => !prev);
     }
 
     function toggleInfoModal() {
@@ -111,7 +111,7 @@ function Member({ member }: { member: Member }) {
             </div>
 
 
-            {/* {isEditPersonModalOpen && !isEventDeleted && <EditPersonModal member={member} onClose={toggleModal} />} */}
+            {isEditMemberModalOpen && <EditMemberModal member={member} onClose={toggleModal} />}
             {/* {isInfoModalOpen && (<MemberInfoModal onClose={toggleInfoModal} member={member} />)} */}
         </li>
 

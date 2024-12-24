@@ -4,36 +4,37 @@ import TextInput from "@/components/Common/Form/TextInput";
 import ModalHeader from "@/components/Common/ModalHeader";
 import ModalWrapper from "@/components/Common/ModalWrapper";
 import { zValidate } from "@/helpers/validation-helper";
-import { Pencil } from "lucide-react";
-import { useState } from "react";
+import { Info, Pencil } from "lucide-react";
+import { useContext, useState } from "react";
 import { createPortal, useFormStatus } from "react-dom";
 import { useParams } from "next/navigation";
-import { personSchema } from "@/database/validations/person-validation";
 import { useEventStore } from "@/store/event-store";
-import { Person, SchemeType } from "@/types/event-types";
+import { Member, SchemeType } from "@/types/event-types";
 import Button from "@/components/Common/Button";
 import { Toast, useToastStore } from "@/store/toast-store";
 import { generateUID } from "@/helpers/helpers";
 import AvatarSelector from "@/components/Common/Form/AvatarSelector";
+import { EventContext } from "@/context/EventContext";
+import { createMemberSchema } from "@/database/validations/member-validation";
+import { updateMemberReq } from "@/app/actions/event";
 
 type FormInputs = {
     name: string;
     scheme: SchemeType;
-    eventId: string;
 }
 
-function EditPersonModal({ onClose, person }: { onClose: () => void, person: Person }) {
+function EditMemberModal({ onClose, member }: { onClose: () => void, member: Member }) {
 
     const addToast = useToastStore(state => state.addToast)
-    const updatePerson = useEventStore(state => state.updatePerson);
+    const { event, updateMember } = useContext(EventContext)
+
     const { pending } = useFormStatus();
-    const { event_id } = useParams()
 
     const initInputs: FormInputs = {
-        name: person.name,
-        scheme: person.scheme,
-        eventId: typeof event_id === 'string' ? event_id : '',
+        name: member.name,
+        scheme: member.scheme,
     }
+
     const [inputs, setInputs] = useState(initInputs);
 
 
@@ -48,43 +49,52 @@ function EditPersonModal({ onClose, person }: { onClose: () => void, person: Per
         setInputs(prev => ({ ...prev, scheme }))
     }
 
-    function formActionHandler() {
+    async function formActionHandler() {
 
-        if (typeof event_id !== 'string') return;
-
-        const updatedPerson = {
-            ...person,
-            ...inputs
+        const createMembeInputs = {
+            name: inputs.name,
+            scheme: inputs.scheme
         }
 
-        const { hasError, errors } = zValidate(personSchema, updatedPerson);
+
+        const { hasError, errors } = zValidate(createMemberSchema, createMembeInputs);
 
         if (hasError) {
-            const validationToast = {
 
+            const validationToast = {
                 message: `فرم نامعتبر است.`,
                 type: 'danger' as const,
             }
 
-
             addToast(validationToast);
-
             setFormErrors(errors);
             return;
         }
 
         setFormErrors(initFormErrors);
 
+        let res = await updateMemberReq(event.id, member.id, createMembeInputs)
 
-        const newToast = {
+        if (res.success) {
+            updateMember(member.id, res.member)
 
-            message: 'شخص ویرایش شد',
-            type: 'success' as const,
+            const successToast = {
+                message: res.message,
+                type: 'success' as const,
+            }
+
+            addToast(successToast)
+            onClose();
+            return
         }
 
-        updatePerson(event_id, person.id, updatedPerson);
-        addToast(newToast)
-        onClose();
+        const errorToast = {
+            message: res.message,
+            type: 'danger' as const,
+        }
+
+        addToast(errorToast)
+
     }
 
     if (typeof window === "object") {
@@ -92,13 +102,13 @@ function EditPersonModal({ onClose, person }: { onClose: () => void, person: Per
             <ModalWrapper onClose={onClose}>
 
                 <section onClick={e => e.stopPropagation()} className="modal_container">
-                    <ModalHeader title="افزودن شخص" onClose={onClose} />
+                    <ModalHeader title="ویرایش عضو" onClose={onClose} />
 
                     <form action={formActionHandler} className="">
 
                         <div className="p-5 flex flex-col gap-y-4">
 
-                            <TextInput name="name" value={inputs.name} error={formErrors.name} label="نام شخص" handleChange={e => setInputs(prev => ({ ...prev, [e.target.name]: e.target.value }))} />
+                            <TextInput name="name" value={inputs.name} error={formErrors.name} label="نام عضو" handleChange={e => setInputs(prev => ({ ...prev, [e.target.name]: e.target.value }))} />
 
                             <AvatarSelector
                                 error={formErrors.scheme}
@@ -106,6 +116,10 @@ function EditPersonModal({ onClose, person }: { onClose: () => void, person: Per
                                 onSelect={selectSchemeHandler}
                             />
 
+                            <div className="text-gray-700 dark:text-gray-300">
+                                <Info className="ml-2 mt-1.5 size-4 float-right" />
+                                <span className="text-sm">تغییرات در لیست دوستان نیز اعمال خواهد شد</span>
+                            </div>
                         </div>
                         <div className="p-5 flex justify-end">
                             <Button
@@ -129,4 +143,4 @@ function EditPersonModal({ onClose, person }: { onClose: () => void, person: Per
     return null;
 }
 
-export default EditPersonModal;
+export default EditMemberModal;

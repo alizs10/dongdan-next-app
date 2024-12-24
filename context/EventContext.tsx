@@ -28,6 +28,7 @@ export type EventContextType = {
     addMember: (member: Member) => void;
     setMembers: (members: Member[]) => void;
     deleteMember: (memberId: number) => void;
+    updateMember: (memberId: number, updatedMember: Member) => void;
     creditors: SettlePerson[];
     debtors: SettlePerson[];
     transactions: string[];
@@ -51,6 +52,7 @@ const EventContextInit = {
     addMember: () => { },
     setMembers: () => { },
     deleteMember: () => { },
+    updateMember: () => { },
     creditors: [],
     debtors: [],
     transactions: [],
@@ -109,6 +111,10 @@ export function EventContextProvider({ children, eventData }: { children: React.
         }
         addToast(errorToast)
 
+    }
+
+    async function updateMember(memberId: number, updatedMember: Member) {
+        setEvent(prevState => ({ ...prevState, members: prevState.members.map(m => m.id === memberId ? updatedMember : m) }));
     }
 
     async function toggleEventStatus() {
@@ -358,6 +364,7 @@ export function EventContextProvider({ children, eventData }: { children: React.
         addMember,
         setMembers,
         deleteMember,
+        updateMember,
         creditors,
         debtors,
         transactions,
