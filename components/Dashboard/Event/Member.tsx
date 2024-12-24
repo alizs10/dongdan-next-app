@@ -112,7 +112,7 @@ function Member({ member }: { member: Member }) {
 
 
             {isEditMemberModalOpen && <EditMemberModal member={member} onClose={toggleModal} />}
-            {/* {isInfoModalOpen && (<MemberInfoModal onClose={toggleInfoModal} member={member} />)} */}
+            {isInfoModalOpen && (<MemberInfoModal onClose={toggleInfoModal} member={member} />)}
         </li>
 
     );
