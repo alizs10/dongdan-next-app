@@ -7,17 +7,14 @@ import { ArrowRightLeft, DollarSign, Ellipsis, MoveLeft, Pencil, Trash } from "l
 import { useCallback, useState, useContext } from "react";
 import EditExpenseModal from "../EditExpenseModal";
 import { useDialogStore } from "@/store/dialog-store";
-import { useToastStore } from "@/store/toast-store";
 import { EventContext } from "@/context/EventContext";
 import { useAppStore } from "@/store/app-store";
 
 function Expense({ expense }: { expense: Expense }) {
 
-    const addToast = useToastStore(state => state.addToast)
     const openDialog = useDialogStore(state => state.openDialog);
-    // const { events, deleteExpense } = useEventStore(state => state)
 
-    const { event } = useContext(EventContext)
+    const { event, deleteExpense } = useContext(EventContext)
 
     const getMember = useCallback((memeberId: string) => {
         return event.members.find(member => member.id.toString() === memeberId);
@@ -28,12 +25,12 @@ function Expense({ expense }: { expense: Expense }) {
     const [isEditExpenseModalOpen, setIsEditExpenseModalOpen] = useState(false);
 
     function toggleOptions() {
-        if (event.deleted_at !== null) return;
+
         setIsOptionsOpen(prev => !prev);
     }
 
     function toggleModal() {
-        if (event.deleted_at !== null) return;
+
         setIsOptionsOpen(false);
         setIsEditExpenseModalOpen(prev => !prev);
     }
@@ -41,14 +38,9 @@ function Expense({ expense }: { expense: Expense }) {
     const optionsParentRef = useClickOutside(() => setIsOptionsOpen(false))
 
     function onDelete() {
-        if (event.deleted_at !== null) return;
+
         setIsOptionsOpen(false);
 
-        const newToast = {
-
-            message: `${expense.type === 'expend' ? 'هزینه' : 'جابجایی پول'} حذف شد`,
-            type: 'success' as const,
-        }
 
         openDialog(
             'حذف هزینه',
@@ -57,8 +49,7 @@ function Expense({ expense }: { expense: Expense }) {
                 ok: {
                     text: 'حذف',
                     onClick: () => {
-                        // deleteExpense(event_id as string, expense.id)
-                        addToast(newToast)
+                        deleteExpense(expense.id)
                     }
                 },
                 cancel: {

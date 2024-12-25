@@ -1,6 +1,6 @@
 'use client';
 
-import { deleteMemberReq } from "@/app/actions/event";
+import { deleteExpenseReq, deleteMemberReq } from "@/app/actions/event";
 import { updateEventStatusReq } from "@/app/actions/events";
 import DashboardLoading from "@/components/Layout/DashboardLoading";
 import { TomanPriceFormatter } from "@/helpers/helpers";
@@ -28,6 +28,7 @@ export type EventContextType = {
     addExpense: (expense: Expense) => void;
     setMembers: (members: Member[]) => void;
     deleteMember: (memberId: number) => void;
+    deleteExpense: (expenseId: number) => void;
     updateMember: (memberId: number, updatedMember: Member) => void;
     updateExpense: (expenseId: number, updatedExpense: Expense) => void;
     creditors: SettlePerson[];
@@ -54,6 +55,7 @@ const EventContextInit = {
     addExpense: () => { },
     setMembers: () => { },
     deleteMember: () => { },
+    deleteExpense: () => { },
     updateMember: () => { },
     updateExpense: () => { },
     creditors: [],
@@ -98,6 +100,31 @@ export function EventContextProvider({ children, eventData }: { children: React.
 
         if (res.success) {
             setEvent(prevState => ({ ...prevState, members: prevState.members.filter(m => m.id !== memberId) }));
+
+
+            const successToast = {
+                message: res.message,
+                type: 'success' as const,
+            }
+            addToast(successToast)
+
+            return;
+        }
+
+        const errorToast = {
+            message: res.message,
+            type: 'danger' as const,
+        }
+        addToast(errorToast)
+
+    }
+
+    async function deleteExpense(expenseId: number) {
+
+        const res = await deleteExpenseReq(event.id.toString(), expenseId)
+
+        if (res.success) {
+            setEvent(prevState => ({ ...prevState, expenses: prevState.expenses.filter(m => m.id !== expenseId) }));
 
 
             const successToast = {
@@ -383,6 +410,7 @@ export function EventContextProvider({ children, eventData }: { children: React.
         addMember,
         setMembers,
         deleteMember,
+        deleteExpense,
         updateMember,
         updateExpense,
         addExpense,
