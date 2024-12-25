@@ -15,6 +15,24 @@ type CreateMemberInputs = {
 }
 export type CreateMemberReqInputs = AddContactsInputs | CreateMemberInputs;
 
+export type CreateExpendReqInputs = {
+    description: string;
+    amount: string;
+    type: "expend";
+    date: Date;
+    payer_id: string;
+    contributors: string[];
+}
+export type CreateTransferReqInputs = {
+    description: string;
+    amount: string;
+    type: "transfer";
+    date: Date;
+    transmitter_id: string;
+    receiver_id: string;
+}
+
+type CreateExpenseReqInputs = CreateExpendReqInputs | CreateTransferReqInputs;
 
 export async function createMemberReq(eventId: string, inputs: CreateMemberReqInputs) {
 
@@ -134,6 +152,50 @@ export async function updateMemberReq(eventId: string | number, memberId: string
                 success: true,
                 member: data.member,
                 message: 'عضو با موفقیت بروزرسانی شد'
+            }
+        }
+
+        return {
+            success: false,
+            message: response.statusText
+        }
+
+    } catch {
+
+        return {
+            success: false,
+            message: 'خطای سرور'
+        }
+
+    }
+
+
+}
+
+export async function createExpeseReq(eventId: string | number, inputs: CreateExpenseReqInputs) {
+
+    const token = (await cookies()).get('token');
+
+    try {
+        console.log(inputs)
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/event/${eventId}/expenses`, {
+            method: 'POST',
+            body: JSON.stringify(inputs),
+            headers: {
+                Authorization: `Bearer ${token?.value}`,
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+            },
+        });
+
+        const data = await response.json()
+
+        if (response.ok && data.status) {
+
+            return {
+                success: true,
+                expense: data.expense,
+                message: 'هزینه جدید با موفقیت اضافه شد'
             }
         }
 

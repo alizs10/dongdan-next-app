@@ -61,8 +61,8 @@ function EditEventModal({ onClose, event }: { onClose: () => void, event: Event 
 
     useEffect(() => {
         async function getEventMembers() {
-            const res = await getEventMembersReq(event.id)
-            const res2 = await getEventNonMembersReq(event.id)
+            const res = await getEventMembersReq(event.id.toString())
+            const res2 = await getEventNonMembersReq(event.id.toString())
 
             if (res.success && res2.success && user) {
 
@@ -141,7 +141,7 @@ function EditEventModal({ onClose, event }: { onClose: () => void, event: Event 
             return
         }
 
-        setInputs(prev => ({ ...prev, selfIncluded: true, members: allPossibleMembers.map(p => p.id) ?? [] }))
+        setInputs(prev => ({ ...prev, selfIncluded: true, members: allPossibleMembers.map(p => p.id.toString()) ?? [] }))
 
     }
 
@@ -209,7 +209,7 @@ function EditEventModal({ onClose, event }: { onClose: () => void, event: Event 
         }
         setFormErrors(initFormErrors);
 
-        const res = await updateEventReq(event.id, reqInputs)
+        const res = await updateEventReq(event.id.toString(), reqInputs)
 
         if (res.success) {
             const successToast = {
@@ -218,7 +218,7 @@ function EditEventModal({ onClose, event }: { onClose: () => void, event: Event 
                 type: 'success' as const,
             }
 
-            updateEvent(event.id, res.updatedEvent);
+            updateEvent(event.id.toString(), res.updatedEvent);
             addToast(successToast)
             onClose();
             return

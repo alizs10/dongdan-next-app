@@ -100,34 +100,40 @@ function NewEventModal({ onClose }: { onClose: () => void }) {
         return inputs.label === label;
     }
 
-    function isPersonSelected(personId: string) {
+    function isMemberSelected(personId: string) {
         return inputs.members.includes(personId);
     }
 
+    function toggleAllMembers() {
+        const allPossibleMembers = contacts;
 
-    function togglePerson(personId: string) {
+        if (allPossibleMembers === null) return
 
-        if (!contacts) return;
-
-        if (personId === 'self') {
-            setInputs(prevState => ({ ...prevState, self_included: !prevState.self_included }))
-            return
-        }
-
-        if (personId === 'all' && inputs.members.length === contacts.length) {
+        if (inputs.members.length === allPossibleMembers.length) {
             setInputs(prev => ({ ...prev, members: [], self_included: false }))
             return
         }
-        if (personId === 'all' && inputs.members.length !== contacts.length) {
-            setInputs(prev => ({ ...prev, members: contacts.map(p => p.id), self_included: true }))
+
+        setInputs(prev => ({ ...prev, self_included: true, members: allPossibleMembers.map(p => p.id.toString()) ?? [] }))
+
+    }
+
+    function toggleMember(actionKey: string) {
+
+        if (actionKey === 'all') {
+            toggleAllMembers()
             return
         }
 
+        if (actionKey === 'self') {
+            setInputs(prev => ({ ...prev, self_included: !prev.self_included }))
+            return
+        }
 
-        if (isPersonSelected(personId)) {
-            setInputs(prev => ({ ...prev, members: prev.members.filter(id => id !== personId) }))
+        if (isMemberSelected(actionKey)) {
+            setInputs(prev => ({ ...prev, members: prev.members.filter(id => id !== actionKey) }))
         } else {
-            setInputs(prev => ({ ...prev, members: [...prev.members, personId] }))
+            setInputs(prev => ({ ...prev, members: [...prev.members, actionKey] }))
         }
     }
 
@@ -252,7 +258,7 @@ function NewEventModal({ onClose }: { onClose: () => void }) {
                             <MemberSelector
                                 label="انتخاب اعضا"
                                 members={contacts}
-                                onSelect={togglePerson}
+                                onSelect={toggleMember}
                                 value={inputs.members}
                                 error={formErrors.members}
                                 selectAllOption={true}

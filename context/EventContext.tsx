@@ -6,7 +6,7 @@ import DashboardLoading from "@/components/Layout/DashboardLoading";
 import { generateUID, TomanPriceFormatter } from "@/helpers/helpers";
 import { useEventStore } from "@/store/event-store";
 import { Toast, useToastStore } from "@/store/toast-store";
-import { Event, Member, SettlePerson } from "@/types/event-types";
+import { Event, Expense, Member, SettlePerson } from "@/types/event-types";
 import { useParams } from "next/navigation";
 import { createContext, useCallback, useEffect, useMemo, useState } from "react";
 
@@ -26,6 +26,7 @@ export type EventContextType = {
     getPersonBalanceStatus: (personId: string) => string;
     toggleEventStatus: () => void;
     addMember: (member: Member) => void;
+    addExpense: (expense: Expense) => void;
     setMembers: (members: Member[]) => void;
     deleteMember: (memberId: number) => void;
     updateMember: (memberId: number, updatedMember: Member) => void;
@@ -50,6 +51,7 @@ const EventContextInit = {
     getPersonBalanceStatus: () => 'تسویه',
     toggleEventStatus: () => { },
     addMember: () => { },
+    addExpense: () => { },
     setMembers: () => { },
     deleteMember: () => { },
     updateMember: () => { },
@@ -115,6 +117,11 @@ export function EventContextProvider({ children, eventData }: { children: React.
 
     async function updateMember(memberId: number, updatedMember: Member) {
         setEvent(prevState => ({ ...prevState, members: prevState.members.map(m => m.id === memberId ? updatedMember : m) }));
+    }
+
+
+    function addExpense(expense: Expense) {
+        setEvent(prevState => ({ ...prevState, expenses: [...prevState.expenses, expense] }))
     }
 
     async function toggleEventStatus() {
@@ -365,6 +372,7 @@ export function EventContextProvider({ children, eventData }: { children: React.
         setMembers,
         deleteMember,
         updateMember,
+        addExpense,
         creditors,
         debtors,
         transactions,

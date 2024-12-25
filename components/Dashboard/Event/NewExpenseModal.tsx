@@ -3,35 +3,37 @@
 import TextInput from "@/components/Common/Form/TextInput";
 import ModalHeader from "@/components/Common/ModalHeader";
 import ModalWrapper from "@/components/Common/ModalWrapper";
-import { generateUID, TomanPriceFormatter, TomanPriceToNumber } from "@/helpers/helpers";
+import { TomanPriceFormatter, TomanPriceToNumber } from "@/helpers/helpers";
 import { zValidate } from "@/helpers/validation-helper";
 import { Save } from "lucide-react";
-import { useCallback, useState } from "react";
+import { useCallback, useContext, useState } from "react";
 import { createPortal, useFormStatus } from "react-dom";
 import ExpensePreview from "./ExpensePreview";
 import PDatePicker from "@/components/Common/Form/PDatePicker";
-import { expendSchema } from "@/database/validations/expend-validation";
 import { transferSchema } from "@/database/validations/transfer-validation";
 import { Event } from "@/types/event-types";
-import { useEventStore } from "@/store/event-store";
-import { Toast, useToastStore } from "@/store/toast-store";
+import { useToastStore } from "@/store/toast-store";
 import { DateObject } from "react-multi-date-picker";
 import Button from "@/components/Common/Button";
 import MemberSelector from "@/components/Common/Form/MemberSelector";
+import { useAppStore } from "@/store/app-store";
+import { createExpendSchema } from "@/database/validations/expense-validation";
+import { CreateExpendReqInputs, createExpeseReq } from "@/app/actions/event";
+import { EventContext } from "@/context/EventContext";
 
 type FormInputs = {
-    desc: string;
+    description: string;
     amount: string;
-    group: string[];
+    contributors: string[];
     payer: string;
     date: Date;
 }
 
 type FormInputs2 = {
-    from: string;
-    to: string;
+    transmitter: string;
+    receiver: string;
     amount: string;
-    desc: string;
+    description: string;
     date: Date;
 }
 
@@ -40,25 +42,27 @@ type FormTypes = 0 | 1;
 
 function NewExpenseModal({ onClose, event }: { onClose: () => void, event: Event }) {
 
+    const user = useAppStore(state => state.user)
     const addToast = useToastStore(state => state.addToast)
-    const addExpense = useEventStore(state => state.addExpense);
+
+    const { addExpense } = useContext(EventContext);
 
     const { pending } = useFormStatus();
     const [formType, setFormType] = useState<FormTypes>(0)
 
     const initInputs: FormInputs = {
-        desc: '',
+        description: '',
         amount: '',
-        group: [],
+        contributors: [],
         payer: '',
         date: new Date(Date.now())
     }
     const [inputs, setInputs] = useState(initInputs);
 
     const initInputs2: FormInputs2 = {
-        from: '',
-        to: '',
-        desc: '',
+        transmitter: '',
+        receiver: '',
+        description: '',
         amount: '',
         date: new Date(Date.now())
     }
@@ -66,19 +70,19 @@ function NewExpenseModal({ onClose, event }: { onClose: () => void, event: Event
 
 
     const initFormErrors = {
-        desc: '',
+        description: '',
         amount: '',
-        group: '',
+        contributors: '',
         payer: '',
         date: '',
     }
     const [formErrors, setFormErrors] = useState(initFormErrors);
 
     const initFormErrors2 = {
-        from: '',
-        to: '',
+        transmitter: '',
+        receiver: '',
         amount: '',
-        desc: '',
+        description: '',
         date: '',
     }
     const [formErrors2, setFormErrors2] = useState(initFormErrors2);
@@ -99,41 +103,47 @@ function NewExpenseModal({ onClose, event }: { onClose: () => void, event: Event
         }
     }
 
-    function isPersonSelected(personId: string) {
-        return inputs.group.includes(personId);
+    function isMemberContributor(personId: string) {
+        return inputs.contributors.includes(personId);
     }
 
     function selectPayer(personId: string) {
         setInputs(prev => ({ ...prev, payer: prev.payer === personId ? '' : personId }))
     }
 
-    function togglePerson(personId: string) {
+    function toggleAllContributors() {
 
-        if (personId === 'all' && inputs.group.length === event.group.length) {
-            setInputs(prev => ({ ...prev, group: [] }))
-            return
-        }
-        if (personId === 'all' && inputs.group.length !== event.group.length) {
-            setInputs(prev => ({ ...prev, group: event.group.map(p => p.id) }))
+        if (inputs.contributors.length === event.members.length) {
+            setInputs(prev => ({ ...prev, contributors: [] }))
             return
         }
 
+        setInputs(prev => ({ ...prev, contributors: event.members.map(m => m.id.toString()) ?? [] }))
 
-        if (isPersonSelected(personId)) {
-            setInputs(prev => ({ ...prev, group: prev.group.filter(id => id !== personId) }))
+    }
+
+    function toggleContributor(actionKey: string) {
+
+        if (actionKey === 'all') {
+            toggleAllContributors()
+            return
+        }
+
+        if (isMemberContributor(actionKey)) {
+            setInputs(prev => ({ ...prev, contributors: prev.contributors.filter(id => id !== actionKey) }))
         } else {
-            setInputs(prev => ({ ...prev, group: [...prev.group, personId] }))
+            setInputs(prev => ({ ...prev, contributors: [...prev.contributors, actionKey] }))
         }
     }
 
-    function selectFromPerson(personId: string) {
-        if (personId === inputs2.to) return
-        setInputs2(prev => ({ ...prev, from: prev.from === personId ? '' : personId }))
+    function selectTransmitter(personId: string) {
+        if (personId === inputs2.receiver) return
+        setInputs2(prev => ({ ...prev, transmitter: prev.transmitter === personId ? '' : personId }))
     }
 
-    function selectToPerson(personId: string) {
-        if (personId === inputs2.from) return
-        setInputs2(prev => ({ ...prev, to: prev.to === personId ? '' : personId }))
+    function selectReceiver(personId: string) {
+        if (personId === inputs2.transmitter) return
+        setInputs2(prev => ({ ...prev, receiver: prev.receiver === personId ? '' : personId }))
     }
 
 
@@ -151,16 +161,18 @@ function NewExpenseModal({ onClose, event }: { onClose: () => void, event: Event
     }
 
 
-    function expendFormHandler() {
+    async function expendFormHandler() {
 
-        const newExpend = {
-
+        const newExpendInputs: CreateExpendReqInputs = {
+            description: inputs.description,
+            amount: TomanPriceToNumber(inputs.amount).toString(),
             type: 'expend' as const,
-            ...inputs,
-            amount: TomanPriceToNumber(inputs.amount),
+            date: inputs.date,
+            payer_id: inputs.payer,
+            contributors: inputs.contributors,
         }
 
-        const { hasError, errors } = zValidate(expendSchema, newExpend);
+        const { hasError, errors } = zValidate(createExpendSchema, newExpendInputs);
 
         if (hasError) {
             console.log(errors)
@@ -170,29 +182,46 @@ function NewExpenseModal({ onClose, event }: { onClose: () => void, event: Event
                 type: 'danger' as const,
             }
 
-
             addToast(validationToast);
-
             setFormErrors(errors);
             return;
         }
 
         setFormErrors(initFormErrors);
 
+        const res = await createExpeseReq(event.id, newExpendInputs)
 
+        if (res.success) {
 
-        const newToast = {
-
-            message: 'هزینه جدید اضافه شد',
-            type: 'success' as const,
+            const successToast = {
+                message: res.message,
+                type: 'success' as const,
+            }
+            addExpense(res.expense)
+            addToast(successToast)
+            onClose();
+            return
         }
-        addExpense(event.id, newExpend)
-        addToast(newToast)
-        onClose();
+
+        const errorToast = {
+            message: res.message,
+            type: 'danger' as const,
+        }
+        addToast(errorToast)
     }
 
 
     function transferFormHandler() {
+
+
+        const newTransferInputs = {
+            description: inputs.description,
+            amount: inputs.amount,
+            type: 'transfer' as const,
+            date: inputs.date,
+            transmitter_id: inputs2.transmitter,
+            receiver_id: inputs2.receiver,
+        }
 
         const newTransfer = {
             ...inputs2,
@@ -225,14 +254,14 @@ function NewExpenseModal({ onClose, event }: { onClose: () => void, event: Event
             message: 'جابجایی پول جدید اضافه شد',
             type: 'success' as const,
         }
-        addExpense(event.id, newTransfer)
+        // addExpense(event.id, newTransfer)
         addToast(newToast)
         onClose();
     }
 
     const getPersonName = useCallback((personId: string) => {
-        return event.group.find(p => p.id === personId)?.name || '';
-    }, [event.group])
+        return event.members.find(p => p.id.toString() === personId)?.name || '';
+    }, [event.members])
 
     if (typeof window === "object") {
         return createPortal(
@@ -246,7 +275,7 @@ function NewExpenseModal({ onClose, event }: { onClose: () => void, event: Event
                         <div className={`col-span-1 transition-all duration-300 select-none py-3 cursor-pointer text-center ${formType === 0 ? 'bg-indigo-100 dark:bg-indigo-600 text-indigo-800 dark:text-white' : 'bg-gray-200 dark:bg-gray-800 text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-white'}`} onClick={() => setFormType(0)}>
                             هزینه
                         </div>
-                        <button disabled={event.group.length < 2} className={`col-span-1 transition-all duration-300 select-none py-3 text-center  ${formType === 1 ? 'bg-indigo-100 dark:bg-indigo-600 text-indigo-800 dark:text-white' : event.group.length < 2 ? 'text-gray-300 dark:text-gray-700 cursor-not-allowed' : 'cursor-pointer bg-gray-200 dark:bg-gray-800 text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-white'}`} onClick={() => setFormType(event.group.length < 2 ? 0 : 1)}>
+                        <button disabled={event.members.length < 2} className={`col-span-1 transition-all duration-300 select-none py-3 text-center  ${formType === 1 ? 'bg-indigo-100 dark:bg-indigo-600 text-indigo-800 dark:text-white' : event.members.length < 2 ? 'text-gray-300 dark:text-gray-700 cursor-not-allowed' : 'cursor-pointer bg-gray-200 dark:bg-gray-800 text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-white'}`} onClick={() => setFormType(event.members.length < 2 ? 0 : 1)}>
                             جابجایی پول
                         </button>
                     </div>
@@ -258,7 +287,7 @@ function NewExpenseModal({ onClose, event }: { onClose: () => void, event: Event
                             <div className="p-5 flex flex-col gap-y-4">
 
                                 <TextInput name="amount" value={inputs.amount} error={formErrors.amount} label="هزینه (تومان)" handleChange={changeAmountHandler} />
-                                <TextInput name="desc" value={inputs.desc} error={formErrors.desc} label="توضیحات" handleChange={e => setInputs(prev => ({ ...prev, [e.target.name]: e.target.value }))} />
+                                <TextInput name="description" value={inputs.description} error={formErrors.description} label="توضیحات" handleChange={e => setInputs(prev => ({ ...prev, [e.target.name]: e.target.value }))} />
 
                                 <PDatePicker
                                     name="date"
@@ -269,33 +298,45 @@ function NewExpenseModal({ onClose, event }: { onClose: () => void, event: Event
                                     maxDate={new Date()}
                                 />
 
-                                <MemberSelector
-                                    label="کی پرداخت کرده؟"
-                                    members={event.group}
-                                    onSelect={selectPayer}
-                                    value={inputs.payer}
-                                    error={formErrors.payer}
-                                />
-                                <MemberSelector
-                                    label="کیا سهیم بودن؟"
-                                    members={event.group}
-                                    onSelect={togglePerson}
-                                    value={inputs.group}
-                                    error={formErrors.group}
-                                    selectAllOption={true}
-                                />
+                                {user && (<>
+                                    <MemberSelector
+                                        label="کی پرداخت کرده؟"
+                                        members={event.members}
+                                        onSelect={selectPayer}
+                                        value={inputs.payer}
+                                        error={formErrors.payer}
+                                        self={{
+                                            id: user.id,
+                                            include: false,
+                                            scheme: user.scheme
+                                        }}
+                                    />
+                                    <MemberSelector
+                                        label="کیا سهیم بودن؟"
+                                        members={event.members}
+                                        onSelect={toggleContributor}
+                                        value={inputs.contributors}
+                                        error={formErrors.contributors}
+                                        selectAllOption={true}
+                                        self={{
+                                            id: user.id,
+                                            include: false,
+                                            scheme: user.scheme
+                                        }}
+                                    />
+                                </>)}
 
                             </div>
-
-                            {inputs.group.length > 0 && inputs.amount.length > 0 && inputs.desc.length > 0 && inputs.payer && (
+                            {/* 
+                            {inputs.contributors.length > 0 && inputs.amount.length > 0 && inputs.description.length > 0 && inputs.payer && (
                                 <ExpensePreview
                                     type={formType === 0 ? 'expend' : 'transfer'}
-                                    group={inputs.group}
+                                    contributors={inputs.contributors}
                                     amount={inputs.amount}
-                                    desc={inputs.desc}
+                                    description={inputs.description}
                                     payer={getPersonName(inputs.payer)}
                                 />
-                            )}
+                            )} */}
                             <div className="p-5 flex justify-end">
                                 <Button
                                     text={pending ? 'در حال ثبت' : 'ثبت'}
@@ -316,7 +357,7 @@ function NewExpenseModal({ onClose, event }: { onClose: () => void, event: Event
                             <div className="p-5 flex flex-col gap-y-4">
 
                                 <TextInput name="amount" value={inputs2.amount} error={formErrors2.amount} label="هزینه (تومان)" handleChange={changeAmountHandler} />
-                                <TextInput name="desc" value={inputs2.desc} error={formErrors2.desc} label="توضیحات" handleChange={e => setInputs2(prev => ({ ...prev, [e.target.name]: e.target.value }))} />
+                                <TextInput name="description" value={inputs2.description} error={formErrors2.description} label="توضیحات" handleChange={e => setInputs2(prev => ({ ...prev, [e.target.name]: e.target.value }))} />
                                 <PDatePicker
                                     label={'تاریخ'}
                                     name={"date"}
@@ -326,33 +367,45 @@ function NewExpenseModal({ onClose, event }: { onClose: () => void, event: Event
                                     maxDate={new Date()}
                                 />
 
-                                <MemberSelector
-                                    label="مبداء"
-                                    members={event.group}
-                                    onSelect={selectFromPerson}
-                                    value={inputs2.from}
-                                    error={formErrors2.from}
-                                    disalllows={inputs2.to.length > 0 ? [inputs2.to] : []}
-                                />
-                                <MemberSelector
-                                    label="مقصد"
-                                    members={event.group}
-                                    onSelect={selectToPerson}
-                                    value={inputs2.to}
-                                    error={formErrors2.to}
-                                    disalllows={inputs2.from.length > 0 ? [inputs2.from] : []}
-                                />
+                                {user && (<>
+                                    <MemberSelector
+                                        label="مبداء"
+                                        members={event.members}
+                                        onSelect={selectTransmitter}
+                                        value={inputs2.transmitter}
+                                        error={formErrors2.transmitter}
+                                        disalllows={inputs2.receiver.length > 0 ? [inputs2.receiver] : []}
+                                        self={{
+                                            id: user.id,
+                                            include: false,
+                                            scheme: user.scheme
+                                        }}
+                                    />
+                                    <MemberSelector
+                                        label="مقصد"
+                                        members={event.members}
+                                        onSelect={selectReceiver}
+                                        value={inputs2.receiver}
+                                        error={formErrors2.receiver}
+                                        disalllows={inputs2.transmitter.length > 0 ? [inputs2.transmitter] : []}
+                                        self={{
+                                            id: user.id,
+                                            include: false,
+                                            scheme: user.scheme
+                                        }}
+                                    />
+                                </>)}
                             </div>
 
-                            {inputs2.from && inputs2.amount.length > 0 && inputs2.desc.length > 0 && inputs2.to && (
+                            {/* {inputs2.transmitter && inputs2.amount.length > 0 && inputs2.description.length > 0 && inputs2.receiver && (
                                 <ExpensePreview
                                     type={formType === 1 ? 'transfer' : 'expend'}
                                     amount={inputs2.amount}
-                                    desc={inputs2.desc}
-                                    from={getPersonName(inputs2.from)}
-                                    to={getPersonName(inputs2.to)}
+                                    description={inputs2.description}
+                                    transmitter={getPersonName(inputs2.transmitter)}
+                                    receiver={getPersonName(inputs2.receiver)}
                                 />
-                            )}
+                            )} */}
 
                             <div className="p-5 flex justify-end">
                                 <Button

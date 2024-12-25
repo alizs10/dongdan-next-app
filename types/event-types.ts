@@ -109,7 +109,7 @@ export type ExpenseFilters = ExpendFilter | TransferFilter | AnyExpense;
 export type SchemeType = 'gray' | 'blue' | 'red' | 'rose' | 'green' | 'orange' | 'yellow' | 'purple';
 
 export type Person = {
-    id: string;
+    id: number;
     name: string;
     scheme: SchemeType;
     eventId: string;
