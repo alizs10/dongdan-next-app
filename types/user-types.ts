@@ -1,7 +1,7 @@
 import { SchemeType } from "./event-types";
 
 export type User = {
-    id: string;
+    id: number;
     name: string;
     email: string;
     email_verified_at: null | Date;

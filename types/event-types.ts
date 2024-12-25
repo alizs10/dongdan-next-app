@@ -38,7 +38,7 @@ export type Member = {
     email?: string;
     scheme: SchemeType;
     eventId: string;
-    member_id?: string;
+    member_id?: number;
     member_type?: string;
     event?: Event;
 }
@@ -143,4 +143,5 @@ export type EventState = {
 export type SettlePerson = {
     name: string;
     amount: number;
+    member_id: number | null;
 };
