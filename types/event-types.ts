@@ -54,7 +54,7 @@ export type CreateMemberInputs = {
 export type Expend = {
     id: number;
     description: string;
-    amount: number;
+    amount: string;
     date: Date;
     type: 'expend';
     payer_id: number;
@@ -65,7 +65,7 @@ export type Expend = {
 export type Transfer = {
     id: number;
     description: string;
-    amount: number;
+    amount: string;
     date: Date;
     type: 'transfer';
     receiver_id: number;

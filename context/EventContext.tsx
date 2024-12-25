@@ -162,7 +162,7 @@ export function EventContextProvider({ children, eventData }: { children: React.
 
         event.expenses.forEach(expense => {
             if (expense.type === 'expend') {
-                total += expense.amount;
+                total += parseInt(expense.amount);
             }
         });
         return total;
@@ -181,8 +181,8 @@ export function EventContextProvider({ children, eventData }: { children: React.
         let max = 0;
 
         event.expenses.forEach(expense => {
-            if (expense.type === 'expend' && expense.amount > max) {
-                max = expense.amount;
+            if (expense.type === 'expend' && parseInt(expense.amount) > max) {
+                max = parseInt(expense.amount);
             }
         });
 
@@ -194,8 +194,8 @@ export function EventContextProvider({ children, eventData }: { children: React.
         let max = 0;
 
         event.expenses.forEach(expense => {
-            if (expense.type === 'transfer' && expense.amount > max) {
-                max = expense.amount;
+            if (expense.type === 'transfer' && parseInt(expense.amount) > max) {
+                max = parseInt(expense.amount);
             }
         });
 
@@ -207,7 +207,7 @@ export function EventContextProvider({ children, eventData }: { children: React.
 
         event.expenses.forEach(expense => {
             if (expense.type === 'expend' && expense.payer_id.toString() === memberId) {
-                total += expense.amount;
+                total += parseInt(expense.amount);
             }
         });
 
@@ -220,7 +220,7 @@ export function EventContextProvider({ children, eventData }: { children: React.
         event.expenses.forEach(expense => {
             let contributorIds = expense.type === 'expend' ? expense.contributors.map(c => c.id.toString()) : [];
             if (expense.type === 'expend' && contributorIds.includes(memberId)) {
-                total += expense.amount / expense.contributors.length;
+                total += parseInt(expense.amount) / expense.contributors.length;
             }
         });
 
@@ -233,7 +233,7 @@ export function EventContextProvider({ children, eventData }: { children: React.
 
         event.expenses.forEach(expense => {
             if (expense.type === 'transfer' && expense.receiver_id.toString() === memberId) {
-                total += expense.amount;
+                total += parseInt(expense.amount);
             }
         })
 
@@ -247,7 +247,7 @@ export function EventContextProvider({ children, eventData }: { children: React.
 
         event.expenses.forEach(expense => {
             if (expense.type === 'transfer' && expense.transmitter_id.toString() === memberId) {
-                total += expense.amount;
+                total += parseInt(expense.amount);
             }
         })
 
