@@ -103,12 +103,12 @@ function NewExpenseModal({ onClose, event }: { onClose: () => void, event: Event
         }
     }
 
-    function isMemberContributor(personId: string) {
-        return inputs.contributors.includes(personId);
+    function isMemberContributor(memberId: string) {
+        return inputs.contributors.includes(memberId);
     }
 
-    function selectPayer(personId: string) {
-        setInputs(prev => ({ ...prev, payer: prev.payer === personId ? '' : personId }))
+    function selectPayer(memberId: string) {
+        setInputs(prev => ({ ...prev, payer: prev.payer === memberId ? '' : memberId }))
     }
 
     function toggleAllContributors() {
@@ -136,14 +136,14 @@ function NewExpenseModal({ onClose, event }: { onClose: () => void, event: Event
         }
     }
 
-    function selectTransmitter(personId: string) {
-        if (personId === inputs2.receiver) return
-        setInputs2(prev => ({ ...prev, transmitter: prev.transmitter === personId ? '' : personId }))
+    function selectTransmitter(memberId: string) {
+        if (memberId === inputs2.receiver) return
+        setInputs2(prev => ({ ...prev, transmitter: prev.transmitter === memberId ? '' : memberId }))
     }
 
-    function selectReceiver(personId: string) {
-        if (personId === inputs2.transmitter) return
-        setInputs2(prev => ({ ...prev, receiver: prev.receiver === personId ? '' : personId }))
+    function selectReceiver(memberId: string) {
+        if (memberId === inputs2.transmitter) return
+        setInputs2(prev => ({ ...prev, receiver: prev.receiver === memberId ? '' : memberId }))
     }
 
 
@@ -259,8 +259,13 @@ function NewExpenseModal({ onClose, event }: { onClose: () => void, event: Event
         onClose();
     }
 
-    const getPersonName = useCallback((personId: string) => {
-        return event.members.find(p => p.id.toString() === personId)?.name || '';
+    const getMemberName = useCallback((memberId: string) => {
+
+        let member = event.members.find(p => p.id.toString() === memberId)
+
+        if (member?.member_id === user?.id) return 'خودم'
+
+        return member?.name || 'نامشخص';
     }, [event.members])
 
     if (typeof window === "object") {
@@ -327,16 +332,16 @@ function NewExpenseModal({ onClose, event }: { onClose: () => void, event: Event
                                 </>)}
 
                             </div>
-                            {/* 
+
                             {inputs.contributors.length > 0 && inputs.amount.length > 0 && inputs.description.length > 0 && inputs.payer && (
                                 <ExpensePreview
                                     type={formType === 0 ? 'expend' : 'transfer'}
                                     contributors={inputs.contributors}
                                     amount={inputs.amount}
                                     description={inputs.description}
-                                    payer={getPersonName(inputs.payer)}
+                                    payer={getMemberName(inputs.payer)}
                                 />
-                            )} */}
+                            )}
                             <div className="p-5 flex justify-end">
                                 <Button
                                     text={pending ? 'در حال ثبت' : 'ثبت'}
@@ -397,15 +402,15 @@ function NewExpenseModal({ onClose, event }: { onClose: () => void, event: Event
                                 </>)}
                             </div>
 
-                            {/* {inputs2.transmitter && inputs2.amount.length > 0 && inputs2.description.length > 0 && inputs2.receiver && (
+                            {inputs2.transmitter && inputs2.amount.length > 0 && inputs2.description.length > 0 && inputs2.receiver && (
                                 <ExpensePreview
                                     type={formType === 1 ? 'transfer' : 'expend'}
                                     amount={inputs2.amount}
                                     description={inputs2.description}
-                                    transmitter={getPersonName(inputs2.transmitter)}
-                                    receiver={getPersonName(inputs2.receiver)}
+                                    transmitter={getMemberName(inputs2.transmitter)}
+                                    receiver={getMemberName(inputs2.receiver)}
                                 />
-                            )} */}
+                            )}
 
                             <div className="p-5 flex justify-end">
                                 <Button
