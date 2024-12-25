@@ -48,7 +48,7 @@ function EventItem({ event }: { event: Event }) {
 
     function onSelect() {
         if (!selectMode) return;
-        toggleItem(event.id);
+        toggleItem(event.id.toString());
     }
 
     const addToast = useToastStore(state => state.addToast)
@@ -71,7 +71,7 @@ function EventItem({ event }: { event: Event }) {
 
     async function handleTrashEvent() {
 
-        const res = await trashEventReq(event.id)
+        const res = await trashEventReq(event.id.toString())
 
         if (res.success) {
             const successToast = {
@@ -79,7 +79,7 @@ function EventItem({ event }: { event: Event }) {
                 message: res.message,
                 type: 'success' as const,
             }
-            deleteEvent(event.id)
+            deleteEvent(event.id.toString())
             addToast(successToast)
             return
         }
@@ -117,7 +117,7 @@ function EventItem({ event }: { event: Event }) {
     return (
         <li
             onClick={onSelect}
-            className={`event_item ${selectMode && 'cursor-pointer'} ${selectedItems.includes(event.id) ? 'bg-gray-200 dark:bg-gray-800' : ''}`}>
+            className={`event_item ${selectMode && 'cursor-pointer'} ${selectedItems.includes(event.id.toString()) ? 'bg-gray-200 dark:bg-gray-800' : ''}`}>
             <div className='event_item_right'>
 
                 <div className='event_item_icon_container'>

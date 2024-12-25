@@ -295,6 +295,8 @@ function Event() {
 
                 </div>
 
+                <Expenses expenses={event.expenses} />
+
                 {/* {(event.expenses.length > 0 && !activeFilters) || (activeFilters && filteredExpenses.length > 0) ? (
                     <Expenses expenses={activeFilters ? filteredExpenses : event.expenses} />
                 ) : (event.deleted_at !== null || eventStatus === 'inactive' || (eventStatus === 'active' && event.members.length > 0)) ? <NoExpenses isFilterMode={!!activeFilters} isDeleted={event.deleted_at !== null} eventStatus={eventStatus} openNewExpenseModal={openNewExpenseModal} /> : (<NoGroupExpenses openNewMemberModal={openNewMemberModal} />)} */}

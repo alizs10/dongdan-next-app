@@ -3,12 +3,10 @@
 import { deleteMemberReq } from "@/app/actions/event";
 import { updateEventStatusReq } from "@/app/actions/events";
 import DashboardLoading from "@/components/Layout/DashboardLoading";
-import { generateUID, TomanPriceFormatter } from "@/helpers/helpers";
-import { useEventStore } from "@/store/event-store";
-import { Toast, useToastStore } from "@/store/toast-store";
+import { TomanPriceFormatter } from "@/helpers/helpers";
+import { useToastStore } from "@/store/toast-store";
 import { Event, Expense, Member, SettlePerson } from "@/types/event-types";
-import { useParams } from "next/navigation";
-import { createContext, useCallback, useEffect, useMemo, useState } from "react";
+import { createContext, useCallback, useMemo, useState } from "react";
 
 export type EventContextType = {
     event: Event;
@@ -17,13 +15,13 @@ export type EventContextType = {
     getTransfersCount: () => number;
     getMostCost: () => number;
     getHighestTransfer: () => number;
-    getAllPersonExpends: (personId: string) => number;
-    getAllPersonDebts: (personId: string) => number;
-    getAllPersonRecieved: (personId: string) => number;
-    getAllPersonSent: (personId: string) => number;
+    getAllPersonExpends: (memberId: string) => number;
+    getAllPersonDebts: (memberId: string) => number;
+    getAllPersonRecieved: (memberId: string) => number;
+    getAllPersonSent: (memberId: string) => number;
     getMaxPayer: () => { name: string, amount: number };
-    getPersonBalance: (personId: string) => number;
-    getPersonBalanceStatus: (personId: string) => string;
+    getPersonBalance: (memberId: string) => number;
+    getPersonBalanceStatus: (memberId: string) => string;
     toggleEventStatus: () => void;
     addMember: (member: Member) => void;
     addExpense: (expense: Expense) => void;
@@ -204,11 +202,11 @@ export function EventContextProvider({ children, eventData }: { children: React.
         return max;
     }, [event.expenses]);
 
-    const getAllPersonExpends = useCallback((personId: string) => {
+    const getAllPersonExpends = useCallback((memberId: string) => {
         let total = 0;
 
         event.expenses.forEach(expense => {
-            if (expense.type === 'expend' && expense.payer_id === personId) {
+            if (expense.type === 'expend' && expense.payer_id.toString() === memberId) {
                 total += expense.amount;
             }
         });
@@ -216,13 +214,12 @@ export function EventContextProvider({ children, eventData }: { children: React.
         return total;
     }, [event.members, event.expenses]);
 
-    const getAllPersonDebts = useCallback((personId: string) => {
+    const getAllPersonDebts = useCallback((memberId: string) => {
         let total = 0;
-
 
         event.expenses.forEach(expense => {
             let contributorIds = expense.type === 'expend' ? expense.contributors.map(c => c.id.toString()) : [];
-            if (expense.type === 'expend' && contributorIds.includes(personId)) {
+            if (expense.type === 'expend' && contributorIds.includes(memberId)) {
                 total += expense.amount / expense.contributors.length;
             }
         });
@@ -230,12 +227,12 @@ export function EventContextProvider({ children, eventData }: { children: React.
         return total;
     }, [event.members, event.expenses]);
 
-    const getAllPersonRecieved = useCallback((personId: string) => {
+    const getAllPersonRecieved = useCallback((memberId: string) => {
 
         let total = 0;
 
         event.expenses.forEach(expense => {
-            if (expense.type === 'transfer' && expense.receiver_id === personId) {
+            if (expense.type === 'transfer' && expense.receiver_id.toString() === memberId) {
                 total += expense.amount;
             }
         })
@@ -244,12 +241,12 @@ export function EventContextProvider({ children, eventData }: { children: React.
 
     }, [event.members, event.expenses])
 
-    const getAllPersonSent = useCallback((personId: string) => {
+    const getAllPersonSent = useCallback((memberId: string) => {
 
         let total = 0;
 
         event.expenses.forEach(expense => {
-            if (expense.type === 'transfer' && expense.transmitter_id === personId) {
+            if (expense.type === 'transfer' && expense.transmitter_id.toString() === memberId) {
                 total += expense.amount;
             }
         })
@@ -264,31 +261,31 @@ export function EventContextProvider({ children, eventData }: { children: React.
         let maxPayer = '';
         let paid = 0;
 
-        event.members.forEach(person => {
-            let personPaid = getAllPersonExpends(person.id.toString());
-            if (personPaid > paid) {
-                paid = personPaid;
-                maxPayer = person.name;
+        event.members.forEach(member => {
+            let memberPaid = getAllPersonExpends(member.id.toString());
+            if (memberPaid > paid) {
+                paid = memberPaid;
+                maxPayer = member.name;
             }
         })
 
         return { name: maxPayer, amount: paid };
     }, [event.expenses]);
 
-    const getPersonBalance = useCallback((personId: string) => {
-        const personDebts = getAllPersonDebts(personId);
-        const personRecieved = getAllPersonRecieved(personId);
-        const personSent = getAllPersonSent(personId);
-        const personExpends = getAllPersonExpends(personId);
-        const personBalance = (personSent + personExpends - personRecieved - personDebts);
-        return personBalance;
+    const getPersonBalance = useCallback((memberId: string) => {
+        const memberDebts = getAllPersonDebts(memberId);
+        const memberRecieved = getAllPersonRecieved(memberId);
+        const memberSent = getAllPersonSent(memberId);
+        const memberExpends = getAllPersonExpends(memberId);
+        const memberBalance = (memberSent + memberExpends - memberRecieved - memberDebts);
+        return memberBalance;
     }, [event.members, event.expenses]);
 
-    const getPersonBalanceStatus = useCallback((personId: string) => {
-        const personBalance = parseInt(getPersonBalance(personId).toFixed(0));
-        if (personBalance > 999) {
+    const getPersonBalanceStatus = useCallback((memberId: string) => {
+        const memberBalance = parseInt(getPersonBalance(memberId).toFixed(0));
+        if (memberBalance > 999) {
             return 'طلبکار';
-        } else if (personBalance < -999) {
+        } else if (memberBalance < -999) {
             return 'بدهکار';
         } else {
             return 'تسویه';
@@ -297,13 +294,13 @@ export function EventContextProvider({ children, eventData }: { children: React.
 
     const creditors = useMemo(() => {
         const creditorsArr: SettlePerson[] = [];
-        event.members.forEach(person => {
-            const personBalance = getPersonBalance(person.id.toString());
+        event.members.forEach(member => {
+            const memberBalance = getPersonBalance(member.id.toString());
 
-            if (personBalance > 0) {
+            if (memberBalance > 0) {
                 creditorsArr.push({
-                    name: person.name,
-                    amount: personBalance
+                    name: member.name,
+                    amount: memberBalance
                 });
             }
         })
@@ -313,14 +310,14 @@ export function EventContextProvider({ children, eventData }: { children: React.
 
     const debtors = useMemo(() => {
         const debtorsArr: SettlePerson[] = [];
-        event.members.forEach(person => {
+        event.members.forEach(member => {
 
-            const personBalance = parseInt(getPersonBalance(person.id.toString().toString()).toFixed(0));
+            const memberBalance = parseInt(getPersonBalance(member.id.toString().toString()).toFixed(0));
 
-            if (personBalance < 0) {
+            if (memberBalance < 0) {
                 debtorsArr.push({
-                    name: person.name,
-                    amount: Math.abs(personBalance)
+                    name: member.name,
+                    amount: Math.abs(memberBalance)
                 });
             }
         })

@@ -52,25 +52,25 @@ export type CreateMemberInputs = {
 }
 
 export type Expend = {
-    id: string;
-    desc: string;
+    id: number;
+    description: string;
     amount: number;
     date: Date;
     type: 'expend';
-    payer_id: string;
+    payer_id: number;
     payer: Member;
     contributors: Member[]
 }
 
 export type Transfer = {
-    id: string;
-    desc: string;
+    id: number;
+    description: string;
     amount: number;
     date: Date;
     type: 'transfer';
-    receiver_id: string;
+    receiver_id: number;
     receiver: Member;
-    transmitter_id: string;
+    transmitter_id: number;
     transmitter: Member;
 }
 

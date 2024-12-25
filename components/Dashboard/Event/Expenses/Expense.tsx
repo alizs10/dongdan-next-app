@@ -1,27 +1,26 @@
 import Button from "@/components/Common/Button";
-import { generateUID, TomanPriceFormatter } from "@/helpers/helpers";
+import { TomanPriceFormatter } from "@/helpers/helpers";
 import useClickOutside from "@/hooks/useOutsideClick";
-import { useEventStore } from "@/store/event-store";
-import { type Event, type Expense } from "@/types/event-types";
+import { type Expense } from "@/types/event-types";
 import moment from "jalali-moment";
 import { ArrowRightLeft, DollarSign, Ellipsis, MoveLeft, Pencil, Trash } from "lucide-react";
-import { useParams } from "next/navigation";
-import { useMemo, useCallback, useState } from "react";
+import { useCallback, useState, useContext } from "react";
 import EditExpenseModal from "../EditExpenseModal";
 import { useDialogStore } from "@/store/dialog-store";
-import { Toast, useToastStore } from "@/store/toast-store";
+import { useToastStore } from "@/store/toast-store";
+import { EventContext } from "@/context/EventContext";
+import { useAppStore } from "@/store/app-store";
 
 function Expense({ expense }: { expense: Expense }) {
-    const { event_id } = useParams()
 
     const addToast = useToastStore(state => state.addToast)
     const openDialog = useDialogStore(state => state.openDialog);
-    const { events, deleteExpense } = useEventStore(state => state)
+    // const { events, deleteExpense } = useEventStore(state => state)
 
-    const event = useMemo(() => events.find(event => event.id === event_id) as Event, [events, event_id]);
+    const { event } = useContext(EventContext)
 
-    const getPerson = useCallback((personId: string) => {
-        return event.group.find(person => person.id === personId);
+    const getMember = useCallback((memeberId: string) => {
+        return event.members.find(member => member.id.toString() === memeberId);
     }, [event]);
 
 
@@ -58,7 +57,7 @@ function Expense({ expense }: { expense: Expense }) {
                 ok: {
                     text: 'حذف',
                     onClick: () => {
-                        deleteExpense(event_id as string, expense.id)
+                        // deleteExpense(event_id as string, expense.id)
                         addToast(newToast)
                     }
                 },
@@ -68,6 +67,15 @@ function Expense({ expense }: { expense: Expense }) {
                 }
             })
     }
+
+    const user = useAppStore(state => state.user)
+
+    const getMemberName = useCallback((memberId: string) => {
+        const member = getMember(memberId);
+        if (member?.member_id === user?.id) return 'خودم';
+
+        return member?.name ?? 'نامشخص';
+    }, [getMember]);
 
     return (
         <div className="flex flex-wrap gap-4 justify-between border-b app_border_color py-3 px-5">
@@ -81,18 +89,18 @@ function Expense({ expense }: { expense: Expense }) {
                 </div>
 
                 <div className="flex flex-col gap-y-2">
-                    <h2 className="text-sm lg:text-base text-gray-700 dark:text-gray-300">{expense.type === 'transfer' ? 'جابه جایی پول' : 'هزینه'}: {expense.desc}</h2>
+                    <h2 className="text-sm lg:text-base text-gray-700 dark:text-gray-300">{expense.type === 'transfer' ? 'جابه جایی پول' : 'هزینه'}: {expense.description}</h2>
 
                     <div className="flex flex-wrap gap-x-2 lg:gap-x-4 items-center text-xs lg:text-sm">
-                        <span className="user_avatar_gray_text">{expense.type === 'expend' ? getPerson(expense.payer)?.name ?? '?' : getPerson(expense.from)?.name ?? '?'}</span>
+                        <span className="user_avatar_gray_text">{expense.type === 'expend' ? getMemberName(expense.payer_id.toString()) : getMemberName(expense.transmitter_id.toString())}</span>
                         <MoveLeft className="size-3.5 text-gray-500 dark:text-gray-400" />
                         {expense.type === 'transfer' ? (
-                            <span className={`user_avatar_${getPerson(expense.to)?.scheme ?? 'gray'}_text`}>{getPerson(expense.to)?.name ?? '?'}</span>
-                        ) : expense.group.length > 3 ? (
-                            <span className={`user_avatar_blue_text`}>{expense.group.length} نفر</span>
+                            <span className={`user_avatar_${getMember(expense.receiver_id.toString())?.scheme ?? 'gray'}_text`}>{getMemberName(expense.receiver_id.toString())}</span>
+                        ) : expense.contributors.length > 3 ? (
+                            <span className={`user_avatar_blue_text`}>{expense.contributors.length} نفر</span>
                         ) : <div className="flex flex-wrap gap-x-2">
-                            {expense.group.map((person, index) => (
-                                <span key={person} className={`user_avatar_${getPerson(person)?.scheme ?? 'blue'}_text`}>{getPerson(person)?.name ?? '?'}{index < expense.group.length - 1 && '،'}</span>
+                            {expense.contributors.map((member, index) => (
+                                <span key={member.id} className={`user_avatar_${getMember(member.id.toString())?.scheme ?? 'blue'}_text`}>{getMemberName(member.id.toString())}{index < expense.contributors.length - 1 && '،'}</span>
                             ))}
                         </div>}
                     </div>
@@ -103,37 +111,35 @@ function Expense({ expense }: { expense: Expense }) {
                 <span className="text-xs text-gray-500 dark:text-gray-400">{moment(expense.date).locale('fa').format("DD MMM، YYYY")}</span>
                 <div className="flex flex-row items-center gap-x-2">
 
-                    {event.deleted_at === null && (
-                        <div ref={optionsParentRef} className='relative'>
-                            <Button
-                                text=''
-                                icon={<Ellipsis className='size-4' />}
-                                color='gray'
-                                size='small'
-                                shape='square'
-                                onClick={toggleOptions}
-                            />
+                    <div ref={optionsParentRef} className='relative'>
+                        <Button
+                            text=''
+                            icon={<Ellipsis className='size-4' />}
+                            color='gray'
+                            size='small'
+                            shape='square'
+                            onClick={toggleOptions}
+                        />
 
-                            {isOptionsOpen && (
-                                <div className="z-50 absolute top-full left-0 mt-4 flex flex-col gap-y-2">
-                                    <Button
-                                        text='ویرایش'
-                                        icon={<Pencil className='size-4' />}
-                                        color='warning'
-                                        size='small'
-                                        onClick={toggleModal}
-                                    />
-                                    <Button
-                                        text='حذف'
-                                        icon={<Trash className='size-4' />}
-                                        color='danger'
-                                        size='small'
-                                        onClick={onDelete}
-                                    />
-                                </div>
-                            )}
-                        </div>
-                    )}
+                        {isOptionsOpen && (
+                            <div className="z-50 absolute top-full left-0 mt-4 flex flex-col gap-y-2">
+                                <Button
+                                    text='ویرایش'
+                                    icon={<Pencil className='size-4' />}
+                                    color='warning'
+                                    size='small'
+                                    onClick={toggleModal}
+                                />
+                                <Button
+                                    text='حذف'
+                                    icon={<Trash className='size-4' />}
+                                    color='danger'
+                                    size='small'
+                                    onClick={onDelete}
+                                />
+                            </div>
+                        )}
+                    </div>
 
                     <span className="px-2 lg:px-4  py-1 lg:py-2 text-sm lg:text-base font-semibold bg-indigo-100 dark:bg-indigo-950/50 primary_text_color rounded-full">{TomanPriceFormatter(expense.amount.toString())} تومان</span>
                 </div>
