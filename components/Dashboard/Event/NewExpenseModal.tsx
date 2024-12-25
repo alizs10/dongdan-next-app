@@ -17,8 +17,8 @@ import { DateObject } from "react-multi-date-picker";
 import Button from "@/components/Common/Button";
 import MemberSelector from "@/components/Common/Form/MemberSelector";
 import { useAppStore } from "@/store/app-store";
-import { createExpendSchema } from "@/database/validations/expense-validation";
-import { CreateExpendReqInputs, createExpeseReq } from "@/app/actions/event";
+import { createExpendSchema, createTransferSchema } from "@/database/validations/expense-validation";
+import { CreateExpendReqInputs, createExpenseReq, CreateTransferReqInputs } from "@/app/actions/event";
 import { EventContext } from "@/context/EventContext";
 
 type FormInputs = {
@@ -99,7 +99,7 @@ function NewExpenseModal({ onClose, event }: { onClose: () => void, event: Event
         if (formType === 0) {
             setInputs((prev: FormInputs) => ({ ...prev, date: selectedDate }))
         } else {
-            setInputs((prev: FormInputs) => ({ ...prev, date: selectedDate }))
+            setInputs2((prev: FormInputs2) => ({ ...prev, date: selectedDate }))
         }
     }
 
@@ -189,7 +189,7 @@ function NewExpenseModal({ onClose, event }: { onClose: () => void, event: Event
 
         setFormErrors(initFormErrors);
 
-        const res = await createExpeseReq(event.id, newExpendInputs)
+        const res = await createExpenseReq(event.id, newExpendInputs)
 
         if (res.success) {
 
@@ -211,52 +211,51 @@ function NewExpenseModal({ onClose, event }: { onClose: () => void, event: Event
     }
 
 
-    function transferFormHandler() {
+    async function transferFormHandler() {
 
 
-        const newTransferInputs = {
-            description: inputs.description,
-            amount: inputs.amount,
+        const newTransferInputs: CreateTransferReqInputs = {
+            description: inputs2.description,
+            amount: TomanPriceToNumber(inputs2.amount).toString(),
             type: 'transfer' as const,
-            date: inputs.date,
+            date: inputs2.date,
             transmitter_id: inputs2.transmitter,
             receiver_id: inputs2.receiver,
         }
 
-        const newTransfer = {
-            ...inputs2,
-
-            type: 'transfer' as const,
-            amount: TomanPriceToNumber(inputs2.amount)
-        }
-
-        const { hasError, errors } = zValidate(transferSchema, newTransfer);
+        const { hasError, errors } = zValidate(createTransferSchema, newTransferInputs);
 
         if (hasError) {
             console.log(errors)
             const validationToast = {
-
                 message: `فرم نامعتبر است.`,
                 type: 'danger' as const,
             }
-
-
             addToast(validationToast);
-
             setFormErrors2(errors);
             return;
         }
-
         setFormErrors2(initFormErrors2);
 
-        const newToast = {
+        const res = await createExpenseReq(event.id, newTransferInputs)
 
-            message: 'جابجایی پول جدید اضافه شد',
-            type: 'success' as const,
+        if (res.success) {
+            const successToast = {
+                message: res.message,
+                type: 'success' as const,
+            }
+
+            addExpense(res.expense)
+            addToast(successToast)
+            onClose();
+            return
         }
-        // addExpense(event.id, newTransfer)
-        addToast(newToast)
-        onClose();
+
+        const errorToast = {
+            message: res.message,
+            type: 'danger' as const,
+        }
+        addToast(errorToast)
     }
 
     const getMemberName = useCallback((memberId: string) => {

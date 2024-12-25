@@ -172,7 +172,7 @@ export async function updateMemberReq(eventId: string | number, memberId: string
 
 }
 
-export async function createExpeseReq(eventId: string | number, inputs: CreateExpenseReqInputs) {
+export async function createExpenseReq(eventId: string | number, inputs: CreateExpenseReqInputs) {
 
     const token = (await cookies()).get('token');
 
