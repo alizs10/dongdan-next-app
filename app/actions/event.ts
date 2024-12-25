@@ -34,6 +34,48 @@ export type CreateTransferReqInputs = {
 
 type CreateExpenseReqInputs = CreateExpendReqInputs | CreateTransferReqInputs;
 
+export async function getEventExpensesReq(eventId: string | number) {
+
+    const token = (await cookies()).get('token');
+
+    try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/event/${eventId}/expenses`, {
+            method: 'GET',
+            headers: {
+                Authorization: `Bearer ${token?.value}`,
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+            },
+        });
+
+        const data = await response.json()
+
+        if (response.ok && data.status) {
+
+            return {
+                success: true,
+                expenses: data.expenses,
+                message: 'هزینه ها با موفقیت بارگذاری شد'
+            }
+        }
+
+        return {
+            success: false,
+            message: response.statusText
+        }
+
+    } catch {
+
+        return {
+            success: false,
+            message: 'خطای سرور'
+        }
+
+    }
+
+
+}
+
 export async function createMemberReq(eventId: string, inputs: CreateMemberReqInputs) {
 
     const token = (await cookies()).get('token');

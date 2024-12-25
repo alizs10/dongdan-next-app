@@ -1,6 +1,6 @@
 'use client';
 
-import { deleteExpenseReq, deleteMemberReq } from "@/app/actions/event";
+import { deleteExpenseReq, deleteMemberReq, getEventExpensesReq } from "@/app/actions/event";
 import { updateEventStatusReq } from "@/app/actions/events";
 import DashboardLoading from "@/components/Layout/DashboardLoading";
 import { TomanPriceFormatter } from "@/helpers/helpers";
@@ -99,15 +99,28 @@ export function EventContextProvider({ children, eventData }: { children: React.
         const res = await deleteMemberReq(event.id.toString(), memberId)
 
         if (res.success) {
-            setEvent(prevState => ({ ...prevState, members: prevState.members.filter(m => m.id !== memberId) }));
 
+            const res2 = await getEventExpensesReq(event.id)
 
-            const successToast = {
-                message: res.message,
-                type: 'success' as const,
+            if (res2.success) {
+
+                setEvent(prevState => ({ ...prevState, members: prevState.members.filter(m => m.id !== memberId), expenses: res2.expenses }));
+
+                const successToast = {
+                    message: res.message,
+                    type: 'success' as const,
+                }
+                addToast(successToast)
+                return;
+
             }
-            addToast(successToast)
 
+
+            const errorToast = {
+                message: res2.message,
+                type: 'danger' as const,
+            }
+            addToast(errorToast)
             return;
         }
 
