@@ -28,15 +28,15 @@ export function ContactsContextProvider({ children, items }: { children: React.R
     }
 
     function updateContact(contactId: string, updatedContact: Contact) {
-        setContacts(prevState => prevState.map(contact => contact.id === contactId ? updatedContact : contact));
+        setContacts(prevState => prevState.map(contact => contact.id.toString() === contactId ? updatedContact : contact));
     }
 
     function deleteContact(contactId: string) {
-        setContacts(contacts.filter((contact) => contact.id !== contactId));
+        setContacts(contacts.filter((contact) => contact.id.toString() !== contactId));
     }
 
     function deleteMultiContact(contactIds: string[]) {
-        setContacts(contacts.filter((contact) => !contactIds.includes(contact.id)));
+        setContacts(contacts.filter((contact) => !contactIds.includes(contact.id.toString())));
     }
 
     const values = {

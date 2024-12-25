@@ -1,6 +1,6 @@
 'use client'
 
-import { CalendarCheck, CalendarClock, Filter, MoveRight, Plus, UserPlus, Zap } from "lucide-react";
+import { CalendarCheck, CalendarClock, Filter, ListCheck, ListChecks, MoveRight, Plus, Trash, UserPlus, X, Zap } from "lucide-react";
 import Link from "next/link";
 import { useContext, useState } from "react";
 import NewExpenseModal from "./NewExpenseModal";
@@ -19,10 +19,15 @@ import ShareEventLink from "./ShareEventLink";
 import { EventContext } from "@/context/EventContext";
 import { useAppStore } from "@/store/app-store";
 import NewMemberModal from "./NewMemberModal";
+import { MultiSelectItemContext } from "@/context/MultiSelectItemContext";
+import { useDialogStore } from "@/store/dialog-store";
+import { useToastStore } from "@/store/toast-store";
+import { deleteExpenseItemsReq } from "@/app/actions/event";
 
 function Event() {
 
     const user = useAppStore(state => state.user)
+    const { enableSelectMode, selectMode, disableSelectMode, selectAllItems, selectedItems } = useContext(MultiSelectItemContext);
 
     const {
         event,
@@ -36,7 +41,57 @@ function Event() {
         getPersonBalanceStatus,
         toggleEventStatus,
         transactions,
+        deleteMultiExpenses
     } = useContext(EventContext);
+
+    const addToast = useToastStore(state => state.addToast)
+    const openDialog = useDialogStore(state => state.openDialog)
+
+    function onDeleteSelectedItems() {
+
+        openDialog(
+            'حذف موارد انتخابی',
+            'آیا از حذف موارد انتخاب شده اطمینان دارید؟ درصورت حذف، داده ها قابل بازیابی نیستند.',
+            {
+                ok: {
+                    text: 'حذف',
+                    onClick: () => {
+                        handleTrashExpenseItems()
+                    }
+                },
+                cancel: {
+                    text: 'انصراف',
+                    onClick: () => { }
+                }
+            }
+        )
+
+    }
+
+    async function handleTrashExpenseItems() {
+        const res = await deleteExpenseItemsReq(event.id, selectedItems)
+
+        if (res.success) {
+            deleteMultiExpenses(selectedItems)
+            disableSelectMode()
+            const successToast = {
+
+                message: res.message,
+                type: 'success' as const,
+            }
+            addToast(successToast)
+            return;
+        }
+
+        const errorToast = {
+
+            message: res.message,
+            type: 'danger' as const,
+        }
+        addToast(errorToast)
+    }
+
+
 
     // const { activateEvent, deactivateEvent, activeFilters, filteredExpenses } = useEventStore(state => state);
 
@@ -264,8 +319,31 @@ function Event() {
                     </div>
 
                     {event.members.length > 0 && (
+
                         <div className="event_header_left">
-                            {event.expenses.length > 0 && (
+                            {selectMode && (
+                                <>
+                                    {selectedItems.length > 0 && (
+
+                                        <Button
+                                            text={"حذف" + `${selectedItems.length > 0 ? " (" + selectedItems.length + ")" : ''}`}
+                                            color="danger"
+                                            onClick={onDeleteSelectedItems}
+                                            size="small"
+                                            icon={<Trash className="size-5" />}
+                                        />
+                                    )}
+                                    <Button
+                                        text="انتخاب همه"
+                                        color="accent"
+                                        onClick={() => selectAllItems(event.expenses.map(e => e.id.toString()))}
+                                        size="small"
+                                        icon={<ListCheck className="size-5" />}
+                                    />
+                                </>
+                            )}
+
+                            {!selectMode && event.expenses.length > 0 && (
                                 <Button
                                     text="فیلتر"
                                     color="gray"
@@ -274,8 +352,9 @@ function Event() {
                                     icon={<Filter className="size-4" />}
                                 />
                             )}
-                            {event.expenses.length > 0 && isFiltersModalOpen && <FiltersModal event={event} onClose={toggleFiltersModal} />}
-                            {eventStatus === 'active' && event.deleted_at === null && (
+
+                            {!selectMode && event.expenses.length > 0 && isFiltersModalOpen && <FiltersModal event={event} onClose={toggleFiltersModal} />}
+                            {!selectMode && eventStatus === 'active' && event.deleted_at === null && (
                                 <Button
                                     text="ثبت هزینه/جابجایی پول"
                                     color="accent"
@@ -284,7 +363,17 @@ function Event() {
                                     icon={<Plus className="size-4" />}
                                 />
                             )}
+                            {event.expenses.length > 0 && (
+                                <Button
+                                    text=""
+                                    color="accent"
+                                    onClick={selectMode ? disableSelectMode : enableSelectMode}
+                                    size="small"
+                                    icon={selectMode ? <X className='size-5' /> : <ListChecks className="size-5" />}
+                                />
+                            )}
                         </div>
+
                     )}
 
                     {/* {activeFilters && (

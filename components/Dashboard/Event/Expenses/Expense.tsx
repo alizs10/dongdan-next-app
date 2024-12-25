@@ -9,12 +9,19 @@ import EditExpenseModal from "../EditExpenseModal";
 import { useDialogStore } from "@/store/dialog-store";
 import { EventContext } from "@/context/EventContext";
 import { useAppStore } from "@/store/app-store";
+import { MultiSelectItemContext } from "@/context/MultiSelectItemContext";
 
 function Expense({ expense }: { expense: Expense }) {
 
     const openDialog = useDialogStore(state => state.openDialog);
 
     const { event, deleteExpense } = useContext(EventContext)
+    const { toggleItem, selectMode, selectedItems } = useContext(MultiSelectItemContext);
+
+    function onSelect() {
+        if (!selectMode) return;
+        toggleItem(expense.id.toString());
+    }
 
     const getMember = useCallback((memeberId: string) => {
         return event.members.find(member => member.id.toString() === memeberId);
@@ -69,7 +76,9 @@ function Expense({ expense }: { expense: Expense }) {
     }, [getMember]);
 
     return (
-        <div className="flex flex-wrap gap-4 justify-between border-b app_border_color py-3 px-5">
+        <div
+            onClick={onSelect}
+            className={`flex flex-wrap gap-4 justify-between border-b app_border_color py-3 px-5 ${selectMode && 'cursor-pointer'} ${selectedItems.includes(expense.id.toString()) ? 'bg-gray-200 dark:bg-gray-800' : ''}`}>
             <div className="flex flex-wrap gap-4">
                 <div className={`p-2 lg:p-3 rounded-full my-auto h-fit ${expense.type === 'transfer' ? 'bg-orange-50 dark:bg-orange-950/30 text-orange-300 dark:text-orange-500' : 'bg-green-50 dark:bg-green-950/30 text-green-400 dark:text-green-500'}`}>
                     {expense.type === 'transfer' ? (
@@ -103,14 +112,16 @@ function Expense({ expense }: { expense: Expense }) {
                 <div className="flex flex-row items-center gap-x-2">
 
                     <div ref={optionsParentRef} className='relative'>
-                        <Button
-                            text=''
-                            icon={<Ellipsis className='size-4' />}
-                            color='gray'
-                            size='small'
-                            shape='square'
-                            onClick={toggleOptions}
-                        />
+                        {!selectMode && (
+                            <Button
+                                text=''
+                                icon={<Ellipsis className='size-4' />}
+                                color='gray'
+                                size='small'
+                                shape='square'
+                                onClick={toggleOptions}
+                            />
+                        )}
 
                         {isOptionsOpen && (
                             <div className="z-50 absolute top-full left-0 mt-4 flex flex-col gap-y-2">

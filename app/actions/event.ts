@@ -301,7 +301,6 @@ export async function updateExpenseReq(eventId: string | number, expenseId: stri
 
 }
 
-
 export async function deleteExpenseReq(eventId: string, expenseId: string | number) {
 
     const token = (await cookies()).get('token');
@@ -340,5 +339,45 @@ export async function deleteExpenseReq(eventId: string, expenseId: string | numb
 
     }
 
+
+}
+
+export async function deleteExpenseItemsReq(eventId: string | number, expenseIds: string[]) {
+
+    const token = (await cookies()).get('token');
+
+    try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/event/${eventId}/expenses/delete/items`, {
+            method: 'DELETE',
+            body: JSON.stringify({ expenses: expenseIds.map(id => id.toString()) }),
+            headers: {
+                Authorization: `Bearer ${token?.value}`,
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+            },
+        });
+
+        const data = await response.json()
+
+        if (response.ok && data.status) {
+            return {
+                success: true,
+                message: 'هزینه ها با موفقیت حذف شدند'
+            }
+        }
+
+        return {
+            success: false,
+            message: data?.message ? data.message : response.statusText
+        }
+
+    } catch {
+
+        return {
+            success: false,
+            message: 'خطای سرور'
+        }
+
+    }
 
 }

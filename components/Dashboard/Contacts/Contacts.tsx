@@ -101,7 +101,7 @@ function Contacts() {
                                     <Button
                                         text="انتخاب همه"
                                         color="accent"
-                                        onClick={() => selectAllItems(contacts.map(item => item.id))}
+                                        onClick={() => selectAllItems(contacts.map(item => item.id.toString()))}
                                         size="small"
                                         icon={<ListCheck className="size-5" />}
                                     />

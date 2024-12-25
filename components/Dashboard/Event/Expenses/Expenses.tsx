@@ -9,7 +9,7 @@ function Expenses({ expenses }: { expenses: ExpenseType[] }) {
     });
 
     return (
-        <div className="py-3 flex flex-col min-h-[600px]">
+        <div className="flex flex-col min-h-[600px]">
             {expenses.map(expense => (
                 <Expense key={expense.id} expense={expense} />
             ))}

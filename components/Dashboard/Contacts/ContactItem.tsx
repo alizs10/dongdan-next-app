@@ -5,8 +5,7 @@ import { useContext, useState } from 'react';
 import useClickOutside from '@/hooks/useOutsideClick';
 import EditContactModal from './EditContactModal';
 import { useDialogStore } from '@/store/dialog-store';
-import { Toast, useToastStore } from '@/store/toast-store';
-import { generateUID } from '@/helpers/helpers';
+import { useToastStore } from '@/store/toast-store';
 import ContactInfoModal from './ContactInfoModal';
 import { trashContactReq } from '@/app/actions/contacts';
 import { ContactsContext } from '@/context/ContactsContext';
@@ -20,7 +19,7 @@ function ContactItem({ contact }: { contact: Contact }) {
 
     function onSelect() {
         if (!selectMode) return;
-        toggleItem(contact.id);
+        toggleItem(contact.id.toString());
     }
 
 
@@ -52,7 +51,7 @@ function ContactItem({ contact }: { contact: Contact }) {
 
     async function handleTrashContact() {
 
-        const res = await trashContactReq(contact.id)
+        const res = await trashContactReq(contact.id.toString())
 
         if (res.success) {
             const successToast = {
@@ -60,7 +59,7 @@ function ContactItem({ contact }: { contact: Contact }) {
                 message: res.message,
                 type: 'success' as const,
             }
-            deleteContact(contact.id)
+            deleteContact(contact.id.toString())
             addToast(successToast)
             return
         }
@@ -98,7 +97,7 @@ function ContactItem({ contact }: { contact: Contact }) {
     return (
         <li
             onClick={onSelect}
-            className={`event_item ${selectMode && 'cursor-pointer'} ${selectedItems.includes(contact.id) ? 'bg-gray-200 dark:bg-gray-800' : ''}`}>
+            className={`event_item ${selectMode && 'cursor-pointer'} ${selectedItems.includes(contact.id.toString()) ? 'bg-gray-200 dark:bg-gray-800' : ''}`}>
             <div className="flex flex-row gap-x-4 items-center">
 
                 <div className={`flex justify-center p-3 rounded-xl items-center user_avatar_${contact.scheme}_bg user_avatar_${contact.scheme}_text`}>

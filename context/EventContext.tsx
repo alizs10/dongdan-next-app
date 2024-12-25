@@ -29,6 +29,7 @@ export type EventContextType = {
     setMembers: (members: Member[]) => void;
     deleteMember: (memberId: number) => void;
     deleteExpense: (expenseId: number) => void;
+    deleteMultiExpenses: (expenseIds: string[]) => void;
     updateMember: (memberId: number, updatedMember: Member) => void;
     updateExpense: (expenseId: number, updatedExpense: Expense) => void;
     creditors: SettlePerson[];
@@ -56,6 +57,7 @@ const EventContextInit = {
     setMembers: () => { },
     deleteMember: () => { },
     deleteExpense: () => { },
+    deleteMultiExpenses: () => { },
     updateMember: () => { },
     updateExpense: () => { },
     creditors: [],
@@ -155,6 +157,10 @@ export function EventContextProvider({ children, eventData }: { children: React.
         }
         addToast(errorToast)
 
+    }
+
+    function deleteMultiExpenses(expenseIds: string[]) {
+        setEvent(prevState => ({ ...prevState, expenses: prevState.expenses.filter(e => !expenseIds.includes(e.id.toString())) }));
     }
 
     async function updateMember(memberId: number, updatedMember: Member) {
@@ -424,6 +430,7 @@ export function EventContextProvider({ children, eventData }: { children: React.
         setMembers,
         deleteMember,
         deleteExpense,
+        deleteMultiExpenses,
         updateMember,
         updateExpense,
         addExpense,
