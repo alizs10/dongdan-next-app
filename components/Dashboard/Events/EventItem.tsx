@@ -14,7 +14,7 @@ import { EventsContext } from '@/context/EventsContext';
 import { MultiSelectItemContext } from '@/context/MultiSelectItemContext';
 
 
-function renderIcon(label: string) {
+export function RenderLabelIcon(label: string) {
     switch (label) {
         case 'سفر':
             return <Plane className='event_item_icon' />
@@ -41,6 +41,7 @@ function renderIcon(label: string) {
             break;
     }
 }
+
 function EventItem({ event }: { event: Event }) {
 
     const { deleteEvent } = useContext(EventsContext)
@@ -121,7 +122,7 @@ function EventItem({ event }: { event: Event }) {
             <div className='event_item_right'>
 
                 <div className='event_item_icon_container'>
-                    {renderIcon(event.label)}
+                    {RenderLabelIcon(event.label)}
                 </div>
 
                 <div className="flex flex-col gap-y-1">

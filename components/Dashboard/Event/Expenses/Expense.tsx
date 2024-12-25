@@ -3,13 +3,14 @@ import { TomanPriceFormatter } from "@/helpers/helpers";
 import useClickOutside from "@/hooks/useOutsideClick";
 import { type Expense } from "@/types/event-types";
 import moment from "jalali-moment";
-import { ArrowRightLeft, DollarSign, Ellipsis, MoveLeft, Pencil, Trash } from "lucide-react";
+import { ArrowRightLeft, DollarSign, Ellipsis, Info, MoveLeft, Pencil, Trash } from "lucide-react";
 import { useCallback, useState, useContext } from "react";
 import EditExpenseModal from "../EditExpenseModal";
 import { useDialogStore } from "@/store/dialog-store";
 import { EventContext } from "@/context/EventContext";
 import { useAppStore } from "@/store/app-store";
 import { MultiSelectItemContext } from "@/context/MultiSelectItemContext";
+import InfoExpenseModal from "../InfoExpenseModal";
 
 function Expense({ expense }: { expense: Expense }) {
 
@@ -30,16 +31,22 @@ function Expense({ expense }: { expense: Expense }) {
 
     const [isOptionsOpen, setIsOptionsOpen] = useState(false);
     const [isEditExpenseModalOpen, setIsEditExpenseModalOpen] = useState(false);
+    const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
 
     function toggleOptions() {
 
         setIsOptionsOpen(prev => !prev);
     }
 
-    function toggleModal() {
+    function toggleEditModal() {
 
         setIsOptionsOpen(false);
         setIsEditExpenseModalOpen(prev => !prev);
+    }
+
+    function toggleInfoModal() {
+        setIsOptionsOpen(false);
+        setIsInfoModalOpen(prev => !prev);
     }
 
     const optionsParentRef = useClickOutside(() => setIsOptionsOpen(false))
@@ -126,11 +133,18 @@ function Expense({ expense }: { expense: Expense }) {
                         {isOptionsOpen && (
                             <div className="z-50 absolute top-full left-0 mt-4 flex flex-col gap-y-2">
                                 <Button
+                                    text='جزییات'
+                                    icon={<Info className='size-4' />}
+                                    color='gray'
+                                    size='small'
+                                    onClick={toggleInfoModal}
+                                />
+                                <Button
                                     text='ویرایش'
                                     icon={<Pencil className='size-4' />}
                                     color='warning'
                                     size='small'
-                                    onClick={toggleModal}
+                                    onClick={toggleEditModal}
                                 />
                                 <Button
                                     text='حذف'
@@ -147,11 +161,17 @@ function Expense({ expense }: { expense: Expense }) {
                 </div>
             </div>
 
-            {isEditExpenseModalOpen && event.deleted_at === null && (
+            {isEditExpenseModalOpen && (
                 <EditExpenseModal
                     event={event}
                     expense={expense}
-                    onClose={toggleModal}
+                    onClose={toggleEditModal}
+                />
+            )}
+            {isInfoModalOpen && (
+                <InfoExpenseModal
+                    expense={expense}
+                    onClose={toggleInfoModal}
                 />
             )}
         </div>
