@@ -5,7 +5,7 @@ type Member = {
     id: number;
     name: string;
     scheme: SchemeType;
-    member_id?: string;
+    member_id?: number;
     member_type?: string;
 }
 

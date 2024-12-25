@@ -29,6 +29,7 @@ export type EventContextType = {
     setMembers: (members: Member[]) => void;
     deleteMember: (memberId: number) => void;
     updateMember: (memberId: number, updatedMember: Member) => void;
+    updateExpense: (expenseId: number, updatedExpense: Expense) => void;
     creditors: SettlePerson[];
     debtors: SettlePerson[];
     transactions: string[];
@@ -54,6 +55,7 @@ const EventContextInit = {
     setMembers: () => { },
     deleteMember: () => { },
     updateMember: () => { },
+    updateExpense: () => { },
     creditors: [],
     debtors: [],
     transactions: [],
@@ -119,6 +121,10 @@ export function EventContextProvider({ children, eventData }: { children: React.
         setEvent(prevState => ({ ...prevState, members: prevState.members.map(m => m.id === memberId ? updatedMember : m) }));
     }
 
+    async function updateExpense(expenseId: number, updatedExpense: Expense) {
+        setEvent(prevState => ({ ...prevState, expenses: prevState.expenses.map(e => e.id === expenseId ? updatedExpense : e) }));
+    }
+
 
     function addExpense(expense: Expense) {
         setEvent(prevState => ({ ...prevState, expenses: [...prevState.expenses, expense] }))
@@ -164,7 +170,7 @@ export function EventContextProvider({ children, eventData }: { children: React.
 
         event.expenses.forEach(expense => {
             if (expense.type === 'expend') {
-                total += parseInt(expense.amount);
+                total += expense.amount;
             }
         });
         return total;
@@ -183,8 +189,8 @@ export function EventContextProvider({ children, eventData }: { children: React.
         let max = 0;
 
         event.expenses.forEach(expense => {
-            if (expense.type === 'expend' && parseInt(expense.amount) > max) {
-                max = parseInt(expense.amount);
+            if (expense.type === 'expend' && expense.amount > max) {
+                max = expense.amount;
             }
         });
 
@@ -196,8 +202,8 @@ export function EventContextProvider({ children, eventData }: { children: React.
         let max = 0;
 
         event.expenses.forEach(expense => {
-            if (expense.type === 'transfer' && parseInt(expense.amount) > max) {
-                max = parseInt(expense.amount);
+            if (expense.type === 'transfer' && expense.amount > max) {
+                max = expense.amount;
             }
         });
 
@@ -209,7 +215,7 @@ export function EventContextProvider({ children, eventData }: { children: React.
 
         event.expenses.forEach(expense => {
             if (expense.type === 'expend' && expense.payer_id.toString() === memberId) {
-                total += parseInt(expense.amount);
+                total += expense.amount;
             }
         });
 
@@ -222,7 +228,7 @@ export function EventContextProvider({ children, eventData }: { children: React.
         event.expenses.forEach(expense => {
             let contributorIds = expense.type === 'expend' ? expense.contributors.map(c => c.id.toString()) : [];
             if (expense.type === 'expend' && contributorIds.includes(memberId)) {
-                total += parseInt(expense.amount) / expense.contributors.length;
+                total += expense.amount / expense.contributors.length;
             }
         });
 
@@ -235,7 +241,7 @@ export function EventContextProvider({ children, eventData }: { children: React.
 
         event.expenses.forEach(expense => {
             if (expense.type === 'transfer' && expense.receiver_id.toString() === memberId) {
-                total += parseInt(expense.amount);
+                total += expense.amount;
             }
         })
 
@@ -249,7 +255,7 @@ export function EventContextProvider({ children, eventData }: { children: React.
 
         event.expenses.forEach(expense => {
             if (expense.type === 'transfer' && expense.transmitter_id.toString() === memberId) {
-                total += parseInt(expense.amount);
+                total += expense.amount;
             }
         })
 
@@ -378,6 +384,7 @@ export function EventContextProvider({ children, eventData }: { children: React.
         setMembers,
         deleteMember,
         updateMember,
+        updateExpense,
         addExpense,
         creditors,
         debtors,

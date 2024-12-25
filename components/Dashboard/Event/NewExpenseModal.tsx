@@ -10,7 +10,6 @@ import { useCallback, useContext, useState } from "react";
 import { createPortal, useFormStatus } from "react-dom";
 import ExpensePreview from "./ExpensePreview";
 import PDatePicker from "@/components/Common/Form/PDatePicker";
-import { transferSchema } from "@/database/validations/transfer-validation";
 import { Event } from "@/types/event-types";
 import { useToastStore } from "@/store/toast-store";
 import { DateObject } from "react-multi-date-picker";
@@ -310,7 +309,7 @@ function NewExpenseModal({ onClose, event }: { onClose: () => void, event: Event
                                         value={inputs.payer}
                                         error={formErrors.payer}
                                         self={{
-                                            id: user.id,
+                                            id: user.id.toString(),
                                             include: false,
                                             scheme: user.scheme
                                         }}
@@ -323,7 +322,7 @@ function NewExpenseModal({ onClose, event }: { onClose: () => void, event: Event
                                         error={formErrors.contributors}
                                         selectAllOption={true}
                                         self={{
-                                            id: user.id,
+                                            id: user.id.toString(),
                                             include: false,
                                             scheme: user.scheme
                                         }}
@@ -380,7 +379,7 @@ function NewExpenseModal({ onClose, event }: { onClose: () => void, event: Event
                                         error={formErrors2.transmitter}
                                         disalllows={inputs2.receiver.length > 0 ? [inputs2.receiver] : []}
                                         self={{
-                                            id: user.id,
+                                            id: user.id.toString(),
                                             include: false,
                                             scheme: user.scheme
                                         }}
@@ -393,7 +392,7 @@ function NewExpenseModal({ onClose, event }: { onClose: () => void, event: Event
                                         error={formErrors2.receiver}
                                         disalllows={inputs2.transmitter.length > 0 ? [inputs2.transmitter] : []}
                                         self={{
-                                            id: user.id,
+                                            id: user.id.toString(),
                                             include: false,
                                             scheme: user.scheme
                                         }}

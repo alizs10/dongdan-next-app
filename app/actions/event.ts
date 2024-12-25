@@ -215,3 +215,46 @@ export async function createExpenseReq(eventId: string | number, inputs: CreateE
 
 
 }
+
+export async function updateExpenseReq(eventId: string | number, expenseId: string | number, inputs: CreateExpenseReqInputs) {
+
+    const token = (await cookies()).get('token');
+
+    try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/event/${eventId}/expense/${expenseId}`, {
+            method: 'PUT',
+            body: JSON.stringify(inputs),
+            headers: {
+                Authorization: `Bearer ${token?.value}`,
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+            },
+        });
+
+        const data = await response.json()
+
+        if (response.ok && data.status) {
+
+            return {
+                success: true,
+                expense: data.expense,
+                message: 'هزینه با موفقیت بروزرسانی شد'
+            }
+        }
+
+        return {
+            success: false,
+            message: response.statusText
+        }
+
+    } catch {
+
+        return {
+            success: false,
+            message: 'خطای سرور'
+        }
+
+    }
+
+
+}

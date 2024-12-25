@@ -9,10 +9,9 @@ import NoExpenses from "./Expenses/NoExpenses";
 import NoGroupExpenses from "./Expenses/NoGroupExpenses";
 import moment from "jalali-moment";
 import Button from "@/components/Common/Button";
-import { generateUID, TomanPriceFormatter } from "@/helpers/helpers";
+import { TomanPriceFormatter } from "@/helpers/helpers";
 import SettleHintsModal from "./SettleHintsModal";
 import GroupMembers from "./GroupMembers";
-import { Toast, useToastStore } from "@/store/toast-store";
 import NoGroupMembers from "./NoGroupMembers";
 import FiltersModal from "./FiltersModal";
 import ActiveFilters from "./ActiveFilters";
@@ -24,7 +23,6 @@ import NewMemberModal from "./NewMemberModal";
 function Event() {
 
     const user = useAppStore(state => state.user)
-    const addToast = useToastStore(state => state.addToast)
 
     const {
         event,
