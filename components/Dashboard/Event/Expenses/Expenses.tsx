@@ -5,7 +5,9 @@ function Expenses({ expenses }: { expenses: ExpenseType[] }) {
 
     // Sort expenses by date in descending order
     expenses = expenses.sort((a, b) => {
-        return new Date(b.date).getTime() - new Date(a.date).getTime();
+        const dateComparison = new Date(b.date).getTime() - new Date(a.date).getTime();
+        if (dateComparison !== 0) return dateComparison;
+        return new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime();
     });
 
     return (

@@ -60,6 +60,8 @@ export type Expend = {
     payer_id: number;
     payer: Member;
     contributors: Member[]
+    created_at: Date;
+    updated_at: Date;
 }
 
 export type Transfer = {
@@ -72,6 +74,8 @@ export type Transfer = {
     receiver: Member;
     transmitter_id: number;
     transmitter: Member;
+    created_at: Date;
+    updated_at: Date;
 }
 
 export type Expense = Expend | Transfer;
