@@ -38,12 +38,12 @@ function Toast({ toastId, scheme, text, i }: PropsTypes) {
             initial={{ opacity: 0, scale: 0.5, y: 100, zIndex: 1002 - i }}
             animate={{ opacity: 1, scale: 1 - i * .1, y: 0 - i * 30, zIndex: 1002 - i }}
             exit={{ opacity: 0, scale: 0.5, y: -100, zIndex: 1002 - i }}
-            className={`absolute top-0 left-0 w-full h-fit rounded-full px-5 py-3 border shadow-md flex flex-wrap justify-between items-center ${schemeClasses}`}>
+            className={`absolute top-0 left-0 w-full h-fit rounded-full px-5 py-3 border shadow-md flex flex-row justify-between items-center ${schemeClasses}`}>
             <div className="flex flex-row gap-x-3 items-center">
                 {icon}
-                <span className="text-base md:text-lg line-clamp-1 text-ellipsis">{text}</span>
+                <span className="text-sm lg:text-base line-clamp-1 text-ellipsis">{text}</span>
             </div>
-            <button onClick={() => removeToast(toastId)} type="button" className="p-1 mr-10 transition-all duration-300 opacity-50 hover:opacity-100">
+            <button onClick={() => removeToast(toastId)} type="button" className="p-1 mr-5 transition-all duration-300 opacity-50 hover:opacity-100">
                 <X className="size-5" />
             </button>
         </motion.div>
