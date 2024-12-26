@@ -9,6 +9,12 @@ import { useToastStore } from "@/store/toast-store";
 import { Event, Expense, Member, SettlePerson } from "@/types/event-types";
 import { createContext, useCallback, useMemo, useState } from "react";
 
+export type SettlementTransactions = {
+    transmitter: SettlePerson;
+    receiver: SettlePerson;
+    amount: number;
+}
+
 export type EventContextType = {
     event: Event;
     getAllCosts: () => number;
@@ -34,7 +40,10 @@ export type EventContextType = {
     updateExpense: (expenseId: number, updatedExpense: Expense) => void;
     creditors: SettlePerson[];
     debtors: SettlePerson[];
-    transactions: string[];
+    transactions: {
+        hints: string[];
+        transactions: SettlementTransactions[];
+    };
 }
 
 const EventContextInit = {
@@ -62,7 +71,7 @@ const EventContextInit = {
     updateExpense: () => { },
     creditors: [],
     debtors: [],
-    transactions: [],
+    transactions: { hints: [], transactions: [] },
 }
 
 
@@ -332,14 +341,14 @@ export function EventContextProvider({ children, eventData }: { children: React.
         const memberSent = getAllPersonSent(memberId);
         const memberExpends = getAllPersonExpends(memberId);
         const memberBalance = (memberSent + memberExpends - memberRecieved - memberDebts);
-        return memberBalance;
+        return (memberBalance > 999 || memberBalance < -999) ? memberBalance : 0;
     }, [event.members, event.expenses]);
 
     const getPersonBalanceStatus = useCallback((memberId: string) => {
         const memberBalance = parseInt(getPersonBalance(memberId).toFixed(0));
-        if (memberBalance > 999) {
+        if (memberBalance > 0) {
             return 'طلبکار';
-        } else if (memberBalance < -999) {
+        } else if (memberBalance < 0) {
             return 'بدهکار';
         } else {
             return 'تسویه';
@@ -353,9 +362,8 @@ export function EventContextProvider({ children, eventData }: { children: React.
 
             if (memberBalance > 0) {
                 creditorsArr.push({
-                    name: member.name,
-                    amount: memberBalance,
-                    member_id: member?.member_id ?? null,
+                    ...member,
+                    amount: parseInt(memberBalance.toFixed(0)),
                 });
             }
         })
@@ -371,9 +379,8 @@ export function EventContextProvider({ children, eventData }: { children: React.
 
             if (memberBalance < 0) {
                 debtorsArr.push({
-                    name: member.name,
-                    amount: Math.abs(memberBalance),
-                    member_id: member?.member_id ?? null,
+                    ...member,
+                    amount: parseInt(Math.abs(memberBalance).toFixed(0)),
                 });
             }
         })
@@ -383,13 +390,15 @@ export function EventContextProvider({ children, eventData }: { children: React.
 
     const transactions = useMemo(() => {
 
-        if (!user) return []
+        if (!user) return { hints: [], transactions: [] }
+
+        const transactions: SettlementTransactions[] = [];
 
         // Sort debtors and creditors by the amount
         debtors.sort((a, b) => b.amount - a.amount);
         creditors.sort((a, b) => b.amount - a.amount);
 
-        const transactions: string[] = [];
+        const hints: string[] = [];
         let i = 0, j = 0;
 
         while (i < debtors.length && j < creditors.length) {
@@ -400,14 +409,20 @@ export function EventContextProvider({ children, eventData }: { children: React.
             const debtorName = debtor.member_id === user?.id ? 'من' : debtor.name;
             const creditorName = creditor.member_id === user?.id ? 'من' : creditor.name;
 
-            transactions.push(`${debtorName} باید مقدار ${TomanPriceFormatter(transactionAmount.toFixed(0))} تومان به ${creditorName} پرداخت ${debtorName === 'من' ? 'کنم' : 'کند'}.`);
+            transactions.push({
+                transmitter: debtor,
+                receiver: creditor,
+                amount: transactionAmount,
+            });
+
+            hints.push(`${debtorName} باید مقدار ${TomanPriceFormatter(transactionAmount.toFixed(0))} تومان به ${creditorName} پرداخت ${debtorName === 'من' ? 'کنم' : 'کند'}.`);
             debtor.amount -= transactionAmount;
             creditor.amount -= transactionAmount;
 
             if (debtor.amount === 0) i++;
             if (creditor.amount === 0) j++;
         }
-        return transactions;
+        return { hints, transactions };
     }, [debtors, creditors, user]);
 
 

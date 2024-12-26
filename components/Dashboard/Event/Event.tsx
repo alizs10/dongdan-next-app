@@ -188,7 +188,7 @@ function Event() {
                             <button onClick={toggleSettleHintsModal} className="flex flex-row flex-nowrap gap-x-2 items-center w-fit rounded-full px-3 py-1.5 bg-indigo-50 dark:bg-indigo-950/30 text-indigo-700 dark:text-indigo-600">
                                 <Zap className="size-4" />
                                 <p className="text-[.7rem] font-semibold text-nowrap">
-                                    راهنمای تسویه
+                                    تسویه حساب سریع
                                 </p>
                             </button>
 

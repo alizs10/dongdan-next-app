@@ -140,8 +140,6 @@ export type EventState = {
 };
 
 
-export type SettlePerson = {
-    name: string;
+export type SettlePerson = Member & {
     amount: number;
-    member_id: number | null;
 };
