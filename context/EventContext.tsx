@@ -3,11 +3,11 @@
 import { deleteExpenseReq, deleteMemberReq, getEventExpensesReq } from "@/app/actions/event";
 import { updateEventStatusReq } from "@/app/actions/events";
 import DashboardLoading from "@/components/Layout/DashboardLoading";
-import { TomanPriceFormatter } from "@/helpers/helpers";
+import { arraysHaveSameValues, isDateBetween, TomanPriceFormatter, TomanPriceToNumber } from "@/helpers/helpers";
 import { useAppStore } from "@/store/app-store";
 import { useToastStore } from "@/store/toast-store";
-import { Event, Expense, Member, SettlePerson } from "@/types/event-types";
-import { createContext, useCallback, useMemo, useState } from "react";
+import { Event, Expense, ExpenseFilters, Member, SettlePerson } from "@/types/event-types";
+import { act, createContext, useCallback, useEffect, useMemo, useState } from "react";
 
 export type SettlementTransactions = {
     transmitter: SettlePerson;
@@ -17,6 +17,10 @@ export type SettlementTransactions = {
 
 export type EventContextType = {
     event: Event;
+    applyFilters: (filters: ExpenseFilters) => void;
+    filteredExpenses: Expense[];
+    activeFilters: ExpenseFilters | null;
+    clearFilters: () => void;
     getAllCosts: () => number;
     getCostsCount: () => number;
     getTransfersCount: () => number;
@@ -48,6 +52,10 @@ export type EventContextType = {
 
 const EventContextInit = {
     event: {} as Event,
+    applyFilters: () => { },
+    filteredExpenses: [],
+    activeFilters: null,
+    clearFilters: () => { },
     getAllCosts: () => 0,
     getCostsCount: () => 0,
     getTransfersCount: () => 0,
@@ -80,22 +88,83 @@ export const EventContext = createContext<EventContextType>(EventContextInit);
 export function EventContextProvider({ children, eventData }: { children: React.ReactNode, eventData: Event }) {
 
     const user = useAppStore(state => state.user)
-    const [loading, setLoading] = useState(false)
-    const [event, setEvent] = useState<Event>(eventData)
     const addToast = useToastStore(state => state.addToast)
 
+    const [loading, setLoading] = useState(false)
+    const [event, setEvent] = useState<Event>(eventData)
+    const [activeFilters, setActiveFilters] = useState<ExpenseFilters | null>(null)
+    const [filteredExpenses, setFilteredExpenses] = useState<Expense[]>([])
 
-    // const { events, activeFilters, applyFilters } = useEventStore(state => state);
-    // const event = useMemo(() => events.find(e => e.slug === event_slug), [events, event_slug]);
+    useEffect(() => {
 
-    // useEffect(() => {
+        if (!!activeFilters) {
+            applyFilters(activeFilters)
+        }
 
-    //     console.log('expenses changed')
-    //     if (!!activeFilters) {
-    //         applyFilters(activeFilters, event.id)
-    //     }
+    }, [event.expenses, activeFilters])
 
-    // }, [event, event.expenses, activeFilters])
+    function applyFilters(filters: ExpenseFilters) {
+
+        let results: Event['expenses'] = filters.type === 'any' ? [...event.expenses] : event.expenses.filter(exp => filters.type === exp.type);
+
+        // 1. amount filter
+        results = results.filter(exp => {
+
+            const amount = TomanPriceToNumber(exp.amount.toString());
+
+            const amountMin = TomanPriceToNumber(filters.amountMin.toString());
+            const amountMax = TomanPriceToNumber(filters.amountMax.toString());
+
+            if (filters.amountMin && filters.amountMax && amount >= amountMin && amount < amountMax) return true;
+
+            return false;
+        })
+
+        // 2. date filter
+        results = results.filter(exp => {
+            const startDate = filters.dateRange[0];
+            const endDate = filters.dateRange[1];
+
+            return isDateBetween(exp.date, startDate, endDate);
+        })
+
+
+        // expend
+        // 1. payer_id filter
+        if (filters.type === 'expend' && filters?.payer_id) {
+            // activeFilters.payer_id = filters.payer_id;
+            results = results.filter((exp) => (exp.type === 'expend' && exp.payer_id.toString() === filters.payer_id));
+        }
+
+        // 2. group filter
+        if (filters.type === 'expend' && filters?.contributors.length > 0) {
+            // activeFilters.contributors = filters.contributors;
+            results = results.filter((exp) => (exp.type === 'expend' && arraysHaveSameValues(exp.contributors.map(p => p.id.toString()), filters.contributors)));
+        }
+
+
+        // transfer
+        // 1. from filter
+        if (filters.type === 'transfer' && filters?.transmitter_id) {
+            // activeFilters.from = filters.from;
+            results = results.filter((exp) => (exp.type === 'transfer' && exp.transmitter_id.toString() === filters.transmitter_id));
+        }
+
+        // 2. to filter
+        if (filters.type === 'transfer' && filters?.receiver_id) {
+            // activeFilters.to = filters.to;
+            results = results.filter((exp) => (exp.type === 'transfer' && exp.receiver_id.toString() === filters.receiver_id));
+        }
+
+
+        setFilteredExpenses(results)
+        setActiveFilters(filters)
+    }
+
+    function clearFilters() {
+        setActiveFilters(null)
+        setFilteredExpenses([])
+    }
 
     function addMember(member: Member) {
         setEvent(prevState => ({ ...prevState, members: [...prevState.members, member] }))
@@ -428,6 +497,10 @@ export function EventContextProvider({ children, eventData }: { children: React.
 
     let values: EventContextType = {
         event,
+        applyFilters,
+        clearFilters,
+        filteredExpenses,
+        activeFilters,
         getAllCosts,
         getCostsCount,
         getTransfersCount,

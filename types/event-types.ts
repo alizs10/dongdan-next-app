@@ -85,9 +85,8 @@ export type ExpendFilter = {
     dateRange: [Date, Date];
     amountMin: string;
     amountMax: string;
-    contributors: Member[]
+    contributors: string[]
     payer_id: string;
-    payer: Member;
 }
 
 export type TransferFilter = {
@@ -96,9 +95,7 @@ export type TransferFilter = {
     amountMin: string;
     amountMax: string;
     transmitter_id: string;
-    transmitter: Member;
     receiver_id: string;
-    receiver: Member;
 }
 
 export type AnyExpense = {
@@ -136,10 +133,10 @@ export type EventState = {
     // updateExpense: (eventId: string, expenseId: string, updatedExpense: Expense) => void;
     // deleteExpense: (eventId: string, expenseId: string) => void;
     // updatePersonInEvents: (personId: string, updatedPerson: Omit<Person, "eventId">) => void;
-    // filteredExpenses: Expense[];
-    // activeFilters: ExpenseFilters | null;
-    // applyFilters: (filters: ExpenseFilters, eventId: string) => void;
-    // clearFilters: () => void;
+    filteredExpenses: Expense[];
+    activeFilters: ExpenseFilters | null;
+    applyFilters: (filters: ExpenseFilters, eventId: number) => void;
+    clearFilters: () => void;
     // deleteEventMemberWithExpenses: (eventId: string, personId: string) => void;
 };
 

@@ -61,7 +61,7 @@ function NewMemberModal({ onClose }: { onClose: () => void }) {
             const res = await getEventNonMembersReq(event.id.toString())
             if (res.success) {
                 setNonMembers(res.nonMembers)
-                setSelfIncluded(res.selfIncluded)
+                setSelfIncluded(!res.selfIncluded)
                 setFetchingNonMembers(false);
                 return
             }
@@ -212,7 +212,7 @@ function NewMemberModal({ onClose }: { onClose: () => void }) {
                             />
 
 
-                            {nonMembers && user && nonMembers.length > 0 && (
+                            {(nonMembers && user && (nonMembers.length > 0 || selfIncluded)) && (
                                 <MemberSelector
                                     label="اعضای رویداد"
                                     members={nonMembers}
@@ -223,7 +223,7 @@ function NewMemberModal({ onClose }: { onClose: () => void }) {
                                     self={{
                                         id: user.id.toString(),
                                         scheme: user.scheme,
-                                        include: !selfIncluded,
+                                        include: selfIncluded,
                                         value: inputs.selfIncluded
                                     }}
                                 />

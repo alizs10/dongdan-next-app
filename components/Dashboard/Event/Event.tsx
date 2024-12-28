@@ -41,7 +41,8 @@ function Event() {
         getPersonBalanceStatus,
         toggleEventStatus,
         transactions,
-        deleteMultiExpenses
+        deleteMultiExpenses,
+        activeFilters, filteredExpenses
     } = useContext(EventContext);
 
     const addToast = useToastStore(state => state.addToast)
@@ -93,7 +94,6 @@ function Event() {
 
 
 
-    // const { activateEvent, deactivateEvent, activeFilters, filteredExpenses } = useEventStore(state => state);
 
     const [isNewExpenseModalOpen, setIsNewExpenseModalOpen] = useState(false);
     const [isNewMemberModalOpen, setIsNewMemberModalOpen] = useState(false);
@@ -376,17 +376,17 @@ function Event() {
 
                     )}
 
-                    {/* {activeFilters && (
+                    {activeFilters && (
                         <ActiveFilters />
-                    )} */}
+                    )}
 
                 </div>
 
-                <Expenses expenses={event.expenses} />
+                {/* <Expenses expenses={event.expenses} /> */}
 
-                {/* {(event.expenses.length > 0 && !activeFilters) || (activeFilters && filteredExpenses.length > 0) ? (
+                {(event.expenses.length > 0 && !activeFilters) || (activeFilters && filteredExpenses.length > 0) ? (
                     <Expenses expenses={activeFilters ? filteredExpenses : event.expenses} />
-                ) : (event.deleted_at !== null || eventStatus === 'inactive' || (eventStatus === 'active' && event.members.length > 0)) ? <NoExpenses isFilterMode={!!activeFilters} isDeleted={event.deleted_at !== null} eventStatus={eventStatus} openNewExpenseModal={openNewExpenseModal} /> : (<NoGroupExpenses openNewMemberModal={openNewMemberModal} />)} */}
+                ) : (event.deleted_at !== null || eventStatus === 'inactive' || (eventStatus === 'active' && event.members.length > 0)) ? <NoExpenses isFilterMode={!!activeFilters} isDeleted={event.deleted_at !== null} eventStatus={eventStatus} openNewExpenseModal={openNewExpenseModal} /> : (<NoGroupExpenses openNewMemberModal={openNewMemberModal} />)}
 
 
                 {isNewExpenseModalOpen && <NewExpenseModal event={event} onClose={closeNewExpenseModal} />}

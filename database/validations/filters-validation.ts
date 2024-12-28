@@ -25,8 +25,8 @@ export const expendFilterSchema: ZodType<ExpendFilter> = z.object({
     dateRange: z.tuple([z.date(), z.date()]).refine(([start, end]) => start < end, {
         message: 'تاریخ شروع باید کمتر از تاریخ پایان باشد',
     }),
-    payer: z.string(),
-    group: z.array(z.string()),
+    payer_id: z.string(),
+    contributors: z.array(z.string()),
 }).refine((data) => {
     const amountMin = TomanPriceToNumber(data.amountMin);
     const amountMax = TomanPriceToNumber(data.amountMax);
@@ -43,8 +43,8 @@ export const transferFilterSchema: ZodType<TransferFilter> = z.object({
     dateRange: z.tuple([z.date(), z.date()]).refine(([start, end]) => start < end, {
         message: 'تاریخ شروع باید کمتر از تاریخ پایان باشد',
     }),
-    to: z.string(),
-    from: z.string(),
+    receiver_id: z.string(),
+    transmitter_id: z.string(),
 }).refine((data) => {
     const amountMin = TomanPriceToNumber(data.amountMin);
     const amountMax = TomanPriceToNumber(data.amountMax);
@@ -52,12 +52,12 @@ export const transferFilterSchema: ZodType<TransferFilter> = z.object({
 }, {
     message: 'حداقل هزینه باید از حداکثر هزینه کمتر باشد',
     path: ['amountMin']
-}).superRefine(({ from, to }, ctx) => {
-    if (from.length > 0 && to.length > 0 && from === to) {
+}).superRefine(({ transmitter_id, receiver_id }, ctx) => {
+    if (transmitter_id.length > 0 && receiver_id.length > 0 && transmitter_id === receiver_id) {
         ctx.addIssue({
             code: z.ZodIssueCode.custom,
             message: 'شخص مبداء و مقصد نمیتوانند یکسان باشند',
-            path: ['to'], // Path to the field that has the issue
+            path: ['receiver_id'], // Path to the field that has the issue
         })
     }
 })

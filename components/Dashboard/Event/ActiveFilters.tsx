@@ -1,11 +1,12 @@
 import Button from "@/components/Common/Button";
 import { Banknote, CalendarRange, CreditCard, DollarSign, FilterX, UserMinus, UserPlus, Users } from "lucide-react";
-import { useEventStore } from "@/store/event-store";
 import moment from "jalali-moment";
+import { useContext } from "react";
+import { EventContext } from "@/context/EventContext";
 
 function ActiveFilters() {
 
-    const { activeFilters, clearFilters } = useEventStore(state => state);
+    const { activeFilters, clearFilters } = useContext(EventContext);
 
     return (
         <section className="w-full flex flex-col gap-y-2 py-3">
@@ -53,27 +54,27 @@ function ActiveFilters() {
                     <span>تومان</span>
                 </div>
 
-                {activeFilters?.type === 'expend' && activeFilters?.payer && activeFilters?.payer.length > 0 && (
+                {activeFilters?.type === 'expend' && activeFilters?.payer_id && activeFilters?.payer_id.length > 0 && (
                     <div className="flex flex-row gap-x-2 items-center text-xs text-white bg-indigo-800 px-3 py-2 rounded-full">
                         <CreditCard className="size-4" />
                         <span>پرداخت کننده</span>
                     </div>
                 )}
-                {activeFilters?.type === 'expend' && activeFilters?.group && activeFilters?.group.length > 0 && (
+                {activeFilters?.type === 'expend' && activeFilters?.contributors && activeFilters?.contributors.length > 0 && (
                     <div className="flex flex-row gap-x-2 items-center text-xs text-white bg-indigo-800 px-3 py-2 rounded-full">
                         <Users className="size-4" />
                         <span>کی سهیم بوده</span>
                     </div>
                 )}
 
-                {activeFilters?.type === 'transfer' && activeFilters?.from && activeFilters?.from.length > 0 && (
+                {activeFilters?.type === 'transfer' && activeFilters?.transmitter_id && activeFilters?.transmitter_id.length > 0 && (
                     <div className="flex flex-row gap-x-2 items-center text-xs text-white bg-indigo-800 px-3 py-2 rounded-full">
                         <UserMinus className="size-4" />
                         <span>مبداء</span>
                     </div>
                 )}
 
-                {activeFilters?.type === 'transfer' && activeFilters?.to && activeFilters?.to.length > 0 && (
+                {activeFilters?.type === 'transfer' && activeFilters?.receiver_id && activeFilters?.receiver_id.length > 0 && (
                     <div className="flex flex-row gap-x-2 items-center text-xs text-white bg-indigo-800 px-3 py-2 rounded-full">
                         <UserPlus className="size-4" />
                         <span>مقصد</span>

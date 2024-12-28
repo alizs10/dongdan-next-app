@@ -7,19 +7,20 @@ import ModalHeader from "@/components/Common/ModalHeader";
 import ModalWrapper from "@/components/Common/ModalWrapper";
 import { zValidate } from "@/helpers/validation-helper";
 import { Filter } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
-import { useEventStore } from "@/store/event-store";
-import { generateUID, TomanPriceFormatter } from "@/helpers/helpers";
-import { Toast, useToastStore } from "@/store/toast-store";
+import { TomanPriceFormatter } from "@/helpers/helpers";
+import { useToastStore } from "@/store/toast-store";
 import Button from "@/components/Common/Button";
 import MemberSelector from "@/components/Common/Form/MemberSelector";
 import PRangeDatePicker from "@/components/Common/Form/PRangeDatePicker";
 import { anyFilterSchema, expendFilterSchema, transferFilterSchema } from "@/database/validations/filters-validation";
+import { EventContext } from "@/context/EventContext";
 
 function FiltersModal({ onClose, event }: { onClose: () => void, event: Event }) {
 
     const addToast = useToastStore(state => state.addToast)
+    const { applyFilters } = useContext(EventContext)
 
 
     const tommorowDate = new Date();
@@ -35,16 +36,16 @@ function FiltersModal({ onClose, event }: { onClose: () => void, event: Event })
         type: 'expend',
         amountMin: '',
         amountMax: '',
-        payer: '',
-        group: [],
+        payer_id: '',
+        contributors: [],
         dateRange: [new Date(), tommorowDate]
     }
     const initTransferFilters: TransferFilter = {
         type: 'transfer',
         amountMin: '',
         amountMax: '',
-        from: '',
-        to: '',
+        transmitter_id: '',
+        receiver_id: '',
         dateRange: [new Date(), tommorowDate]
     }
 
@@ -53,10 +54,10 @@ function FiltersModal({ onClose, event }: { onClose: () => void, event: Event })
 
     const initFormErrors = useMemo(() => ({
         type: '',
-        group: '',
-        payer: '',
-        from: '',
-        to: '',
+        contributors: '',
+        payer_id: '',
+        transmitter_id: '',
+        receiver_id: '',
         amountMin: '',
         amountMax: '',
         dateRange: ''
@@ -82,29 +83,29 @@ function FiltersModal({ onClose, event }: { onClose: () => void, event: Event })
         if (filters.type !== 'expend') return
 
         if (id === 'all' && filters.type === 'expend') {
-            setFilters((prev) => ({ ...prev, group: (prev.type === 'expend' && prev.group.length === event.group.length) ? [] : event.group.map(m => m.id) }))
+            setFilters((prev) => ({ ...prev, contributors: (prev.type === 'expend' && prev.contributors.length === event.members.length) ? [] : event.members.map(m => m.id.toString()) }))
             return
         }
 
-        setFilters(prev => prev.type === 'expend' ? ({ ...prev, group: prev.group.includes(id) ? prev.group.filter(mId => mId !== id) : [...prev.group, id] }) : prev)
+        setFilters(prev => prev.type === 'expend' ? ({ ...prev, contributors: prev.contributors.includes(id) ? prev.contributors.filter(mId => mId.toString() !== id) : [...prev.contributors, id] }) : prev)
     }
 
     function togglePayer(id: string) {
         if (filters.type !== 'expend') return
-        setFilters(prev => prev.type === 'expend' ? ({ ...prev, payer: prev.payer === id ? '' : id }) : prev)
+        setFilters(prev => prev.type === 'expend' ? ({ ...prev, payer_id: prev.payer_id === id ? '' : id }) : prev)
     }
 
-    function toggleFrom(id: string) {
+    function toggleTransmitter(id: string) {
         if (filters.type !== 'transfer') return
 
-        if (id === filters.to) return
+        if (id === filters.receiver_id) return
 
-        setFilters(prev => prev.type === 'transfer' ? ({ ...prev, from: prev.from === id ? '' : id }) : prev)
+        setFilters(prev => prev.type === 'transfer' ? ({ ...prev, transmitter_id: prev.transmitter_id === id ? '' : id }) : prev)
     }
-    function toggleTo(id: string) {
+    function toggleReceiver(id: string) {
         if (filters.type !== 'transfer') return
-        if (id === filters.from) return
-        setFilters(prev => prev.type === 'transfer' ? ({ ...prev, to: prev.to === id ? '' : id }) : prev)
+        if (id === filters.transmitter_id) return
+        setFilters(prev => prev.type === 'transfer' ? ({ ...prev, receiver_id: prev.receiver_id === id ? '' : id }) : prev)
     }
 
 
@@ -128,7 +129,6 @@ function FiltersModal({ onClose, event }: { onClose: () => void, event: Event })
 
     }
 
-    const { applyFilters } = useEventStore(state => state)
 
     function handleFilterExpenses() {
 
@@ -139,7 +139,6 @@ function FiltersModal({ onClose, event }: { onClose: () => void, event: Event })
         if (hasError) {
 
             const validationToast = {
-
                 message: `فرم فیلتر ها نامعتبر است.`,
                 type: 'danger' as const,
             }
@@ -158,7 +157,7 @@ function FiltersModal({ onClose, event }: { onClose: () => void, event: Event })
             type: 'success' as const,
         }
 
-        applyFilters(filters, event.id);
+        applyFilters(filters);
 
         addToast(newToast);
         onClose();
@@ -184,7 +183,7 @@ function FiltersModal({ onClose, event }: { onClose: () => void, event: Event })
                             </div>
                         </div>
                         <div className="flex flex-col gap-y-2">
-                            <span className={`text-base ${formErrors.group ? 'text-red-500' : 'primary_text_color'} capitalize`}>فیلتر هزینه {"(0 - 1200000)"}</span>
+                            <span className={`text-base ${formErrors.contributors ? 'text-red-500' : 'primary_text_color'} capitalize`}>فیلتر هزینه {"(0 - 1200000)"}</span>
 
                             <TextInput name="amount" value={filters.amountMin} error={formErrors.amountMin} label="از (تومان)" handleChange={changeAmountMinHandler} />
                             <TextInput name="amount" value={filters.amountMax} error={formErrors.amountMax} label="تا (تومان)" handleChange={changeAmountMaxHandler} />
@@ -203,17 +202,17 @@ function FiltersModal({ onClose, event }: { onClose: () => void, event: Event })
                             <>
                                 <MemberSelector
                                     label="کی پرداخت کرده؟"
-                                    members={event.group}
+                                    members={event.members}
                                     onSelect={togglePayer}
-                                    value={filters.payer}
-                                    error={formErrors.payer}
+                                    value={filters.payer_id}
+                                    error={formErrors.payer_id}
                                 />
                                 <MemberSelector
                                     label="کیا سهیم بودن؟"
-                                    members={event.group}
+                                    members={event.members}
                                     onSelect={toggleGroupMember}
-                                    value={filters.group}
-                                    error={formErrors.group}
+                                    value={filters.contributors}
+                                    error={formErrors.contributors}
                                     selectAllOption={true}
                                 />
                             </>
@@ -223,19 +222,19 @@ function FiltersModal({ onClose, event }: { onClose: () => void, event: Event })
                             <>
                                 <MemberSelector
                                     label="مبداء"
-                                    members={event.group}
-                                    onSelect={toggleFrom}
-                                    value={filters.from}
-                                    error={formErrors.from}
-                                    disalllows={filters.to.length > 0 ? [filters.to] : []}
+                                    members={event.members}
+                                    onSelect={toggleTransmitter}
+                                    value={filters.transmitter_id}
+                                    error={formErrors.transmitter_id}
+                                    disalllows={filters.receiver_id.length > 0 ? [filters.receiver_id] : []}
                                 />
                                 <MemberSelector
                                     label="مقصد"
-                                    members={event.group}
-                                    onSelect={toggleTo}
-                                    value={filters.to}
-                                    error={formErrors.to}
-                                    disalllows={filters.from.length > 0 ? [filters.from] : []}
+                                    members={event.members}
+                                    onSelect={toggleReceiver}
+                                    value={filters.receiver_id}
+                                    error={formErrors.receiver_id}
+                                    disalllows={filters.transmitter_id.length > 0 ? [filters.transmitter_id] : []}
                                 />
                             </>
                         )}
