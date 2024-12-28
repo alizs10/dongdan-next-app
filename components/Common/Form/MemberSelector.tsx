@@ -77,7 +77,7 @@ function MemberSelector({ label, members, onSelect, value, error, self = undefin
                             <User className="size-5" />
                         </div>
 
-                        <span className="text-base">{member.member_id === self?.id ? 'خودم' : member.name}</span>
+                        <span className="text-base">{member.member_id?.toString() === self?.id ? 'خودم' : member.name}</span>
                     </div>
                 ))}
 
