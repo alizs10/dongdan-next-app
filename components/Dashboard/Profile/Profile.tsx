@@ -1,17 +1,19 @@
 'use client'
 
 import Link from 'next/link';
-import { Key, MoveRight, UserPen } from 'lucide-react';
+import { Key, MoveRight, User, UserPen } from 'lucide-react';
 import Button from '@/components/Common/Button';
 import { useDialogStore } from '@/store/dialog-store';
-import { Toast, useToastStore } from '@/store/toast-store';
-import { generateUID } from '@/helpers/helpers';
+import { useToastStore } from '@/store/toast-store';
 import { useState } from 'react';
 import EditProfileModal from './EditProfileModal';
 import ChangePasswordModal from './ChangePasswordModal';
-import { User } from '@/types/user-types';
+import { type User as TypeUser } from '@/types/user-types';
+import moment from 'jalali-moment';
 
-function Profile({ data }: { data: User }) {
+function Profile({ data }: { data: TypeUser }) {
+
+    const [profile, setProfile] = useState<TypeUser>(data);
 
     const openDialog = useDialogStore(state => state.openDialog)
     const addToast = useToastStore(state => state.addToast)
@@ -26,19 +28,12 @@ function Profile({ data }: { data: User }) {
         setChangePasswordModalVis(prev => !prev);
     }
 
+    function updateProfile(updatedProfile: TypeUser) {
+        setProfile(updatedProfile)
+    }
+
     function onDeleteAccClick() {
-        console.log('delete account');
 
-        const okToast = {
-
-            message: 'اکانت شما با موفقیت حذف شد',
-            type: 'success' as const,
-        }
-        const cancelToast = {
-
-            message: 'انصراف',
-            type: 'info'
-        }
 
         openDialog(
             'حذف حساب کاربری'
@@ -49,6 +44,11 @@ function Profile({ data }: { data: User }) {
                 ok: {
                     text: 'حذف حساب',
                     onClick: () => {
+                        const okToast = {
+                            message: 'اکانت شما با موفقیت حذف شد',
+                            type: 'success' as const,
+                        }
+
                         console.log('delete account');
                         addToast(okToast)
                     }
@@ -56,6 +56,10 @@ function Profile({ data }: { data: User }) {
                 cancel: {
                     text: 'انصراف',
                     onClick: () => {
+                        const cancelToast = {
+                            message: 'انصراف',
+                            type: 'info' as const
+                        }
                         console.log('cancel delete account');
                         addToast(cancelToast)
                     }
@@ -89,17 +93,37 @@ function Profile({ data }: { data: User }) {
             </div>
 
 
-            <div className="flex flex-col gap-y-2 p-5">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-2 p-5">
 
-                <div className="flex flex-row w-full max-w-[400px] justify-between items-center gap-x-4 text-base">
-                    <h1 className='text-gray-700 dark:text-gray-300'>نام:</h1>
-                    <span className='text-gray-500 dark:text-gray-400 text-right w-full'>{data.name}</span>
+                <div className="col-span-1 md:col-span-2">
+                    <div className="w-fit flex flex-col items-center gap-y-2">
+                        <div className={`w-fit p-3 select-none cursor-pointer flex flex-row gap-x-4 items-center border user_avatar_${profile.scheme}_text user_avatar_${profile.scheme}_border user_avatar_${profile.scheme}_bg transition-all duration-300 rounded-full`}>
+                            <div className="">
+                                <User className="size-7" />
+                            </div>
+
+                        </div>
+                        <span className="text-base">{profile.name}</span>
+                    </div>
                 </div>
-                <div className="flex flex-row w-full max-w-[400px] justify-between items-center gap-x-4 text-base">
+
+                <div className="col-span-1 flex flex-row items-center gap-x-4 text-base">
                     <h1 className='text-gray-700 dark:text-gray-300'>ایمیل:</h1>
-                    <span className='text-gray-500 dark:text-gray-400 text-right  w-full'>{data.email}</span>
+                    <span className='text-gray-500 dark:text-gray-400'>{profile.email}</span>
                 </div>
-                <div className="mt-10 flex flex-row w-full max-w-[400px] justify-between items-center gap-x-4 text-base">
+                <div className="flex flex-row col-span-1 items-center gap-x-4 text-base">
+                    <h1 className='text-gray-700 dark:text-gray-300'>تایید حساب کاربری:</h1>
+                    <span className='text-gray-500 dark:text-gray-400'>{profile.email_verified_at ? moment(profile.updated_at).locale('fa').format("DD MMM، YYYY") : 'تایید نشده'}</span>
+                </div>
+                <div className="flex flex-row col-span-1 items-center gap-x-4 text-base">
+                    <h1 className='text-gray-700 dark:text-gray-300'>آخرین بروزرسانی:</h1>
+                    <span className='text-gray-500 dark:text-gray-400'>{moment(profile.updated_at).locale('fa').format("DD MMM، YYYY")}</span>
+                </div>
+                <div className="flex flex-row col-span-1 items-center gap-x-4 text-base">
+                    <h1 className='text-gray-700 dark:text-gray-300'>تاریخ عضویت:</h1>
+                    <span className='text-gray-500 dark:text-gray-400'>{moment(profile.created_at).locale('fa').format("DD MMM، YYYY")}</span>
+                </div>
+                <div className="mt-10 flex flex-row col-span-1 md:col-span-2 items-center gap-x-4 text-base">
                     <Button
                         text='تغییر رمز عبور'
                         icon={<Key className='size-4' />}
@@ -107,8 +131,6 @@ function Profile({ data }: { data: User }) {
                         color='gray'
                         size='small'
                     />
-                </div>
-                <div className="flex flex-row w-full max-w-[400px] justify-between items-center gap-x-4 text-base">
                     <Button
                         text='حذف حساب کاربری'
                         icon={<Key className='size-4' />}
@@ -120,7 +142,7 @@ function Profile({ data }: { data: User }) {
 
             </div>
 
-            {editProfileModalVis && (<EditProfileModal profile={data} onClose={toggleEditProfileModal} />)}
+            {editProfileModalVis && (<EditProfileModal profile={profile} updateProfile={updateProfile} onClose={toggleEditProfileModal} />)}
             {changePasswordModalVis && (<ChangePasswordModal onClose={toggleChangePasswordModal} />)}
         </div>
     );

@@ -9,12 +9,12 @@ import { useState } from "react";
 import { createPortal, useFormStatus } from "react-dom";
 import { SchemeType } from "@/types/event-types";
 import Button from "@/components/Common/Button";
-import { Toast, useToastStore } from "@/store/toast-store";
-import { generateUID } from "@/helpers/helpers";
+import { useToastStore } from "@/store/toast-store";
 import { updateProfileSchema } from "@/database/validations/profile-validation";
 import { useAppStore } from "@/store/app-store";
 import AvatarSelector from "@/components/Common/Form/AvatarSelector";
 import { User } from "@/types/user-types";
+import { updateProfileReq } from "@/app/actions/profile";
 
 type FormInputs = {
     name: string;
@@ -22,11 +22,10 @@ type FormInputs = {
     scheme: SchemeType;
 }
 
-function EditProfileModal({ onClose, profile }: { onClose: () => void, profile: User }) {
+function EditProfileModal({ onClose, profile, updateProfile }: { onClose: () => void, profile: User, updateProfile: (updatedProfile: User) => void }) {
 
     const [loading, setLoading] = useState(false);
     const addToast = useToastStore(state => state.addToast);
-    const updateUser = useAppStore(state => state.updateUser);
 
     const { pending } = useFormStatus();
 
@@ -54,58 +53,48 @@ function EditProfileModal({ onClose, profile }: { onClose: () => void, profile: 
         if (loading) return
         setLoading(true)
 
-        const { hasError, errors } = zValidate(updateProfileSchema, inputs);
+        const updateProfileInputs = {
+            name: inputs.name,
+            email: inputs.email,
+            scheme: inputs.scheme,
+        }
+
+        const { hasError, errors } = zValidate(updateProfileSchema, updateProfileInputs);
 
         if (hasError) {
+            console.log(errors)
+            const validationToast = {
+                message: `فرم نامعتبر است.`,
+                type: 'danger' as const,
+            }
+
+            addToast(validationToast)
             setFormErrors(errors);
+            setLoading(false)
             return;
         }
         setFormErrors(initFormErrors);
 
-        const updatedProfile = {
-            ...profile,
-            ...inputs
-        }
+        const res = await updateProfileReq(updateProfileInputs)
 
-        try {
-
-            const res = await fetch('/api/profile', {
-                method: 'PUT',
-                body: JSON.stringify(updatedProfile)
-            })
-
-
-            const data = await res.json();
-            if (data.status) {
-                const successToast = {
-
-                    message: 'پروفایل ویرایش شد',
-                    type: 'success' as const,
-                }
-                updateUser(data?.profile ?? {});
-                setLoading(false)
-                addToast(successToast)
-                onClose();
-            } else {
-                const errorToast = {
-
-                    message: data?.message ?? 'خطا در ویرایش پروفایل',
-                    type: 'danger' as const,
-                }
-                setLoading(false)
-                addToast(errorToast)
+        if (res.success) {
+            updateProfile(res.profile);
+            const successToast = {
+                message: 'پروفایل ویرایش شد',
+                type: 'success' as const,
             }
-
-        } catch {
-            const errorToast = {
-
-                message: 'خطا',
-                type: 'danger' as const,
-            }
+            addToast(successToast)
             setLoading(false)
-            addToast(errorToast)
+            onClose();
+            return;
         }
 
+        const errorToast = {
+            message: 'خطا',
+            type: 'danger' as const,
+        }
+        setLoading(false)
+        addToast(errorToast)
     }
 
     if (typeof window === "object") {
