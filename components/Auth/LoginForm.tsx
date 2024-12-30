@@ -3,12 +3,17 @@
 import { ArrowLeft, Github, Key, Mail } from "lucide-react";
 import GoogleIcon from "./Layout/GoogleIcon";
 import Link from "next/link";
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { zValidate } from "@/helpers/validation-helper";
 import { loginDataSchema } from "@/database/validations/auth-validation";
-import { login } from "@/app/actions/auth";
+import { loginReq } from "@/app/actions/auth";
 import { useAppStore } from "@/store/app-store";
+
+type Message = {
+    type: 'info' | 'error' | 'success';
+    body: string;
+}
 
 function LoginForm() {
 
@@ -21,8 +26,7 @@ function LoginForm() {
     const [inputs, setInputs] = useState(initInputs)
 
     const [loading, setLoading] = useState(false)
-    const [errorMsg, setErrorMsg] = useState('')
-    const [successMsg, setSuccessMsg] = useState('')
+    const [message, setMessage] = useState<Message | null>(null)
 
     const initErrors = {
         email: '',
@@ -41,58 +45,64 @@ function LoginForm() {
     async function handleCredentialsLogin(event: FormEvent) {
 
         event.preventDefault();
-
         if (loading) return
+
         setLoading(true)
-        setErrorMsg('')
-        setSuccessMsg('')
+        setMessage({
+            type: 'info',
+            body: 'در حال ورود...'
+        })
 
         //validate inputs
         const { hasError, errors } = zValidate(loginDataSchema, inputs)
 
         if (hasError) {
-            setErrorMsg('اطلاعات وارد شده صحیح نمی باشد')
+            setMessage({
+                type: 'error',
+                body: 'اطلاعات وارد شده صحیح نمی باشد'
+            })
             setErrors(errors)
             setLoading(false)
             return
         }
         setErrors(initErrors)
 
-        try {
-            const result = await login(inputs);
+        const result = await loginReq(inputs);
 
-            console.log("result is:", result);
-
-            if (result.success) {
-                setUser(result.user)
-                setSuccessMsg('با موفقیت وارد شدید')
-
-                router.push('/dashboard/profile')
-
-                // router.replace('/dashboard/profile')
-
-                // localStorage.setItem('token', token)
-                // let user = data.user;
-            }
-
-            setLoading(false)
-        } catch (err) {
-            console.log(err)
-            setErrorMsg('خطایی رخ داده است')
-            setLoading(false)
+        if (result.success) {
+            setUser(result.user)
+            setMessage({
+                type: 'success',
+                body: 'با موفقیت وارد شدید. در حال ورود به حساب کاربری...'
+            })
+            router.push('/dashboard/profile')
+            return;
         }
+
+        if (result.statusCode === 401) {
+            setMessage({
+                type: 'error',
+                body: 'کلمه عبور یا ایمیل اشتباه است'
+            })
+            setLoading(false)
+            return;
+        }
+
+        setMessage({
+            type: 'error',
+            body: 'خطا در ورود به حساب کاربری'
+        })
+        setLoading(false)
+
     }
 
     return (
         <form onSubmit={handleCredentialsLogin} className="mt-6 flex flex-col gap-y-2">
 
-            {errorMsg && (
-                <p className="block text-center my-4 text-red-500 text-base font-semibold">{errorMsg}</p>
+            {message && (
+                <p className={`block text-center my-4 ${message.type === 'error' ? 'text-red-500' : message.type === 'success' ? 'text-green-600' : 'text-gray-300'} text-base font-semibold`}>{message.body}</p>
             )}
 
-            {successMsg && (
-                <p className="block text-center my-4 text-green-600 text-base font-semibold">{successMsg}</p>
-            )}
 
             <div className="flex flex-row w-fit mx-auto rounded-full bg-black/40 overflow-hidden">
                 <div className="px-6 flex justify-center items-center">

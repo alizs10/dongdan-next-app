@@ -1,6 +1,6 @@
 'use client'
 
-import { getLoggedInUser, logout } from "@/app/actions/auth";
+import { getLoggedInUserReq, logoutReq } from "@/app/actions/auth";
 import { useAppStore } from "@/store/app-store";
 import { useToastStore } from "@/store/toast-store";
 import { BookOpenCheck, CalendarRange, Headset, Info, LogOut, Settings2, Trash, User, Users, Zap } from "lucide-react";
@@ -17,7 +17,7 @@ function Layout({ children }: { children: React.ReactNode }) {
 
         async function getUserData() {
 
-            const res = await getLoggedInUser()
+            const res = await getLoggedInUserReq()
 
             console.log(res.user)
             if (res.success) {
@@ -41,7 +41,7 @@ function Layout({ children }: { children: React.ReactNode }) {
         if (loading) return;
         setLoading(true)
 
-        const response = await logout();
+        const response = await logoutReq();
 
         if (response.success) {
             setLoading(false)
