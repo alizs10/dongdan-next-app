@@ -48,8 +48,8 @@ function MemberInfoModal({ onClose, member }: PropsTypes) {
                         <span className="text-base text-gray-700 dark:text-gray-300">{TomanPriceFormatter(getAllPersonExpends(member.id.toString()).toString())} تومان</span>
                     </div>
                     <div className="col-span-1 flex flex-col gap-y-2">
-                        <span className="text-sm text-gray-500 dark:text-gray-400">مجموع بدهی ها:</span>
-                        <span className="text-base text-gray-700 dark:text-gray-300">{TomanPriceFormatter(getAllPersonDebts(member.id.toString()).toFixed(0))} تومان</span>
+                        <span className="text-sm text-gray-500 dark:text-gray-400">سهم در مخارج:</span>
+                        <span className="text-base text-gray-700 dark:text-gray-300">{TomanPriceFormatter(getAllPersonDebts(member.id.toString()).toString())} تومان</span>
                     </div>
                     <div className="col-span-1 flex flex-col gap-y-2">
                         <span className="text-sm text-gray-500 dark:text-gray-400">مجموع پول های دریافتی:</span>
@@ -65,7 +65,7 @@ function MemberInfoModal({ onClose, member }: PropsTypes) {
                     </div>
                     <div className="col-span-1 flex flex-col gap-y-2">
                         <span className="text-sm text-gray-500 dark:text-gray-400">تسویه:</span>
-                        <span className="text-base text-gray-700 dark:text-gray-300">{TomanPriceFormatter(Math.abs(getPersonBalance(member.id.toString())).toFixed(0))} تومان</span>
+                        <span className="text-base text-gray-700 dark:text-gray-300">{TomanPriceFormatter(Math.abs(getPersonBalance(member.id.toString())).toString())} تومان</span>
                     </div>
 
                 </div>

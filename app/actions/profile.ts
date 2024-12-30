@@ -1,6 +1,7 @@
 'use server'
 
 import { SchemeType } from "@/types/event-types";
+import { Settings } from "@/types/user-types";
 import { cookies } from "next/headers";
 
 type UpdateProfileInputs = {
@@ -31,6 +32,50 @@ export async function updateProfileReq(inputs: UpdateProfileInputs) {
                 success: true,
                 profile: data.profile,
                 message: 'پروفایل شما با موفقیت بروزرسانی شد'
+            }
+        }
+
+        return {
+            success: false,
+            message: response.statusText
+        }
+
+    } catch {
+
+        return {
+            success: false,
+            message: 'خطای سرور'
+        }
+
+    }
+
+
+}
+
+export async function updateSettingsReq(inputs: Settings) {
+
+    const token = (await cookies()).get('token');
+
+    try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/profile/settings`, {
+            method: 'PUT',
+            body: JSON.stringify(inputs),
+            headers: {
+                Authorization: `Bearer ${token?.value}`,
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+            },
+        });
+
+        const data = await response.json()
+
+        console.log(data)
+
+        if (response.ok && data.status) {
+            return {
+                success: true,
+                settings: data.settings,
+                message: 'تنظیمات با موفقیت بروزرسانی شد'
             }
         }
 

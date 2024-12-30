@@ -4,11 +4,49 @@ import Link from 'next/link';
 import { MoveRight, Save } from 'lucide-react';
 import ToggleInput from '@/components/Common/Form/ToggleInput';
 import Button from '@/components/Common/Button';
-import { useSettingsStore } from '@/store/settings-store';
+import { type Settings as TypeSettings } from '@/types/user-types';
+import { useState } from 'react';
+import { updateSettingsReq } from '@/app/actions/profile';
+import { useToastStore } from '@/store/toast-store';
+import { useAppStore } from '@/store/app-store';
 
-function Settings() {
+function Settings({ data }: { data: TypeSettings }) {
 
-    const { calcAccuracy, selfIncluding, toggleSelfIncluding, toggleCalcAccuracy } = useSettingsStore(state => state);
+    const [settings, setSettings] = useState(data);
+    const [loading, setLoading] = useState(false);
+
+    const addToast = useToastStore(state => state.addToast)
+    const syncSettings = useAppStore(state => state.setSettings)
+
+    async function toggleShowAsMe() {
+
+        if (loading) return;
+        setLoading(true);
+
+        const updatedSettings = { ...settings, show_as_me: settings.show_as_me === 1 ? 0 as const : 1 as const };
+        const res = await updateSettingsReq(updatedSettings)
+
+        if (res.success) {
+            setSettings(res.settings)
+            syncSettings(res.settings)
+            const successToast = {
+                message: res.message,
+                type: 'success' as const
+            }
+            addToast(successToast)
+            setLoading(false)
+            return;
+        }
+
+        const errorToast = {
+            message: res.message,
+            type: 'danger' as const
+        }
+        addToast(errorToast)
+        setLoading(false)
+        return;
+    }
+
 
     return (
         <div className="events_container">
@@ -21,27 +59,14 @@ function Settings() {
                     <h1 className="event_header_title">تنظیمات</h1>
                 </div>
 
-                <div className="event_header_left">
-                    <Button
-                        text='ذخیره تغییرات'
-                        icon={<Save className='size-4' />}
-                        onClick={() => { }}
-                        color='accent'
-                        size='small'
-                    />
-                </div>
             </div>
 
 
             <div className="flex flex-col gap-y-2 p-5">
-                <h1 className='text-base text-gray-500 dark:text-gray-400'>تنظیمات رویداد ها</h1>
-
+                <h1 className='text-base text-gray-500 dark:text-gray-400'>تنظیمات کاربر</h1>
 
                 <div className="mt-4 text-gray-700 dark:text-gray-300">
-                    <ToggleInput label='دقت محاسبات 1000 تومان باشد' name='calc_accuracy' value={calcAccuracy} handleChange={toggleCalcAccuracy} />
-                </div>
-                <div className="mt-4 text-gray-700 dark:text-gray-300">
-                    <ToggleInput label='لیست اشخال شامل شما باشد' name='calc_accuracy' value={selfIncluding} handleChange={toggleSelfIncluding} />
+                    <ToggleInput label='نمایش نام شما بصورت خودم/من' name='calc_accuracy' value={settings.show_as_me === 1} handleChange={toggleShowAsMe} />
                 </div>
 
 

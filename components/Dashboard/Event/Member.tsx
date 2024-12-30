@@ -11,7 +11,7 @@ import { EventContext } from "@/context/EventContext";
 
 function Member({ member }: { member: Member }) {
 
-    const user = useAppStore(state => state.user)
+    const { user, settings } = useAppStore(state => state)
 
     const openDialog = useDialogStore(state => state.openDialog)
     const { deleteMember } = useContext(EventContext)
@@ -67,7 +67,7 @@ function Member({ member }: { member: Member }) {
                 <div className={`p-2 border user_avatar_${member.scheme}_border user_avatar_${member.scheme}_bg rounded-full`}>
                     <User className={`size-5 user_avatar_${member.scheme}_text`} />
                 </div>
-                <span className={`text-base user_avatar_${member.scheme}_text`}>{user?.id === member?.member_id ? 'خودم' : member.name}</span>
+                <span className={`text-base user_avatar_${member.scheme}_text`}>{user?.id === member?.member_id ? settings.show_as_me ? 'خودم' : user?.name : member.name}</span>
             </div>
 
 

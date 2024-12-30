@@ -26,7 +26,7 @@ import { deleteExpenseItemsReq } from "@/app/actions/event";
 
 function Event() {
 
-    const user = useAppStore(state => state.user)
+    const { user, settings } = useAppStore(state => state)
     const { enableSelectMode, selectMode, disableSelectMode, selectAllItems, selectedItems } = useContext(MultiSelectItemContext);
 
     const {
@@ -203,7 +203,7 @@ function Event() {
                             {event.members.map(person => (
                                 <li key={person.id} className="flex w-full justify-between items-center">
                                     <div className="flex flex-row gap-x-2 justify-center items-center">
-                                        <h1 className={`user_avatar_${person.scheme}_text`}>{person?.member_id === user?.id ? 'خودم' : person.name}</h1>
+                                        <h1 className={`user_avatar_${person.scheme}_text`}>{person?.member_id === user?.id ? settings.show_as_me ? 'خودم' : user?.name : person.name}</h1>
                                         {getPersonBalanceStatus(person.id.toString()) === 'طلبکار' && (
                                             <span className="text-[.6rem] rounded-full px-2 py-1 bg-green-100 dark:bg-green-950/30 text-green-700 dark:text-green-500">
                                                 طلبکار
@@ -220,7 +220,7 @@ function Event() {
                                             </span>
                                         )}
                                     </div>
-                                    <span className="text-sm text-gray-500 dark:text-gray-400">{TomanPriceFormatter(Math.abs(getPersonBalance(person.id.toString())).toFixed(0))} تومان</span>
+                                    <span className="text-sm text-gray-500 dark:text-gray-400">{TomanPriceFormatter(Math.abs(getPersonBalance(person.id.toString())).toString())} تومان</span>
                                 </li>
                             ))}
 
@@ -285,7 +285,7 @@ function Event() {
                         </div>
                         <div className="flex w-full justify-between items-center">
                             <h1 className="text-sm text-gray-500 dark:text-gray-400">هزینه های مادرخرج</h1>
-                            <span className="text-sm text-gray-500 dark:text-gray-400">{TomanPriceFormatter(getMaxPayer().amount.toFixed(0))} تومان</span>
+                            <span className="text-sm text-gray-500 dark:text-gray-400">{TomanPriceFormatter(getMaxPayer().amount.toString())} تومان</span>
                         </div>
 
                         <ShareEventLink />

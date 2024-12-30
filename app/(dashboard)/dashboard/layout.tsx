@@ -1,7 +1,6 @@
 'use client'
 
 import { getLoggedInUser, logout } from "@/app/actions/auth";
-import { generateUID } from "@/helpers/helpers";
 import { useAppStore } from "@/store/app-store";
 import { useToastStore } from "@/store/toast-store";
 import { BookOpenCheck, CalendarRange, Headset, Info, LogOut, Settings2, Trash, User, Users, Zap } from "lucide-react";
@@ -11,7 +10,7 @@ import { useEffect, useState } from "react";
 
 function Layout({ children }: { children: React.ReactNode }) {
 
-    const setUser = useAppStore(state => state.setUser)
+    const { setUser, setSettings } = useAppStore(state => state)
     const router = useRouter();
 
     useEffect(() => {
@@ -23,6 +22,7 @@ function Layout({ children }: { children: React.ReactNode }) {
             console.log(res.user)
             if (res.success) {
                 setUser(res.user)
+                setSettings(res.user.settings)
                 return;
             }
             router.push('/auth?form=login');

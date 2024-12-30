@@ -87,7 +87,7 @@ export const EventContext = createContext<EventContextType>(EventContextInit);
 
 export function EventContextProvider({ children, eventData }: { children: React.ReactNode, eventData: Event }) {
 
-    const user = useAppStore(state => state.user)
+    const { user, settings } = useAppStore(state => state)
     const addToast = useToastStore(state => state.addToast)
 
     const [loading, setLoading] = useState(false)
@@ -352,7 +352,19 @@ export function EventContextProvider({ children, eventData }: { children: React.
         event.expenses.forEach(expense => {
             let contributorIds = expense.type === 'expend' ? expense.contributors.map(c => c.id.toString()) : [];
             if (expense.type === 'expend' && contributorIds.includes(memberId)) {
-                total += expense.amount / expense.contributors.length;
+                let reminder = expense.amount % expense.contributors.length;
+                total += Math.floor(expense.amount / expense.contributors.length);
+
+                let reminderGoesToPayer = contributorIds.includes(expense.payer_id.toString());
+
+                // reminder goes to payer if there is any otherwise it goes to first contributor
+                if (reminder > 0) {
+                    if (reminderGoesToPayer && memberId === expense.payer_id.toString()) {
+                        total += reminder;
+                    } else if (!reminderGoesToPayer && memberId === contributorIds[0]) {
+                        total += reminder;
+                    }
+                }
             }
         });
 
@@ -393,28 +405,33 @@ export function EventContextProvider({ children, eventData }: { children: React.
         let maxPayer = '';
         let paid = 0;
 
+        if (!user || !settings) return { name: '', amount: 0 };
+
         event.members.forEach(member => {
             let memberPaid = getAllPersonExpends(member.id.toString());
             if (memberPaid > paid) {
                 paid = memberPaid;
-                maxPayer = member.name;
+                maxPayer = user.id === member.member_id ? settings.show_as_me ? 'خودم' : user.name : member.name;
             }
         })
 
         return { name: maxPayer, amount: paid };
-    }, [event.expenses]);
+    }, [event.expenses, settings, user]);
+
 
     const getPersonBalance = useCallback((memberId: string) => {
+
         const memberDebts = getAllPersonDebts(memberId);
         const memberRecieved = getAllPersonRecieved(memberId);
         const memberSent = getAllPersonSent(memberId);
         const memberExpends = getAllPersonExpends(memberId);
         const memberBalance = (memberSent + memberExpends - memberRecieved - memberDebts);
-        return (memberBalance > 999 || memberBalance < -999) ? memberBalance : 0;
-    }, [event.members, event.expenses]);
+
+        return (memberBalance > 0 || memberBalance < 0) ? memberBalance : 0;
+    }, [event.members, event.expenses, settings]);
 
     const getPersonBalanceStatus = useCallback((memberId: string) => {
-        const memberBalance = parseInt(getPersonBalance(memberId).toFixed(0));
+        const memberBalance = getPersonBalance(memberId);
         if (memberBalance > 0) {
             return 'طلبکار';
         } else if (memberBalance < 0) {
@@ -432,7 +449,7 @@ export function EventContextProvider({ children, eventData }: { children: React.
             if (memberBalance > 0) {
                 creditorsArr.push({
                     ...member,
-                    amount: parseInt(memberBalance.toFixed(0)),
+                    amount: memberBalance,
                 });
             }
         })
@@ -444,12 +461,12 @@ export function EventContextProvider({ children, eventData }: { children: React.
         const debtorsArr: SettlePerson[] = [];
         event.members.forEach(member => {
 
-            const memberBalance = parseInt(getPersonBalance(member.id.toString().toString()).toFixed(0));
+            const memberBalance = getPersonBalance(member.id.toString());
 
             if (memberBalance < 0) {
                 debtorsArr.push({
                     ...member,
-                    amount: parseInt(Math.abs(memberBalance).toFixed(0)),
+                    amount: Math.abs(memberBalance),
                 });
             }
         })
@@ -484,7 +501,7 @@ export function EventContextProvider({ children, eventData }: { children: React.
                 amount: transactionAmount,
             });
 
-            hints.push(`${debtorName} باید مقدار ${TomanPriceFormatter(transactionAmount.toFixed(0))} تومان به ${creditorName} پرداخت ${debtorName === 'من' ? 'کنم' : 'کند'}.`);
+            hints.push(`${debtorName} باید مقدار ${TomanPriceFormatter(transactionAmount.toString())} تومان به ${creditorName} پرداخت ${debtorName === 'من' ? 'کنم' : 'کند'}.`);
             debtor.amount -= transactionAmount;
             creditor.amount -= transactionAmount;
 

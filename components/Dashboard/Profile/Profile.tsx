@@ -10,9 +10,11 @@ import EditProfileModal from './EditProfileModal';
 import ChangePasswordModal from './ChangePasswordModal';
 import { type User as TypeUser } from '@/types/user-types';
 import moment from 'jalali-moment';
+import { useAppStore } from '@/store/app-store';
 
 function Profile({ data }: { data: TypeUser }) {
 
+    const syncUser = useAppStore(state => state.setUser)
     const [profile, setProfile] = useState<TypeUser>(data);
 
     const openDialog = useDialogStore(state => state.openDialog)
@@ -29,6 +31,7 @@ function Profile({ data }: { data: TypeUser }) {
     }
 
     function updateProfile(updatedProfile: TypeUser) {
+        syncUser(updatedProfile)
         setProfile(updatedProfile)
     }
 

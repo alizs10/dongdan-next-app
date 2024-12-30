@@ -1,3 +1,4 @@
+import { useAppStore } from "@/store/app-store";
 import { SchemeType } from "@/types/event-types";
 import { Ban, User, Users } from "lucide-react";
 
@@ -43,6 +44,8 @@ function MemberSelector({ label, members, onSelect, value, error, self = undefin
         return 0;
     }));
 
+    const { settings, user } = useAppStore(state => state);
+
     return (
 
         <div className="flex flex-col gap-y-2">
@@ -67,7 +70,7 @@ function MemberSelector({ label, members, onSelect, value, error, self = undefin
                             <User className="size-5" />
                         </div>
 
-                        <span className="text-base">خودم</span>
+                        <span className="text-base">{settings.show_as_me ? 'خودم' : user?.name}</span>
                     </div>
                 )}
 
@@ -77,7 +80,7 @@ function MemberSelector({ label, members, onSelect, value, error, self = undefin
                             <User className="size-5" />
                         </div>
 
-                        <span className="text-base">{member.member_id?.toString() === self?.id ? 'خودم' : member.name}</span>
+                        <span className="text-base">{member.member_id?.toString() === self?.id ? settings.show_as_me ? 'خودم' : user?.name : member.name}</span>
                     </div>
                 ))}
 

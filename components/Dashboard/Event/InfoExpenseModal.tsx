@@ -89,7 +89,7 @@ function InfoExpenseModal({ onClose, expense }: { onClose: () => void, expense: 
 
                                 <div className="flex flex-col gap-y-3">
                                     <span className={`text-base primary_text_color capitalize`}>سهم هر عضو</span>
-                                    <span className="w-full text-center py-3 text-base lg:text-lg font-semibold bg-gray-200 dark:bg-gray-800 app_text_color rounded-full">{TomanPriceFormatter((expense.amount / expense.contributors.length).toFixed(0))} تومان</span>
+                                    <span className="w-full text-center py-3 text-base lg:text-lg font-semibold bg-gray-200 dark:bg-gray-800 app_text_color rounded-full">{TomanPriceFormatter((expense.amount / expense.contributors.length).toString())} تومان</span>
                                 </div>
 
                                 <div className="flex flex-col gap-y-3">
