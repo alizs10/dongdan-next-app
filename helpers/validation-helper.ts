@@ -1,41 +1,46 @@
 import { ZodSchema } from "zod";
 
 export const zValidate = (schema: ZodSchema, data: object) => {
-
-    let validationErrors: any = {};
-    let hasError = false;
-
-    let validationRes = schema.safeParse(data)
+    const validationRes = schema.safeParse(data);
 
     if (!validationRes.success) {
-        hasError = true;
-        let errors = validationRes.error.errors
-
-        let errorPaths = []
-
-        for (let errorObj of errors) {
+        const errorPaths = validationRes.error.errors.reduce((acc: { path: string; message: string[] }[], errorObj) => {
             const errorMsg = errorObj.message;
-            let paths = errorObj.path;
+            const path = errorObj.path.join("_");
 
-            let existsPath = errorPaths.find(errorPath => errorPath.path === paths.join("."))
+            const existingPath = acc.find(item => item.path === path);
 
-            if (existsPath) {
-
-                let pathIndex = errorPaths.findIndex(errorPath => errorPath.path === paths.join("_"))
-                errorPaths[pathIndex].message.push(errorMsg)
-
+            if (existingPath) {
+                existingPath.message.push(errorMsg);
             } else {
-                errorPaths.push({ path: paths.join("_"), message: [errorMsg] })
+                acc.push({ path, message: [errorMsg] });
             }
-        }
 
-        for (const errorPath of errorPaths) {
-            validationErrors[errorPath.path] = errorPath.message[0]
-        }
+            return acc;
+        }, []);
 
-        return { hasError, errors: validationErrors }
+        const validationErrors = errorPaths.reduce((acc: Record<string, string>, errorPath) => {
+            acc[errorPath.path] = errorPath.message[0];
+            return acc;
+        }, {});
+
+        return { hasError: true, errors: validationErrors };
     }
 
+    return {
+        hasError: false,
+        values: validationRes.data,
+        errors: {}
+    };
+}
+export const transformLaravelFieldErrors = (laravelErrors: Record<string, string[]>) => {
 
-    return { hasError, values: validationRes.data, errors: validationErrors }
+    let errors: Record<string, string> = {}
+
+    for (const [key, value] of Object.entries(laravelErrors)) {
+        let error = value[0]
+        errors[key] = error
+    }
+
+    return errors
 }

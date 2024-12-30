@@ -1,98 +1,93 @@
 'use client'
 
+import { RegisterCredentials, registerReq } from "@/app/actions/auth";
 import { registerDataSchema } from "@/database/validations/auth-validation";
-import { zValidate } from "@/helpers/validation-helper";
+import { transformLaravelFieldErrors, zValidate } from "@/helpers/validation-helper";
 import { ArrowLeft, Key, Mail } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 
+type Message = {
+    type: 'info' | 'error' | 'success';
+    body: string;
+}
+
 function RegisterForm() {
 
     const [loading, setLoading] = useState(false)
-    const [errorMsg, setErrorMsg] = useState('')
+    const [message, setMessage] = useState<Message | null>(null)
 
     const initInputs = {
         email: '',
         password: '',
-        confirmPassword: '',
+        password_confirmation: '',
     }
 
-    const [inputs, setInputs] = useState(initInputs)
+    const [inputs, setInputs] = useState<RegisterCredentials>(initInputs)
 
     const initErrors = {
         email: '',
         password: '',
-        confirmPassword: ''
+        password_confirmation: ''
     }
     const [errors, setErrors] = useState(initErrors)
 
     const router = useRouter();
 
     async function onSubmit(e: FormEvent<HTMLFormElement>) {
-
         e.preventDefault()
 
         if (loading) return
         setLoading(true)
-        setErrorMsg('')
+        setMessage({
+            type: 'info',
+            body: 'در حال ورود...'
+        })
 
-        try {
+        const { hasError, errors } = zValidate(registerDataSchema, inputs)
 
-            // validate form inputs
-            const { hasError, errors } = zValidate(registerDataSchema, inputs)
-            console.log("we are here", inputs)
-            if (hasError) {
-                const errMsg = "اطلاعات وارد شده صحیح نمی باشد"
-                // or just show a error toast
-                setErrorMsg(errMsg)
-                setErrors({ ...initErrors, ...errors })
-                setLoading(false)
-                return
-            }
-            setErrors(initErrors)
-
-            const formData = new FormData;
-            for (const key in inputs) {
-                formData.append(key, inputs[key as keyof typeof inputs])
-            }
-
-            const result = await fetch('/api/auth/register',
-                {
-                    method: 'POST',
-                    body: formData
-                })
-
-            if (!result.ok) {
-
-                if (result.status === 409) {
-                    const errMsg = 'این ایمیل قبلا استفاده شده است'
-                    setErrorMsg(errMsg)
-                } else {
-                    setErrorMsg(result.statusText)
-                }
-
-                setLoading(false)
-                return
-            }
-
-            // first show a success toast
-
-            // then redirect user
-            router.push('/auth?form=login')
-        } catch {
-            const errMsg = "خطای سرور"
-            // or just show a error toast
-            setErrorMsg(errMsg)
+        if (hasError) {
             setLoading(false)
+            setErrors({ ...initErrors, ...errors })
+            setMessage({
+                type: 'error',
+                body: 'اطلاعات وارد شده صحیح نمی باشد'
+            })
+            return
         }
+        setErrors(initErrors)
+
+
+        const res = await registerReq(inputs)
+
+        if (!res.success) {
+            setLoading(false)
+            setMessage({
+                type: 'error',
+                body: res.message
+            })
+
+            if (res?.statusCode === 422) {
+                setErrors({ ...initErrors, ...transformLaravelFieldErrors(res.errors) })
+            }
+
+            return
+        }
+
+        setMessage({
+            type: 'success',
+            body: 'ثبت نام با موفقیت انجام شد. در حال ورود به حساب کاربری...'
+        })
+        router.push('/auth?form==login')
 
     }
 
     return (
         <form onSubmit={onSubmit}>
-            {errorMsg && (
-                <p className="block text-center my-4 text-red-500 text-base font-semibold">{errorMsg}</p>
+            {message && (
+                <p className={`block text-center my-4 ${message.type === 'error' ? 'text-red-500' : message.type === 'success' ? 'text-green-600' : 'text-gray-300'} text-base font-semibold`}>{message.body}</p>
             )}
+
             <div className="mt-6 flex flex-col gap-y-2">
 
 
@@ -140,16 +135,16 @@ function RegisterForm() {
                     <input
                         className="bg-transparent font-sans placeholder:text-gray-400 placeholder:font-[estedadFD] placeholder:font-normal text-indigo-200 px-5 py-3 text-lg focus:outline-none"
                         type="password"
-                        name="confirmPassword"
+                        name="password_confirmation"
                         dir="ltr"
-                        value={inputs.confirmPassword}
+                        value={inputs.password_confirmation}
                         onChange={e => setInputs(prev => ({ ...prev, [e.target.name]: e.target.value }))}
                         placeholder="تکرار رمز عبور"
                     />
 
                 </div>
-                {errors.confirmPassword && (
-                    <span className="text-red-500 text-xs font-semibold text-center">{errors.confirmPassword}</span>
+                {errors.password_confirmation && (
+                    <span className="text-red-500 text-xs font-semibold text-center">{errors.password_confirmation}</span>
                 )}
 
                 <button className="flex flex-row gap-x-3 transition-all duration-300 border-2 border-transparent hover:text-indigo-600 hover:border-indigo-600 px-5 py-3 text-lg rounded-full bg-black/40 justify-center items-center text-indigo-200 w-fit mx-auto mt-4" type="submit">

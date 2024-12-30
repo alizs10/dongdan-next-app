@@ -103,7 +103,6 @@ function LoginForm() {
                 <p className={`block text-center my-4 ${message.type === 'error' ? 'text-red-500' : message.type === 'success' ? 'text-green-600' : 'text-gray-300'} text-base font-semibold`}>{message.body}</p>
             )}
 
-
             <div className="flex flex-row w-fit mx-auto rounded-full bg-black/40 overflow-hidden">
                 <div className="px-6 flex justify-center items-center">
                     <Mail className="size-6 text-indigo-200" />

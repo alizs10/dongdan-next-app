@@ -2,7 +2,18 @@
 
 import { cookies } from 'next/headers'
 
-export async function loginReq(credentials: { email: string; password: string }) {
+export type LoginCredentials = {
+    email: string;
+    password: string;
+}
+
+export type RegisterCredentials = {
+    email: string;
+    password: string;
+    password_confirmation: string;
+}
+
+export async function loginReq(credentials: LoginCredentials) {
 
     const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/login`, {
         method: 'POST',
@@ -14,9 +25,6 @@ export async function loginReq(credentials: { email: string; password: string })
     });
 
     const data = await response.json();
-
-    console.log(response)
-    console.log(data)
 
     if (data.token) {
         (await cookies()).set('token', data.token, {
@@ -30,6 +38,32 @@ export async function loginReq(credentials: { email: string; password: string })
 
 
     return { success: false, message: data.message, statusCode: response.status };
+}
+
+export async function registerReq(credentials: RegisterCredentials) {
+
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/register`, {
+        method: 'POST',
+        body: JSON.stringify(credentials),
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+        }
+    });
+
+    const data = await response.json();
+
+    if (!response.ok && response.status === 422) {
+        return { success: false, message: 'اطلاعات وارد شده صحیح نمی باشد.', statusCode: response.status, errors: data.errors };
+    }
+
+    if (response.ok && data.status) {
+        return { success: true, message: 'کاربر با موفقیت ثبت نام شد.' };
+    }
+
+
+
+    return { success: false, message: data.message };
 }
 
 export async function logoutReq() {
