@@ -66,6 +66,32 @@ export async function registerReq(credentials: RegisterCredentials) {
     return { success: false, message: data.message };
 }
 
+export async function sendEmailVerificationReq() {
+
+    const token = (await cookies()).get('token');
+
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/verify-email`, {
+        method: 'GET',
+        headers: {
+            Authorization: `Bearer ${token?.value}`,
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+        }
+    });
+
+    const data = await response.json();
+
+    if (!response.ok && response.status === 400) {
+        return { success: false, message: 'ایمیل شما قبلا تایید شده است' };
+    }
+
+    if (response.ok && data.status) {
+        return { success: true, message: 'ایمیل تایید حساب برای شما ارسال شد.' };
+    }
+
+    return { success: false, message: data.message };
+}
+
 export async function logoutReq() {
 
     const token = (await cookies()).get('token');
