@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link';
-import { BadgeCheck, Key, LoaderCircle, MoveRight, User, UserPen } from 'lucide-react';
+import { BadgeCheck, Key, LoaderCircle, MoveRight, User, UserPen, UserX } from 'lucide-react';
 import Button from '@/components/Common/Button';
 import { useDialogStore } from '@/store/dialog-store';
 import { useToastStore } from '@/store/toast-store';
@@ -175,7 +175,7 @@ function Profile({ data }: { data: TypeUser }) {
                     />
                     <Button
                         text='حذف حساب کاربری'
-                        icon={<Key className='size-4' />}
+                        icon={<UserX className='size-4' />}
                         onClick={onDeleteAccClick}
                         color='danger'
                         size='small'

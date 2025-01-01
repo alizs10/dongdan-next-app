@@ -31,3 +31,14 @@ export const resetPasswordDataSchema = z.object({
 }).refine(data => data.password === data.password_confirmation, {
     message: "تکرار رمز عبور با رمز عبور هم خوانی ندارد",
 })
+
+export const changePasswordSchema = z.object({
+    password: z.string().min(8, "رمز عبور باید حداقل شامل 8 کارکتر باشد"),
+    new_password: z.string()
+        .min(8, "رمز عبور باید حداقل شامل 8 کارکتر باشد")
+        .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>])/, "رمز عبور باید حداقل شامل یک حرف لاتین بزرگ، کوچک، عدد و یک کارکتر خاص باشد"),
+    new_password_confirmation: z.string().min(8, "رمز عبور باید حداقل شامل 8 کارکتر باشد"),
+}).refine(data => data.new_password === data.new_password_confirmation, {
+    message: "تکرار رمز عبور با رمز عبور هم خوانی ندارد",
+    path: ["new_password_confirmation"]
+})

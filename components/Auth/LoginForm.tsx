@@ -82,7 +82,7 @@ function LoginForm() {
         if (result.statusCode === 401) {
             setMessage({
                 type: 'error',
-                body: 'کلمه عبور یا ایمیل اشتباه است'
+                body: 'رمز عبور یا ایمیل اشتباه است'
             })
             setLoading(false)
             return;
