@@ -81,6 +81,8 @@ export async function sendEmailVerificationReq() {
 
     const data = await response.json();
 
+    console.log(data)
+
     if (!response.ok && response.status === 400) {
         return { success: false, message: 'ایمیل شما قبلا تایید شده است' };
     }
