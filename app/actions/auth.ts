@@ -19,6 +19,10 @@ export type ChangePasswordInputs = {
     new_password_confirmation: string;
 }
 
+export type ForgotPasswordInputs = {
+    email: string;
+}
+
 export async function loginReq(credentials: LoginCredentials) {
 
     const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/login`, {
@@ -116,7 +120,29 @@ export async function changePasswordReq(changePasswordInputs: ChangePasswordInpu
 
     const data = await response.json();
 
-    console.log(data)
+    if (!response.ok && response.status === 422) {
+        return { success: false, message: 'اطلاعات وارد شده صحیح نمی باشد.', statusCode: response.status, errors: data.errors };
+    }
+
+    if (response.ok && data.status) {
+        return { success: true, message: data.message };
+    }
+
+    return { success: false, message: data.message || response.statusText };
+}
+
+export async function forgotPasswordReq(forgotPasswordInputs: ForgotPasswordInputs) {
+
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/forgot-password`, {
+        method: 'POST',
+        body: JSON.stringify(forgotPasswordInputs),
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+        }
+    });
+
+    const data = await response.json();
 
     if (!response.ok && response.status === 422) {
         return { success: false, message: 'اطلاعات وارد شده صحیح نمی باشد.', statusCode: response.status, errors: data.errors };

@@ -18,7 +18,7 @@ export const registerDataSchema = z.object({
     path: ["password_confirmation"]
 });
 
-export const forgotPasswordDataSchema = z.object({
+export const forgotPasswordSchema = z.object({
     email: z.string().min(1, 'وارد کردن ایمیل ضروری است').email("آدرس ایمیل صحیح نمی باشد"),
 })
 

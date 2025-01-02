@@ -1,19 +1,26 @@
 'use client'
 
-import { forgotPasswordDataSchema } from "@/database/validations/auth-validation";
-import { zValidate } from "@/helpers/validation-helper";
+import { forgotPasswordReq } from "@/app/actions/auth";
+import { forgotPasswordSchema } from "@/database/validations/auth-validation";
+import { transformLaravelFieldErrors, zValidate } from "@/helpers/validation-helper";
 import { Key, Mail, MoveRight, Send } from "lucide-react";
 import Link from "next/link";
 import { FormEvent, useState } from "react";
 
+
+type Message = {
+    type: 'info' | 'error' | 'success';
+    body: string;
+}
+
+
 function ForgotPasswordForm() {
 
-    const [email, setEmail] = useState('')
     const [loading, setLoading] = useState(false)
-    const [errorMsg, setErrorMsg] = useState('')
-    const [successMsg, setSuccessMsg] = useState('')
+    const [message, setMessage] = useState<Message | null>(null)
+    const [email, setEmail] = useState('')
 
-    const [errors, setErrors] = useState({
+    const [errors, setErrors] = useState<Record<string, string>>({
         email: ''
     })
 
@@ -22,46 +29,51 @@ function ForgotPasswordForm() {
 
         if (loading) return
         setLoading(true)
-        setErrorMsg('')
-        setSuccessMsg('')
+        setMessage({
+            type: 'info',
+            body: 'در حال ارسال ایمیل بازیابی...'
+        })
 
-        try {
-
-            const formData = new FormData;
-            formData.append('email', email)
-
-            // validate email
-
-            const { hasError, errors } = zValidate(forgotPasswordDataSchema, { email })
-
-            if (hasError) {
-                const errorMsg = 'اطلاعات وارد شده معتبر نمی باشد'
-
-                setErrorMsg(errorMsg)
-                setErrors(errors)
-                setLoading(false)
-                return
-            }
-
-            const res = await fetch('/api/auth/forgot-password', {
-                method: 'POST',
-                body: formData
-            })
-
-            const data = await res.json()
-            if (data.status) {
-                setSuccessMsg(data.message)
-            } else {
-                setErrorMsg(data.message)
-            }
-
-            setLoading(false)
-        } catch (error) {
-            console.log(error)
-            setLoading(false)
-            setErrorMsg('An error occurred. Please try again later.')
+        const inputs = {
+            email
         }
 
+        const { hasError, errors } = zValidate(forgotPasswordSchema, inputs)
+
+        if (hasError) {
+            setErrors(errors)
+            setLoading(false)
+            setMessage({
+                type: 'error',
+                body: 'اطلاعات وارد شده صحیح نمی باشد'
+            })
+            return
+        }
+        setErrors({
+            email: ''
+        })
+
+        const res = await forgotPasswordReq(inputs)
+
+        if (!res.success) {
+            setLoading(false)
+            setMessage({
+                type: 'error',
+                body: res.message
+            })
+            if (res?.statusCode === 422) {
+                setErrors(transformLaravelFieldErrors(res.errors))
+            }
+            return
+        }
+
+        setLoading(false)
+        setMessage({
+            type: 'success',
+            body: res.message
+        })
+
+        setEmail('')
 
     }
 
@@ -75,12 +87,8 @@ function ForgotPasswordForm() {
 
             <h1 className="text-xl font-bold text-indigo-100 mt-4">بازیابی رمز عبور</h1>
 
-            {errorMsg && (
-                <p className="block text-center my-4 text-red-500 text-base font-semibold">{errorMsg}</p>
-            )}
-
-            {successMsg && (
-                <p className="block text-center my-4 text-green-600 text-base font-semibold">{successMsg}</p>
+            {message && (
+                <p className={`block text-center my-4 ${message.type === 'error' ? 'text-red-500' : message.type === 'success' ? 'text-green-600' : 'text-gray-300'} text-base font-semibold`}>{message.body}</p>
             )}
 
 

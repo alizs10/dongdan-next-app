@@ -3,7 +3,7 @@
 import TextInput from "@/components/Common/Form/TextInput";
 import ModalHeader from "@/components/Common/ModalHeader";
 import ModalWrapper from "@/components/Common/ModalWrapper";
-import { zValidate } from "@/helpers/validation-helper";
+import { transformLaravelFieldErrors, zValidate } from "@/helpers/validation-helper";
 import { Pencil, Save } from "lucide-react";
 import { useState } from "react";
 import { createPortal, useFormStatus } from "react-dom";
@@ -70,7 +70,7 @@ function ChangePasswordModal({ onClose }: { onClose: () => void }) {
                 type: 'danger' as const
             })
             if (res?.errors) {
-                setFormErrors(res.errors);
+                setFormErrors(transformLaravelFieldErrors(res.errors));
             }
             setLoading(false)
             return;
