@@ -22,7 +22,8 @@ export const forgotPasswordSchema = z.object({
     email: z.string().min(1, 'وارد کردن ایمیل ضروری است').email("آدرس ایمیل صحیح نمی باشد"),
 })
 
-export const resetPasswordDataSchema = z.object({
+export const resetPasswordSchema = z.object({
+    email: z.string().min(1, 'وارد کردن ایمیل ضروری است').email("آدرس ایمیل صحیح نمی باشد"),
     token: z.string().min(1, 'وارد کردن توکن ضروری است').length(64, 'توکن معتبر نمی باشد'),
     password: z.string()
         .min(8, "رمز عبور باید حداقل شامل 8 کارکتر باشد")
@@ -30,6 +31,7 @@ export const resetPasswordDataSchema = z.object({
     password_confirmation: z.string().min(8, "رمز عبور باید حداقل شامل 8 کارکتر باشد"),
 }).refine(data => data.password === data.password_confirmation, {
     message: "تکرار رمز عبور با رمز عبور هم خوانی ندارد",
+    path: ["password_confirmation"]
 })
 
 export const changePasswordSchema = z.object({

@@ -1,102 +1,106 @@
 'use client'
 
-import { resetPasswordDataSchema } from "@/database/validations/auth-validation";
-import { zValidate } from "@/helpers/validation-helper";
+import { ResetPasswordInputs, resetPasswordReq } from "@/app/actions/auth";
+import { resetPasswordSchema } from "@/database/validations/auth-validation";
+import { transformLaravelFieldErrors, zValidate } from "@/helpers/validation-helper";
 import { Key, MoveRight, Pen } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { FormEvent, useEffect, useState } from "react";
 
+
+type Message = {
+    type: 'info' | 'error' | 'success';
+    body: string;
+}
+
+
 function ResetPasswordForm() {
 
+    const [message, setMessage] = useState<Message | null>(null)
+    const [loading, setLoading] = useState(false)
+
     const searchParams = useSearchParams()
+
     const token = searchParams.get('token')
+    const email = searchParams.get('email')
 
     const router = useRouter()
 
     useEffect(() => {
 
-        if (!token) {
+        if (!token || !email) {
             router.replace('/auth?form=login')
         }
 
     }, [router, token])
 
-    const [loading, setLoading] = useState(false)
-    const [errorMsg, setErrorMsg] = useState('')
-    const [successMsg, setSuccessMsg] = useState('')
 
     const initInputs = {
         password: '',
-        confirmPassword: ''
+        password_confirmation: ''
     }
 
     const [inputs, setInputs] = useState(initInputs)
 
     const initErrors = {
         password: '',
-        confirmPassword: ''
+        password_confirmation: ''
     }
 
-    const [errors, setErrors] = useState(initErrors)
+    const [errors, setErrors] = useState<Record<string, string>>(initErrors)
 
     async function handleSubmit(event: FormEvent) {
         event.preventDefault()
-
         if (loading) return
-
         setLoading(true)
-        setErrorMsg('')
-        setSuccessMsg('')
+        setMessage({
+            type: 'info',
+            body: 'در حال ارسال درخواست...'
+        })
 
-        try {
 
-            // validate inputs
-
-            const { hasError, errors } = zValidate(resetPasswordDataSchema, { token, ...inputs })
-
-            if (hasError) {
-                const errorMsg = 'اطلاعات وارد شده معتبر نمی باشد'
-                console.log(errors)
-                setErrorMsg(errorMsg)
-                setErrors(errors)
-                setLoading(false)
-                return
-            }
-            setErrors(initErrors)
-
-            const formData = new FormData;
-            formData.append('token', token as string)
-            formData.append('password', inputs.password)
-            formData.append('confirmPassword', inputs.confirmPassword)
-
-            const res = await fetch('/api/auth/reset-password', {
-                method: 'POST',
-                body: formData
-            })
-
-            const data = await res.json()
-
-            if (data.status) {
-                setSuccessMsg(data.message)
-                setLoading(false)
-                setInputs(initInputs)
-
-                router.replace('/auth?form=login')
-            } else {
-                setErrorMsg(data.message)
-                setLoading(false)
-            }
-
-        } catch (error) {
-
-            console.log(error)
-            setErrorMsg('An error occurred. Please try again later.')
-            setLoading(false)
+        const resetPasswordInputs: ResetPasswordInputs = {
+            email: email ?? '',
+            token: token ?? '',
+            password: inputs.password,
+            password_confirmation: inputs.password_confirmation
         }
 
-    }
+        const { hasError, errors } = zValidate(resetPasswordSchema, resetPasswordInputs)
 
+        if (hasError) {
+            setLoading(false)
+            setErrors(errors)
+            setMessage({
+                type: 'error',
+                body: 'اطلاعات وارد شده صحیح نمی باشد'
+            })
+            return
+        }
+        setErrors(initErrors)
+
+        const res = await resetPasswordReq(resetPasswordInputs)
+
+        if (!res.success) {
+            setLoading(false)
+            setMessage({
+                type: 'error',
+                body: res.message
+            })
+            if (res?.statusCode === 422) {
+                setErrors(transformLaravelFieldErrors(res.errors))
+            }
+            return
+        }
+
+        setLoading(false)
+        setInputs(initInputs)
+        setMessage({
+            type: 'success',
+            body: res.message
+        })
+    }
 
     return (
 
@@ -108,12 +112,8 @@ function ResetPasswordForm() {
 
             <h1 className="text-xl font-bold text-indigo-100 mt-4">بازنشانی رمز عبور</h1>
 
-            {errorMsg && (
-                <p className="block text-center my-4 text-red-500 text-base font-semibold">{errorMsg}</p>
-            )}
-
-            {successMsg && (
-                <p className="block text-center my-4 text-green-600 text-base font-semibold">{successMsg}</p>
+            {message && (
+                <p className={`block text-center my-4 ${message.type === 'error' ? 'text-red-500' : message.type === 'success' ? 'text-green-600' : 'text-gray-300'} text-base font-semibold`}>{message.body}</p>
             )}
 
             <div className="mt-6 flex flex-col gap-y-2">
@@ -146,13 +146,13 @@ function ResetPasswordForm() {
                         type="password"
                         name="password"
                         dir="ltr"
-                        value={inputs.confirmPassword}
-                        onChange={(e) => setInputs({ ...inputs, confirmPassword: e.target.value })}
+                        value={inputs.password_confirmation}
+                        onChange={(e) => setInputs({ ...inputs, password_confirmation: e.target.value })}
                         placeholder="تکرار رمز عبور"
                     />
                 </div>
-                {errors.confirmPassword && (
-                    <span className="text-red-500 text-xs font-semibold text-center">{errors.confirmPassword}</span>
+                {errors.password_confirmation && (
+                    <span className="text-red-500 text-xs font-semibold text-center">{errors.password_confirmation}</span>
                 )}
 
                 <button type="submit" className="flex flex-row gap-x-3 transition-all duration-300 border-2 border-transparent hover:text-indigo-600 hover:border-indigo-600 px-5 py-3 text-lg rounded-full bg-black/40 justify-center items-center text-indigo-200 w-fit mx-auto mt-4">

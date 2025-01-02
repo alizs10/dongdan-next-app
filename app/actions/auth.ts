@@ -23,6 +23,13 @@ export type ForgotPasswordInputs = {
     email: string;
 }
 
+export type ResetPasswordInputs = {
+    email: string;
+    token: string;
+    password: string;
+    password_confirmation: string;
+}
+
 export async function loginReq(credentials: LoginCredentials) {
 
     const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/login`, {
@@ -136,6 +143,30 @@ export async function forgotPasswordReq(forgotPasswordInputs: ForgotPasswordInpu
     const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/forgot-password`, {
         method: 'POST',
         body: JSON.stringify(forgotPasswordInputs),
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+        }
+    });
+
+    const data = await response.json();
+
+    if (!response.ok && response.status === 422) {
+        return { success: false, message: 'اطلاعات وارد شده صحیح نمی باشد.', statusCode: response.status, errors: data.errors };
+    }
+
+    if (response.ok && data.status) {
+        return { success: true, message: data.message };
+    }
+
+    return { success: false, message: data.message || response.statusText };
+}
+
+export async function resetPasswordReq(resetPasswordInputs: ResetPasswordInputs) {
+
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/reset-password`, {
+        method: 'POST',
+        body: JSON.stringify(resetPasswordInputs),
         headers: {
             'Content-Type': 'application/json',
             'Accept': 'application/json',
