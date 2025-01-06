@@ -9,9 +9,8 @@ import NoContacts from "./NoContacts";
 import Link from "next/link";
 import { ContactsContext } from "@/context/ContactsContext";
 import { MultiSelectItemContext } from "@/context/MultiSelectItemContext";
-import { Toast, useToastStore } from "@/store/toast-store";
+import { useToastStore } from "@/store/toast-store";
 import { useDialogStore } from "@/store/dialog-store";
-import { generateUID } from "@/helpers/helpers";
 import { trashContactItemsReq } from "@/app/actions/contacts";
 
 function Contacts() {

@@ -2,7 +2,6 @@
 
 import ModalHeader from "@/components/Common/ModalHeader";
 import ModalWrapper from "@/components/Common/ModalWrapper";
-import { useEventStore } from "@/store/event-store";
 import { Contact } from "@/types/contact-types";
 import { Event } from "@/types/event-types";
 import moment from "jalali-moment";
@@ -17,20 +16,7 @@ type PropsTypes = {
 
 function ContactInfoModal({ onClose, contact }: PropsTypes) {
 
-    let events = useEventStore(state => state.events)
-    events = useMemo(() => events.filter(e => e.deleted_at === null), [events])
-
-    const getUserEvents = useCallback(() => {
-        const userEvents: Event[] = []
-
-        events.forEach(event => {
-            if (event.group.some(m => m.id === contact.id)) {
-                userEvents.push(event)
-            }
-        })
-
-        return userEvents;
-    }, [events, contact.id])
+    return null;
 
     return (
         <ModalWrapper onClose={onClose}>

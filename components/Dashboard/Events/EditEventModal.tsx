@@ -56,7 +56,7 @@ function EditEventModal({ onClose, event }: { onClose: () => void, event: Event 
         start_date: '',
         members: '',
     }
-    const [formErrors, setFormErrors] = useState(initFormErrors);
+    const [formErrors, setFormErrors] = useState<Record<string, string>>(initFormErrors);
 
 
     useEffect(() => {

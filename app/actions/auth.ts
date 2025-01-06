@@ -233,3 +233,30 @@ export async function getLoggedInUserReq() {
 
     }
 }
+
+export async function loginWithGoogle(params: string) {
+
+    const response = await fetch(`http://localhost:8000/api/auth/google/callback${params}`, {
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+        }
+    });
+
+    const data = await response.json();
+
+    console.log(data)
+    if (response.ok && data.token) {
+
+        await (await cookies()).delete('token');
+        await (await cookies()).set('token', data.token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'strict',
+            path: '/'
+        });
+        return { success: true, message: 'با موفقیت وارد شدید' };
+    }
+
+    return { success: false, message: data.message };
+}

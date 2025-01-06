@@ -32,15 +32,25 @@ function LoginForm() {
         email: '',
         password: ''
     }
-    const [errors, setErrors] = useState(initErrors)
+    const [errors, setErrors] = useState<Record<string, string>>(initErrors)
 
     const router = useRouter()
 
+    const handleGoogleLogin = async () => {
 
-    async function loginWithProvider(provider: 'google' | 'github') {
-        //login
-        console.log(provider)
-    }
+        // Get redirect URL from backend
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/google`, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json'
+            }
+        });
+        const { url } = await response.json();
+
+        // Redirect to Google
+        window.location.href = url;
+    };
+
 
     async function handleCredentialsLogin(event: FormEvent) {
 
@@ -154,11 +164,7 @@ function LoginForm() {
 
             <div className="flex flex-col gap-y-2">
 
-                <button onClick={() => loginWithProvider('github')} className="flex flex-row gap-x-3 transition-all duration-300 border-2 border-transparent hover:text-indigo-600 hover:border-indigo-600 px-5 py-3 text-lg rounded-full bg-black/40 justify-center items-center text-indigo-200 w-fit mx-auto mt-4" type="button">
-                    <Github className="size-6" />
-                    <span className="text-indigo-200">ورود با گیت هاب</span>
-                </button>
-                <button onClick={() => loginWithProvider('google')} className="flex flex-row gap-x-3 transition-all duration-300 border-2 border-transparent hover:text-indigo-600 hover:border-indigo-600 px-5 py-3 text-lg rounded-full bg-black/40 justify-center items-center text-indigo-200 w-fit mx-auto mt-4" type="button">
+                <button onClick={handleGoogleLogin} className="flex flex-row gap-x-3 transition-all duration-300 border-2 border-transparent hover:text-indigo-600 hover:border-indigo-600 px-5 py-3 text-lg rounded-full bg-black/40 justify-center items-center text-indigo-200 w-fit mx-auto mt-4" type="button">
                     <div className="size-6">
                         <GoogleIcon />
                     </div>

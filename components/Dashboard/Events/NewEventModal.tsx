@@ -78,7 +78,7 @@ function NewEventModal({ onClose }: { onClose: () => void }) {
         self_included: '',
         members: ''
     }
-    const [formErrors, setFormErrors] = useState(initFormErrors);
+    const [formErrors, setFormErrors] = useState<Record<string, string>>(initFormErrors);
 
 
     function handleChangeDate(date: DateObject) {
@@ -105,16 +105,17 @@ function NewEventModal({ onClose }: { onClose: () => void }) {
     }
 
     function toggleAllMembers() {
-        const allPossibleMembers = contacts;
+        if (contacts === null) return
 
-        if (allPossibleMembers === null) return
+        const allPossibleMembersCount = (contacts?.length ?? 0) + 1;
+        const membersCount = inputs.members.length + (inputs.self_included ? 1 : 0);
 
-        if (inputs.members.length === allPossibleMembers.length) {
+        if (membersCount === allPossibleMembersCount) {
             setInputs(prev => ({ ...prev, members: [], self_included: false }))
             return
         }
 
-        setInputs(prev => ({ ...prev, self_included: true, members: allPossibleMembers.map(p => p.id.toString()) ?? [] }))
+        setInputs(prev => ({ ...prev, self_included: true, members: contacts.map(p => p.id.toString()) ?? [] }))
 
     }
 
@@ -254,7 +255,7 @@ function NewEventModal({ onClose }: { onClose: () => void }) {
                             <input type="hidden" value={inputs.label} name="label" />
                         </div>
 
-                        {contacts && contacts.length > 0 && (
+                        {contacts && (
                             <MemberSelector
                                 label="انتخاب اعضا"
                                 members={contacts}

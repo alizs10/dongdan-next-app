@@ -3,19 +3,16 @@
 import TextInput from "@/components/Common/Form/TextInput";
 import ModalHeader from "@/components/Common/ModalHeader";
 import ModalWrapper from "@/components/Common/ModalWrapper";
-import { generateUID, TomanPriceFormatter, TomanPriceToNumber } from "@/helpers/helpers";
+import { TomanPriceFormatter, TomanPriceToNumber } from "@/helpers/helpers";
 import { zValidate } from "@/helpers/validation-helper";
-import { Pencil, Save } from "lucide-react";
+import { Save } from "lucide-react";
 import { useCallback, useContext, useState } from "react";
 import { createPortal, useFormStatus } from "react-dom";
 import ExpensePreview from "./ExpensePreview";
 import PDatePicker from "@/components/Common/Form/PDatePicker";
-import { expendSchema } from "@/database/validations/expend-validation";
-import { transferSchema } from "@/database/validations/transfer-validation";
 import { Event, Expense } from "@/types/event-types";
-import { useEventStore } from "@/store/event-store";
 import Button from "@/components/Common/Button";
-import { Toast, useToastStore } from "@/store/toast-store";
+import { useToastStore } from "@/store/toast-store";
 import { DateObject } from "react-multi-date-picker";
 import MemberSelector from "@/components/Common/Form/MemberSelector";
 import { useAppStore } from "@/store/app-store";
@@ -76,7 +73,7 @@ function EditExpenseModal({ onClose, event, expense }: { onClose: () => void, ev
         payer: '',
         date: '',
     }
-    const [formErrors, setFormErrors] = useState(initFormErrors);
+    const [formErrors, setFormErrors] = useState<Record<string, string>>(initFormErrors);
 
     const initFormErrors2 = {
         transmitter: '',
@@ -85,7 +82,7 @@ function EditExpenseModal({ onClose, event, expense }: { onClose: () => void, ev
         description: '',
         date: '',
     }
-    const [formErrors2, setFormErrors2] = useState(initFormErrors2);
+    const [formErrors2, setFormErrors2] = useState<Record<string, string>>(initFormErrors2);
 
     function handleChangeDate(date: DateObject) {
 

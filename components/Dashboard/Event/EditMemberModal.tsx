@@ -7,12 +7,9 @@ import { zValidate } from "@/helpers/validation-helper";
 import { Info, Pencil } from "lucide-react";
 import { useContext, useState } from "react";
 import { createPortal, useFormStatus } from "react-dom";
-import { useParams } from "next/navigation";
-import { useEventStore } from "@/store/event-store";
 import { Member, SchemeType } from "@/types/event-types";
 import Button from "@/components/Common/Button";
-import { Toast, useToastStore } from "@/store/toast-store";
-import { generateUID } from "@/helpers/helpers";
+import { useToastStore } from "@/store/toast-store";
 import AvatarSelector from "@/components/Common/Form/AvatarSelector";
 import { EventContext } from "@/context/EventContext";
 import { createMemberSchema } from "@/database/validations/member-validation";
@@ -43,7 +40,7 @@ function EditMemberModal({ onClose, member }: { onClose: () => void, member: Mem
         scheme: '',
         eventId: '',
     }
-    const [formErrors, setFormErrors] = useState(initFormErrors);
+    const [formErrors, setFormErrors] = useState<Record<string, string>>(initFormErrors);
 
     function selectSchemeHandler(scheme: SchemeType) {
         setInputs(prev => ({ ...prev, scheme }))
