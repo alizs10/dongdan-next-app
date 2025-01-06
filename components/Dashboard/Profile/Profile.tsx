@@ -12,6 +12,7 @@ import { type User as TypeUser } from '@/types/user-types';
 import moment from 'jalali-moment';
 import { useAppStore } from '@/store/app-store';
 import { sendEmailVerificationReq } from '@/app/actions/auth';
+import DeleteAccountModal from './DeleteAccountModal';
 
 function Profile({ data }: { data: TypeUser }) {
 
@@ -24,12 +25,16 @@ function Profile({ data }: { data: TypeUser }) {
 
     const [editProfileModalVis, setEditProfileModalVis] = useState(false);
     const [changePasswordModalVis, setChangePasswordModalVis] = useState(false);
+    const [deleteAccountModalVis, setDeleteAccountModalVis] = useState(false);
 
     function toggleEditProfileModal() {
         setEditProfileModalVis(prev => !prev);
     }
     function toggleChangePasswordModal() {
         setChangePasswordModalVis(prev => !prev);
+    }
+    function toggleDeleteAccountModal() {
+        setDeleteAccountModalVis(prev => !prev);
     }
 
     function updateProfile(updatedProfile: TypeUser) {
@@ -61,43 +66,6 @@ function Profile({ data }: { data: TypeUser }) {
 
     }
 
-    function onDeleteAccClick() {
-
-
-        openDialog(
-            'حذف حساب کاربری'
-            ,
-            'آیا از حذف حساب کاربری خود اطمینان دارید؟ تمام داده های شما حذف خواهد شد و قابل برگشت نمی باشد.'
-            ,
-            {
-                ok: {
-                    text: 'حذف حساب',
-                    onClick: () => {
-                        const okToast = {
-                            message: 'اکانت شما با موفقیت حذف شد',
-                            type: 'success' as const,
-                        }
-
-                        console.log('delete account');
-                        addToast(okToast)
-                    }
-                },
-                cancel: {
-                    text: 'انصراف',
-                    onClick: () => {
-                        const cancelToast = {
-                            message: 'انصراف',
-                            type: 'info' as const
-                        }
-                        console.log('cancel delete account');
-                        addToast(cancelToast)
-                    }
-                }
-
-            }
-        )
-
-    }
 
     return (
         <div className="events_container">
@@ -176,7 +144,7 @@ function Profile({ data }: { data: TypeUser }) {
                     <Button
                         text='حذف حساب کاربری'
                         icon={<UserX className='size-4' />}
-                        onClick={onDeleteAccClick}
+                        onClick={toggleDeleteAccountModal}
                         color='danger'
                         size='small'
                     />
@@ -186,6 +154,7 @@ function Profile({ data }: { data: TypeUser }) {
 
             {editProfileModalVis && (<EditProfileModal profile={profile} updateProfile={updateProfile} onClose={toggleEditProfileModal} />)}
             {changePasswordModalVis && (<ChangePasswordModal onClose={toggleChangePasswordModal} />)}
+            {deleteAccountModalVis && (<DeleteAccountModal onClose={toggleDeleteAccountModal} />)}
         </div>
     );
 }

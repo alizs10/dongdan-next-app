@@ -44,3 +44,9 @@ export const changePasswordSchema = z.object({
     message: "تکرار رمز عبور با رمز عبور هم خوانی ندارد",
     path: ["new_password_confirmation"]
 })
+
+export const deleteAccountSchema = z.object({
+    password: z.string()
+        .min(8, "رمز عبور باید حداقل شامل 8 کارکتر باشد")
+        .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>])/, "رمز عبور باید حداقل شامل یک حرف لاتین بزرگ، کوچک، عدد و یک کارکتر خاص باشد"),
+})
