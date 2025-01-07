@@ -39,6 +39,42 @@ export async function getContactsReq() {
     }
 }
 
+export async function getContactReq(contactId: string | number) {
+    const token = (await cookies()).get('token');
+
+    try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/contact/${contactId}`, {
+            method: 'GET',
+            headers: {
+                Authorization: `Bearer ${token?.value}`,
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+            },
+        });
+
+        const data = await response.json()
+
+        if (response.ok && data.status) {
+            return {
+                success: true,
+                contact: data.contact,
+                message: data.message
+            }
+        }
+
+        return {
+            success: false,
+            message: data?.message ? data.message : response.statusText
+        }
+
+    } catch {
+        return {
+            success: false,
+            message: 'خطای سرور'
+        }
+    }
+}
+
 export async function createContactReq(inputs: ContactInputs) {
 
     const token = (await cookies()).get('token');

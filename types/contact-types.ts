@@ -1,9 +1,10 @@
-import { Person } from "./event-types"
+import { Member, Person } from "./event-types"
 
 export type Contact = Omit<Person, 'eventId'> & {
-    created_at: Date,
-    updated_at: Date,
-    deleted_at: Date | null,
+    event_member_ships?: Member[];
+    created_at: Date;
+    updated_at: Date;
+    deleted_at: Date | null;
 }
 
 export type ContactState = {

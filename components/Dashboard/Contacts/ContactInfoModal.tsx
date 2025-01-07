@@ -6,7 +6,7 @@ import { Contact } from "@/types/contact-types";
 import { Event } from "@/types/event-types";
 import moment from "jalali-moment";
 import { User } from "lucide-react";
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useState } from "react";
 
 type PropsTypes = {
     onClose: () => void,
@@ -16,7 +16,9 @@ type PropsTypes = {
 
 function ContactInfoModal({ onClose, contact }: PropsTypes) {
 
-    return null;
+    // const [contact, setContact] = useState<Contact | null>(null)
+
+    console.log(contact)
 
     return (
         <ModalWrapper onClose={onClose}>
@@ -33,8 +35,18 @@ function ContactInfoModal({ onClose, contact }: PropsTypes) {
                     </div>
 
                     <div className="col-span-1 flex flex-col gap-y-2">
-                        <span className="text-sm text-gray-500 dark:text-gray-400">تعداد رویداد ها:</span>
-                        <span className="text-base text-gray-700 dark:text-gray-300">{getUserEvents().length}</span>
+                        <span className="text-sm text-gray-500 dark:text-gray-400">رویداد ها:</span>
+                        {contact?.event_member_ships ? (
+
+                            <span className="text-base text-gray-700 dark:text-gray-300">
+                                {contact.event_member_ships.map(membership => membership.event?.name).join(', ')}
+                            </span>
+                        ) : (
+
+                            <span className="text-base text-gray-700 dark:text-gray-300">
+                                {'-'}
+                            </span>
+                        )}
                     </div>
 
                     <div className="col-span-1 flex flex-col gap-y-2">
