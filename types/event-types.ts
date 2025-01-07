@@ -43,6 +43,16 @@ export type Member = {
     event?: Event;
 }
 
+export type Contributor = {
+    id: number;
+    event_member_id: number;
+    expense_id: number;
+    amount: number;
+    event_member?: Member;
+    created_at: Date;
+    updated_at: Date;
+}
+
 export type CreateMemberInputs = {
     name: string;
     email?: string;
@@ -59,7 +69,7 @@ export type Expend = {
     type: 'expend';
     payer_id: number;
     payer: Member;
-    contributors: Member[]
+    contributors: Contributor[]
     created_at: Date;
     updated_at: Date;
 }

@@ -350,21 +350,10 @@ export function EventContextProvider({ children, eventData }: { children: React.
         let total = 0;
 
         event.expenses.forEach(expense => {
-            let contributorIds = expense.type === 'expend' ? expense.contributors.map(c => c.id.toString()) : [];
+            let contributorIds = expense.type === 'expend' ? expense.contributors.map(c => c.event_member_id.toString()) : [];
             if (expense.type === 'expend' && contributorIds.includes(memberId)) {
-                let reminder = expense.amount % expense.contributors.length;
-                total += Math.floor(expense.amount / expense.contributors.length);
-
-                let reminderGoesToPayer = contributorIds.includes(expense.payer_id.toString());
-
-                // reminder goes to payer if there is any otherwise it goes to first contributor
-                if (reminder > 0) {
-                    if (reminderGoesToPayer && memberId === expense.payer_id.toString()) {
-                        total += reminder;
-                    } else if (!reminderGoesToPayer && memberId === contributorIds[0]) {
-                        total += reminder;
-                    }
-                }
+                const contributor = expense.contributors.find(c => c.event_member_id.toString() === memberId);
+                total += contributor?.amount ?? 0;
             }
         });
 

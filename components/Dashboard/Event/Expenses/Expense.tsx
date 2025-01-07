@@ -14,6 +14,7 @@ import InfoExpenseModal from "../InfoExpenseModal";
 
 function Expense({ expense }: { expense: Expense }) {
 
+    const { user, settings } = useAppStore(state => state);
     const openDialog = useDialogStore(state => state.openDialog);
 
     const { event, deleteExpense } = useContext(EventContext)
@@ -73,8 +74,6 @@ function Expense({ expense }: { expense: Expense }) {
             })
     }
 
-    const user = useAppStore(state => state.user)
-
     const getMemberName = useCallback((memberId: string) => {
         const member = getMember(memberId);
         if (member?.member_id === user?.id) return 'خودم';
@@ -106,8 +105,8 @@ function Expense({ expense }: { expense: Expense }) {
                         ) : expense.contributors.length > 3 ? (
                             <span className={`user_avatar_blue_text`}>{expense.contributors.length} نفر</span>
                         ) : <div className="flex flex-wrap gap-x-2">
-                            {expense.contributors.map((member, index) => (
-                                <span key={member.id} className={`user_avatar_${getMember(member.id.toString())?.scheme ?? 'blue'}_text`}>{getMemberName(member.id.toString())}{index < expense.contributors.length - 1 && '،'}</span>
+                            {expense.contributors.map((contributor, index) => (
+                                <span key={contributor.id} className={`user_avatar_${contributor?.event_member?.scheme ?? 'blue'}_text`}>{user && (user.id === contributor.event_member?.member_id && settings.show_as_me) ? 'من' : contributor.event_member?.name}{index < expense.contributors.length - 1 && '،'}</span>
                             ))}
                         </div>}
                     </div>

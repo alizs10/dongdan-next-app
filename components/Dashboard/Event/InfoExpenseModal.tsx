@@ -24,7 +24,7 @@ function InfoExpenseModal({ onClose, expense }: { onClose: () => void, expense: 
         return createPortal(
             <ModalWrapper onClose={onClose}>
 
-                <section onClick={e => e.stopPropagation()} className="modal_container">
+                <section onClick={e => e.stopPropagation()} className="modal_container !w-4/5 md:!w-2/3 xl:!w-3/5 2xl:!w-1/2">
                     <ModalHeader title={'جزییات هزینه'} onClose={onClose} />
 
                     <div className="p-3 flex flex-col gap-y-4">
@@ -71,15 +71,18 @@ function InfoExpenseModal({ onClose, expense }: { onClose: () => void, expense: 
                                 <div className="flex flex-col gap-y-3">
                                     <span className={`text-base primary_text_color capitalize`}>مشارکت کننده ها</span>
 
-                                    <div className="flex flex-wrap gap-2">
+                                    <div className="grid grid-cols-1 xl:grid-cols-2 gap-2">
 
-                                        {expense.contributors.map(member => (
-                                            <div key={member.id} className={`px-4 select-none py-2 flex flex-row gap-x-4 items-center border user_avatar_${member.scheme}_text user_avatar_${member.scheme}_border user_avatar_${member.scheme}_bg w-fit rounded-full`}>
-                                                <div className="">
-                                                    <User className="size-5" />
+                                        {expense.contributors.map(contributor => (
+                                            <div key={contributor.id} className={`col-span-1 w-full px-4 select-none py-2 flex flex-row justify-between items-center border user_avatar_${contributor?.event_member?.scheme}_text user_avatar_${contributor?.event_member?.scheme}_border user_avatar_${contributor?.event_member?.scheme}_bg w-fit rounded-full`}>
+                                                <div className="flex flex-row gap-x-2 items-center">
+                                                    <div className="">
+                                                        <User className="size-5" />
+                                                    </div>
+                                                    <span className="text-base line-clamp-1">{contributor?.event_member?.member_id === user?.id ? 'خودم' : contributor?.event_member?.name}</span>
                                                 </div>
 
-                                                <span className="text-base">{member.member_id === user?.id ? 'خودم' : member.name}</span>
+                                                <span className="text-base w-fit text-nowrap">{TomanPriceFormatter(contributor.amount.toString())} تومان</span>
                                             </div>
                                         ))}
 
@@ -87,10 +90,6 @@ function InfoExpenseModal({ onClose, expense }: { onClose: () => void, expense: 
 
                                 </div>
 
-                                <div className="flex flex-col gap-y-3">
-                                    <span className={`text-base primary_text_color capitalize`}>سهم هر عضو</span>
-                                    <span className="w-full text-center py-3 text-base lg:text-lg font-semibold bg-gray-200 dark:bg-gray-800 app_text_color rounded-full">{TomanPriceFormatter((expense.amount / expense.contributors.length).toString())} تومان</span>
-                                </div>
 
                                 <div className="flex flex-col gap-y-3">
                                     <span className={`text-base primary_text_color capitalize`}>هزینه کل</span>

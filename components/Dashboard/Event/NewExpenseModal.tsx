@@ -6,7 +6,7 @@ import ModalWrapper from "@/components/Common/ModalWrapper";
 import { TomanPriceFormatter, TomanPriceToNumber } from "@/helpers/helpers";
 import { zValidate } from "@/helpers/validation-helper";
 import { Save } from "lucide-react";
-import { useCallback, useContext, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { createPortal, useFormStatus } from "react-dom";
 import ExpensePreview from "./ExpensePreview";
 import PDatePicker from "@/components/Common/Form/PDatePicker";
@@ -19,6 +19,8 @@ import { useAppStore } from "@/store/app-store";
 import { createExpendSchema, createTransferSchema } from "@/database/validations/expense-validation";
 import { CreateExpendReqInputs, createExpenseReq, CreateTransferReqInputs } from "@/app/actions/event";
 import { EventContext } from "@/context/EventContext";
+import ToggleInput from "@/components/Common/Form/ToggleInput";
+import MemberSelectorWithAmountInput from "@/components/Common/Form/MemberSelectorWithAmountInput";
 
 type FormInputs = {
     description: string;
@@ -26,6 +28,11 @@ type FormInputs = {
     contributors: string[];
     payer: string;
     date: Date;
+    equalShares: boolean;
+    manualContributors: {
+        key: string;
+        amount: string;
+    }[];
 }
 
 type FormInputs2 = {
@@ -54,7 +61,9 @@ function NewExpenseModal({ onClose, event }: { onClose: () => void, event: Event
         amount: '',
         contributors: [],
         payer: '',
-        date: new Date(Date.now())
+        date: new Date(Date.now()),
+        equalShares: true,
+        manualContributors: []
     }
     const [inputs, setInputs] = useState(initInputs);
 
@@ -72,10 +81,11 @@ function NewExpenseModal({ onClose, event }: { onClose: () => void, event: Event
         description: '',
         amount: '',
         contributors: '',
+        manualContributors: '',
         payer: '',
         date: '',
     }
-    const [formErrors, setFormErrors] = useState(initFormErrors);
+    const [formErrors, setFormErrors] = useState<Record<string, string>>(initFormErrors);
 
     const initFormErrors2 = {
         transmitter: '',
@@ -84,8 +94,19 @@ function NewExpenseModal({ onClose, event }: { onClose: () => void, event: Event
         description: '',
         date: '',
     }
-    const [formErrors2, setFormErrors2] = useState(initFormErrors2);
+    const [formErrors2, setFormErrors2] = useState<Record<string, string>>(initFormErrors2);
 
+
+    const expenseTotalAmount = useCallback(() => {
+        return inputs.manualContributors.reduce((acc, value) => {
+            return acc + TomanPriceToNumber(value.amount);
+        }, 0);
+    }, [inputs.manualContributors])
+
+
+    function toggleEqualShares() {
+        setInputs(prev => ({ ...prev, equalShares: !prev.equalShares }))
+    }
 
     function handleChangeDate(date: DateObject) {
 
@@ -135,6 +156,45 @@ function NewExpenseModal({ onClose, event }: { onClose: () => void, event: Event
         }
     }
 
+    function toggleAllManualContributors() {
+
+        if (inputs.manualContributors.length === event.members.length) {
+            setInputs(prev => ({ ...prev, manualContributors: [] }))
+            return
+        }
+
+        setInputs(prev => ({ ...prev, manualContributors: event.members.map(mc => ({ key: mc.id.toString(), amount: '' })) ?? [] }))
+
+    }
+
+
+    function isMemberManualContributor(memberId: string) {
+        return inputs.manualContributors.some(mc => mc.key === memberId);
+    }
+
+    function toggleManualContributor(actionKey: string) {
+
+        if (actionKey === 'all') {
+            toggleAllManualContributors()
+            return
+        }
+
+        if (isMemberManualContributor(actionKey)) {
+            setInputs(prev => ({ ...prev, manualContributors: prev.manualContributors.filter(mc => mc.key !== actionKey) }))
+        } else {
+            setInputs(prev => ({ ...prev, manualContributors: [...prev.manualContributors, { key: actionKey, amount: '' }] }))
+        }
+    }
+
+    function handleManualContributorChangeAmount(key: string, amount: string) {
+        const regex = /^[0-9]+$/;
+        amount = amount.replaceAll(',', '');
+
+        if (amount.length > 0 && !regex.test(amount)) return;
+
+        setInputs(prev => ({ ...prev, manualContributors: prev.manualContributors.map(mc => mc.key === key ? { ...mc, amount: TomanPriceFormatter(amount) } : mc) }))
+    }
+
     function selectTransmitter(memberId: string) {
         if (memberId === inputs2.receiver) return
         setInputs2(prev => ({ ...prev, transmitter: prev.transmitter === memberId ? '' : memberId }))
@@ -162,31 +222,48 @@ function NewExpenseModal({ onClose, event }: { onClose: () => void, event: Event
 
     async function expendFormHandler() {
 
-        const newExpendInputs: CreateExpendReqInputs = {
+        const newExpendInputs: CreateExpendReqInputs = inputs.equalShares ? {
             description: inputs.description,
             amount: TomanPriceToNumber(inputs.amount).toString(),
             type: 'expend' as const,
             date: inputs.date,
             payer_id: inputs.payer,
             contributors: inputs.contributors,
+        } : {
+            description: inputs.description,
+            type: 'expend' as const,
+            date: inputs.date,
+            payer_id: inputs.payer,
+            manual_contributors: inputs.manualContributors.map(mc => ({ event_member_id: mc.key, amount: TomanPriceToNumber(mc.amount).toString() })),
         }
 
         const { hasError, errors } = zValidate(createExpendSchema, newExpendInputs);
 
         if (hasError) {
-            console.log(errors)
             const validationToast = {
 
                 message: `فرم نامعتبر است.`,
                 type: 'danger' as const,
             }
 
+            const compactErrors: Record<string, string> = {}
+            for (const errorKey in errors) {
+                if (errorKey.includes('manual_contributors')) {
+                    if (!compactErrors['manualContributors']) {
+                        compactErrors['manualContributors'] = (errors as Record<string, string>)[errorKey]
+                    }
+                } else {
+                    compactErrors[errorKey] = (errors as Record<string, string>)[errorKey]
+                }
+            }
+
             addToast(validationToast);
-            setFormErrors(errors);
+            setFormErrors(compactErrors);
             return;
         }
-
         setFormErrors(initFormErrors);
+
+
 
         const res = await createExpenseReq(event.id, newExpendInputs)
 
@@ -289,7 +366,14 @@ function NewExpenseModal({ onClose, event }: { onClose: () => void, event: Event
 
                             <div className="p-5 flex flex-col gap-y-4">
 
-                                <TextInput name="amount" value={inputs.amount} error={formErrors.amount} label="هزینه (تومان)" handleChange={changeAmountHandler} />
+                                <TextInput
+                                    name="amount"
+                                    value={inputs.equalShares ? inputs.amount : TomanPriceFormatter(expenseTotalAmount().toString())}
+                                    error={formErrors.amount}
+                                    label="هزینه (تومان)"
+                                    handleChange={changeAmountHandler}
+                                    disabled={!inputs.equalShares}
+                                />
                                 <TextInput name="description" value={inputs.description} error={formErrors.description} label="توضیحات" handleChange={e => setInputs(prev => ({ ...prev, [e.target.name]: e.target.value }))} />
 
                                 <PDatePicker
@@ -307,26 +391,45 @@ function NewExpenseModal({ onClose, event }: { onClose: () => void, event: Event
                                         members={event.members}
                                         onSelect={selectPayer}
                                         value={inputs.payer}
-                                        error={formErrors.payer}
+                                        error={formErrors.payer_id}
                                         self={{
                                             id: user.id.toString(),
                                             include: false,
                                             scheme: user.scheme
                                         }}
                                     />
-                                    <MemberSelector
-                                        label="کیا سهیم بودن؟"
-                                        members={event.members}
-                                        onSelect={toggleContributor}
-                                        value={inputs.contributors}
-                                        error={formErrors.contributors}
-                                        selectAllOption={true}
-                                        self={{
-                                            id: user.id.toString(),
-                                            include: false,
-                                            scheme: user.scheme
-                                        }}
-                                    />
+                                    <ToggleInput label='دنگ های یکسان' name='equalShares' value={inputs.equalShares} handleChange={toggleEqualShares} />
+
+                                    {inputs.equalShares ? (
+                                        <MemberSelector
+                                            label="کیا سهیم بودن؟"
+                                            members={event.members}
+                                            onSelect={toggleContributor}
+                                            value={inputs.contributors}
+                                            error={formErrors.contributors}
+                                            selectAllOption={true}
+                                            self={{
+                                                id: user.id.toString(),
+                                                include: false,
+                                                scheme: user.scheme
+                                            }}
+                                        />
+                                    ) : (
+                                        <MemberSelectorWithAmountInput
+                                            label="کیا سهیم بودن؟"
+                                            members={event.members}
+                                            onSelect={toggleManualContributor}
+                                            onChangeAmount={handleManualContributorChangeAmount}
+                                            values={inputs.manualContributors}
+                                            error={formErrors.manualContributors}
+                                            selectAllOption={true}
+                                            self={{
+                                                id: user.id.toString(),
+                                                include: false,
+                                                scheme: user.scheme
+                                            }}
+                                        />
+                                    )}
                                 </>)}
 
                             </div>

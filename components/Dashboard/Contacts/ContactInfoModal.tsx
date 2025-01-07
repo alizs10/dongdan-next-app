@@ -3,10 +3,8 @@
 import ModalHeader from "@/components/Common/ModalHeader";
 import ModalWrapper from "@/components/Common/ModalWrapper";
 import { Contact } from "@/types/contact-types";
-import { Event } from "@/types/event-types";
 import moment from "jalali-moment";
 import { User } from "lucide-react";
-import { useCallback, useMemo, useState } from "react";
 
 type PropsTypes = {
     onClose: () => void,
@@ -15,10 +13,6 @@ type PropsTypes = {
 
 
 function ContactInfoModal({ onClose, contact }: PropsTypes) {
-
-    // const [contact, setContact] = useState<Contact | null>(null)
-
-    console.log(contact)
 
     return (
         <ModalWrapper onClose={onClose}>
