@@ -29,9 +29,10 @@ type PropsTypes = {
         include: boolean;
         values?: boolean;
     };
+    disabledInputs?: boolean;
 }
 
-function MemberSelectorWithAmountInput({ label, members, onSelect, onChangeAmount, values, error, self = undefined, selectAllOption = false }: PropsTypes) {
+function MemberSelectorWithAmountInput({ label, members, onSelect, onChangeAmount, values, error, self = undefined, selectAllOption = false, disabledInputs }: PropsTypes) {
 
     let membersCount = members.length;
     if (self && self.include) {
@@ -110,6 +111,7 @@ function MemberSelectorWithAmountInput({ label, members, onSelect, onChangeAmoun
                                     <input
                                         type="text"
                                         onClick={e => e.stopPropagation()}
+                                        disabled={disabledInputs ?? false}
                                         value={values.find(value => value.key === member.id.toString())?.amount}
                                         onChange={(e) => onChangeAmount(member.id.toString(), e.target.value)}
                                         placeholder="مبلغ"

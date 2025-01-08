@@ -67,6 +67,7 @@ export type Expend = {
     amount: number;
     date: Date;
     type: 'expend';
+    equal_shares: 0 | 1;
     payer_id: number;
     payer: Member;
     contributors: Contributor[]

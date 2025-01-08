@@ -17,12 +17,11 @@ export type CreateMemberReqInputs = AddContactsInputs | CreateMemberInputs;
 
 export type CreateExpendReqInputs = {
     description: string;
-    amount?: string;
     type: "expend";
     date: Date;
     payer_id: string;
-    contributors?: string[];
-    manual_contributors?: {
+    equal_shares: 0 | 1;
+    contributors: {
         event_member_id: string;
         amount: string;
     }[];
@@ -280,6 +279,8 @@ export async function updateExpenseReq(eventId: string | number, expenseId: stri
         });
 
         const data = await response.json()
+
+        console.log(data)
 
         if (response.ok && data.status) {
 

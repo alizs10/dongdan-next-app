@@ -6,7 +6,7 @@ import ModalWrapper from "@/components/Common/ModalWrapper";
 import { TomanPriceFormatter, TomanPriceToNumber } from "@/helpers/helpers";
 import { zValidate } from "@/helpers/validation-helper";
 import { Save } from "lucide-react";
-import { useCallback, useContext, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { createPortal, useFormStatus } from "react-dom";
 import ExpensePreview from "./ExpensePreview";
 import PDatePicker from "@/components/Common/Form/PDatePicker";
@@ -19,13 +19,19 @@ import { useAppStore } from "@/store/app-store";
 import { EventContext } from "@/context/EventContext";
 import { CreateExpendReqInputs, CreateTransferReqInputs, updateExpenseReq } from "@/app/actions/event";
 import { createExpendSchema, createTransferSchema } from "@/database/validations/expense-validation";
+import MemberSelectorWithAmountInput from "@/components/Common/Form/MemberSelectorWithAmountInput";
+import ToggleInput from "@/components/Common/Form/ToggleInput";
 
 type FormInputs = {
     description: string;
     amount: string;
-    contributors: string[];
+    contributors: {
+        key: string;
+        amount: string;
+    }[];
     payer: string;
     date: Date;
+    equal_shares: 0 | 1;
 }
 
 type FormInputs2 = {
@@ -47,13 +53,17 @@ function EditExpenseModal({ onClose, event, expense }: { onClose: () => void, ev
     const { pending } = useFormStatus();
 
     const [formType, setFormType] = useState<FormTypes>(expense.type === 'expend' ? 0 : 1)
+    const [expendFormLoading, setExpendFormLoading] = useState(false)
+    const [transferFormLoading, setTransferFormLoading] = useState(false)
+
 
     const initInputs: FormInputs = {
         description: expense.type === 'expend' ? expense.description : '',
         amount: expense.type === 'expend' ? TomanPriceFormatter(expense.amount.toString()) : '',
-        contributors: expense.type === 'expend' ? expense.contributors.map(c => c.id.toString()) : [],
+        contributors: expense.type === 'expend' ? expense.contributors.map(c => ({ key: c.event_member_id.toString(), amount: TomanPriceFormatter(c.amount.toString()) })) : [],
         payer: expense.type === 'expend' ? expense.payer_id.toString() : '',
-        date: expense.type === 'expend' ? new Date(expense.date) : new Date(Date.now())
+        date: expense.type === 'expend' ? new Date(expense.date) : new Date(Date.now()),
+        equal_shares: expense.type === 'expend' ? expense.equal_shares : 1,
     }
     const [inputs, setInputs] = useState(initInputs);
 
@@ -84,6 +94,45 @@ function EditExpenseModal({ onClose, event, expense }: { onClose: () => void, ev
     }
     const [formErrors2, setFormErrors2] = useState<Record<string, string>>(initFormErrors2);
 
+
+    function toggleEqualShares() {
+        setInputs((prev: FormInputs) => ({ ...prev, equal_shares: prev.equal_shares === 1 ? 0 : 1 }))
+    }
+
+    useEffect(() => {
+
+        if (inputs.equal_shares === 0 && inputs.contributors.length > 0) {
+            const totalAmount = inputs.contributors.reduce((pv, cv) => pv + TomanPriceToNumber(cv.amount), 0);
+            const formattedAmount = TomanPriceFormatter(totalAmount.toString());
+
+            if (formattedAmount !== inputs.amount) {
+                setInputs((prev: FormInputs) => ({ ...prev, amount: formattedAmount }));
+            }
+        }
+
+    }, [inputs.equal_shares, inputs.amount, inputs.contributors])
+
+    useEffect(() => {
+
+        if (inputs.equal_shares === 1 && inputs.contributors.length > 0) {
+            const totalAmount = TomanPriceToNumber(inputs.amount);
+            const equalShare = Math.floor(totalAmount / inputs.contributors.length);
+            const reminder = totalAmount % inputs.contributors.length;
+
+            const updatedContributors = inputs.contributors.map((c, i) => ({
+                key: c.key,
+                amount: (i === 0 && reminder > 0)
+                    ? TomanPriceFormatter((equalShare + reminder).toString())
+                    : TomanPriceFormatter(equalShare.toString())
+            }));
+
+            setInputs((prev: FormInputs) => ({ ...prev, contributors: updatedContributors }));
+        }
+
+
+
+    }, [inputs.amount, inputs.contributors.length, inputs.equal_shares])
+
     function handleChangeDate(date: DateObject) {
 
         const selectedDate = new Date(date.toDate());
@@ -100,7 +149,7 @@ function EditExpenseModal({ onClose, event, expense }: { onClose: () => void, ev
     }
 
     function isMemberContributor(memberId: string) {
-        return inputs.contributors.includes(memberId);
+        return inputs.contributors.some(c => c.key === memberId);
     }
 
     function selectPayer(memberId: string) {
@@ -114,7 +163,7 @@ function EditExpenseModal({ onClose, event, expense }: { onClose: () => void, ev
             return
         }
 
-        setInputs(prev => ({ ...prev, contributors: event.members.map(m => m.id.toString()) ?? [] }))
+        setInputs(prev => ({ ...prev, contributors: event.members.map(m => ({ key: m.id.toString(), amount: '' })) ?? [] }))
 
     }
 
@@ -126,9 +175,9 @@ function EditExpenseModal({ onClose, event, expense }: { onClose: () => void, ev
         }
 
         if (isMemberContributor(actionKey)) {
-            setInputs(prev => ({ ...prev, contributors: prev.contributors.filter(id => id !== actionKey) }))
+            setInputs(prev => ({ ...prev, contributors: prev.contributors.filter(c => c.key !== actionKey) }))
         } else {
-            setInputs(prev => ({ ...prev, contributors: [...prev.contributors, actionKey] }))
+            setInputs(prev => ({ ...prev, contributors: [...prev.contributors, { key: actionKey, amount: '' }] }))
         }
     }
 
@@ -156,21 +205,37 @@ function EditExpenseModal({ onClose, event, expense }: { onClose: () => void, ev
         }
     }
 
+    function changeContributorAmountHandler(key: string, amount: string) {
+
+        if (inputs.equal_shares === 1) return
+
+        const regex = /^[0-9]+$/;
+        amount = amount.replaceAll(',', '');
+
+        if (amount.length > 0 && !regex.test(amount)) return;
+
+        setInputs(prev => ({ ...prev, contributors: prev.contributors.map(c => c.key === key ? { ...c, amount: TomanPriceFormatter(amount) } : c) }))
+    }
+
+
     async function expendFormHandler() {
+
+        if (expendFormLoading) return
+        setExpendFormLoading(true)
+
 
         const newExpendInputs: CreateExpendReqInputs = {
             description: inputs.description,
-            amount: TomanPriceToNumber(inputs.amount).toString(),
             type: 'expend' as const,
             date: inputs.date,
             payer_id: inputs.payer,
-            contributors: inputs.contributors,
+            equal_shares: inputs.equal_shares,
+            contributors: inputs.contributors.map(mc => ({ event_member_id: mc.key, amount: TomanPriceToNumber(mc.amount).toString() })),
         }
 
         const { hasError, errors } = zValidate(createExpendSchema, newExpendInputs);
 
         if (hasError) {
-            console.log(errors)
             const validationToast = {
 
                 message: `فرم نامعتبر است.`,
@@ -179,6 +244,7 @@ function EditExpenseModal({ onClose, event, expense }: { onClose: () => void, ev
 
             addToast(validationToast);
             setFormErrors(errors);
+            setExpendFormLoading(false)
             return;
         }
 
@@ -194,6 +260,7 @@ function EditExpenseModal({ onClose, event, expense }: { onClose: () => void, ev
             }
             updateExpense(expense.id, res.expense)
             addToast(successToast)
+            setExpendFormLoading(false)
             onClose();
             return
         }
@@ -203,10 +270,15 @@ function EditExpenseModal({ onClose, event, expense }: { onClose: () => void, ev
             type: 'danger' as const,
         }
         addToast(errorToast)
+        setExpendFormLoading(false)
     }
 
 
     async function transferFormHandler() {
+
+        if (transferFormLoading) return
+        setTransferFormLoading(true)
+
 
         const newTransferInputs: CreateTransferReqInputs = {
             description: inputs2.description,
@@ -227,6 +299,7 @@ function EditExpenseModal({ onClose, event, expense }: { onClose: () => void, ev
             }
             addToast(validationToast);
             setFormErrors2(errors);
+            setTransferFormLoading(false)
             return;
         }
         setFormErrors2(initFormErrors2);
@@ -241,6 +314,7 @@ function EditExpenseModal({ onClose, event, expense }: { onClose: () => void, ev
             }
             updateExpense(expense.id, res.expense)
             addToast(successToast)
+            setTransferFormLoading(false)
             onClose();
             return
         }
@@ -250,6 +324,7 @@ function EditExpenseModal({ onClose, event, expense }: { onClose: () => void, ev
             type: 'danger' as const,
         }
         addToast(errorToast)
+        setTransferFormLoading(false)
     }
 
     const getMemberName = useCallback((memberId: string) => {
@@ -284,7 +359,14 @@ function EditExpenseModal({ onClose, event, expense }: { onClose: () => void, ev
 
                             <div className="p-5 flex flex-col gap-y-4">
 
-                                <TextInput name="amount" value={inputs.amount} error={formErrors.amount} label="هزینه (تومان)" handleChange={changeAmountHandler} />
+                                <TextInput
+                                    name="amount"
+                                    value={inputs.amount}
+                                    error={formErrors.amount}
+                                    label="هزینه (تومان)"
+                                    handleChange={changeAmountHandler}
+                                    disabled={inputs.equal_shares === 0}
+                                />
                                 <TextInput name="description" value={inputs.description} error={formErrors.description} label="توضیحات" handleChange={e => setInputs(prev => ({ ...prev, [e.target.name]: e.target.value }))} />
 
                                 <PDatePicker
@@ -309,11 +391,13 @@ function EditExpenseModal({ onClose, event, expense }: { onClose: () => void, ev
                                             scheme: user.scheme
                                         }}
                                     />
-                                    <MemberSelector
+                                    <ToggleInput label='دنگ های یکسان' name='equalShares' value={inputs.equal_shares === 1} handleChange={toggleEqualShares} />
+                                    <MemberSelectorWithAmountInput
                                         label="کیا سهیم بودن؟"
                                         members={event.members}
                                         onSelect={toggleContributor}
-                                        value={inputs.contributors}
+                                        onChangeAmount={changeContributorAmountHandler}
+                                        values={inputs.contributors}
                                         error={formErrors.contributors}
                                         selectAllOption={true}
                                         self={{
@@ -321,6 +405,7 @@ function EditExpenseModal({ onClose, event, expense }: { onClose: () => void, ev
                                             include: false,
                                             scheme: user.scheme
                                         }}
+                                        disabledInputs={inputs.equal_shares === 1}
                                     />
                                 </>)}
 
@@ -329,7 +414,7 @@ function EditExpenseModal({ onClose, event, expense }: { onClose: () => void, ev
                             {inputs.contributors.length > 0 && inputs.amount.length > 0 && inputs.description.length > 0 && inputs.payer && (
                                 <ExpensePreview
                                     type={formType === 0 ? 'expend' : 'transfer'}
-                                    contributors={inputs.contributors}
+                                    contributors={inputs.contributors.map(c => c.key)}
                                     amount={inputs.amount}
                                     description={inputs.description}
                                     payer={getMemberName(inputs.payer)}
