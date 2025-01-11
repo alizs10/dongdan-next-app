@@ -10,12 +10,11 @@ import ModalHeader from "@/components/Common/ModalHeader";
 import ModalWrapper from "@/components/Common/ModalWrapper";
 import { EventsContext } from "@/context/EventsContext";
 import { createEventSchema } from "@/database/validations/event-validation";
-import { generateUID } from "@/helpers/helpers";
 import { zValidate } from "@/helpers/validation-helper";
 import { useAppStore } from "@/store/app-store";
-import { Toast, useToastStore } from "@/store/toast-store";
+import { useToastStore } from "@/store/toast-store";
 import { Contact } from "@/types/contact-types";
-import { NewEvent } from "@/types/event-types";
+import { CreateEventRequest } from "@/types/requests/events";
 import { Ban, BriefcaseBusiness, Cake, Coffee, Loader, Plane, Save, TreePalm, Utensils } from "lucide-react";
 import { useContext, useEffect, useState } from "react";
 import { createPortal, useFormStatus } from "react-dom";
@@ -143,7 +142,7 @@ function NewEventModal({ onClose }: { onClose: () => void }) {
 
         setLoading(true);
 
-        const eventInputs: NewEvent = {
+        const eventInputs: CreateEventRequest = {
             name: inputs.name,
             label: inputs.label,
             start_date: inputs.start_date,
@@ -151,12 +150,9 @@ function NewEventModal({ onClose }: { onClose: () => void }) {
             contact_members: inputs.members.map(id => id.toString())
         }
 
-        console.log(inputs.start_date, new Date())
-
         const { hasError, errors } = zValidate(createEventSchema, eventInputs);
 
         if (hasError) {
-            console.log(errors)
             const validationToast = {
 
                 message: `فرم نامعتبر است.`,
@@ -174,7 +170,6 @@ function NewEventModal({ onClose }: { onClose: () => void }) {
 
         if (res.success) {
             addEvent(res.newEvent);
-
             const successToast = {
 
                 message: res.message,
@@ -187,14 +182,11 @@ function NewEventModal({ onClose }: { onClose: () => void }) {
         }
 
         const errorToast = {
-
             message: res.message,
             type: 'danger' as const,
         }
         addToast(errorToast)
         setLoading(false);
-
-
     }
 
     if (typeof window === "object") {

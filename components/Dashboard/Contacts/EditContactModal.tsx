@@ -7,7 +7,7 @@ import { zValidate } from "@/helpers/validation-helper";
 import { Pencil } from "lucide-react";
 import { useContext, useState } from "react";
 import { createPortal, useFormStatus } from "react-dom";
-import { newContactSchema } from "@/database/validations/contact-validation";
+import { createContactSchema } from "@/database/validations/contact-validation";
 import { SchemeType } from "@/types/event-types";
 import Button from "@/components/Common/Button";
 import { Contact } from "@/types/contact-types";
@@ -39,7 +39,7 @@ function EditContactModal({ onClose, contact }: { onClose: () => void, contact: 
         name: '',
         scheme: '',
     }
-    const [formErrors, setFormErrors] = useState(initFormErrors);
+    const [formErrors, setFormErrors] = useState<Record<string, string>>(initFormErrors);
 
     function selectSchemeHandler(scheme: SchemeType) {
         setInputs(prev => ({ ...prev, scheme }))
@@ -47,7 +47,7 @@ function EditContactModal({ onClose, contact }: { onClose: () => void, contact: 
 
     async function formActionHandler() {
 
-        const { hasError, errors } = zValidate(newContactSchema, inputs);
+        const { hasError, errors } = zValidate(createContactSchema, inputs);
 
         if (hasError) {
 
@@ -68,7 +68,7 @@ function EditContactModal({ onClose, contact }: { onClose: () => void, contact: 
         const res = await updateContactReq(contact.id, inputs);
 
         if (res.success) {
-            updateContact(contact.id, res.updatedContact);
+            updateContact(contact.id.toString(), res.updatedContact);
             const successToast = {
 
                 message: res.message,

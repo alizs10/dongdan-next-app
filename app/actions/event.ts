@@ -1,41 +1,7 @@
 'use server'
 
-import { SchemeType } from "@/types/event-types";
+import { CreateExpendRequest, CreateMemberRequest, CreateTransferRequest } from "@/types/requests/event";
 import { cookies } from "next/headers";
-
-type AddContactsInputs = {
-    contacts: string[];
-    self_included: 'true' | 'false';
-}
-
-type CreateMemberInputs = {
-    name: string;
-    scheme: SchemeType;
-    email?: string;
-}
-export type CreateMemberReqInputs = AddContactsInputs | CreateMemberInputs;
-
-export type CreateExpendReqInputs = {
-    description: string;
-    type: "expend";
-    date: Date;
-    payer_id: string;
-    equal_shares: 0 | 1;
-    contributors: {
-        event_member_id: string;
-        amount: string;
-    }[];
-}
-export type CreateTransferReqInputs = {
-    description: string;
-    amount: string;
-    type: "transfer";
-    date: Date;
-    transmitter_id: string;
-    receiver_id: string;
-}
-
-type CreateExpenseReqInputs = CreateExpendReqInputs | CreateTransferReqInputs;
 
 export async function getEventExpensesReq(eventId: string | number) {
 
@@ -79,7 +45,7 @@ export async function getEventExpensesReq(eventId: string | number) {
 
 }
 
-export async function createMemberReq(eventId: string, inputs: CreateMemberReqInputs) {
+export async function createMemberReq(eventId: string, inputs: CreateMemberRequest) {
 
     const token = (await cookies()).get('token');
 
@@ -172,7 +138,7 @@ export async function deleteMemberReq(eventId: string, memberId: string | number
 
 }
 
-export async function updateMemberReq(eventId: string | number, memberId: string | number, inputs: CreateMemberInputs) {
+export async function updateMemberReq(eventId: string | number, memberId: string | number, inputs: CreateMemberRequest) {
 
     const token = (await cookies()).get('token');
 
@@ -217,7 +183,7 @@ export async function updateMemberReq(eventId: string | number, memberId: string
 
 }
 
-export async function createExpenseReq(eventId: string | number, inputs: CreateExpenseReqInputs) {
+export async function createExpenseReq(eventId: string | number, inputs: CreateExpendRequest | CreateTransferRequest) {
 
     const token = (await cookies()).get('token');
 
@@ -263,7 +229,7 @@ export async function createExpenseReq(eventId: string | number, inputs: CreateE
 
 }
 
-export async function updateExpenseReq(eventId: string | number, expenseId: string | number, inputs: CreateExpenseReqInputs) {
+export async function updateExpenseReq(eventId: string | number, expenseId: string | number, inputs: CreateExpendRequest | CreateTransferRequest) {
 
     const token = (await cookies()).get('token');
 

@@ -63,7 +63,7 @@ function FiltersModal({ onClose, event }: { onClose: () => void, event: Event })
         dateRange: ''
     }), [])
 
-    const [formErrors, setFormErrors] = useState(initFormErrors);
+    const [formErrors, setFormErrors] = useState<Record<string, string>>(initFormErrors);
 
     useEffect(() => {
         setFormErrors(initFormErrors)

@@ -1,13 +1,7 @@
+import { CreateExpendRequest, CreateTransferRequest } from "@/types/requests/event";
 import { z, ZodType } from "zod";
-import { expendSchema } from "./expend-validation";
-import { transferSchema } from "./transfer-validation";
-import { Expense } from "@/types/event-types";
-import { CreateExpendReqInputs, CreateTransferReqInputs } from "@/app/actions/event";
 
-export const expenseSchema: ZodType<Expense> = z.union([expendSchema, transferSchema])
-
-
-export const createExpendSchema: ZodType<CreateExpendReqInputs> = z.object({
+export const createExpendSchema: ZodType<CreateExpendRequest> = z.object({
     description: z.string().min(1, { message: 'توضیحات نمیتواند خالی باشد' }),
     type: z.literal('expend'),
     date: z.date(),
@@ -19,8 +13,7 @@ export const createExpendSchema: ZodType<CreateExpendReqInputs> = z.object({
     equal_shares: z.literal(0).or(z.literal(1)),
 })
 
-
-export const createTransferSchema: ZodType<CreateTransferReqInputs> = z.object({
+export const createTransferSchema: ZodType<CreateTransferRequest> = z.object({
     description: z.string().min(1, { message: 'توضیحات نمیتواند خالی باشد' }),
     amount: z.string().min(4, { message: 'مبلغ نمیتواند کمتر از 1000 تومان باشد' }),
     type: z.literal('transfer'),

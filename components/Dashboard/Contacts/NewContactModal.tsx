@@ -9,7 +9,7 @@ import { useContext, useState } from "react";
 import { createPortal, useFormStatus } from "react-dom";
 import { generateUID } from "@/helpers/helpers";
 import { SchemeType } from "@/types/event-types";
-import { newContactSchema } from "@/database/validations/contact-validation";
+import { createContactSchema } from "@/database/validations/contact-validation";
 import { Toast, useToastStore } from "@/store/toast-store";
 import Button from "@/components/Common/Button";
 import AvatarSelector from "@/components/Common/Form/AvatarSelector";
@@ -39,7 +39,7 @@ function NewContactModal({ onClose }: { onClose: () => void }) {
         name: '',
         scheme: '',
     }
-    const [formErrors, setFormErrors] = useState(initFormErrors);
+    const [formErrors, setFormErrors] = useState<Record<string, string>>(initFormErrors);
 
     function selectSchemeHandler(scheme: SchemeType) {
         setInputs(prev => ({ ...prev, scheme }))
@@ -47,7 +47,7 @@ function NewContactModal({ onClose }: { onClose: () => void }) {
 
     async function formActionHandler() {
 
-        const { hasError, errors } = zValidate(newContactSchema, inputs);
+        const { hasError, errors } = zValidate(createContactSchema, inputs);
 
         if (hasError) {
             const validationToast = {

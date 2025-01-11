@@ -1,22 +1,3 @@
-// import { Event as PrismaEvent } from "@prisma/client";
-
-export type NewEvent = {
-    name: string;
-    label: string;
-    start_date: Date;
-    self_included: 'true' | 'false';
-    contact_members: string[];
-}
-
-export type UpdateEvent = {
-    name: string;
-    label: string;
-    start_date: Date;
-    members: string[];
-    contacts: string[];
-    self_included: 'true' | 'false';
-}
-
 export type Event = {
     id: number;
     name: string;
@@ -53,14 +34,6 @@ export type Contributor = {
     updated_at: Date;
 }
 
-export type CreateMemberInputs = {
-    name: string;
-    email?: string;
-    scheme: SchemeType;
-    member_id?: string;
-    member_type?: string;
-}
-
 export type Expend = {
     id: number;
     description: string;
@@ -91,6 +64,7 @@ export type Transfer = {
 
 export type Expense = Expend | Transfer;
 
+
 export type ExpendFilter = {
     type: 'expend'
     dateRange: [Date, Date];
@@ -119,38 +93,6 @@ export type AnyExpense = {
 export type ExpenseFilters = ExpendFilter | TransferFilter | AnyExpense;
 
 export type SchemeType = 'gray' | 'blue' | 'red' | 'rose' | 'green' | 'orange' | 'yellow' | 'purple';
-
-export type Person = {
-    id: number;
-    name: string;
-    scheme: SchemeType;
-    eventId: string;
-}
-
-export type EventState = {
-    events: null | Event[];
-    setEvents: (events: Event[]) => void;
-    // addEvent: (event: Event) => void;
-    deleteEvent: (eventId: string) => void;
-    // restoreEvent: (eventId: string) => void;
-    // updateEvent: (eventId: string, updatedEvent: Event) => void;
-    // deleteEvent: (eventId: string) => void;
-    // activateEvent: (eventId: string) => void;
-    // deactivateEvent: (eventId: string) => void;
-    // addPerson: (eventId: string, person: Person) => void;
-    // deletePerson: (eventId: string, personId: string) => void;
-    // updatePerson: (eventId: string, personId: string, updatedPerson: Person) => void;
-    // addExpense: (eventId: string, expense: Expense) => void;
-    // updateExpense: (eventId: string, expenseId: string, updatedExpense: Expense) => void;
-    // deleteExpense: (eventId: string, expenseId: string) => void;
-    // updatePersonInEvents: (personId: string, updatedPerson: Omit<Person, "eventId">) => void;
-    filteredExpenses: Expense[];
-    activeFilters: ExpenseFilters | null;
-    applyFilters: (filters: ExpenseFilters, eventId: number) => void;
-    clearFilters: () => void;
-    // deleteEventMemberWithExpenses: (eventId: string, personId: string) => void;
-};
-
 
 export type SettlePerson = Member & {
     amount: number;

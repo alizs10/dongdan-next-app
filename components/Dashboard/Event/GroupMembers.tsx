@@ -1,4 +1,4 @@
-import { type Member as TypeMember, Person } from "@/types/event-types";
+import { type Member as TypeMember } from "@/types/event-types";
 import Member from "./Member";
 
 function GroupMembers({ members }: { members: TypeMember[] }) {

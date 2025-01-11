@@ -1,36 +1,9 @@
 'use server'
 
+import { ChangePasswordRequest, ForgotPasswordRequest, LoginCredentialsRequest, RegisterCredentialsRequest, ResetPasswordRequest } from '@/types/requests/auth';
 import { cookies } from 'next/headers'
 
-export type LoginCredentials = {
-    email: string;
-    password: string;
-}
-
-export type RegisterCredentials = {
-    email: string;
-    password: string;
-    password_confirmation: string;
-}
-
-export type ChangePasswordInputs = {
-    password: string;
-    new_password: string;
-    new_password_confirmation: string;
-}
-
-export type ForgotPasswordInputs = {
-    email: string;
-}
-
-export type ResetPasswordInputs = {
-    email: string;
-    token: string;
-    password: string;
-    password_confirmation: string;
-}
-
-export async function loginReq(credentials: LoginCredentials) {
+export async function loginReq(credentials: LoginCredentialsRequest) {
 
     const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/login`, {
         method: 'POST',
@@ -57,7 +30,7 @@ export async function loginReq(credentials: LoginCredentials) {
     return { success: false, message: data.message, statusCode: response.status };
 }
 
-export async function registerReq(credentials: RegisterCredentials) {
+export async function registerReq(credentials: RegisterCredentialsRequest) {
 
     const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/register`, {
         method: 'POST',
@@ -111,7 +84,7 @@ export async function sendEmailVerificationReq() {
     return { success: false, message: data.message };
 }
 
-export async function changePasswordReq(changePasswordInputs: ChangePasswordInputs) {
+export async function changePasswordReq(changePasswordInputs: ChangePasswordRequest) {
 
     const token = (await cookies()).get('token');
 
@@ -138,7 +111,7 @@ export async function changePasswordReq(changePasswordInputs: ChangePasswordInpu
     return { success: false, message: data.message || response.statusText };
 }
 
-export async function forgotPasswordReq(forgotPasswordInputs: ForgotPasswordInputs) {
+export async function forgotPasswordReq(forgotPasswordInputs: ForgotPasswordRequest) {
 
     const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/forgot-password`, {
         method: 'POST',
@@ -162,7 +135,7 @@ export async function forgotPasswordReq(forgotPasswordInputs: ForgotPasswordInpu
     return { success: false, message: data.message || response.statusText };
 }
 
-export async function resetPasswordReq(resetPasswordInputs: ResetPasswordInputs) {
+export async function resetPasswordReq(resetPasswordInputs: ResetPasswordRequest) {
 
     const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/reset-password`, {
         method: 'POST',

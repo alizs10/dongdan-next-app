@@ -17,10 +17,11 @@ import { DateObject } from "react-multi-date-picker";
 import MemberSelector from "@/components/Common/Form/MemberSelector";
 import { useAppStore } from "@/store/app-store";
 import { EventContext } from "@/context/EventContext";
-import { CreateExpendReqInputs, CreateTransferReqInputs, updateExpenseReq } from "@/app/actions/event";
+import { updateExpenseReq } from "@/app/actions/event";
 import { createExpendSchema, createTransferSchema } from "@/database/validations/expense-validation";
 import MemberSelectorWithAmountInput from "@/components/Common/Form/MemberSelectorWithAmountInput";
 import ToggleInput from "@/components/Common/Form/ToggleInput";
+import { CreateExpendRequest, CreateTransferRequest } from "@/types/requests/event";
 
 type FormInputs = {
     description: string;
@@ -224,7 +225,7 @@ function EditExpenseModal({ onClose, event, expense }: { onClose: () => void, ev
         setExpendFormLoading(true)
 
 
-        const newExpendInputs: CreateExpendReqInputs = {
+        const newExpendInputs: CreateExpendRequest = {
             description: inputs.description,
             type: 'expend' as const,
             date: inputs.date,
@@ -280,7 +281,7 @@ function EditExpenseModal({ onClose, event, expense }: { onClose: () => void, ev
         setTransferFormLoading(true)
 
 
-        const newTransferInputs: CreateTransferReqInputs = {
+        const newTransferInputs: CreateTransferRequest = {
             description: inputs2.description,
             amount: TomanPriceToNumber(inputs2.amount).toString(),
             type: 'transfer' as const,

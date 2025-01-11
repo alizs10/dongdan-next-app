@@ -11,10 +11,10 @@ import { SchemeType } from "@/types/event-types";
 import Button from "@/components/Common/Button";
 import { useToastStore } from "@/store/toast-store";
 import { updateProfileSchema } from "@/database/validations/profile-validation";
-import { useAppStore } from "@/store/app-store";
 import AvatarSelector from "@/components/Common/Form/AvatarSelector";
-import { User } from "@/types/user-types";
+import { User } from "@/types/user";
 import { updateProfileReq } from "@/app/actions/profile";
+import { UpdateProfileRequest } from "@/types/requests/profile";
 
 type FormInputs = {
     name: string;
@@ -42,7 +42,7 @@ function EditProfileModal({ onClose, profile, updateProfile }: { onClose: () => 
         email: '',
         scheme: '',
     }
-    const [formErrors, setFormErrors] = useState(initFormErrors);
+    const [formErrors, setFormErrors] = useState<Record<string, string>>(initFormErrors);
 
     function selectSchemeHandler(scheme: SchemeType) {
         setInputs(prev => ({ ...prev, scheme }))
@@ -53,7 +53,7 @@ function EditProfileModal({ onClose, profile, updateProfile }: { onClose: () => 
         if (loading) return
         setLoading(true)
 
-        const updateProfileInputs = {
+        const updateProfileInputs: UpdateProfileRequest = {
             name: inputs.name,
             email: inputs.email,
             scheme: inputs.scheme,

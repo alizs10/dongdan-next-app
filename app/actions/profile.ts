@@ -1,20 +1,12 @@
 'use server'
 
-import { SchemeType } from "@/types/event-types";
-import { Settings } from "@/types/user-types";
+import { DeleteAccountRequest } from "@/types/requests/auth";
+import { UpdateProfileRequest } from "@/types/requests/profile";
+import { Settings } from "@/types/settings";
 import { cookies } from "next/headers";
 
-type UpdateProfileInputs = {
-    name: string;
-    email: string;
-    scheme: SchemeType;
-}
 
-type DeleteAccountInputs = {
-    password: string;
-}
-
-export async function updateProfileReq(inputs: UpdateProfileInputs) {
+export async function updateProfileReq(inputs: UpdateProfileRequest) {
 
     const token = (await cookies()).get('token');
 
@@ -100,7 +92,7 @@ export async function updateSettingsReq(inputs: Settings) {
 
 }
 
-export async function deleteAccountReq(inputs: DeleteAccountInputs) {
+export async function deleteAccountReq(inputs: DeleteAccountRequest) {
 
     const token = (await cookies()).get('token');
 

@@ -17,10 +17,11 @@ import Button from "@/components/Common/Button";
 import MemberSelector from "@/components/Common/Form/MemberSelector";
 import { useAppStore } from "@/store/app-store";
 import { createExpendSchema, createTransferSchema } from "@/database/validations/expense-validation";
-import { CreateExpendReqInputs, createExpenseReq, CreateTransferReqInputs } from "@/app/actions/event";
+import { createExpenseReq } from "@/app/actions/event";
 import { EventContext } from "@/context/EventContext";
 import ToggleInput from "@/components/Common/Form/ToggleInput";
 import MemberSelectorWithAmountInput from "@/components/Common/Form/MemberSelectorWithAmountInput";
+import { CreateExpendRequest, CreateTransferRequest } from "@/types/requests/event";
 
 type FormInputs = {
     description: string;
@@ -232,7 +233,7 @@ function NewExpenseModal({ onClose, event }: { onClose: () => void, event: Event
         if (expendFormLoading) return
         setExpendFormLoading(true)
 
-        const newExpendInputs: CreateExpendReqInputs = {
+        const newExpendInputs: CreateExpendRequest = {
             description: inputs.description,
             type: 'expend' as const,
             date: inputs.date,
@@ -299,7 +300,7 @@ function NewExpenseModal({ onClose, event }: { onClose: () => void, event: Event
         if (transferFormLoading) return
         setTransferFormLoading(true)
 
-        const newTransferInputs: CreateTransferReqInputs = {
+        const newTransferInputs: CreateTransferRequest = {
             description: inputs2.description,
             amount: TomanPriceToNumber(inputs2.amount).toString(),
             type: 'transfer' as const,

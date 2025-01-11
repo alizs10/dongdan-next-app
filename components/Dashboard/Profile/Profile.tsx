@@ -8,7 +8,7 @@ import { useToastStore } from '@/store/toast-store';
 import { useState } from 'react';
 import EditProfileModal from './EditProfileModal';
 import ChangePasswordModal from './ChangePasswordModal';
-import { type User as TypeUser } from '@/types/user-types';
+import { type User as TypeUser } from '@/types/user';
 import moment from 'jalali-moment';
 import { useAppStore } from '@/store/app-store';
 import { sendEmailVerificationReq } from '@/app/actions/auth';

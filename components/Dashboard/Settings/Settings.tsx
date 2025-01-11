@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { MoveRight, Save } from 'lucide-react';
 import ToggleInput from '@/components/Common/Form/ToggleInput';
 import Button from '@/components/Common/Button';
-import { type Settings as TypeSettings } from '@/types/user-types';
+import { type Settings as TypeSettings } from '@/types/user';
 import { useState } from 'react';
 import { updateSettingsReq } from '@/app/actions/profile';
 import { useToastStore } from '@/store/toast-store';

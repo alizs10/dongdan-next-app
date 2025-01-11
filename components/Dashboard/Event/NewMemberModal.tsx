@@ -7,10 +7,8 @@ import { zValidate } from "@/helpers/validation-helper";
 import { Loader, Save } from "lucide-react";
 import { useContext, useEffect, useState } from "react";
 import { createPortal, useFormStatus } from "react-dom";
-import { useParams } from "next/navigation";
-import { generateUID } from "@/helpers/helpers";
 import { Member, SchemeType } from "@/types/event-types";
-import { Toast, useToastStore } from "@/store/toast-store";
+import { useToastStore } from "@/store/toast-store";
 import Button from "@/components/Common/Button";
 import AvatarSelector from "@/components/Common/Form/AvatarSelector";
 import { EventContext } from "@/context/EventContext";
@@ -18,8 +16,8 @@ import { getEventNonMembersReq } from "@/app/actions/events";
 import MemberSelector from "@/components/Common/Form/MemberSelector";
 import { useAppStore } from "@/store/app-store";
 import { addMembersSchema, createMemberSchema } from "@/database/validations/member-validation";
-import { createPersonSchema } from "@/database/validations/person-validation";
-import { createMemberReq, CreateMemberReqInputs } from "@/app/actions/event";
+import { createMemberReq } from "@/app/actions/event";
+import { CreateMemberRequest } from "@/types/requests/event";
 
 type FormInputs = {
     name: string;
@@ -52,7 +50,7 @@ function NewMemberModal({ onClose }: { onClose: () => void }) {
         eventId: '',
         contacts: ''
     }
-    const [formErrors, setFormErrors] = useState(initFormErrors);
+    const [formErrors, setFormErrors] = useState<Record<string, string>>(initFormErrors);
 
 
     useEffect(() => {
@@ -132,7 +130,7 @@ function NewMemberModal({ onClose }: { onClose: () => void }) {
     async function formActionHandler() {
 
 
-        const reqInputs: CreateMemberReqInputs = inputsDisallowed ? {
+        const reqInputs: CreateMemberRequest = inputsDisallowed ? {
             contacts: inputs.contacts,
             self_included: inputs.selfIncluded ? 'true' : 'false'
         } : {

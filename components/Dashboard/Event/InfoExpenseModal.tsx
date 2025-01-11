@@ -18,8 +18,6 @@ function InfoExpenseModal({ onClose, expense }: { onClose: () => void, expense: 
     const user = useAppStore(state => state.user)
     const { event } = useContext(EventContext);
 
-    console.log(expense)
-
     if (typeof window === "object") {
         return createPortal(
             <ModalWrapper onClose={onClose}>

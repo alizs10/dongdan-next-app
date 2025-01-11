@@ -1,8 +1,5 @@
 import { SchemeType } from "./event-types";
-
-export type Settings = {
-    show_as_me: 0 | 1;
-}
+import { Settings } from "./settings";
 
 export type User = {
     id: number;

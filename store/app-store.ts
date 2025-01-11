@@ -1,4 +1,4 @@
-import { Settings, User } from "@/types/user-types";
+import { Settings, User } from "@/types/user";
 import { create } from "zustand";
 
 interface AppStoreState {

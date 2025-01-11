@@ -1,19 +1,15 @@
 'use client'
 
-import { ArrowLeft, Github, Key, Mail } from "lucide-react";
+import { ArrowLeft, Key, Mail } from "lucide-react";
 import GoogleIcon from "./Layout/GoogleIcon";
 import Link from "next/link";
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 import { zValidate } from "@/helpers/validation-helper";
-import { loginDataSchema } from "@/database/validations/auth-validation";
+import { loginCredentialsSchema } from "@/database/validations/auth-validation";
 import { loginReq } from "@/app/actions/auth";
 import { useAppStore } from "@/store/app-store";
-
-type Message = {
-    type: 'info' | 'error' | 'success';
-    body: string;
-}
+import { LoginCredentialsRequest } from "@/types/requests/auth";
 
 function LoginForm() {
 
@@ -26,7 +22,7 @@ function LoginForm() {
     const [inputs, setInputs] = useState(initInputs)
 
     const [loading, setLoading] = useState(false)
-    const [message, setMessage] = useState<Message | null>(null)
+    const [message, setMessage] = useState<FormStatusMessage | null>(null)
 
     const initErrors = {
         email: '',
@@ -63,8 +59,10 @@ function LoginForm() {
             body: 'در حال ورود...'
         })
 
+        const loginCredentialsRequest: LoginCredentialsRequest = { ...inputs }
+
         //validate inputs
-        const { hasError, errors } = zValidate(loginDataSchema, inputs)
+        const { hasError, errors } = zValidate(loginCredentialsSchema, loginCredentialsRequest)
 
         if (hasError) {
             setMessage({

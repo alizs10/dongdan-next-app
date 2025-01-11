@@ -1,6 +1,6 @@
 'use server'
 
-import { NewEvent, UpdateEvent } from "@/types/event-types";
+import { CreateEventRequest, UpdateEventRequest } from "@/types/requests/events";
 import { cookies } from "next/headers";
 
 export async function getEventMembersReq(eventId: string) {
@@ -76,7 +76,7 @@ export async function getEventNonMembersReq(eventId: string) {
     }
 }
 
-export async function updateEventReq(eventId: string, inputs: UpdateEvent) {
+export async function updateEventReq(eventId: string, inputs: UpdateEventRequest) {
 
     const token = (await cookies()).get('token');
 
@@ -158,7 +158,7 @@ export async function updateEventStatusReq(eventId: string) {
 
 }
 
-export async function createEventReq(inputs: NewEvent) {
+export async function createEventReq(inputs: CreateEventRequest) {
 
     const token = (await cookies()).get('token');
 

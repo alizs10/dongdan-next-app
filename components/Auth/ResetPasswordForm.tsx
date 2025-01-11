@@ -1,23 +1,17 @@
 'use client'
 
-import { ResetPasswordInputs, resetPasswordReq } from "@/app/actions/auth";
+import { resetPasswordReq } from "@/app/actions/auth";
 import { resetPasswordSchema } from "@/database/validations/auth-validation";
 import { transformLaravelFieldErrors, zValidate } from "@/helpers/validation-helper";
+import { ResetPasswordRequest } from "@/types/requests/auth";
 import { Key, MoveRight, Pen } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { FormEvent, useEffect, useState } from "react";
 
-
-type Message = {
-    type: 'info' | 'error' | 'success';
-    body: string;
-}
-
-
 function ResetPasswordForm() {
 
-    const [message, setMessage] = useState<Message | null>(null)
+    const [message, setMessage] = useState<FormStatusMessage | null>(null)
     const [loading, setLoading] = useState(false)
 
     const searchParams = useSearchParams()
@@ -60,7 +54,7 @@ function ResetPasswordForm() {
         })
 
 
-        const resetPasswordInputs: ResetPasswordInputs = {
+        const resetPasswordInputs: ResetPasswordRequest = {
             email: email ?? '',
             token: token ?? '',
             password: inputs.password,

@@ -1,6 +1,6 @@
 'use server'
 
-import { ContactInputs } from "@/types/contact-types";
+import { CreateContactRequest } from "@/types/requests/contacts";
 import { cookies } from "next/headers";
 
 export async function getContactsReq() {
@@ -75,7 +75,7 @@ export async function getContactReq(contactId: string | number) {
     }
 }
 
-export async function createContactReq(inputs: ContactInputs) {
+export async function createContactReq(inputs: CreateContactRequest) {
 
     const token = (await cookies()).get('token');
 
@@ -120,7 +120,7 @@ export async function createContactReq(inputs: ContactInputs) {
 
 }
 
-export async function trashContactReq(contactId: string) {
+export async function trashContactReq(contactId: string | number) {
 
     const token = (await cookies()).get('token');
 
@@ -159,7 +159,7 @@ export async function trashContactReq(contactId: string) {
 
 }
 
-export async function updateContactReq(contactId: string, inputs: ContactInputs) {
+export async function updateContactReq(contactId: string | number, inputs: CreateContactRequest) {
 
     const token = (await cookies()).get('token');
 
@@ -200,7 +200,7 @@ export async function updateContactReq(contactId: string, inputs: ContactInputs)
 
 }
 
-export async function deleteContactReq(contactId: string) {
+export async function deleteContactReq(contactId: string | number) {
 
     const token = (await cookies()).get('token');
 
@@ -239,7 +239,7 @@ export async function deleteContactReq(contactId: string) {
 
 }
 
-export async function restoreContactReq(contactId: string) {
+export async function restoreContactReq(contactId: string | number) {
 
     const token = (await cookies()).get('token');
 

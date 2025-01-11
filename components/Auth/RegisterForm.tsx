@@ -1,21 +1,17 @@
 'use client'
 
-import { RegisterCredentials, registerReq } from "@/app/actions/auth";
-import { registerDataSchema } from "@/database/validations/auth-validation";
+import { registerReq } from "@/app/actions/auth";
+import { registerCredentialsSchema } from "@/database/validations/auth-validation";
 import { transformLaravelFieldErrors, zValidate } from "@/helpers/validation-helper";
+import { RegisterCredentialsRequest } from "@/types/requests/auth";
 import { ArrowLeft, Key, Mail } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 
-type Message = {
-    type: 'info' | 'error' | 'success';
-    body: string;
-}
-
 function RegisterForm() {
 
     const [loading, setLoading] = useState(false)
-    const [message, setMessage] = useState<Message | null>(null)
+    const [message, setMessage] = useState<FormStatusMessage | null>(null)
 
     const initInputs = {
         email: '',
@@ -23,7 +19,7 @@ function RegisterForm() {
         password_confirmation: '',
     }
 
-    const [inputs, setInputs] = useState<RegisterCredentials>(initInputs)
+    const [inputs, setInputs] = useState<RegisterCredentialsRequest>(initInputs)
 
     const initErrors = {
         email: '',
@@ -44,7 +40,7 @@ function RegisterForm() {
             body: 'در حال ورود...'
         })
 
-        const { hasError, errors } = zValidate(registerDataSchema, inputs)
+        const { hasError, errors } = zValidate(registerCredentialsSchema, inputs)
 
         if (hasError) {
             setLoading(false)

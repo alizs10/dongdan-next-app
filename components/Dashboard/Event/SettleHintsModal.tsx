@@ -1,4 +1,4 @@
-import { createExpenseReq, CreateTransferReqInputs } from "@/app/actions/event";
+import { createExpenseReq } from "@/app/actions/event";
 import Button from "@/components/Common/Button";
 import ModalHeader from "@/components/Common/ModalHeader";
 import ModalWrapper from "@/components/Common/ModalWrapper";
@@ -6,7 +6,8 @@ import { EventContext, SettlementTransactions } from "@/context/EventContext";
 import { TomanPriceFormatter } from "@/helpers/helpers";
 import { useAppStore } from "@/store/app-store";
 import { useToastStore } from "@/store/toast-store";
-import { ArrowLeft, CreditCard, Handshake, Minus, MoveLeft, User, Zap } from "lucide-react";
+import { CreateTransferRequest } from "@/types/requests/event";
+import { CreditCard, Handshake, Minus, MoveLeft, User } from "lucide-react";
 import { useContext } from "react";
 import { createPortal } from "react-dom";
 
@@ -25,7 +26,7 @@ function SettleHintsModal({ onClose, transactions }: {
 
     async function onSettleButtonClick(transaction: SettlementTransactions) {
 
-        let newTransferInputs: CreateTransferReqInputs = {
+        let newTransferInputs: CreateTransferRequest = {
             amount: transaction.amount.toString(),
             description: "تسویه حساب",
             date: new Date(),

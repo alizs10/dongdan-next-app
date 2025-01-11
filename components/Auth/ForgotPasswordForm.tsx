@@ -7,17 +7,10 @@ import { Key, Mail, MoveRight, Send } from "lucide-react";
 import Link from "next/link";
 import { FormEvent, useState } from "react";
 
-
-type Message = {
-    type: 'info' | 'error' | 'success';
-    body: string;
-}
-
-
 function ForgotPasswordForm() {
 
     const [loading, setLoading] = useState(false)
-    const [message, setMessage] = useState<Message | null>(null)
+    const [message, setMessage] = useState<FormStatusMessage | null>(null)
     const [email, setEmail] = useState('')
 
     const [errors, setErrors] = useState<Record<string, string>>({

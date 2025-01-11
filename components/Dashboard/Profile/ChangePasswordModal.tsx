@@ -4,36 +4,26 @@ import TextInput from "@/components/Common/Form/TextInput";
 import ModalHeader from "@/components/Common/ModalHeader";
 import ModalWrapper from "@/components/Common/ModalWrapper";
 import { transformLaravelFieldErrors, zValidate } from "@/helpers/validation-helper";
-import { Pencil, Save } from "lucide-react";
+import { Save } from "lucide-react";
 import { useState } from "react";
-import { createPortal, useFormStatus } from "react-dom";
+import { createPortal } from "react-dom";
 import Button from "@/components/Common/Button";
-import { Toast, useToastStore } from "@/store/toast-store";
-import { generateUID } from "@/helpers/helpers";
-import { profileSchema } from "@/database/validations/profile-validation";
+import { useToastStore } from "@/store/toast-store";
 import { changePasswordReq } from "@/app/actions/auth";
 import { changePasswordSchema } from "@/database/validations/auth-validation";
-
-
-type FormInputs = {
-    password: string;
-    new_password: string;
-    new_password_confirmation: string,
-}
+import { ChangePasswordRequest } from "@/types/requests/auth";
 
 function ChangePasswordModal({ onClose }: { onClose: () => void }) {
 
     const addToast = useToastStore(state => state.addToast);
     const [loading, setLoading] = useState(false)
 
-    const { pending } = useFormStatus();
-
-    const initInputs: FormInputs = {
+    const initInputs = {
         password: '',
         new_password: '',
         new_password_confirmation: '',
     }
-    const [inputs, setInputs] = useState(initInputs);
+    const [inputs, setInputs] = useState<ChangePasswordRequest>(initInputs);
 
 
     const initFormErrors = {
