@@ -20,11 +20,11 @@ export function TrashedEventsContextProvider({ children, items }: { children: Re
     const [trashedEvents, setTrashedEvents] = useState<Event[]>(items);
 
     function deleteEvent(contactId: string) {
-        setTrashedEvents(trashedEvents.filter((event) => event.id !== contactId));
+        setTrashedEvents(trashedEvents.filter((event) => event.id.toString() !== contactId));
     }
 
     function deleteMultiEvent(contactIds: string[]) {
-        setTrashedEvents(trashedEvents.filter((event) => !contactIds.includes(event.id)));
+        setTrashedEvents(trashedEvents.filter((event) => !contactIds.includes(event.id.toString())));
     }
 
     const values = {

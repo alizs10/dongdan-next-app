@@ -20,11 +20,11 @@ export function TrashedContactsContextProvider({ children, items }: { children: 
     const [trashedContacts, setTrashedContacts] = useState<Contact[]>(items);
 
     function deleteContact(contactId: string) {
-        setTrashedContacts(trashedContacts.filter((contact) => contact.id !== contactId));
+        setTrashedContacts(trashedContacts.filter((contact) => contact.id.toString() !== contactId));
     }
 
     function deleteMultiContact(contactIds: string[]) {
-        setTrashedContacts(trashedContacts.filter((contact) => !contactIds.includes(contact.id)));
+        setTrashedContacts(trashedContacts.filter((contact) => !contactIds.includes(contact.id.toString())));
     }
 
     const values = {

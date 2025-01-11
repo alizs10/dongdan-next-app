@@ -1,8 +1,8 @@
-export function generateUID() {
+export function generateUID(): string {
     return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
 }
 
-export function TomanPriceFormatter(price: string) {
+export function TomanPriceFormatter(price: string): string {
 
     if (price.length <= 3) return price;
 
@@ -21,11 +21,11 @@ export function TomanPriceFormatter(price: string) {
     return priceArr2.reverse().join('');
 }
 
-export function TomanPriceToNumber(price: string) {
+export function TomanPriceToNumber(price: string): number {
     return Number(price.replaceAll(',', ''));
 }
 
-export const arraysHaveSameValues = (arr1: string[], arr2: string[]) => {
+export const arraysHaveSameValues = (arr1: string[], arr2: string[]): boolean => {
     if (arr1.length !== arr2.length) return false;
 
     const sortedArr1 = arr1.slice().sort();
@@ -35,7 +35,7 @@ export const arraysHaveSameValues = (arr1: string[], arr2: string[]) => {
 };
 
 
-export const isDateBetween = (date: Date, startDate: Date, endDate: Date) => {
+export const isDateBetween = (date: Date, startDate: Date, endDate: Date): boolean => {
     const dateToCheck = new Date(date);
     dateToCheck.setHours(23)
     dateToCheck.setMinutes(59)

@@ -28,15 +28,15 @@ export function EventsContextProvider({ children, items }: { children: React.Rea
     }
 
     function updateEvent(eventId: string, updatedEvent: Event) {
-        setEvents(prevState => prevState.map(event => event.id === eventId ? updatedEvent : event));
+        setEvents(prevState => prevState.map(event => event.id.toString() === eventId ? updatedEvent : event));
     }
 
     function deleteEvent(eventId: string) {
-        setEvents(events.filter((event) => event.id !== eventId));
+        setEvents(events.filter((event) => event.id.toString() !== eventId));
     }
 
     function deleteMultiEvent(eventIds: string[]) {
-        setEvents(events.filter((event) => !eventIds.includes(event.id)));
+        setEvents(events.filter((event) => !eventIds.includes(event.id.toString())));
     }
 
     const values = {
