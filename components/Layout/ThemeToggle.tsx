@@ -4,24 +4,41 @@ import { Moon, SunDim } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 
+function ThemeToggleSkeleton() {
+    return (
+        <div className="header_left_button">
+            <div className="size-6 animate-pulse rounded-full bg-gray-200 dark:bg-gray-700"></div>
+        </div>
+    )
+}
+
 function ThemeToggle() {
 
+    const [mounted, setMounted] = useState(false);
     const { theme, setTheme } = useTheme();
-    const [mounted, setMounted] = useState(false)
+
+    useEffect(() => {
+        if (!mounted) {
+            setMounted(true);
+        }
+    }, [])
 
     const toggleTheme = () => setTheme(theme === 'light' ? 'dark' : 'light');
 
-    useEffect(() => {
-        setMounted(true)
-    }, [])
-
     if (!mounted) {
-        return null // Prevents rendering until client-side
+        return <ThemeToggleSkeleton />
     }
 
     return (
-        <button onClick={toggleTheme} className="header_left_button">
-            {theme === 'light' ? <SunDim className="size-6" /> : <Moon className="size-6" />}
+        <button
+            onClick={toggleTheme}
+            className="header_left_button"
+            aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} theme`}
+        >
+            {theme === 'light' ?
+                <SunDim className="size-6" aria-hidden="true" /> :
+                <Moon className="size-6" aria-hidden="true" />
+            }
         </button>
     );
 }

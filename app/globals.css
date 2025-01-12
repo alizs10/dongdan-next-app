@@ -45,7 +45,7 @@
 }
 
 .header_left_button {
-  @apply p-3 rounded-xl app_text_color hover:bg-gray-200 dark:hover:bg-gray-800;
+  @apply p-3 rounded-full app_text_color hover:bg-gray-200 dark:hover:bg-gray-800;
 }
 
 /* landing styles */
