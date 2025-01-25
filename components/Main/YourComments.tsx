@@ -4,6 +4,7 @@ import { MessagesSquare, MoveLeft, MoveRight, User } from "lucide-react";
 import { useState } from "react";
 
 import { AnimatePresence, motion } from 'framer-motion';
+import useWidth from "@/hooks/useWidth";
 
 export default function YourComments() {
 
@@ -20,8 +21,6 @@ export default function YourComments() {
         { id: 10, body: "استفاده از دونگ دان تجربه خرید دسته‌جمعی رو خیلی راحت‌تر کرده. می‌تونیم به راحتی هزینه‌ها رو تقسیم کنیم بدون هیچ مشکلی.", author: "زهرا عباسی" }
     ];
 
-
-
     const [currentIndex, setCurrentIndex] = useState(0);
     const sliceLength = 3;
 
@@ -34,41 +33,47 @@ export default function YourComments() {
     };
 
     const getCurrentComments = () => {
-
         const endIndex = currentIndex + sliceLength;
         if (endIndex <= comments.length) {
             const arr = comments.slice(currentIndex, endIndex);
-            console.log(arr.length)
             return arr;
         } else {
             const arr = [...comments.slice(currentIndex), ...comments.slice(0, endIndex % comments.length)];
-            console.log(arr.length)
             return arr;
         }
     };
 
+    const { width, breakPKey } = useWidth()
+    const gap = breakPKey === 'xs' ? 15 : breakPKey === 'md' ? 20 : breakPKey === 'xl' ? 30 : 40;
+    const padding = width < 640 ? 40 : 80;
 
+    const commentWidth = (width - padding - (2 * gap)) / 3;  // Total width minus padding minus gaps divided by 3
+    const sideCommentWidth = commentWidth - (1 / 3 * commentWidth);  // Total width minus padding minus gaps divided by 3
+    const mainCommentWidth = commentWidth + (2 / 3 * commentWidth);  // Total width minus padding minus gaps divided by 3
+
+    const firstCommentRightP = 0;
+    const mainCommentRightP = sideCommentWidth + gap;
+    const lastCommentRightP = sideCommentWidth + gap + mainCommentWidth + gap;
 
     return (
-        <div className="w-full my-20 flex flex-col gap-x-0 col-span-2">
-            <div className="px-20 primary_text_color flex flex-row gap-x-4 items-center">
+        <div className="w-full my-20 flex flex-col gap-x-0 col-span-2 order-3">
+            <div className="px-5 xl:px-20 primary_text_color flex flex-row gap-x-4 items-center">
                 <MessagesSquare className="size-10" />
                 <h2 className="font-bold text-3xl">نظرات شما</h2>
             </div>
 
-            <div className="mx-auto mt-20 w-[1240px] h-[400px] flex flex-col gap-y-4">
-
-                <ul className="relative w-full py-10">
+            <div className="px-5 md:px-10 mt-5 md:mt-20 max-w-full overflow-hidden h-[300px] md:h-[400px] w-full mx-auto flex flex-col gap-y-4">
+                <ul className="relative h-full w-full">
                     <AnimatePresence mode="sync">
                         {getCurrentComments().map((comment, index) => (
                             <motion.li
                                 key={comment.id}
-                                initial={{ scale: 0.5, opacity: 0, right: index * 400 + index * 20, top: 0 }}
+                                initial={{ scale: 0.5, opacity: 0, right: index === 0 ? firstCommentRightP : index === 1 ? mainCommentRightP : lastCommentRightP, top: 30 }}
                                 animate={{
-                                    scale: index === 1 ? 1.2 : 0.8,
+                                    scale: index === 1 ? 1.1 : 1,
                                     opacity: 1,
-                                    right: index * 400 + index * 20,
-                                    top: 0,
+                                    right: index === 0 ? firstCommentRightP : index === 1 ? mainCommentRightP : lastCommentRightP,
+                                    top: 30,
                                     transition: {
                                         type: "spring",
                                         duration: 0.1,
@@ -80,34 +85,35 @@ export default function YourComments() {
                                     scale: 0.5,
                                     opacity: 0,
                                     right: 0,
-                                    top: 0,
+                                    top: 30,
                                     transition: {
                                         duration: 0.1,
                                         ease: "easeInOut"
                                     }
-                                }} className="absolute rounded-[3rem] primary_bg_color w-[400px] h-[300px] p-7 flex flex-col z-40 shadow-lg hover:shadow-xl transition-shadow">
-                                <p className="text-justify line-clamp-4 leading-7 text-white font-light text-sm">
+                                }}
+                                style={{ width: index === 1 ? mainCommentWidth : sideCommentWidth }}
+                                className="absolute rounded-xl md:rounded-2xl xl:rounded-[3rem] primary_bg_color h-[200px] md:h-[250px] p-2 md:p-3 xl:p-7 flex flex-col z-40 shadow-lg hover:shadow-xl transition-shadow">
+                                <p className="text-justify line-clamp-[8] leading-5 md:leading-7 text-white font-light text-sm xl:text-sm">
                                     {comment.body}
                                 </p>
 
-                                <div className="mt-auto text-sm font-semibold text-white mr-auto flex flex-row items-center gap-x-2">
-                                    <User className="size-5" />
-                                    <p className="text-base">{comment.author.trim()}</p>
-                                </div>
+                                {index === 1 && (
+                                    <div className="mt-auto text-xs xl:text-sm font-semibold text-white mr-auto flex flex-row items-center gap-x-2">
+                                        <User className="size-3 xl:size-5" />
+                                        <p className="text-xs xl:text-base">{comment.author.trim()}</p>
+                                    </div>
+                                )}
                             </motion.li>
                         ))}
                     </AnimatePresence>
                 </ul>
                 <div className="flex flex-row gap-x-2 items-center mt-auto mr-auto">
-
                     <button onClick={showPreviousComment}>
                         <MoveRight className="size-6 primary_text_color" />
                     </button>
-
                     <button onClick={showNextComment}>
                         <MoveLeft className="size-6 primary_text_color" />
                     </button>
-
                 </div>
             </div>
         </div>

@@ -15,15 +15,15 @@ function Landing() {
         <div className="grid grid-cols-2 my-20">
 
 
-            <div className="col-span-1 mt-20 mx-auto w-full relative">
+            <div className="col-span-2 xl:col-span-1 xl:order-1 order-2 mt-20 mx-auto w-full relative">
 
-                <div className="moving-element">
+                <div className="moving-element max-w-[300px] lg:max-w-full">
                     <Shape />
                 </div>
                 <Banner />
             </div>
 
-            <div className='landing_container col-span-1'>
+            <div className='landing_container col-span-2 xl:col-span-1 order-1'>
                 <div className='landing_title_container'>
                     <h2 className='primary_text_color text-4xl font-bold'>رایگان،</h2>
                     <h2 className='app_text_color text-4xl font-bold'>آسان،</h2>
