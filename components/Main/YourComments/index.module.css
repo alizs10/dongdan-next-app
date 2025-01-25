@@ -1,0 +1,3 @@
+.slide {
+  @apply primary_bg_color text-base text-white p-5 h-[250px] rounded-2xl flex flex-col gap-y-8;
+}

@@ -39,7 +39,6 @@ function Landing() {
                 </Link>
             </div>
 
-
             <YourComments />
 
         </div>
