@@ -74,16 +74,12 @@ export default function YourComments() {
                             rows: 1,
                         }}
                         breakpoints={{
-                            320: {
+                            0: {
                                 slidesPerView: 1.5,
                                 spaceBetween: 20
                             },
                             480: {
                                 slidesPerView: 2.5,
-                                spaceBetween: 20
-                            },
-                            640: {
-                                slidesPerView: 3.5,
                                 spaceBetween: 20
                             },
                             768: {

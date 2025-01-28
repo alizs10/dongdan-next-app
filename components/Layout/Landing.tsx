@@ -12,14 +12,10 @@ function Landing() {
 
     return (
 
-        <div className="grid grid-cols-2 my-20">
+        <div className="grid grid-cols-2 my-20 mb-20 md:mb-44 xl:mb-60">
 
 
             <div className="col-span-2 xl:col-span-1 xl:order-1 order-2 mt-20 mx-auto w-full relative">
-
-                <div className="moving-element max-w-[300px] lg:max-w-full">
-                    <Shape />
-                </div>
                 <Banner />
             </div>
 

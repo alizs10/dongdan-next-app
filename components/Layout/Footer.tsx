@@ -1,16 +1,14 @@
 import { Github, Globe, Headset, Info, Instagram, Mail, MapPin, Phone, Send } from "lucide-react";
 import Link from "next/link";
-import Wave6 from "../Common/Wave6";
+import FooterWave from "./FooterWave";
+
 
 function Footer() {
-
 
     return (
         <footer className="relative">
 
-            <Wave6 />
-
-            {/* <Image src={'/wave6up.png'} className="w-full h-[400px]" alt="wave" width={1920} height={300} /> */}
+            <FooterWave />
 
             <div className='footer_container'>
 
