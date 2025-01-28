@@ -286,6 +286,7 @@
 }
 
 .footer_about_desc {
+  @apply text-white;
   font-size: 1rem;
   font-weight: 400;
   text-align: justify;
@@ -304,11 +305,18 @@
 }
 
 .footer_title {
-  @apply font-bold text-lg sm:text-lg md:text-base xl:text-lg;
+  @apply text-white font-bold text-lg sm:text-lg md:text-base xl:text-lg;
   /* font-size: 1.5rem; */
 }
 
+.footer_desc_title {
+  @apply text-white;
+  font-size: 1rem;
+  font-weight: 400;
+}
+
 .footer_desc {
+  @apply text-white;
   font-size: 1rem;
   font-weight: 400;
 }
@@ -355,6 +363,7 @@
     /* top: -10%; */
     right: 5%;
   }
+
   100% {
     /* top: -20%; */
     right: 0;
@@ -368,6 +377,8 @@
 
 /* Hide scrollbar for IE, Edge and Firefox */
 .hide-scrollbar {
-  -ms-overflow-style: none; /* IE and Edge */
-  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none;
+  /* IE and Edge */
+  scrollbar-width: none;
+  /* Firefox */
 }

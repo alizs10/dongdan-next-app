@@ -15,13 +15,9 @@ function YourCommentsSkeleton() {
 
     return <div className="flex flex-row flex-nowrap overflow-x-scroll hide-scrollbar gap-x-5">
 
-        <div className="animate-pulse opacity-50 h-[250px] min-w-[250px] bg-gray-200 dark:bg-gray-700 p-5 rounded-xl w-full"></div>
-        <div className="animate-pulse opacity-50 h-[250px] min-w-[250px] bg-gray-200 dark:bg-gray-700 p-5 rounded-xl w-full"></div>
-        <div className="animate-pulse opacity-50 h-[250px] min-w-[250px] bg-gray-200 dark:bg-gray-700 p-5 rounded-xl w-full"></div>
-        <div className="animate-pulse opacity-50 h-[250px] min-w-[250px] bg-gray-200 dark:bg-gray-700 p-5 rounded-xl w-full"></div>
-        <div className="animate-pulse opacity-50 h-[250px] min-w-[250px] bg-gray-200 dark:bg-gray-700 p-5 rounded-xl w-full"></div>
-        <div className="animate-pulse opacity-50 h-[250px] min-w-[250px] bg-gray-200 dark:bg-gray-700 p-5 rounded-xl w-full"></div>
-        <div className="animate-pulse opacity-50 h-[250px] min-w-[250px] bg-gray-200 dark:bg-gray-700 p-5 rounded-xl w-full"></div>
+        {Array.from({ length: 5 }).map((_, index) => (
+            <div key={index} className="animate-pulse opacity-50 h-[250px] min-w-[320px] bg-gray-200 dark:bg-gray-700 p-5 rounded-3xl w-full"></div>
+        ))}
 
     </div>
 }
@@ -93,10 +89,6 @@ export default function YourComments() {
                             768: {
                                 slidesPerView: 4.5,
                                 spaceBetween: 20
-                            },
-                            1024: {
-                                slidesPerView: 5.5,
-                                spaceBetween: 20
                             }
                         }}
                         scrollbar={{ draggable: true }}
@@ -104,7 +96,7 @@ export default function YourComments() {
                         {comments.map((comment, index) => (
                             <SwiperSlide
                                 key={comment.id}
-
+                                className="primary_bg_color rounded-3xl"
                             >
                                 <div className={styles.slide}>
 

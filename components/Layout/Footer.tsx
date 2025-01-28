@@ -1,7 +1,6 @@
 import { Github, Globe, Headset, Info, Instagram, Mail, MapPin, Phone, Send } from "lucide-react";
 import Link from "next/link";
 import Wave6 from "../Common/Wave6";
-import Image from "next/image";
 
 function Footer() {
 
@@ -14,7 +13,6 @@ function Footer() {
             {/* <Image src={'/wave6up.png'} className="w-full h-[400px]" alt="wave" width={1920} height={300} /> */}
 
             <div className='footer_container'>
-
 
                 <div className='footer_info'>
                     <div className='footer_info_title'>
@@ -34,21 +32,21 @@ function Footer() {
                     <div className='footer_info_contact_desc'>
                         <div className='footer_info_contact_item'>
                             <div className="flex items-center gap-x-2">
-                                <MapPin size={20} />
+                                <MapPin className="text-white" size={20} />
                                 <p className='footer_desc_title'>آدرس:</p>
                             </div>
                             <p className='footer_desc'>تهران</p>
                         </div>
                         <div className='footer_info_contact_item'>
                             <div className="flex items-center gap-x-2">
-                                <Mail size={20} />
+                                <Mail className="text-white" size={20} />
                                 <p className='footer_desc_title'>ایمیل:</p>
                             </div>
                             <p className='footer_desc'>dongdan@mail.com</p>
                         </div>
                         <div className='footer_info_contact_item'>
                             <div className="flex items-center gap-x-2">
-                                <Phone size={20} />
+                                <Phone className="text-white" size={20} />
                                 <p className='footer_desc_title'>تلفن تماس:</p>
                             </div>
                             <p className='footer_desc'>0912-345-6789</p>
