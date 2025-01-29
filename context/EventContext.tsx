@@ -6,7 +6,7 @@ import DashboardLoading from "@/components/Layout/DashboardLoading";
 import { arraysHaveSameValues, isDateBetween, TomanPriceFormatter, TomanPriceToNumber } from "@/helpers/helpers";
 import { useAppStore } from "@/store/app-store";
 import { useToastStore } from "@/store/toast-store";
-import { Event, Expense, ExpenseFilters, Member, SettlePerson } from "@/types/event-types";
+import { Event, Expend, Expense, ExpenseFilters, Member, SettlePerson, Transfer } from "@/types/event-types";
 import { act, createContext, useCallback, useEffect, useMemo, useState } from "react";
 
 export type SettlementTransactions = {
@@ -104,61 +104,70 @@ export function EventContextProvider({ children, eventData }: { children: React.
     }, [event.expenses, activeFilters])
 
     function applyFilters(filters: ExpenseFilters) {
+        // Start with base expenses based on type filter
+        let results = filters.type === 'any'
+            ? [...event.expenses]
+            : event.expenses.filter(exp => exp.type === filters.type);
 
-        let results: Event['expenses'] = filters.type === 'any' ? [...event.expenses] : event.expenses.filter(exp => filters.type === exp.type);
-
-        // 1. amount filter
+        // Apply amount range filter
         results = results.filter(exp => {
-
             const amount = TomanPriceToNumber(exp.amount.toString());
+            const min = TomanPriceToNumber(filters.amountMin.toString());
+            const max = TomanPriceToNumber(filters.amountMax.toString());
+            return amount >= min && amount < max;
+        });
 
-            const amountMin = TomanPriceToNumber(filters.amountMin.toString());
-            const amountMax = TomanPriceToNumber(filters.amountMax.toString());
-
-            if (filters.amountMin && filters.amountMax && amount >= amountMin && amount < amountMax) return true;
-
-            return false;
-        })
-
-        // 2. date filter
-        results = results.filter(exp => {
-            const startDate = filters.dateRange[0];
-            const endDate = filters.dateRange[1];
-
-            return isDateBetween(exp.date, startDate, endDate);
-        })
+        // Apply date range filter 
+        results = results.filter(exp =>
+            isDateBetween(exp.date, filters.dateRange[0], filters.dateRange[1])
+        );
+        // Apply expense-specific filters
 
 
-        // expend
-        // 1. payer_id filter
-        if (filters.type === 'expend' && filters?.payer_id) {
-            // activeFilters.payer_id = filters.payer_id;
-            results = results.filter((exp) => (exp.type === 'expend' && exp.payer_id.toString() === filters.payer_id));
-        }
 
-        // 2. group filter
-        if (filters.type === 'expend' && filters?.contributors.length > 0) {
-            // activeFilters.contributors = filters.contributors;
-            results = results.filter((exp) => (exp.type === 'expend' && arraysHaveSameValues(exp.contributors.map(p => p.id.toString()), filters.contributors)));
-        }
+        if (filters.type === 'expend') {
+            // Filter by payer
+            if (filters.payer_id) {
+                results = results.filter(exp =>
+                    (exp as Expend).payer_id.toString() === filters.payer_id
+                );
+            }
 
+            // Filter by contributors
+            if (filters.contributors?.length > 0) {
+                results = results.filter(exp => {
 
-        // transfer
-        // 1. from filter
-        if (filters.type === 'transfer' && filters?.transmitter_id) {
-            // activeFilters.from = filters.from;
-            results = results.filter((exp) => (exp.type === 'transfer' && exp.transmitter_id.toString() === filters.transmitter_id));
-        }
-
-        // 2. to filter
-        if (filters.type === 'transfer' && filters?.receiver_id) {
-            // activeFilters.to = filters.to;
-            results = results.filter((exp) => (exp.type === 'transfer' && exp.receiver_id.toString() === filters.receiver_id));
+                    const contributors = (exp as Expend).contributors.map(p => p.event_member?.id.toString()).filter((c): c is string => c !== undefined)
+                    return arraysHaveSameValues(
+                        contributors,
+                        filters.contributors
+                    )
+                }
+                );
+            }
         }
 
 
-        setFilteredExpenses(results)
-        setActiveFilters(filters)
+        // Apply transfer-specific filters
+        if (filters.type === 'transfer') {
+            // Filter by transmitter
+            if (filters.transmitter_id) {
+                results = results.filter(exp =>
+                    (exp as Transfer).transmitter_id.toString() === filters.transmitter_id
+                );
+            }
+
+            // Filter by receiver
+            if (filters.receiver_id) {
+                results = results.filter(exp =>
+                    (exp as Transfer).receiver_id.toString() === filters.receiver_id
+                );
+            }
+        }
+
+
+        setFilteredExpenses(results);
+        setActiveFilters(filters);
     }
 
     function clearFilters() {
