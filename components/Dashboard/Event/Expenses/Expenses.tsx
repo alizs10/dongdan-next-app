@@ -12,8 +12,8 @@ function Expenses({ expenses }: { expenses: ExpenseType[] }) {
 
     return (
         <div className="flex flex-col min-h-[600px]">
-            {expenses.map(expense => (
-                <Expense key={expense.id} expense={expense} />
+            {expenses.map((expense, index) => (
+                <Expense key={expense.id} index={index} expense={expense} />
             ))}
         </div>
     );

@@ -13,7 +13,7 @@ import { MultiSelectItemContext } from "@/context/MultiSelectItemContext";
 import InfoExpenseModal from "../InfoExpenseModal";
 import DashboardLoading from "@/components/Layout/DashboardLoading";
 
-function Expense({ expense }: { expense: Expense }) {
+function Expense({ expense, index }: { expense: Expense, index: number }) {
 
     const { user, settings } = useAppStore(state => state);
     const openDialog = useDialogStore(state => state.openDialog);
@@ -104,7 +104,7 @@ function Expense({ expense }: { expense: Expense }) {
                 </div>
 
                 <div className="flex flex-col gap-y-2">
-                    <h2 className="text-sm lg:text-base text-gray-700 dark:text-gray-300">{expense.type === 'transfer' ? 'جابه جایی پول' : 'هزینه'}: {expense.description}</h2>
+                    <h2 className="text-sm lg:text-base text-gray-700 dark:text-gray-300">{index + 1}.{<span className="mx-1"></span>}{expense.type === 'transfer' ? 'جابه جایی پول' : 'هزینه'}: {expense.description}</h2>
 
                     <div className="flex flex-wrap gap-x-2 lg:gap-x-4 items-center text-xs lg:text-sm">
                         <span className="user_avatar_gray_text">{expense.type === 'expend' ? getMemberName(expense.payer_id.toString()) : getMemberName(expense.transmitter_id.toString())}</span>
