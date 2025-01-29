@@ -11,6 +11,7 @@ import { EventContext } from "@/context/EventContext";
 import { useAppStore } from "@/store/app-store";
 import { MultiSelectItemContext } from "@/context/MultiSelectItemContext";
 import InfoExpenseModal from "../InfoExpenseModal";
+import DashboardLoading from "@/components/Layout/DashboardLoading";
 
 function Expense({ expense }: { expense: Expense }) {
 
@@ -76,10 +77,18 @@ function Expense({ expense }: { expense: Expense }) {
 
     const getMemberName = useCallback((memberId: string) => {
         const member = getMember(memberId);
-        if (member?.member_id === user?.id) return 'خودم';
+        console.log(member);
+        console.log(user);
+
+        if ((member?.member_id === user?.id) && settings.show_as_me) return 'خودم';
 
         return member?.name ?? 'نامشخص';
-    }, [getMember]);
+    }, [getMember, settings.show_as_me, user]);
+
+
+    if (!user || !settings) {
+        return <DashboardLoading />
+    }
 
     return (
         <div
@@ -114,7 +123,7 @@ function Expense({ expense }: { expense: Expense }) {
             </div>
 
             <div className="flex flex-col gap-y-2 items-end">
-                <span className="text-xs text-gray-500 dark:text-gray-400">{moment(expense.date).locale('fa').format("DD MMM، YYYY")}</span>
+                <span className="text-xs text-gray-500 dark:text-gray-400">{moment(expense.date).locale('fa').format("dddd DD MMM، YYYY")}</span>
                 <div className="flex flex-row items-center gap-x-2">
 
                     <div ref={optionsParentRef} className='relative'>

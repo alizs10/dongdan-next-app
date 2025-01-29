@@ -276,6 +276,14 @@ function Event() {
                             <span className="text-sm text-gray-500 dark:text-gray-400">{moment(event.start_date).locale('fa').format("DD MMM، YYYY")}</span>
                         </div>
                         <div className="flex w-full justify-between items-center">
+                            <h1 className="text-sm text-gray-500 dark:text-gray-400">تاریخ امروز</h1>
+                            <span className="text-sm text-gray-500 dark:text-gray-400">{moment().locale('fa').format("DD MMM، YYYY")}</span>
+                        </div>
+                        <div className="flex w-full justify-between items-center">
+                            <h1 className="text-sm text-gray-500 dark:text-gray-400">طول رویداد</h1>
+                            <span className="text-sm text-gray-500 dark:text-gray-400">{moment().diff(moment(event.start_date), 'days') + 1} روز</span>
+                        </div>
+                        <div className="flex w-full justify-between items-center">
                             <h1 className="text-sm text-gray-500 dark:text-gray-400">تعداد اعضا</h1>
                             <span className="text-sm text-gray-500 dark:text-gray-400">{event.members.length}</span>
                         </div>

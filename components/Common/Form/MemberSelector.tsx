@@ -64,7 +64,7 @@ function MemberSelector({ label, members, onSelect, value, error, self = undefin
                     </div>
                 )}
 
-                {self && self.include && (
+                {(self && self.include) && (
                     <div key={'self'} onClick={onSelect.bind(null, 'self')} className={`px-4 select-none cursor-pointer py-2 flex flex-row gap-x-4 items-center border ${self.value ? `user_avatar_${self.scheme}_text user_avatar_${self.scheme}_border user_avatar_${self.scheme}_bg` : 'user_avatar_gray_text app_border_color'} transition-all duration-300 rounded-full`}>
                         <div className="">
                             <User className="size-5" />

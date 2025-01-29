@@ -10,10 +10,9 @@ import ModalHeader from "@/components/Common/ModalHeader";
 import ModalWrapper from "@/components/Common/ModalWrapper";
 import { EventsContext } from "@/context/EventsContext";
 import { updateEventSchema } from "@/database/validations/event-validation";
-import { generateUID } from "@/helpers/helpers";
 import { zValidate } from "@/helpers/validation-helper";
 import { useAppStore } from "@/store/app-store";
-import { Toast, useToastStore } from "@/store/toast-store";
+import { useToastStore } from "@/store/toast-store";
 import { Contact } from "@/types/contact-types";
 import { Event, Member } from "@/types/event-types";
 import { Ban, BriefcaseBusiness, Cake, Coffee, Loader, Pencil, Plane, TreePalm, Utensils } from "lucide-react";
@@ -39,7 +38,7 @@ function EditEventModal({ onClose, event }: { onClose: () => void, event: Event 
     const [fetchingEventMembers, setFetchingEventMembers] = useState(true);
     const [eventMembers, setEventMembers] = useState<null | Member[]>(null)
     const [nonMemberContacts, setNonMemberContacts] = useState<null | Contact[]>(null)
-    const [selfIncluded, setSelfIncluded] = useState(false);
+    // const [selfIncluded, setSelfIncluded] = useState(false);
 
     const initInputs = {
         name: event.name,
@@ -72,8 +71,6 @@ function EditEventModal({ onClose, event }: { onClose: () => void, event: Event 
                 if (isUserAMember) {
                     members = members.filter((member: Member) => member.member_id !== user.id)
                     setInputs(prev => ({ ...prev, selfIncluded: true }))
-                } else {
-                    setSelfIncluded(res2.selfIncluded)
                 }
 
                 const nonMembers = res2.nonMembers.map((contact: Contact) => ({ ...contact, id: 'contact.' + contact.id }))
@@ -130,7 +127,7 @@ function EditEventModal({ onClose, event }: { onClose: () => void, event: Event 
     function toggleAllMembers() {
         const allPossibleMembers = [...(eventMembers || []), ...(nonMemberContacts || [])]
 
-        const allPossibleMembersCount = (eventMembers?.length ?? 0) + (!selfIncluded ? 1 : 0) + (nonMemberContacts?.length ?? 0);
+        const allPossibleMembersCount = (eventMembers?.length ?? 0) + 1 + (nonMemberContacts?.length ?? 0);
 
         const membersCount = inputs.members.length + (inputs.selfIncluded ? 1 : 0)
 
@@ -211,7 +208,7 @@ function EditEventModal({ onClose, event }: { onClose: () => void, event: Event 
 
         const res = await updateEventReq(event.id.toString(), reqInputs)
 
-        if (res.success) {
+        if (res?.success) {
             const successToast = {
 
                 message: res.message,
@@ -226,7 +223,7 @@ function EditEventModal({ onClose, event }: { onClose: () => void, event: Event 
 
         const errorToast = {
 
-            message: res.message,
+            message: res?.message ?? 'خطایی ناشناخته رخ داده است',
             type: 'danger' as const,
         }
         addToast(errorToast);
@@ -290,7 +287,7 @@ function EditEventModal({ onClose, event }: { onClose: () => void, event: Event 
                             )}
                             <input type="hidden" value={inputs.label} name="label" />
                         </div>
-                        {user && eventMembers && eventMembers.length > 0 && (
+                        {(user && !fetchingEventMembers) && (
                             <MemberSelector
                                 label="اعضای رویداد"
                                 members={[...(eventMembers || []), ...(nonMemberContacts || [])]}
@@ -301,7 +298,7 @@ function EditEventModal({ onClose, event }: { onClose: () => void, event: Event 
                                 self={{
                                     id: user.id.toString(),
                                     scheme: user.scheme,
-                                    include: !selfIncluded,
+                                    include: true,
                                     value: inputs.selfIncluded
                                 }}
                             />
