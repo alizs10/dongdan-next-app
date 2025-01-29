@@ -71,7 +71,7 @@ function MemberSelectorWithAmountInput({ label, members, onSelect, onChangeAmoun
             <div className="flex flex-wrap gap-4">
 
                 {selectAllOption && (
-                    <div key={'all'} onClick={onSelect.bind(null, 'all')} className={`px-4 select-none cursor-pointer py-2 flex flex-row justify-between items-center border ${valuesMembersCount === membersCount ? `w-full user_avatar_blue_text user_avatar_blue_border user_avatar_blue_bg` : 'user_avatar_gray_text app_border_color'} transition-all duration-300 rounded-full`}>
+                    <div key={'all'} onClick={onSelect.bind(null, 'all')} className={`px-4 select-none cursor-pointer py-2 flex flex-row justify-between items-center border ${valuesMembersCount === membersCount ? `w-full user_avatar_blue_text user_avatar_blue_border user_avatar_blue_bg` : 'w-fit user_avatar_gray_text app_border_color'} transition-all duration-300 rounded-full`}>
                         <div className="flex flex-row gap-x-2 items-center">
                             <div className="">
                                 <Users className="size-5" />
@@ -85,8 +85,8 @@ function MemberSelectorWithAmountInput({ label, members, onSelect, onChangeAmoun
                     </div>
                 )}
 
-                {self && self.include && (
-                    <div key={'self'} onClick={onSelect.bind(null, 'self')} className={`px-4 select-none cursor-pointer py-2 flex flex-row gap-x-4 items-center border ${self.values ? `user_avatar_${self.scheme}_text user_avatar_${self.scheme}_border user_avatar_${self.scheme}_bg` : 'user_avatar_gray_text app_border_color'} transition-all duration-300 rounded-full`}>
+                {(self && self.include) && (
+                    <div key={'self'} onClick={onSelect.bind(null, 'self')} className={`px-4 select-none cursor-pointer py-2 flex flex-row gap-x-4 items-center border ${self.values ? `w-full user_avatar_${self.scheme}_text user_avatar_${self.scheme}_border user_avatar_${self.scheme}_bg` : 'w-fit user_avatar_gray_text app_border_color'} transition-all duration-300 rounded-full`}>
                         <div className="">
                             <User className="size-5" />
                         </div>
@@ -95,34 +95,34 @@ function MemberSelectorWithAmountInput({ label, members, onSelect, onChangeAmoun
                     </div>
                 )}
 
-                <div className="flex flex-wrap gap-4">
-                    {members.map(member => (
-                        <div key={member.id} onClick={onSelect.bind(null, member.id.toString())} className={`px-4 select-none py-2 flex flex-row justify-between items-center border ${isSelected(member.id.toString()) ? `w-full cursor-pointer user_avatar_${member.scheme}_text user_avatar_${member.scheme}_border user_avatar_${member.scheme}_bg` : 'w-fit cursor-pointer user_avatar_gray_text app_border_color'} transition-all duration-300 rounded-full`}>
-                            <div className="flex flex-row gap-x-2 items-center">
-                                <div className="">
-                                    <User className="size-5" />
-                                </div>
-                                <span className="text-base">{member.member_id?.toString() === self?.id ? settings.show_as_me ? 'خودم' : user?.name : member.name}</span>
+                {/* <div className="bg-orange-400 flex flex-wrap gap-4"> */}
+                {members.map(member => (
+                    <div key={member.id} onClick={onSelect.bind(null, member.id.toString())} className={`px-4 select-none py-2 flex flex-row justify-between items-center border ${isSelected(member.id.toString()) ? `w-full cursor-pointer user_avatar_${member.scheme}_text user_avatar_${member.scheme}_border user_avatar_${member.scheme}_bg` : 'w-fit cursor-pointer user_avatar_gray_text app_border_color'} transition-all duration-300 rounded-full`}>
+                        <div className="flex flex-row gap-x-2 items-center">
+                            <div className="">
+                                <User className="size-5" />
                             </div>
-
-                            {isSelected(member.id.toString()) && (
-                                <div className="flex flex-row gap-x-2 items-center">
-
-                                    <input
-                                        type="text"
-                                        onClick={e => e.stopPropagation()}
-                                        disabled={disabledInputs ?? false}
-                                        value={values.find(value => value.key === member.id.toString())?.amount}
-                                        onChange={(e) => onChangeAmount(member.id.toString(), e.target.value)}
-                                        placeholder="مبلغ"
-                                        className={`text-right text-base user_avatar_${member.scheme}_text border-b user_avatar_${member.scheme}_bg user_avatar_${member.scheme}_border px-3 py-1 outline-none`} />
-                                    <span className={`text-sm user_avatar_${member.scheme}_text`}>تومان</span>
-                                </div>
-                            )}
-
+                            <span className="text-base">{member.member_id?.toString() === self?.id ? settings.show_as_me ? 'خودم' : user?.name : member.name}</span>
                         </div>
-                    ))}
-                </div>
+
+                        {isSelected(member.id.toString()) && (
+                            <div className="w-full flex flex-row gap-x-2 items-center">
+
+                                <input
+                                    type="text"
+                                    onClick={e => e.stopPropagation()}
+                                    disabled={disabledInputs ?? false}
+                                    value={values.find(value => value.key === member.id.toString())?.amount}
+                                    onChange={(e) => onChangeAmount(member.id.toString(), e.target.value)}
+                                    placeholder="مبلغ"
+                                    className={`w-full text-right text-base user_avatar_${member.scheme}_text border-b user_avatar_${member.scheme}_bg user_avatar_${member.scheme}_border px-3 py-1 outline-none`} />
+                                <span className={`text-sm user_avatar_${member.scheme}_text`}>تومان</span>
+                            </div>
+                        )}
+
+                    </div>
+                ))}
+                {/* </div> */}
 
             </div>
 
