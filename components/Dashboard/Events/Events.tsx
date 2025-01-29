@@ -98,7 +98,7 @@ function Events() {
                                     <Button
                                         text="انتخاب همه"
                                         color="accent"
-                                        onClick={() => selectAllItems(items.map(item => item.id))}
+                                        onClick={() => selectAllItems(items.map(item => item.id.toString()))}
                                         size="small"
                                         icon={<ListCheck className="size-5" />}
                                     />

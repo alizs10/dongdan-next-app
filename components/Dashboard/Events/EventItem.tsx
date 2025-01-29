@@ -1,5 +1,5 @@
 import { Event } from '@/types/event-types';
-import { BriefcaseBusiness, Cake, Coffee, Ellipsis, Info, Pencil, Plane, Trash, TreePalm, Utensils } from "lucide-react";
+import { BookDashed, BriefcaseBusiness, Cake, Coffee, Dot, Ellipsis, Info, Pencil, Plane, Trash, TreePalm, Utensils } from "lucide-react";
 import Link from 'next/link';
 import moment from 'jalali-moment';
 import Button from '@/components/Common/Button';
@@ -131,9 +131,17 @@ function EventItem({ event }: { event: Event }) {
                         <h2 className='event_item_name'>{event.name}</h2>
                     </Link>
 
-                    <span className="text-xs text-gray-500 dark:text-gray-400">
-                        {event.members_count + ' عضو'}
-                    </span>
+                    <div className="flex flex-row gap-x-1 items-center">
+
+
+                        <span className="text-xs text-gray-500 dark:text-gray-400">
+                            {event.members_count + ' عضو'}،
+                        </span>
+
+                        <span className="text-xs text-gray-500 dark:text-gray-400">
+                            {event.expenses_count + ' هزینه'}
+                        </span>
+                    </div>
                 </div>
             </div>
 

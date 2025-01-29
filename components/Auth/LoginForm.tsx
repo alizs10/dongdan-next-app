@@ -83,7 +83,11 @@ function LoginForm() {
                 type: 'success',
                 body: 'با موفقیت وارد شدید. در حال ورود به حساب کاربری...'
             })
-            router.push('/dashboard/profile')
+            if (result.user.email_verified_at) {
+                router.push('/dashboard/events')
+            } else {
+                router.push('/dashboard/profile')
+            }
             return;
         }
 

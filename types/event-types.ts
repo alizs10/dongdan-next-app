@@ -8,6 +8,7 @@ export type Event = {
     members: Member[];
     expenses: Expense[];
     members_count: number;
+    expenses_count: number;
     created_at: Date;
     updated_at: Date;
     deleted_at: Date | null;
