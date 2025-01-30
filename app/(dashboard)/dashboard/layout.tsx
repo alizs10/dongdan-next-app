@@ -58,12 +58,12 @@ function Layout({ children }: { children: React.ReactNode }) {
     }
 
     return (
-        <section className="top-0 sticky grid grid-cols-1 lg:grid-cols-5">
+        <section className="grid grid-cols-1 lg:grid-cols-5">
             <section className="app_border_color border-b lg:border-b-0 col-span-4 lg:border-l">
                 {children}
             </section>
-            <aside className="top-0 pb-8 sticky col-span-1 app_bg_color h-fit">
 
+            <aside className="top-20 pb-8 sticky col-span-1 app_bg_color h-fit">
                 <div className="flex flex-row items-center gap-x-2 xl:gap-x-4 px-5 py-5 primary_text_color">
                     <Zap className="size-4 xl:size-5" />
                     <h1 className="text-base xl:text-lg">دسترسی سریع</h1>

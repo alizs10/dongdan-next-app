@@ -255,7 +255,7 @@ function Event() {
 
                 </div>
 
-                <div className="px-3 py-5 flex flex-col gap-y-8">
+                <div className="sticky top-20 px-3 py-5 flex flex-col gap-y-8">
                     <div className="flex w-full justify-between items-center">
                         <h1 className="event_header_title">اطلاعات رویداد</h1>
                         {/* <span className="text-sm text-gray-500 dark:text-gray-400">8 نفر</span> */}
@@ -317,7 +317,8 @@ function Event() {
             </aside>
 
             <div className="flex flex-col order-first lg:order-none border-b app_border_color lg:border-b-0 col-span-3 h-fit min-h-[400px] lg:min-h-[600px]">
-                <div className="event_header_container z-50">
+
+                <div className="event_header_container ">
 
                     <div className="event_header_right">
                         <Link href={event.deleted_at === null ? '/dashboard/events' : '/dashboard/events/trash'} className="event_back_button">
