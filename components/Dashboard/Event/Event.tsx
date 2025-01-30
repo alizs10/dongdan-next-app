@@ -31,6 +31,8 @@ function Event() {
 
     const {
         event,
+        expenses,
+        eventData,
         getAllCosts,
         getCostsCount,
         getTransfersCount,
@@ -148,24 +150,24 @@ function Event() {
 
                             <div className="flex w-full justify-between items-center">
                                 <h1 className="text-sm text-gray-500 dark:text-gray-400 font-semibold">مجموع هزینه ها</h1>
-                                <span className="text-sm text-gray-500 dark:text-gray-400">{TomanPriceFormatter(getAllCosts().toString())} تومان</span>
+                                <span className="text-sm text-gray-500 dark:text-gray-400">{TomanPriceFormatter(eventData.total_amount.toString())} تومان</span>
                             </div>
                             <div className="flex w-full justify-between items-center">
                                 <h1 className="text-sm text-gray-500 dark:text-gray-400">تعداد هزینه ها</h1>
-                                <span className="text-sm text-gray-500 dark:text-gray-400">{getCostsCount()}</span>
+                                <span className="text-sm text-gray-500 dark:text-gray-400">{eventData.expends_count}</span>
                             </div>
                             <div className="flex w-full justify-between items-center">
                                 <h1 className="text-sm text-gray-500 dark:text-gray-400">تعداد جابجایی پول</h1>
-                                <span className="text-sm text-gray-500 dark:text-gray-400">{getTransfersCount()}</span>
+                                <span className="text-sm text-gray-500 dark:text-gray-400">{eventData.transfers_count}</span>
                             </div>
 
                             <div className="flex w-full justify-between items-center">
                                 <h1 className="text-sm text-gray-500 dark:text-gray-400">بیشترین هزینه</h1>
-                                <span className="text-sm text-gray-500 dark:text-gray-400">{TomanPriceFormatter(getMostCost().toString())} تومان</span>
+                                <span className="text-sm text-gray-500 dark:text-gray-400">{TomanPriceFormatter(eventData.max_expend_amount.toString())} تومان</span>
                             </div>
                             <div className="flex w-full justify-between items-center">
                                 <h1 className="text-sm text-gray-500 dark:text-gray-400">بیشترین جابجایی پول</h1>
-                                <span className="text-sm text-gray-500 dark:text-gray-400">{TomanPriceFormatter(getHighestTransfer().toString())} تومان</span>
+                                <span className="text-sm text-gray-500 dark:text-gray-400">{TomanPriceFormatter(eventData.max_transfer_amount.toString())} تومان</span>
                             </div>
 
 
@@ -289,11 +291,11 @@ function Event() {
                         </div>
                         <div className="flex w-full justify-between items-center">
                             <h1 className="text-sm text-gray-500 dark:text-gray-400">مادرخرج</h1>
-                            <span className="text-sm text-gray-500 dark:text-gray-400">{getMaxPayer().name || '-'}</span>
+                            <span className="text-sm text-gray-500 dark:text-gray-400">{eventData?.member_with_most_expends?.name || '-'}</span>
                         </div>
                         <div className="flex w-full justify-between items-center">
                             <h1 className="text-sm text-gray-500 dark:text-gray-400">هزینه های مادرخرج</h1>
-                            <span className="text-sm text-gray-500 dark:text-gray-400">{TomanPriceFormatter(getMaxPayer().amount.toString())} تومان</span>
+                            <span className="text-sm text-gray-500 dark:text-gray-400">{TomanPriceFormatter(eventData?.member_with_most_expends?.expenses_as_payer_sum_amount.toString() || '-')} تومان</span>
                         </div>
 
                         <ShareEventLink />
@@ -345,14 +347,14 @@ function Event() {
                                     <Button
                                         text="انتخاب همه"
                                         color="accent"
-                                        onClick={() => selectAllItems(event.expenses.map(e => e.id.toString()))}
+                                        onClick={() => selectAllItems(expenses.map(e => e.id.toString()))}
                                         size="small"
                                         icon={<ListCheck className="size-5" />}
                                     />
                                 </>
                             )}
 
-                            {!selectMode && event.expenses.length > 0 && (
+                            {!selectMode && expenses.length > 0 && (
                                 <Button
                                     text="فیلتر"
                                     color="gray"
@@ -362,7 +364,7 @@ function Event() {
                                 />
                             )}
 
-                            {!selectMode && event.expenses.length > 0 && isFiltersModalOpen && <FiltersModal event={event} onClose={toggleFiltersModal} />}
+                            {!selectMode && expenses.length > 0 && isFiltersModalOpen && <FiltersModal event={event} onClose={toggleFiltersModal} />}
                             {!selectMode && eventStatus === 'active' && event.deleted_at === null && (
                                 <Button
                                     text="ثبت هزینه/جابجایی پول"
@@ -372,7 +374,7 @@ function Event() {
                                     icon={<Plus className="size-4" />}
                                 />
                             )}
-                            {event.expenses.length > 0 && (
+                            {expenses.length > 0 && (
                                 <Button
                                     text=""
                                     color="accent"
@@ -391,10 +393,10 @@ function Event() {
 
                 </div>
 
-                {/* <Expenses expenses={event.expenses} /> */}
+                {/* <Expenses expenses={expenses} /> */}
 
-                {(event.expenses.length > 0 && !activeFilters) || (activeFilters && filteredExpenses.length > 0) ? (
-                    <Expenses expenses={activeFilters ? filteredExpenses : event.expenses} />
+                {(expenses.length > 0 && !activeFilters) || (activeFilters && filteredExpenses.length > 0) ? (
+                    <Expenses expenses={activeFilters ? filteredExpenses : expenses} />
                 ) : (event.deleted_at !== null || eventStatus === 'inactive' || (eventStatus === 'active' && event.members.length > 0)) ? <NoExpenses isFilterMode={!!activeFilters} isDeleted={event.deleted_at !== null} eventStatus={eventStatus} openNewExpenseModal={openNewExpenseModal} /> : (<NoGroupExpenses openNewMemberModal={openNewMemberModal} />)}
 
 

@@ -1,6 +1,7 @@
 'use server'
 
 import { CreateExpendRequest, CreateMemberRequest, CreateTransferRequest } from "@/types/requests/event";
+import { LoadMoreExpensesResponse } from "@/types/responses/event";
 import { cookies } from "next/headers";
 
 export async function getEventExpensesReq(eventId: string | number) {
@@ -354,3 +355,41 @@ export async function deleteExpenseItemsReq(eventId: string | number, expenseIds
     }
 
 }
+
+export async function loadMoreExpensesReq(eventId: string | number, page: number, perPage: number) {
+    const token = (await cookies()).get('token');
+
+    try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/event/${eventId}/expenses?page=${page}&per_page=${perPage}`, {
+            method: 'GET',
+            headers: {
+                Authorization: `Bearer ${token?.value}`,
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+            },
+        });
+
+        const data: LoadMoreExpensesResponse = await response.json();
+
+        if (response.ok && data.status) {
+            return {
+                success: true,
+                expenses: data.data.expenses,
+                paginationData: data.data.pagination,
+                message: 'هزینه‌های بیشتر با موفقیت دریافت شدند'
+            }
+        }
+
+        return {
+            success: false,
+            message: data?.message ? data.message : response.statusText
+        }
+
+    } catch {
+        return {
+            success: false,
+            message: 'خطای سرور'
+        }
+    }
+}
+

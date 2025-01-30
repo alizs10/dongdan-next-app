@@ -1,6 +1,7 @@
 import Event from "@/components/Dashboard/Event/Event";
 import { EventContextProvider } from "@/context/EventContext";
 import { MultiSelectItemContextProvider } from "@/context/MultiSelectItemContext";
+import { GetEventResponse } from "@/types/responses/event";
 import { cookies } from "next/headers";
 
 async function getData(slug: string) {
@@ -13,17 +14,19 @@ async function getData(slug: string) {
     });
 
     const data = await response.json();
-    return data.event;
+    return data.data;
 }
 
 
 async function EventPage({ params }: { params: Promise<{ event_slug: string }> }) {
 
     const { event_slug } = await params;
-    const event = await getData(event_slug);
+    const data: GetEventResponse = await getData(event_slug);
+
+    console.log(data)
 
     return (
-        <EventContextProvider eventData={event}>
+        <EventContextProvider data={data}>
             <MultiSelectItemContextProvider>
                 <Event />
             </MultiSelectItemContextProvider>

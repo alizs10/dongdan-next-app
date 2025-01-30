@@ -6,7 +6,7 @@ export type Event = {
     end_date: null | Date;
     label: string;
     members: Member[];
-    expenses: Expense[];
+    // expenses: Expense[];
     members_count: number;
     expenses_count: number;
     created_at: Date;

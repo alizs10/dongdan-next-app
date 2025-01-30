@@ -1,13 +1,15 @@
 'use client';
 
-import { deleteExpenseReq, deleteMemberReq, getEventExpensesReq } from "@/app/actions/event";
+import { deleteExpenseReq, deleteMemberReq, getEventExpensesReq, loadMoreExpensesReq } from "@/app/actions/event";
 import { updateEventStatusReq } from "@/app/actions/events";
 import DashboardLoading from "@/components/Layout/DashboardLoading";
 import { arraysHaveSameValues, isDateBetween, TomanPriceFormatter, TomanPriceToNumber } from "@/helpers/helpers";
 import { useAppStore } from "@/store/app-store";
 import { useToastStore } from "@/store/toast-store";
 import { Event, Expend, Expense, ExpenseFilters, Member, SettlePerson, Transfer } from "@/types/event-types";
-import { act, createContext, useCallback, useEffect, useMemo, useState } from "react";
+import { Pagination } from "@/types/globals";
+import { EventData, GetEventResponse } from "@/types/responses/event";
+import { createContext, useCallback, useEffect, useMemo, useState } from "react";
 
 export type SettlementTransactions = {
     transmitter: SettlePerson;
@@ -17,6 +19,9 @@ export type SettlementTransactions = {
 
 export type EventContextType = {
     event: Event;
+    eventData: EventData;
+    expenses: Expense[];
+    paginationData: Pagination;
     applyFilters: (filters: ExpenseFilters) => void;
     filteredExpenses: Expense[];
     activeFilters: ExpenseFilters | null;
@@ -36,6 +41,8 @@ export type EventContextType = {
     toggleEventStatus: () => void;
     addMember: (member: Member) => void;
     addExpense: (expense: Expense) => void;
+    loadMoreExpenses: () => void;
+    fetchingMoreExpenses: boolean;
     setMembers: (members: Member[]) => void;
     deleteMember: (memberId: number) => void;
     deleteExpense: (expenseId: number) => void;
@@ -52,6 +59,9 @@ export type EventContextType = {
 
 const EventContextInit = {
     event: {} as Event,
+    eventData: {} as EventData,
+    expenses: [],
+    paginationData: {} as Pagination,
     applyFilters: () => { },
     filteredExpenses: [],
     activeFilters: null,
@@ -71,6 +81,8 @@ const EventContextInit = {
     toggleEventStatus: () => { },
     addMember: () => { },
     addExpense: () => { },
+    loadMoreExpenses: () => { },
+    fetchingMoreExpenses: false,
     setMembers: () => { },
     deleteMember: () => { },
     deleteExpense: () => { },
@@ -85,13 +97,17 @@ const EventContextInit = {
 
 export const EventContext = createContext<EventContextType>(EventContextInit);
 
-export function EventContextProvider({ children, eventData }: { children: React.ReactNode, eventData: Event }) {
+export function EventContextProvider({ children, data }: { children: React.ReactNode, data: GetEventResponse }) {
 
     const { user, settings } = useAppStore(state => state)
     const addToast = useToastStore(state => state.addToast)
 
     const [loading, setLoading] = useState(false)
-    const [event, setEvent] = useState<Event>(eventData)
+    const [event, setEvent] = useState<Event>(data.event)
+    const [eventData, setEventData] = useState<EventData>(data.event_data)
+    const [expenses, setExpenses] = useState<Expense[]>(data.expenses_data.expenses)
+    const [paginationData, setPaginationData] = useState<Pagination>(data.expenses_data.pagination)
+    const [fetchingMoreExpenses, setFetchingMoreExpenses] = useState(false)
     const [activeFilters, setActiveFilters] = useState<ExpenseFilters | null>(null)
     const [filteredExpenses, setFilteredExpenses] = useState<Expense[]>([])
 
@@ -101,13 +117,13 @@ export function EventContextProvider({ children, eventData }: { children: React.
             applyFilters(activeFilters)
         }
 
-    }, [event.expenses, activeFilters])
+    }, [expenses, activeFilters])
 
     function applyFilters(filters: ExpenseFilters) {
         // Start with base expenses based on type filter
         let results = filters.type === 'any'
-            ? [...event.expenses]
-            : event.expenses.filter(exp => exp.type === filters.type);
+            ? [...expenses]
+            : expenses.filter(exp => exp.type === filters.type);
 
         // Apply amount range filter
         results = results.filter(exp => {
@@ -226,8 +242,8 @@ export function EventContextProvider({ children, eventData }: { children: React.
         const res = await deleteExpenseReq(event.id.toString(), expenseId)
 
         if (res.success) {
-            setEvent(prevState => ({ ...prevState, expenses: prevState.expenses.filter(m => m.id !== expenseId) }));
-
+            // setEvent(prevState => ({ ...prevState, expenses: prevState.expenses.filter(m => m.id !== expenseId) }));
+            setExpenses(prevState => prevState.filter(e => e.id !== expenseId))
 
             const successToast = {
                 message: res.message,
@@ -247,7 +263,8 @@ export function EventContextProvider({ children, eventData }: { children: React.
     }
 
     function deleteMultiExpenses(expenseIds: string[]) {
-        setEvent(prevState => ({ ...prevState, expenses: prevState.expenses.filter(e => !expenseIds.includes(e.id.toString())) }));
+        // setEvent(prevState => ({ ...prevState, expenses: prevState.expenses.filter(e => !expenseIds.includes(e.id.toString())) }));
+        setExpenses(prevState => prevState.filter(e => !expenseIds.includes(e.id.toString())))
     }
 
     async function updateMember(memberId: number, updatedMember: Member) {
@@ -255,12 +272,31 @@ export function EventContextProvider({ children, eventData }: { children: React.
     }
 
     async function updateExpense(expenseId: number, updatedExpense: Expense) {
-        setEvent(prevState => ({ ...prevState, expenses: prevState.expenses.map(e => e.id === expenseId ? updatedExpense : e) }));
+        // setEvent(prevState => ({ ...prevState, expenses: prevState.expenses.map(e => e.id === expenseId ? updatedExpense : e) }));
+        setExpenses(prevState => prevState.map(e => e.id === expenseId ? updatedExpense : e))
     }
 
 
     function addExpense(expense: Expense) {
-        setEvent(prevState => ({ ...prevState, expenses: [...prevState.expenses, expense] }))
+        // setEvent(prevState => ({ ...prevState, expenses: [...prevState.expenses, expense] }))
+        setExpenses(prevState => [...prevState, expense])
+    }
+
+    async function loadMoreExpenses() {
+
+        if (fetchingMoreExpenses) return;
+        setFetchingMoreExpenses(true)
+        // fetch more expenses
+        const res = await loadMoreExpensesReq(event.id.toString(), paginationData.current_page + 1, paginationData.per_page)
+
+        if (res.success && res.expenses && res.paginationData) {
+            setExpenses(prevState => [...prevState, ...res.expenses])
+            setPaginationData(res.paginationData)
+            setFetchingMoreExpenses(false)
+            return;
+        }
+
+        setFetchingMoreExpenses(false)
     }
 
     async function toggleEventStatus() {
@@ -301,27 +337,27 @@ export function EventContextProvider({ children, eventData }: { children: React.
     const getAllCosts = useCallback(() => {
         let total = 0;
 
-        event.expenses.forEach(expense => {
+        expenses.forEach(expense => {
             if (expense.type === 'expend') {
                 total += expense.amount;
             }
         });
         return total;
-    }, [event.expenses]);
+    }, [expenses]);
 
     const getCostsCount = useCallback(() => {
-        return event.expenses.filter(e => e.type === 'expend').length;
-    }, [event.expenses]);
+        return expenses.filter(e => e.type === 'expend').length;
+    }, [expenses]);
 
     const getTransfersCount = useCallback(() => {
-        return event.expenses.filter(e => e.type === 'transfer').length;
-    }, [event.expenses]);
+        return expenses.filter(e => e.type === 'transfer').length;
+    }, [expenses]);
 
     const getMostCost = useCallback(() => {
 
         let max = 0;
 
-        event.expenses.forEach(expense => {
+        expenses.forEach(expense => {
             if (expense.type === 'expend' && expense.amount > max) {
                 max = expense.amount;
             }
@@ -329,36 +365,36 @@ export function EventContextProvider({ children, eventData }: { children: React.
 
         return max;
 
-    }, [event.expenses]);
+    }, [expenses]);
 
     const getHighestTransfer = useCallback(() => {
         let max = 0;
 
-        event.expenses.forEach(expense => {
+        expenses.forEach(expense => {
             if (expense.type === 'transfer' && expense.amount > max) {
                 max = expense.amount;
             }
         });
 
         return max;
-    }, [event.expenses]);
+    }, [expenses]);
 
     const getAllPersonExpends = useCallback((memberId: string) => {
         let total = 0;
 
-        event.expenses.forEach(expense => {
+        expenses.forEach(expense => {
             if (expense.type === 'expend' && expense.payer_id.toString() === memberId) {
                 total += expense.amount;
             }
         });
 
         return total;
-    }, [event.members, event.expenses]);
+    }, [event.members, expenses]);
 
     const getAllPersonDebts = useCallback((memberId: string) => {
         let total = 0;
 
-        event.expenses.forEach(expense => {
+        expenses.forEach(expense => {
             let contributorIds = expense.type === 'expend' ? expense.contributors.map(c => c.event_member_id.toString()) : [];
             if (expense.type === 'expend' && contributorIds.includes(memberId)) {
                 const contributor = expense.contributors.find(c => c.event_member_id.toString() === memberId);
@@ -367,13 +403,13 @@ export function EventContextProvider({ children, eventData }: { children: React.
         });
 
         return total;
-    }, [event.members, event.expenses]);
+    }, [event.members, expenses]);
 
     const getAllPersonRecieved = useCallback((memberId: string) => {
 
         let total = 0;
 
-        event.expenses.forEach(expense => {
+        expenses.forEach(expense => {
             if (expense.type === 'transfer' && expense.receiver_id.toString() === memberId) {
                 total += expense.amount;
             }
@@ -381,13 +417,13 @@ export function EventContextProvider({ children, eventData }: { children: React.
 
         return total;
 
-    }, [event.members, event.expenses])
+    }, [event.members, expenses])
 
     const getAllPersonSent = useCallback((memberId: string) => {
 
         let total = 0;
 
-        event.expenses.forEach(expense => {
+        expenses.forEach(expense => {
             if (expense.type === 'transfer' && expense.transmitter_id.toString() === memberId) {
                 total += expense.amount;
             }
@@ -395,7 +431,7 @@ export function EventContextProvider({ children, eventData }: { children: React.
 
         return total;
 
-    }, [event.members, event.expenses])
+    }, [event.members, expenses])
 
 
     const getMaxPayer = useCallback(() => {
@@ -414,7 +450,7 @@ export function EventContextProvider({ children, eventData }: { children: React.
         })
 
         return { name: maxPayer, amount: paid };
-    }, [event.expenses, settings, user]);
+    }, [expenses, settings, user]);
 
 
     const getPersonBalance = useCallback((memberId: string) => {
@@ -426,7 +462,7 @@ export function EventContextProvider({ children, eventData }: { children: React.
         const memberBalance = (memberSent + memberExpends - memberRecieved - memberDebts);
 
         return (memberBalance > 0 || memberBalance < 0) ? memberBalance : 0;
-    }, [event.members, event.expenses, settings]);
+    }, [event.members, expenses, settings]);
 
     const getPersonBalanceStatus = useCallback((memberId: string) => {
         const memberBalance = getPersonBalance(memberId);
@@ -437,7 +473,7 @@ export function EventContextProvider({ children, eventData }: { children: React.
         } else {
             return 'تسویه';
         }
-    }, [event.members, event.expenses]);
+    }, [event.members, expenses]);
 
     const creditors = useMemo(() => {
         const creditorsArr: SettlePerson[] = [];
@@ -453,7 +489,7 @@ export function EventContextProvider({ children, eventData }: { children: React.
         })
 
         return creditorsArr;
-    }, [event.members, event.expenses]);
+    }, [event.members, expenses]);
 
     const debtors = useMemo(() => {
         const debtorsArr: SettlePerson[] = [];
@@ -470,7 +506,7 @@ export function EventContextProvider({ children, eventData }: { children: React.
         })
 
         return debtorsArr;
-    }, [event.members, event.expenses]);
+    }, [event.members, expenses]);
 
     const transactions = useMemo(() => {
 
@@ -512,6 +548,9 @@ export function EventContextProvider({ children, eventData }: { children: React.
 
     let values: EventContextType = {
         event,
+        eventData,
+        expenses,
+        paginationData,
         applyFilters,
         clearFilters,
         filteredExpenses,
@@ -537,6 +576,8 @@ export function EventContextProvider({ children, eventData }: { children: React.
         updateMember,
         updateExpense,
         addExpense,
+        loadMoreExpenses,
+        fetchingMoreExpenses,
         creditors,
         debtors,
         transactions,
