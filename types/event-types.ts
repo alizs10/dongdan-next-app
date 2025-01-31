@@ -23,6 +23,12 @@ export type Member = {
     member_id?: number;
     member_type?: string;
     event?: Event;
+    balance?: number;
+    balance_status?: 'debtor' | 'creditor' | 'settled';
+    total_expends_amount?: number;
+    total_contributions_amount?: number;
+    total_recieved_amount?: number;
+    total_sent_amount?: number;
 }
 
 export type Contributor = {

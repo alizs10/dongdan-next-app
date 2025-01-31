@@ -20,7 +20,7 @@ import { EventContext } from "@/context/EventContext";
 function FiltersModal({ onClose, event }: { onClose: () => void, event: Event }) {
 
     const addToast = useToastStore(state => state.addToast)
-    const { applyFilters } = useContext(EventContext)
+    const { applyFilters, eventData, expenses } = useContext(EventContext)
 
 
     const tommorowDate = new Date();
@@ -177,13 +177,13 @@ function FiltersModal({ onClose, event }: { onClose: () => void, event: Event })
                             <span className={`text-base ${formErrors.type ? 'text-red-500' : 'primary_text_color'} capitalize`}>نوع</span>
 
                             <div className="grid grid-cols-3 bg-gray-200 dark:bg-gray-800 rounded-full">
-                                <span onClick={selectType.bind(null, 'expend')} className={`col-span-1 text-center text-sm rounded-full py-3 cursor-pointer ${filters.type === 'expend' ? 'bg-indigo-800 dark:bg-indigo-600 text-white' : 'text-gray-500 dark:text-gray-400 bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-900'} transition-all duration-300`}>هزینه</span>
-                                <span onClick={selectType.bind(null, 'transfer')} className={`col-span-1 text-center text-sm rounded-full py-3 cursor-pointer ${filters.type === 'transfer' ? 'bg-indigo-800 dark:bg-indigo-600 text-white' : 'text-gray-500 dark:text-gray-400 bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-900'} transition-all duration-300`}>جابجایی پول</span>
-                                <span onClick={selectType.bind(null, 'any')} className={`col-span-1 text-center text-sm rounded-full py-3 cursor-pointer ${filters.type === 'any' ? 'bg-indigo-800 dark:bg-indigo-600 text-white' : 'text-gray-500 dark:text-gray-400 bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-900'} transition-all duration-300`}>هر دو</span>
+                                <button disabled={eventData.max_expend_amount === 0} onClick={selectType.bind(null, 'expend')} className={`col-span-1 text-center text-sm rounded-full py-3 ${eventData.max_expend_amount === 0 ? 'cursor-not-allowed opacity-30' : 'cursor-pointer'} ${filters.type === 'expend' ? 'bg-indigo-800 dark:bg-indigo-600 text-white' : 'text-gray-500 dark:text-gray-400 bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-900'} transition-all duration-300`}>هزینه</button>
+                                <button disabled={eventData.max_transfer_amount === 0} onClick={selectType.bind(null, 'transfer')} className={`col-span-1 text-center text-sm rounded-full py-3 ${eventData.max_transfer_amount === 0 ? 'cursor-not-allowed opacity-30' : 'cursor-pointer'} ${filters.type === 'transfer' ? 'bg-indigo-800 dark:bg-indigo-600 text-white' : 'text-gray-500 dark:text-gray-400 bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-900'} transition-all duration-300`}>جابجایی پول</button>
+                                <button disabled={expenses.length === 0} onClick={selectType.bind(null, 'any')} className={`col-span-1 text-center text-sm rounded-full py-3 cursor-pointer ${filters.type === 'any' ? 'bg-indigo-800 dark:bg-indigo-600 text-white' : 'text-gray-500 dark:text-gray-400 bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-900'} transition-all duration-300`}>هر دو</button>
                             </div>
                         </div>
                         <div className="flex flex-col gap-y-2">
-                            <span className={`text-base ${formErrors.contributors ? 'text-red-500' : 'primary_text_color'} capitalize`}>فیلتر هزینه {"(0 - 1200000)"}</span>
+                            <span className={`text-base ${formErrors.contributors ? 'text-red-500' : 'primary_text_color'} capitalize`}>فیلتر هزینه {`(0 - ${filters.type === 'any' ? eventData.max_expend_amount > eventData.max_transfer_amount ? eventData.max_expend_amount : eventData.max_transfer_amount : filters.type === 'transfer' ? eventData.max_transfer_amount : eventData.max_expend_amount})`}</span>
 
                             <TextInput name="amount" value={filters.amountMin} error={formErrors.amountMin} label="از (تومان)" handleChange={changeAmountMinHandler} />
                             <TextInput name="amount" value={filters.amountMax} error={formErrors.amountMax} label="تا (تومان)" handleChange={changeAmountMaxHandler} />

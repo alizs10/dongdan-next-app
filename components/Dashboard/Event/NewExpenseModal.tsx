@@ -273,13 +273,13 @@ function NewExpenseModal({ onClose, event }: { onClose: () => void, event: Event
 
         const res = await createExpenseReq(event.id, newExpendInputs)
 
-        if (res.success) {
+        if (res.success && res.expense) {
 
             const successToast = {
                 message: res.message,
                 type: 'success' as const,
             }
-            addExpense(res.expense)
+            addExpense(res.expense, res.event_data)
             addToast(successToast)
             setExpendFormLoading(false)
             onClose();
@@ -326,13 +326,13 @@ function NewExpenseModal({ onClose, event }: { onClose: () => void, event: Event
 
         const res = await createExpenseReq(event.id, newTransferInputs)
 
-        if (res.success) {
+        if (res.success && res.expense) {
             const successToast = {
                 message: res.message,
                 type: 'success' as const,
             }
 
-            addExpense(res.expense)
+            addExpense(res.expense, res.event_data)
             addToast(successToast)
             setTransferFormLoading(false)
             onClose();

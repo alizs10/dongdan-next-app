@@ -23,6 +23,7 @@ import { MultiSelectItemContext } from "@/context/MultiSelectItemContext";
 import { useDialogStore } from "@/store/dialog-store";
 import { useToastStore } from "@/store/toast-store";
 import { deleteExpenseItemsReq } from "@/app/actions/event";
+import MembersShare from "./MembersShare";
 
 function Event() {
 
@@ -33,14 +34,7 @@ function Event() {
         event,
         expenses,
         eventData,
-        getAllCosts,
-        getCostsCount,
-        getTransfersCount,
-        getMostCost,
-        getHighestTransfer,
-        getMaxPayer,
-        getPersonBalance,
-        getPersonBalanceStatus,
+        showMemberName,
         toggleEventStatus,
         transactions,
         deleteMultiExpenses,
@@ -178,57 +172,7 @@ function Event() {
 
                 {event.members.length > 0 && (
 
-                    <div className="p-3 flex flex-col gap-y-8 border-b app_border_color">
-                        <div className="flex flex-row justify-between items-center">
-
-                            <div className="flex w-full justify-between items-center">
-                                <h1 className="event_header_title">سهم اعضا</h1>
-                                {/* <span className="text-sm text-gray-500 dark:text-gray-400">8 نفر</span> */}
-                            </div>
-
-
-                            <button onClick={toggleSettleHintsModal} className="flex flex-row flex-nowrap gap-x-2 items-center w-fit rounded-full px-3 py-1.5 bg-indigo-50 dark:bg-indigo-950/30 text-indigo-700 dark:text-indigo-600">
-                                <Zap className="size-4" />
-                                <p className="text-[.7rem] font-semibold text-nowrap">
-                                    تسویه حساب سریع
-                                </p>
-                            </button>
-
-                            {isSettleHintsModalOpen && (
-                                <SettleHintsModal transactions={transactions} onClose={toggleSettleHintsModal} />
-                            )}
-                        </div>
-
-
-                        <ul className="flex flex-col gap-y-4">
-
-                            {event.members.map(person => (
-                                <li key={person.id} className="flex w-full justify-between items-center">
-                                    <div className="flex flex-row gap-x-2 justify-center items-center">
-                                        <h1 className={`user_avatar_${person.scheme}_text`}>{person?.member_id === user?.id ? settings.show_as_me ? 'خودم' : user?.name : person.name}</h1>
-                                        {getPersonBalanceStatus(person.id.toString()) === 'طلبکار' && (
-                                            <span className="text-[.6rem] rounded-full px-2 py-1 bg-green-100 dark:bg-green-950/30 text-green-700 dark:text-green-500">
-                                                طلبکار
-                                            </span>
-                                        )}
-                                        {getPersonBalanceStatus(person.id.toString()) === 'بدهکار' && (
-                                            <span className="text-[.6rem] rounded-full px-2 py-1 bg-red-100 dark:bg-red-950/30 text-red-600 dark:text-red-500">
-                                                بدهکار
-                                            </span>
-                                        )}
-                                        {getPersonBalanceStatus(person.id.toString()) === 'تسویه' && (
-                                            <span className="text-[.6rem] rounded-full px-2 py-1 bg-gray-200 dark:bg-gray-800/50 text-gray-700 dark:text-gray-300">
-                                                تسویه
-                                            </span>
-                                        )}
-                                    </div>
-                                    <span className="text-sm text-gray-500 dark:text-gray-400">{TomanPriceFormatter(Math.abs(getPersonBalance(person.id.toString())).toString())} تومان</span>
-                                </li>
-                            ))}
-
-
-                        </ul>
-                    </div>
+                    <MembersShare members={event.members} toggleSettleHintsModal={toggleSettleHintsModal} isSettleHintsModalOpen={isSettleHintsModalOpen} transactions={transactions} />
                 )}
 
 
@@ -291,11 +235,16 @@ function Event() {
                         </div>
                         <div className="flex w-full justify-between items-center">
                             <h1 className="text-sm text-gray-500 dark:text-gray-400">مادرخرج</h1>
-                            <span className="text-sm text-gray-500 dark:text-gray-400">{eventData?.member_with_most_expends?.name || '-'}</span>
+                            {!user ? (
+                                <span className="h-5 w-10 bg-gray-400 dark:bg-gray-600 opacity-50 rounded-md animate-pulse"></span>
+                            ) : (
+
+                                <span className="text-sm text-gray-500 dark:text-gray-400">{eventData.treasurer ? showMemberName(eventData.treasurer.member.id) : '-'}</span>
+                            )}
                         </div>
                         <div className="flex w-full justify-between items-center">
                             <h1 className="text-sm text-gray-500 dark:text-gray-400">هزینه های مادرخرج</h1>
-                            <span className="text-sm text-gray-500 dark:text-gray-400">{TomanPriceFormatter(eventData?.member_with_most_expends?.expenses_as_payer_sum_amount.toString() || '-')} تومان</span>
+                            <span className="text-sm text-gray-500 dark:text-gray-400">{eventData.treasurer ? TomanPriceFormatter(eventData.treasurer.amount.toString()) : '-'} تومان</span>
                         </div>
 
                         <ShareEventLink />

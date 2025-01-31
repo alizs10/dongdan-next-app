@@ -11,14 +11,40 @@ import { EventContext } from "@/context/EventContext";
 import { useAppStore } from "@/store/app-store";
 import { MultiSelectItemContext } from "@/context/MultiSelectItemContext";
 import InfoExpenseModal from "../InfoExpenseModal";
-import DashboardLoading from "@/components/Layout/DashboardLoading";
+
+function ExpenseSkeleton() {
+    return <div className="flex flex-wrap gap-4 justify-between border-b app_border_color py-3 px-5">
+
+        <div className="w-full md:w-fit flex flex-row gap-x-4 items-center">
+            <div className="size-8 lg:size-12 rounded-full bg-gray-400 dark:bg-gray-600 opacity-50 animate-pulse"></div>
+            <div className="flex flex-col gap-y-2 md:gap-y-4">
+                <div className="h-4 lg:h-7 w-32 rounded-md bg-gray-400 dark:bg-gray-600 opacity-50 animate-pulse"></div>
+                <div className="flex flex-row gap-x-2 md:gap-x-4 items-center">
+                    <div className="h-4 lg:h-5 w-10 rounded-md bg-gray-400 dark:bg-gray-600 opacity-50 animate-pulse"></div>
+                    <div className="h-4 lg:h-5 w-6 rounded-md bg-gray-400 dark:bg-gray-600 opacity-50 animate-pulse"></div>
+                    <div className="h-4 lg:h-5 w-28 rounded-md bg-gray-400 dark:bg-gray-600 opacity-50 animate-pulse"></div>
+                </div>
+            </div>
+        </div>
+
+        <div className="w-full md:w-fit flex flex-row md:flex-col justify-between md:justify-start gap-y-2">
+
+            <div className="h-4 w-24 rounded-md mt-auto md:mt-0 md:mr-auto bg-gray-400 dark:bg-gray-600 opacity-50 animate-pulse"></div>
+
+            <div className="flex flex-row gap-x-2 items-end">
+                <div className="size-6 rounded-full bg-gray-400 dark:bg-gray-600 opacity-50 animate-pulse"></div>
+                <div className="h-7 w-24 lg:h-9 lg:w-28 rounded-full bg-gray-400 dark:bg-gray-600 opacity-50 animate-pulse"></div>
+            </div>
+        </div>
+    </div>
+}
 
 function Expense({ expense, index }: { expense: Expense, index: number }) {
 
     const { user, settings } = useAppStore(state => state);
     const openDialog = useDialogStore(state => state.openDialog);
 
-    const { event, deleteExpense } = useContext(EventContext)
+    const { event, deleteExpense, showMemberName } = useContext(EventContext)
     const { toggleItem, selectMode, selectedItems } = useContext(MultiSelectItemContext);
 
     function onSelect() {
@@ -57,7 +83,6 @@ function Expense({ expense, index }: { expense: Expense, index: number }) {
 
         setIsOptionsOpen(false);
 
-
         openDialog(
             'حذف هزینه',
             'آیا از حذف کردن هزینه اطمینان دارید؟',
@@ -75,26 +100,16 @@ function Expense({ expense, index }: { expense: Expense, index: number }) {
             })
     }
 
-    const getMemberName = useCallback((memberId: string) => {
-        const member = getMember(memberId);
-        console.log(member);
-        console.log(user);
-
-        if ((member?.member_id === user?.id) && settings.show_as_me) return 'خودم';
-
-        return member?.name ?? 'نامشخص';
-    }, [getMember, settings.show_as_me, user]);
-
-
     if (!user || !settings) {
-        return <DashboardLoading />
+        // if (true) {
+        return <ExpenseSkeleton />
     }
 
     return (
         <div
             onClick={onSelect}
             className={`flex flex-wrap gap-4 justify-between border-b app_border_color py-3 px-5 ${selectMode && 'cursor-pointer'} ${selectedItems.includes(expense.id.toString()) ? 'bg-gray-200 dark:bg-gray-800' : ''}`}>
-            <div className="flex flex-wrap gap-4">
+            <div className="flex flex-row w-full md:w-fit gap-x-4 items-center">
                 <div className={`p-2 lg:p-3 rounded-full my-auto h-fit ${expense.type === 'transfer' ? 'bg-orange-50 dark:bg-orange-950/30 text-orange-300 dark:text-orange-500' : 'bg-green-50 dark:bg-green-950/30 text-green-400 dark:text-green-500'}`}>
                     {expense.type === 'transfer' ? (
                         <ArrowRightLeft className="size-5 lg:size-6" />
@@ -104,27 +119,27 @@ function Expense({ expense, index }: { expense: Expense, index: number }) {
                 </div>
 
                 <div className="flex flex-col gap-y-2">
-                    <h2 className="text-sm lg:text-base text-gray-700 dark:text-gray-300">{index + 1}.{<span className="mx-1"></span>}{expense.type === 'transfer' ? 'جابه جایی پول' : 'هزینه'}: {expense.description}</h2>
+                    <h2 className="text-xs md:text-sm max-w-64 lg:max-w-52 xl:max-w-72 overflow-clip text-ellipsis text-nowrap lg:text-base text-gray-700 dark:text-gray-300">{index + 1}.{<span className="mx-1"></span>}{expense.type === 'transfer' ? 'جابه جایی پول' : 'هزینه'}: {expense.description}</h2>
 
                     <div className="flex flex-wrap gap-x-2 lg:gap-x-4 items-center text-xs lg:text-sm">
-                        <span className="user_avatar_gray_text">{expense.type === 'expend' ? getMemberName(expense.payer_id.toString()) : getMemberName(expense.transmitter_id.toString())}</span>
+                        <span className="user_avatar_gray_text">{showMemberName(expense.type === 'expend' ? expense.payer_id : expense.transmitter_id)}</span>
                         <MoveLeft className="size-3.5 text-gray-500 dark:text-gray-400" />
                         {expense.type === 'transfer' ? (
-                            <span className={`user_avatar_${getMember(expense.receiver_id.toString())?.scheme ?? 'gray'}_text`}>{getMemberName(expense.receiver_id.toString())}</span>
+                            <span className={`user_avatar_${getMember(expense.receiver_id.toString())?.scheme ?? 'gray'}_text`}>{showMemberName(expense.receiver_id)}</span>
                         ) : expense.contributors.length > 3 ? (
                             <span className={`user_avatar_blue_text`}>{expense.contributors.length} نفر</span>
                         ) : <div className="flex flex-wrap gap-x-2">
                             {expense.contributors.map((contributor, index) => (
-                                <span key={contributor.id} className={`user_avatar_${contributor?.event_member?.scheme ?? 'blue'}_text`}>{user && (user.id === contributor.event_member?.member_id && settings.show_as_me) ? 'من' : contributor.event_member?.name}{index < expense.contributors.length - 1 && '،'}</span>
+                                <span key={contributor.id} className={`user_avatar_${contributor?.event_member?.scheme ?? 'blue'}_text`}>{contributor.event_member && showMemberName(contributor.event_member.id)}{index < expense.contributors.length - 1 && '،'}</span>
                             ))}
                         </div>}
                     </div>
                 </div>
             </div>
 
-            <div className="flex flex-col gap-y-2 items-end">
+            <div className="w-full md:w-fit flex flex-row justify-between md:justify-start md:flex-col gap-y-2 items-end">
                 <span className="text-xs text-gray-500 dark:text-gray-400">{moment(expense.date).locale('fa').format("dddd DD MMM، YYYY")}</span>
-                <div className="flex flex-row items-center gap-x-2">
+                <div className="flex flex-row items-end gap-x-2">
 
                     <div ref={optionsParentRef} className='relative'>
                         {!selectMode && (

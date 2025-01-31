@@ -29,6 +29,14 @@ function MemberInfoModal({ onClose, member }: PropsTypes) {
     } = useContext(EventContext)
 
 
+    const translateBalanceStatus = (status: 'debtor' | 'creditor' | 'settled') => {
+        switch (status) {
+            case 'debtor': return 'بدهکار';
+            case 'creditor': return 'طلبکار';
+            case 'settled': return 'تسویه شده';
+        }
+    }
+
     return (
         <ModalWrapper onClose={onClose}>
 
@@ -45,27 +53,27 @@ function MemberInfoModal({ onClose, member }: PropsTypes) {
 
                     <div className="col-span-1 flex flex-col gap-y-2">
                         <span className="text-sm text-gray-500 dark:text-gray-400">مجموع هزینه کرد ها:</span>
-                        <span className="text-base text-gray-700 dark:text-gray-300">{TomanPriceFormatter(getAllPersonExpends(member.id.toString()).toString())} تومان</span>
+                        <span className="text-base text-gray-700 dark:text-gray-300">{TomanPriceFormatter(member.total_expends_amount?.toString() || '0')} تومان</span>
                     </div>
                     <div className="col-span-1 flex flex-col gap-y-2">
                         <span className="text-sm text-gray-500 dark:text-gray-400">سهم در مخارج:</span>
-                        <span className="text-base text-gray-700 dark:text-gray-300">{TomanPriceFormatter(getAllPersonDebts(member.id.toString()).toString())} تومان</span>
+                        <span className="text-base text-gray-700 dark:text-gray-300">{TomanPriceFormatter(member.total_contributions_amount?.toString() || '0')} تومان</span>
                     </div>
                     <div className="col-span-1 flex flex-col gap-y-2">
                         <span className="text-sm text-gray-500 dark:text-gray-400">مجموع پول های دریافتی:</span>
-                        <span className="text-base text-gray-700 dark:text-gray-300">{TomanPriceFormatter(getAllPersonRecieved(member.id.toString()).toString())} تومان</span>
+                        <span className="text-base text-gray-700 dark:text-gray-300">{TomanPriceFormatter(member.total_recieved_amount?.toString() || '0')} تومان</span>
                     </div>
                     <div className="col-span-1 flex flex-col gap-y-2">
                         <span className="text-sm text-gray-500 dark:text-gray-400">مجموع پول های ارسالی:</span>
-                        <span className="text-base text-gray-700 dark:text-gray-300">{TomanPriceFormatter(getAllPersonSent(member.id.toString()).toString())} تومان</span>
+                        <span className="text-base text-gray-700 dark:text-gray-300">{TomanPriceFormatter(member.total_sent_amount?.toString() || '0')} تومان</span>
                     </div>
                     <div className="col-span-1 flex flex-col gap-y-2">
                         <span className="text-sm text-gray-500 dark:text-gray-400">وضعیت تسویه:</span>
-                        <span className="text-base text-gray-700 dark:text-gray-300">{getPersonBalanceStatus(member.id.toString())}</span>
+                        <span className="text-base text-gray-700 dark:text-gray-300">{translateBalanceStatus(member.balance_status || 'settled')}</span>
                     </div>
                     <div className="col-span-1 flex flex-col gap-y-2">
                         <span className="text-sm text-gray-500 dark:text-gray-400">تسویه:</span>
-                        <span className="text-base text-gray-700 dark:text-gray-300">{TomanPriceFormatter(Math.abs(getPersonBalance(member.id.toString())).toString())} تومان</span>
+                        <span className="text-base text-gray-700 dark:text-gray-300">{TomanPriceFormatter(Math.abs(member.balance || 0).toString())} تومان</span>
                     </div>
 
                 </div>

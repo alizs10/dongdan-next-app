@@ -26,21 +26,21 @@ export type EventContextType = {
     filteredExpenses: Expense[];
     activeFilters: ExpenseFilters | null;
     clearFilters: () => void;
-    getAllCosts: () => number;
-    getCostsCount: () => number;
-    getTransfersCount: () => number;
-    getMostCost: () => number;
-    getHighestTransfer: () => number;
-    getAllPersonExpends: (memberId: string) => number;
-    getAllPersonDebts: (memberId: string) => number;
-    getAllPersonRecieved: (memberId: string) => number;
-    getAllPersonSent: (memberId: string) => number;
-    getMaxPayer: () => { name: string, amount: number };
-    getPersonBalance: (memberId: string) => number;
-    getPersonBalanceStatus: (memberId: string) => string;
+    // getAllCosts: () => number;
+    // getCostsCount: () => number;
+    // getTransfersCount: () => number;
+    // getMostCost: () => number;
+    // getHighestTransfer: () => number;
+    // getAllPersonExpends: (memberId: string) => number;
+    // getAllPersonDebts: (memberId: string) => number;
+    // getAllPersonRecieved: (memberId: string) => number;
+    // getAllPersonSent: (memberId: string) => number;
+    // getMaxPayer: () => { name: string, amount: number };
+    // getPersonBalance: (memberId: string) => number;
+    // getPersonBalanceStatus: (memberId: string) => string;
     toggleEventStatus: () => void;
     addMember: (member: Member) => void;
-    addExpense: (expense: Expense) => void;
+    addExpense: (expense: Expense, event_data: EventData) => void;
     loadMoreExpenses: () => void;
     fetchingMoreExpenses: boolean;
     setMembers: (members: Member[]) => void;
@@ -48,13 +48,14 @@ export type EventContextType = {
     deleteExpense: (expenseId: number) => void;
     deleteMultiExpenses: (expenseIds: string[]) => void;
     updateMember: (memberId: number, updatedMember: Member) => void;
-    updateExpense: (expenseId: number, updatedExpense: Expense) => void;
+    updateExpense: (expenseId: number, updatedExpense: Expense, event_data: EventData) => void;
     creditors: SettlePerson[];
     debtors: SettlePerson[];
     transactions: {
         hints: string[];
         transactions: SettlementTransactions[];
     };
+    showMemberName: (memberId: number) => string;
 }
 
 const EventContextInit = {
@@ -92,6 +93,7 @@ const EventContextInit = {
     creditors: [],
     debtors: [],
     transactions: { hints: [], transactions: [] },
+    showMemberName: () => '...'
 }
 
 
@@ -241,9 +243,10 @@ export function EventContextProvider({ children, data }: { children: React.React
 
         const res = await deleteExpenseReq(event.id.toString(), expenseId)
 
-        if (res.success) {
+        if (res.success && res.event_data) {
             // setEvent(prevState => ({ ...prevState, expenses: prevState.expenses.filter(m => m.id !== expenseId) }));
             setExpenses(prevState => prevState.filter(e => e.id !== expenseId))
+            setEventData(res.event_data)
 
             const successToast = {
                 message: res.message,
@@ -271,15 +274,17 @@ export function EventContextProvider({ children, data }: { children: React.React
         setEvent(prevState => ({ ...prevState, members: prevState.members.map(m => m.id === memberId ? updatedMember : m) }));
     }
 
-    async function updateExpense(expenseId: number, updatedExpense: Expense) {
+    async function updateExpense(expenseId: number, updatedExpense: Expense, event_data: EventData) {
         // setEvent(prevState => ({ ...prevState, expenses: prevState.expenses.map(e => e.id === expenseId ? updatedExpense : e) }));
         setExpenses(prevState => prevState.map(e => e.id === expenseId ? updatedExpense : e))
+        setEventData(event_data)
     }
 
 
-    function addExpense(expense: Expense) {
+    function addExpense(expense: Expense, event_data: EventData) {
         // setEvent(prevState => ({ ...prevState, expenses: [...prevState.expenses, expense] }))
         setExpenses(prevState => [...prevState, expense])
+        setEventData(event_data)
     }
 
     async function loadMoreExpenses() {
@@ -476,14 +481,14 @@ export function EventContextProvider({ children, data }: { children: React.React
     }, [event.members, expenses]);
 
     const creditors = useMemo(() => {
-        const creditorsArr: SettlePerson[] = [];
-        event.members.forEach(member => {
-            const memberBalance = getPersonBalance(member.id.toString());
 
-            if (memberBalance > 0) {
+        const creditorsArr: SettlePerson[] = [];
+
+        event.members.forEach(member => {
+            if (member.balance_status === 'creditor') {
                 creditorsArr.push({
                     ...member,
-                    amount: memberBalance,
+                    amount: member.balance || 0,
                 });
             }
         })
@@ -495,12 +500,10 @@ export function EventContextProvider({ children, data }: { children: React.React
         const debtorsArr: SettlePerson[] = [];
         event.members.forEach(member => {
 
-            const memberBalance = getPersonBalance(member.id.toString());
-
-            if (memberBalance < 0) {
+            if (member.balance_status === 'debtor') {
                 debtorsArr.push({
                     ...member,
-                    amount: Math.abs(memberBalance),
+                    amount: member.balance || 0,
                 });
             }
         })
@@ -545,6 +548,24 @@ export function EventContextProvider({ children, data }: { children: React.React
         return { hints, transactions };
     }, [debtors, creditors, user]);
 
+    const showMemberName = useCallback((memberId: number) => {
+
+        if (!user) return '...';
+
+        const member = event.members.find(member => member.id.toString() === memberId.toString());
+        if (!member) return 'ناشناس';
+        let memberName = member.member_id === user.id ? settings.show_as_me ? 'خودم' : user.name : member.name;
+
+        if (memberName.length > 12) {
+            const memberNameArr = memberName.split(" ");
+            memberName = memberNameArr.length > 1 ? memberNameArr[1] : memberName.slice(0, 12);
+        }
+
+        return memberName;
+
+
+    }, [event.members, settings, user]);
+
 
     let values: EventContextType = {
         event,
@@ -555,18 +576,18 @@ export function EventContextProvider({ children, data }: { children: React.React
         clearFilters,
         filteredExpenses,
         activeFilters,
-        getAllCosts,
-        getCostsCount,
-        getTransfersCount,
-        getMostCost,
-        getHighestTransfer,
-        getAllPersonExpends,
-        getAllPersonDebts,
-        getAllPersonRecieved,
-        getAllPersonSent,
-        getMaxPayer,
-        getPersonBalance,
-        getPersonBalanceStatus,
+        // getAllCosts,
+        // getCostsCount,
+        // getTransfersCount,
+        // getMostCost,
+        // getHighestTransfer,
+        // getAllPersonExpends,
+        // getAllPersonDebts,
+        // getAllPersonRecieved,
+        // getAllPersonSent,
+        // getMaxPayer,
+        // getPersonBalance,
+        // getPersonBalanceStatus,
         toggleEventStatus,
         addMember,
         setMembers,
@@ -581,6 +602,7 @@ export function EventContextProvider({ children, data }: { children: React.React
         creditors,
         debtors,
         transactions,
+        showMemberName
     }
 
 

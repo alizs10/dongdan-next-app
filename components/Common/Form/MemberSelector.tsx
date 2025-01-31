@@ -1,6 +1,8 @@
+import { EventContext } from "@/context/EventContext";
 import { useAppStore } from "@/store/app-store";
 import { SchemeType } from "@/types/event-types";
 import { Ban, User, Users } from "lucide-react";
+import { useContext } from "react";
 
 type Member = {
     id: number;
@@ -44,7 +46,7 @@ function MemberSelector({ label, members, onSelect, value, error, self = undefin
         return 0;
     }));
 
-    const { settings, user } = useAppStore(state => state);
+    const { showMemberName } = useContext(EventContext);
 
     return (
 
@@ -70,7 +72,7 @@ function MemberSelector({ label, members, onSelect, value, error, self = undefin
                             <User className="size-5" />
                         </div>
 
-                        <span className="text-base">{settings.show_as_me ? 'خودم' : user?.name}</span>
+                        <span className="text-base">{showMemberName(parseInt(self.id))}</span>
                     </div>
                 )}
 
@@ -80,7 +82,7 @@ function MemberSelector({ label, members, onSelect, value, error, self = undefin
                             <User className="size-5" />
                         </div>
 
-                        <span className="text-base">{member.member_id?.toString() === self?.id ? settings.show_as_me ? 'خودم' : user?.name : member.name}</span>
+                        <span className="text-base">{showMemberName(member.id)}</span>
                     </div>
                 ))}
 

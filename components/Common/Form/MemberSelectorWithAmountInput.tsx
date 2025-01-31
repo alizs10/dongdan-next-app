@@ -1,8 +1,9 @@
+import { EventContext } from "@/context/EventContext";
 import { TomanPriceFormatter, TomanPriceToNumber } from "@/helpers/helpers";
 import { useAppStore } from "@/store/app-store";
 import { SchemeType } from "@/types/event-types";
 import { Ban, User, Users } from "lucide-react";
-import { useCallback } from "react";
+import { useCallback, useContext } from "react";
 
 type Member = {
     id: number;
@@ -50,7 +51,7 @@ function MemberSelectorWithAmountInput({ label, members, onSelect, onChangeAmoun
         return 0;
     }));
 
-    const { settings, user } = useAppStore(state => state);
+    const { showMemberName } = useContext(EventContext);
 
     function isSelected(memberId: string) {
         return values.some(value => value.key === memberId);
@@ -91,7 +92,7 @@ function MemberSelectorWithAmountInput({ label, members, onSelect, onChangeAmoun
                             <User className="size-5" />
                         </div>
 
-                        <span className="text-base">{settings.show_as_me ? 'خودم' : user?.name}</span>
+                        <span className="text-base">{showMemberName(parseInt(self.id))}</span>
                     </div>
                 )}
 
@@ -102,7 +103,7 @@ function MemberSelectorWithAmountInput({ label, members, onSelect, onChangeAmoun
                             <div className="">
                                 <User className="size-5" />
                             </div>
-                            <span className="text-base">{member.member_id?.toString() === self?.id ? settings.show_as_me ? 'خودم' : user?.name : member.name}</span>
+                            <span className="text-base">{showMemberName(member.id)}</span>
                         </div>
 
                         {isSelected(member.id.toString()) && (

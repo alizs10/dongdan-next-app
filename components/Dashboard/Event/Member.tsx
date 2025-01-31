@@ -9,12 +9,24 @@ import MemberInfoModal from "./MemberInfoModal";
 import { useAppStore } from "@/store/app-store";
 import { EventContext } from "@/context/EventContext";
 
+function MemberSkeleton() {
+    return (
+        <li className="flex w-full justify-between items-center">
+            <div className="flex flex-row gap-x-4 justify-center items-center">
+                <div className="size-10 bg-gray-400 dark:bg-gray-600 opacity-50 rounded-full animate-pulse"></div>
+                <div className="w-14 bg-gray-400 dark:bg-gray-600 opacity-50 rounded-md animate-pulse h-5"></div>
+            </div>
+
+            <div className="size-6 rounded-full bg-gray-400 dark:bg-gray-600 opacity-50 animate-pulse"></div>
+        </li>
+    )
+}
+
 function Member({ member }: { member: Member }) {
 
-    const { user, settings } = useAppStore(state => state)
-
+    const user = useAppStore(state => state.user)
     const openDialog = useDialogStore(state => state.openDialog)
-    const { deleteMember } = useContext(EventContext)
+    const { deleteMember, showMemberName } = useContext(EventContext)
 
     const [isOptionsOpen, setIsOptionsOpen] = useState(false);
     const [isEditMemberModalOpen, setIsEditMemberModalOpen] = useState(false);
@@ -60,6 +72,10 @@ function Member({ member }: { member: Member }) {
 
     }
 
+    if (!user) {
+        return <MemberSkeleton />
+    }
+
     return (
 
         <li className="flex flex-row justify-between items-center">
@@ -67,7 +83,7 @@ function Member({ member }: { member: Member }) {
                 <div className={`p-2 border user_avatar_${member.scheme}_border user_avatar_${member.scheme}_bg rounded-full`}>
                     <User className={`size-5 user_avatar_${member.scheme}_text`} />
                 </div>
-                <span className={`text-base user_avatar_${member.scheme}_text`}>{user?.id === member?.member_id ? settings.show_as_me ? 'خودم' : user?.name : member.name}</span>
+                <span className={`text-base user_avatar_${member.scheme}_text`}>{showMemberName(member.id)}</span>
             </div>
 
 
