@@ -8,7 +8,7 @@ import { useTheme } from "next-themes";
 
 type PropsTypes = {
     name: string,
-    label: string,
+    label?: string,
     hint?: string,
     values: [Date, Date],
     error?: string,
@@ -42,7 +42,9 @@ function PRangeDatePicker({ name, label, values, onChange, error, hint }: PropsT
     return (
         <div className={`w-full flex flex-col gap-y-1`}>
 
-            <label className={`text-base ${error ? 'text-red-500' : 'primary_text_color'} capitalize`}>{label}</label>
+            {label && (
+                <label className={`text-base ${error ? 'text-red-500' : 'primary_text_color'} capitalize`}>{label}</label>
+            )}
 
             <DatePicker
                 render={<CustomInput error={error} />}

@@ -24,6 +24,7 @@ import { useDialogStore } from "@/store/dialog-store";
 import { useToastStore } from "@/store/toast-store";
 import { deleteExpenseItemsReq } from "@/app/actions/event";
 import MembersShare from "./MembersShare";
+import NewFiltersModal from "./NewFiltersModal";
 
 function Event() {
 
@@ -323,7 +324,8 @@ function Event() {
                                 />
                             )}
 
-                            {!selectMode && expenses.length > 0 && isFiltersModalOpen && <FiltersModal event={event} onClose={toggleFiltersModal} />}
+                            {!selectMode && expenses.length > 0 && isFiltersModalOpen && <NewFiltersModal event={event} onClose={toggleFiltersModal} />}
+
                             {!selectMode && eventStatus === 'active' && event.deleted_at === null && (
                                 <Button
                                     text="ثبت هزینه/جابجایی پول"

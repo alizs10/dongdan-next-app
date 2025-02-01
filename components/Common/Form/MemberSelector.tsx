@@ -13,7 +13,7 @@ type Member = {
 }
 
 type PropsTypes = {
-    label: string;
+    label?: string;
     members: Member[];
     onSelect: (actionKey: string) => void;
     value: string | string[];
@@ -51,8 +51,9 @@ function MemberSelector({ label, members, onSelect, value, error, self = undefin
     return (
 
         <div className="flex flex-col gap-y-2">
-
-            <span className={`text-base ${error ? 'text-red-500' : 'primary_text_color'} capitalize`}>{label}</span>
+            {label && (
+                <span className={`text-base ${error ? 'text-red-500' : 'primary_text_color'} capitalize`}>{label}</span>
+            )}
 
             <div className="flex flex-wrap gap-4">
 
