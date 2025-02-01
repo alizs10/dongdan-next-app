@@ -113,6 +113,8 @@ export function EventContextProvider({ children, data }: { children: React.React
     const [activeFilters, setActiveFilters] = useState<ExpenseFilters | null>(null)
     const [filteredExpenses, setFilteredExpenses] = useState<Expense[]>([])
 
+    const [excludeIds, setExcludeIds] = useState<number[]>([])
+
     useEffect(() => {
 
         if (!!activeFilters) {
@@ -285,14 +287,20 @@ export function EventContextProvider({ children, data }: { children: React.React
         // setEvent(prevState => ({ ...prevState, expenses: [...prevState.expenses, expense] }))
         setExpenses(prevState => [...prevState, expense])
         setEventData(event_data)
+        setExcludeIds(prevState => [...prevState, expense.id])
     }
+
 
     async function loadMoreExpenses() {
 
         if (fetchingMoreExpenses) return;
         setFetchingMoreExpenses(true)
+
+        // const nextCursor = expenses[expenses.length - 1].id
+        if (!paginationData.next_cursor) return;
+
         // fetch more expenses
-        const res = await loadMoreExpensesReq(event.id.toString(), paginationData.current_page + 1, paginationData.per_page)
+        const res = await loadMoreExpensesReq(event.id.toString(), paginationData.next_cursor!, paginationData.next_cursor_id!, excludeIds)
 
         if (res.success && res.expenses && res.paginationData) {
             setExpenses(prevState => [...prevState, ...res.expenses])

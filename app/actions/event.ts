@@ -355,11 +355,11 @@ export async function deleteExpenseItemsReq(eventId: string | number, expenseIds
 
 }
 
-export async function loadMoreExpensesReq(eventId: string | number, page: number, perPage: number) {
+export async function loadMoreExpensesReq(eventId: string | number, cursor: string, nextCursorId: number, excludeIds: number[]) {
     const token = (await cookies()).get('token');
 
     try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/event/${eventId}/expenses?page=${page}&per_page=${perPage}`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/event/${eventId}/expenses?cursor=${cursor}&limit=10&cursor_id=${nextCursorId}&exclude_ids=${excludeIds.join(',')}`, {
             method: 'GET',
             headers: {
                 Authorization: `Bearer ${token?.value}`,

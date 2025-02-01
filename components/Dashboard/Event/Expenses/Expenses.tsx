@@ -21,7 +21,7 @@ function Expenses({ expenses }: { expenses: ExpenseType[] }) {
             ))}
 
             <div className="mx-auto my-6">
-                <LoadMore currentPage={paginationData.current_page} totalPages={paginationData.total_pages} onLoadMore={loadMoreExpenses} loading={fetchingMoreExpenses} />
+                <LoadMore pagination={paginationData} onLoadMore={loadMoreExpenses} loading={fetchingMoreExpenses} />
             </div>
         </div>
     );

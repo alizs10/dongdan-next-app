@@ -44,6 +44,7 @@ export type CreateExpenseResponse = {
     event_data: EventData;
 }
 
+
 export type UpdateExpenseResponse = {
     status: boolean;
     message: string;

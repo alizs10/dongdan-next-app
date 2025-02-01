@@ -124,6 +124,8 @@ function Event() {
         setIsFiltersModalOpen(prev => !prev);
     }
 
+    const eventDays = moment().diff(moment(event.start_date), 'days') + 1;
+
 
     return (
         <div className="event_container">
@@ -147,8 +149,16 @@ function Event() {
                                 <span className="text-sm text-gray-500 dark:text-gray-400">{TomanPriceFormatter(eventData.total_amount.toString())} تومان</span>
                             </div>
                             <div className="flex w-full justify-between items-center">
+                                <h1 className="text-sm text-gray-500 dark:text-gray-400">میانگین هزینه در روز</h1>
+                                <span className="text-sm text-gray-500 dark:text-gray-400">{TomanPriceFormatter((eventData.total_amount / eventDays).toString())} تومان</span>
+                            </div>
+                            <div className="flex w-full justify-between items-center">
                                 <h1 className="text-sm text-gray-500 dark:text-gray-400">تعداد هزینه ها</h1>
                                 <span className="text-sm text-gray-500 dark:text-gray-400">{eventData.expends_count}</span>
+                            </div>
+                            <div className="flex w-full justify-between items-center">
+                                <h1 className="text-sm text-gray-500 dark:text-gray-400">میانگین تعداد هزینه در روز</h1>
+                                <span className="text-sm text-gray-500 dark:text-gray-400">{(eventData.expends_count / eventDays).toFixed(2)}</span>
                             </div>
                             <div className="flex w-full justify-between items-center">
                                 <h1 className="text-sm text-gray-500 dark:text-gray-400">تعداد جابجایی پول</h1>
@@ -227,7 +237,7 @@ function Event() {
                         </div>
                         <div className="flex w-full justify-between items-center">
                             <h1 className="text-sm text-gray-500 dark:text-gray-400">طول رویداد</h1>
-                            <span className="text-sm text-gray-500 dark:text-gray-400">{moment().diff(moment(event.start_date), 'days') + 1} روز</span>
+                            <span className="text-sm text-gray-500 dark:text-gray-400">{eventDays} روز</span>
                         </div>
                         <div className="flex w-full justify-between items-center">
                             <h1 className="text-sm text-gray-500 dark:text-gray-400">تعداد اعضا</h1>
