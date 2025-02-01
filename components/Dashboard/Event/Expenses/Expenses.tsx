@@ -11,7 +11,7 @@ function Expenses({ expenses }: { expenses: ExpenseType[] }) {
     expenses = expenses.sort((a, b) => {
         const dateComparison = new Date(b.date).getTime() - new Date(a.date).getTime();
         if (dateComparison !== 0) return dateComparison;
-        return new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime();
+        return b.id - a.id;
     });
 
     return (

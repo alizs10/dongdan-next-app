@@ -150,7 +150,7 @@ function Event() {
                             </div>
                             <div className="flex w-full justify-between items-center">
                                 <h1 className="text-sm text-gray-500 dark:text-gray-400">میانگین هزینه در روز</h1>
-                                <span className="text-sm text-gray-500 dark:text-gray-400">{TomanPriceFormatter((eventData.total_amount / eventDays).toString())} تومان</span>
+                                <span className="text-sm text-gray-500 dark:text-gray-400">{TomanPriceFormatter((eventData.total_amount / eventDays).toFixed(0))} تومان</span>
                             </div>
                             <div className="flex w-full justify-between items-center">
                                 <h1 className="text-sm text-gray-500 dark:text-gray-400">تعداد هزینه ها</h1>
