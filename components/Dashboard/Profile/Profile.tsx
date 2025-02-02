@@ -3,24 +3,20 @@
 import Link from 'next/link';
 import { BadgeCheck, Key, LoaderCircle, MoveRight, User, UserPen, UserX } from 'lucide-react';
 import Button from '@/components/Common/Button';
-import { useDialogStore } from '@/store/dialog-store';
-import { useToastStore } from '@/store/toast-store';
 import { useState } from 'react';
 import EditProfileModal from './EditProfileModal';
 import ChangePasswordModal from './ChangePasswordModal';
 import { type User as TypeUser } from '@/types/user';
 import moment from 'jalali-moment';
-import { useAppStore } from '@/store/app-store';
 import { sendEmailVerificationReq } from '@/app/actions/auth';
 import DeleteAccountModal from './DeleteAccountModal';
+import useStore from '@/store/store';
 
 function Profile({ data }: { data: TypeUser }) {
 
-    const syncUser = useAppStore(state => state.setUser)
+    const { setUser: syncUser, openDialog, addToast } = useStore()
     const [profile, setProfile] = useState<TypeUser>(data);
 
-    const openDialog = useDialogStore(state => state.openDialog)
-    const addToast = useToastStore(state => state.addToast)
     const [loading, setLoading] = useState(false);
 
     const [editProfileModalVis, setEditProfileModalVis] = useState(false);

@@ -6,11 +6,12 @@ import moment from "jalali-moment";
 import { ArrowRightLeft, DollarSign, Ellipsis, Info, MoveLeft, Pencil, Trash } from "lucide-react";
 import { useCallback, useState, useContext } from "react";
 import EditExpenseModal from "../EditExpenseModal";
-import { useDialogStore } from "@/store/dialog-store";
+
 import { EventContext } from "@/context/EventContext";
-import { useAppStore } from "@/store/app-store";
+
 import { MultiSelectItemContext } from "@/context/MultiSelectItemContext";
 import InfoExpenseModal from "../InfoExpenseModal";
+import useStore from "@/store/store";
 
 function ExpenseSkeleton() {
     return <div className="flex flex-wrap gap-4 justify-between border-b app_border_color py-3 px-5">
@@ -41,8 +42,7 @@ function ExpenseSkeleton() {
 
 function Expense({ expense, index }: { expense: Expense, index: number }) {
 
-    const { user, settings } = useAppStore(state => state);
-    const openDialog = useDialogStore(state => state.openDialog);
+    const { user, settings, openDialog } = useStore();
 
     const { event, deleteExpense, showMemberName } = useContext(EventContext)
     const { toggleItem, selectMode, selectedItems } = useContext(MultiSelectItemContext);

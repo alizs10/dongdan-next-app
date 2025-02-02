@@ -11,17 +11,17 @@ import { createPortal, useFormStatus } from "react-dom";
 import ExpensePreview from "./ExpensePreview";
 import PDatePicker from "@/components/Common/Form/PDatePicker";
 import { Event } from "@/types/event-types";
-import { useToastStore } from "@/store/toast-store";
 import { DateObject } from "react-multi-date-picker";
 import Button from "@/components/Common/Button";
 import MemberSelector from "@/components/Common/Form/MemberSelector";
-import { useAppStore } from "@/store/app-store";
+
 import { createExpendSchema, createTransferSchema } from "@/database/validations/expense-validation";
 import { createExpenseReq } from "@/app/actions/event";
 import { EventContext } from "@/context/EventContext";
 import ToggleInput from "@/components/Common/Form/ToggleInput";
 import MemberSelectorWithAmountInput from "@/components/Common/Form/MemberSelectorWithAmountInput";
 import { CreateExpendRequest, CreateTransferRequest } from "@/types/requests/event";
+import useStore from "@/store/store";
 
 type FormInputs = {
     description: string;
@@ -48,8 +48,7 @@ type FormTypes = 0 | 1;
 
 function NewExpenseModal({ onClose, event }: { onClose: () => void, event: Event }) {
 
-    const user = useAppStore(state => state.user)
-    const addToast = useToastStore(state => state.addToast)
+    const { user, addToast } = useStore()
 
     const { addExpense } = useContext(EventContext);
 

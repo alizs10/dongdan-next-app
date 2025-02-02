@@ -4,7 +4,7 @@ import { Member } from "@/types/event-types";
 import { Zap } from "lucide-react";
 import { useContext } from "react";
 import SettleHintsModal from "./SettleHintsModal";
-import { useAppStore } from "@/store/app-store";
+import useStore from "@/store/store";
 
 
 function MemberShareItem({ member }: { member: Member }) {
@@ -53,7 +53,7 @@ function MemberShareItemSkeleton() {
 
 export default function MembersShare({ members, toggleSettleHintsModal, isSettleHintsModalOpen, transactions }: { members: Member[], toggleSettleHintsModal: () => void, isSettleHintsModalOpen: boolean, transactions: { transactions: SettlementTransactions[], hints: string[] } }) {
 
-    const user = useAppStore(state => state.user)
+    const { user } = useStore()
 
     return (
         <div className="p-3 flex flex-col gap-y-8 border-b app_border_color">

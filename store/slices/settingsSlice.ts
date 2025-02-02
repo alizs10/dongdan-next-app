@@ -1,16 +1,15 @@
-import { create } from "zustand";
+import { StateCreator } from "zustand";
 
-export type SettingsState = {
+export interface SettingsSlice {
     calcAccuracy: boolean;
     toggleCalcAccuracy: () => void;
     selfIncluding: boolean;
     toggleSelfIncluding: () => void;
-};
+}
 
-export const useSettingsStore = create<SettingsState>((set) => ({
-    
+export const createSettingsSlice: StateCreator<SettingsSlice, [], [], SettingsSlice> = (set) => ({
     calcAccuracy: true,
     toggleCalcAccuracy: () => set(state => ({ calcAccuracy: !state.calcAccuracy })),
     selfIncluding: true,
     toggleSelfIncluding: () => set(state => ({ selfIncluding: !state.selfIncluding })),
-}));
+});

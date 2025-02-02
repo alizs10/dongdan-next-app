@@ -8,14 +8,15 @@ import { Save } from "lucide-react";
 import { useState } from "react";
 import { createPortal } from "react-dom";
 import Button from "@/components/Common/Button";
-import { useToastStore } from "@/store/toast-store";
+
 import { changePasswordReq } from "@/app/actions/auth";
 import { changePasswordSchema } from "@/database/validations/auth-validation";
 import { ChangePasswordRequest } from "@/types/requests/auth";
+import useStore from "@/store/store";
 
 function ChangePasswordModal({ onClose }: { onClose: () => void }) {
 
-    const addToast = useToastStore(state => state.addToast);
+    const { addToast } = useStore();;
     const [loading, setLoading] = useState(false)
 
     const initInputs = {

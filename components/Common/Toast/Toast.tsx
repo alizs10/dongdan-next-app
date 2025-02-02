@@ -1,7 +1,8 @@
-import { useToastStore } from "@/store/toast-store";
+
 import { CircleAlert, CircleCheck, Info, TriangleAlert, X } from "lucide-react";
 import { useEffect } from "react";
 import { motion } from 'framer-motion';
+import useStore from "@/store/store";
 
 
 type PropsTypes = {
@@ -13,7 +14,7 @@ type PropsTypes = {
 
 function Toast({ toastId, scheme, text, i }: PropsTypes) {
 
-    const removeToast = useToastStore(state => state.removeToast);
+    const { removeToast } = useStore();
 
     useEffect(() => {
 

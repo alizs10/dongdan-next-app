@@ -9,17 +9,17 @@ import NoContacts from "./NoContacts";
 import Link from "next/link";
 import { ContactsContext } from "@/context/ContactsContext";
 import { MultiSelectItemContext } from "@/context/MultiSelectItemContext";
-import { useToastStore } from "@/store/toast-store";
-import { useDialogStore } from "@/store/dialog-store";
+
+
 import { trashContactItemsReq } from "@/app/actions/contacts";
+import useStore from "@/store/store";
 
 function Contacts() {
 
     const { contacts, deleteMultiContact } = useContext(ContactsContext);
     const { enableSelectMode, selectMode, disableSelectMode, selectAllItems, selectedItems } = useContext(MultiSelectItemContext);
 
-    const addToast = useToastStore(state => state.addToast)
-    const openDialog = useDialogStore(state => state.openDialog)
+    const { addToast, openDialog } = useStore()
 
     const [isNewContactModalOpen, setIsNewConatctModalOpen] = useState(false);
     function toggleModal() {

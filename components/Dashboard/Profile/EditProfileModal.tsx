@@ -9,12 +9,13 @@ import { useState } from "react";
 import { createPortal, useFormStatus } from "react-dom";
 import { SchemeType } from "@/types/event-types";
 import Button from "@/components/Common/Button";
-import { useToastStore } from "@/store/toast-store";
+
 import { updateProfileSchema } from "@/database/validations/profile-validation";
 import AvatarSelector from "@/components/Common/Form/AvatarSelector";
 import { User } from "@/types/user";
 import { updateProfileReq } from "@/app/actions/profile";
 import { UpdateProfileRequest } from "@/types/requests/profile";
+import useStore from "@/store/store";
 
 type FormInputs = {
     name: string;
@@ -25,7 +26,7 @@ type FormInputs = {
 function EditProfileModal({ onClose, profile, updateProfile }: { onClose: () => void, profile: User, updateProfile: (updatedProfile: User) => void }) {
 
     const [loading, setLoading] = useState(false);
-    const addToast = useToastStore(state => state.addToast);
+    const { addToast } = useStore();;
 
     const { pending } = useFormStatus();
 

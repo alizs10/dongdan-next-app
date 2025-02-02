@@ -4,8 +4,7 @@ import ModalHeader from "@/components/Common/ModalHeader";
 import ModalWrapper from "@/components/Common/ModalWrapper";
 import { EventContext, SettlementTransactions } from "@/context/EventContext";
 import { TomanPriceFormatter } from "@/helpers/helpers";
-import { useAppStore } from "@/store/app-store";
-import { useToastStore } from "@/store/toast-store";
+import useStore from "@/store/store";
 import { CreateTransferRequest } from "@/types/requests/event";
 import { CreditCard, Handshake, Minus, MoveLeft, User } from "lucide-react";
 import { useContext } from "react";
@@ -20,9 +19,8 @@ function SettleHintsModal({ onClose, transactions }: {
     }
 }) {
 
-    const user = useAppStore(state => state.user)
+    const { user, addToast } = useStore()
     const { event, addExpense } = useContext(EventContext)
-    const addToast = useToastStore(state => state.addToast)
 
     async function onSettleButtonClick(transaction: SettlementTransactions) {
 
@@ -39,7 +37,7 @@ function SettleHintsModal({ onClose, transactions }: {
 
         if (res.success) {
 
-            addExpense(res.expense)
+            // addExpense(res.expense)
             const successToast = {
                 message: 'تسویه حساب با موفقیت انجام شد',
                 type: 'success' as const

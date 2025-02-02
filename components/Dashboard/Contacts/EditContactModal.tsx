@@ -11,11 +11,10 @@ import { createContactSchema } from "@/database/validations/contact-validation";
 import { SchemeType } from "@/types/event-types";
 import Button from "@/components/Common/Button";
 import { Contact } from "@/types/contact-types";
-import { Toast, useToastStore } from "@/store/toast-store";
-import { generateUID } from "@/helpers/helpers";
 import AvatarSelector from "@/components/Common/Form/AvatarSelector";
 import { updateContactReq } from "@/app/actions/contacts";
 import { ContactsContext } from "@/context/ContactsContext";
+import useStore from "@/store/store";
 
 type FormInputs = {
     name: string;
@@ -24,7 +23,7 @@ type FormInputs = {
 
 function EditContactModal({ onClose, contact }: { onClose: () => void, contact: Contact }) {
 
-    const addToast = useToastStore(state => state.addToast);
+    const { addToast } = useStore();
     const { updateContact } = useContext(ContactsContext)
     const { pending } = useFormStatus();
 

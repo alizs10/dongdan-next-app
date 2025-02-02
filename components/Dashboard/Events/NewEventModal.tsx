@@ -11,8 +11,7 @@ import ModalWrapper from "@/components/Common/ModalWrapper";
 import { EventsContext } from "@/context/EventsContext";
 import { createEventSchema } from "@/database/validations/event-validation";
 import { zValidate } from "@/helpers/validation-helper";
-import { useAppStore } from "@/store/app-store";
-import { useToastStore } from "@/store/toast-store";
+import useStore from "@/store/store";
 import { Contact } from "@/types/contact-types";
 import { CreateEventRequest } from "@/types/requests/events";
 import { Ban, BriefcaseBusiness, Cake, Coffee, Loader, Plane, Save, TreePalm, Utensils } from "lucide-react";
@@ -30,14 +29,13 @@ type FormInputs = {
 
 function NewEventModal({ onClose }: { onClose: () => void }) {
 
-    const user = useAppStore(state => state.user);
+    const { user, addToast } = useStore();
 
     const [loading, setLoading] = useState(false);
     const { addEvent } = useContext(EventsContext);
 
     const [fetchingContacts, setFetchingContacts] = useState(true);
     const [contacts, setContacts] = useState<null | Contact[]>(null);
-    const addToast = useToastStore(state => state.addToast)
 
     useEffect(() => {
         async function getUserContacts() {

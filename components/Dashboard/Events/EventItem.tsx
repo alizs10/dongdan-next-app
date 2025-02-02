@@ -1,17 +1,15 @@
 import { Event } from '@/types/event-types';
-import { BookDashed, BriefcaseBusiness, Cake, Coffee, Dot, Ellipsis, Info, Pencil, Plane, Trash, TreePalm, Utensils } from "lucide-react";
+import { BriefcaseBusiness, Cake, Coffee, Ellipsis, Info, Pencil, Plane, Trash, TreePalm, Utensils } from "lucide-react";
 import Link from 'next/link';
 import moment from 'jalali-moment';
 import Button from '@/components/Common/Button';
 import { useContext, useState } from 'react';
 import useClickOutside from '@/hooks/useOutsideClick';
 import EditEventModal from './EditEventModal';
-import { useDialogStore } from '@/store/dialog-store';
-import { Toast, useToastStore } from '@/store/toast-store';
-import { generateUID } from '@/helpers/helpers';
 import { trashEventReq } from '@/app/actions/events';
 import { EventsContext } from '@/context/EventsContext';
 import { MultiSelectItemContext } from '@/context/MultiSelectItemContext';
+import useStore from '@/store/store';
 
 
 export function RenderLabelIcon(label: string) {
@@ -52,8 +50,7 @@ function EventItem({ event }: { event: Event }) {
         toggleItem(event.id.toString());
     }
 
-    const addToast = useToastStore(state => state.addToast)
-    const { openDialog } = useDialogStore(state => state)
+    const { addToast, openDialog } = useStore()
 
     const [isOptionsOpen, setIsOptionsOpen] = useState(false);
     const [isEditEventModalOpen, setIsEditEventModalOpen] = useState(false);

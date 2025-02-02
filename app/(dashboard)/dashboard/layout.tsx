@@ -1,8 +1,7 @@
 'use client'
 
 import { getLoggedInUserReq, logoutReq } from "@/app/actions/auth";
-import { useAppStore } from "@/store/app-store";
-import { useToastStore } from "@/store/toast-store";
+import useStore from "@/store/store";
 import { BookOpenCheck, CalendarRange, Headset, Info, LogOut, Settings2, Trash, User, Users, Zap } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -10,7 +9,7 @@ import { useEffect, useState } from "react";
 
 function Layout({ children }: { children: React.ReactNode }) {
 
-    const { setUser, setSettings } = useAppStore(state => state)
+    const { setUser, setSettings, addToast } = useStore()
     const router = useRouter();
 
     useEffect(() => {
@@ -34,7 +33,6 @@ function Layout({ children }: { children: React.ReactNode }) {
 
     const pathname = usePathname();
     const [loading, setLoading] = useState(false);
-    const addToast = useToastStore((state) => state.addToast);
 
     async function handleLogout() {
 

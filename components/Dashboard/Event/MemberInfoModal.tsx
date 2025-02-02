@@ -2,12 +2,10 @@
 
 import ModalHeader from "@/components/Common/ModalHeader";
 import ModalWrapper from "@/components/Common/ModalWrapper";
-import { EventContext } from "@/context/EventContext";
 import { TomanPriceFormatter } from "@/helpers/helpers";
-import { useAppStore } from "@/store/app-store";
+import useStore from "@/store/store";
 import { Member } from "@/types/event-types";
 import { User } from "lucide-react";
-import { useContext } from "react";
 
 type PropsTypes = {
     onClose: () => void,
@@ -17,17 +15,7 @@ type PropsTypes = {
 
 function MemberInfoModal({ onClose, member }: PropsTypes) {
 
-    const user = useAppStore(state => state.user)
-
-    const {
-        getAllPersonExpends,
-        getAllPersonDebts,
-        getAllPersonRecieved,
-        getAllPersonSent,
-        getPersonBalance,
-        getPersonBalanceStatus
-    } = useContext(EventContext)
-
+    const { user } = useStore()
 
     const translateBalanceStatus = (status: 'debtor' | 'creditor' | 'settled') => {
         switch (status) {

@@ -4,10 +4,9 @@ import { type Member } from "@/types/event-types";
 import { Ellipsis, Info, Pencil, Trash, User } from "lucide-react";
 import { useContext, useState } from "react";
 import EditMemberModal from "./EditMemberModal";
-import { useDialogStore } from "@/store/dialog-store";
 import MemberInfoModal from "./MemberInfoModal";
-import { useAppStore } from "@/store/app-store";
 import { EventContext } from "@/context/EventContext";
+import useStore from "@/store/store";
 
 function MemberSkeleton() {
     return (
@@ -24,8 +23,8 @@ function MemberSkeleton() {
 
 function Member({ member }: { member: Member }) {
 
-    const user = useAppStore(state => state.user)
-    const openDialog = useDialogStore(state => state.openDialog)
+    const { user, openDialog } = useStore()
+
     const { deleteMember, showMemberName } = useContext(EventContext)
 
     const [isOptionsOpen, setIsOptionsOpen] = useState(false);

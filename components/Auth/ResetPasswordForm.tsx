@@ -3,6 +3,7 @@
 import { resetPasswordReq } from "@/app/actions/auth";
 import { resetPasswordSchema } from "@/database/validations/auth-validation";
 import { transformLaravelFieldErrors, zValidate } from "@/helpers/validation-helper";
+import { FormStatusMessage } from "@/types/globals";
 import { ResetPasswordRequest } from "@/types/requests/auth";
 import { Key, MoveRight, Pen } from "lucide-react";
 import Link from "next/link";

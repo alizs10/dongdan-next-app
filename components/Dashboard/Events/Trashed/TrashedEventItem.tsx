@@ -4,12 +4,10 @@ import moment from 'jalali-moment';
 import Button from '@/components/Common/Button';
 import { useContext, useState } from 'react';
 import useClickOutside from '@/hooks/useOutsideClick';
-import { useDialogStore } from '@/store/dialog-store';
-import { Toast, useToastStore } from '@/store/toast-store';
-import { generateUID } from '@/helpers/helpers';
 import { TrashedEventsContext } from '@/context/TrashedEventsContext';
 import { deleteEventReq, restoreEventReq } from '@/app/actions/events';
 import { MultiSelectItemContext } from '@/context/MultiSelectItemContext';
+import useStore from '@/store/store';
 
 
 function renderIcon(label: string) {
@@ -45,8 +43,7 @@ function TrashedEventItem({ event }: { event: Event }) {
     const { deleteEvent } = useContext(TrashedEventsContext);
     const { toggleItem, selectMode, selectedItems } = useContext(MultiSelectItemContext);
 
-    const addToast = useToastStore(state => state.addToast)
-    const openDialog = useDialogStore(state => state.openDialog)
+    const { addToast, openDialog } = useStore()
 
     const [isOptionsOpen, setIsOptionsOpen] = useState(false);
 
@@ -105,10 +102,10 @@ function TrashedEventItem({ event }: { event: Event }) {
 
 
     async function handleRestoreEvent() {
-        const res = await restoreEventReq(event.id)
+        const res = await restoreEventReq(event.id.toString())
 
         if (res.success) {
-            deleteEvent(event.id)
+            deleteEvent(event.id.toString())
             const successToast = {
 
                 message: res.message,
@@ -127,10 +124,10 @@ function TrashedEventItem({ event }: { event: Event }) {
     }
 
     async function handleDeleteEvent() {
-        const res = await deleteEventReq(event.id)
+        const res = await deleteEventReq(event.id.toString())
 
         if (res.success) {
-            deleteEvent(event.id)
+            deleteEvent(event.id.toString())
             const successToast = {
 
                 message: res.message,
@@ -150,14 +147,14 @@ function TrashedEventItem({ event }: { event: Event }) {
 
     function onSelect() {
         if (!selectMode) return;
-        toggleItem(event.id);
+        toggleItem(event.id.toString());
     }
 
 
     return (
         <li
             onClick={onSelect}
-            className={`event_item ${selectMode && 'cursor-pointer'} ${selectedItems.includes(event.id) ? 'bg-gray-200 dark:bg-gray-800' : ''}`}>
+            className={`event_item ${selectMode && 'cursor-pointer'} ${selectedItems.includes(event.id.toString()) ? 'bg-gray-200 dark:bg-gray-800' : ''}`}>
             <div className="event_item_right">
 
                 <div className="event_item_icon_container">

@@ -4,19 +4,19 @@ import Link from 'next/link';
 import { MoveRight, Save } from 'lucide-react';
 import ToggleInput from '@/components/Common/Form/ToggleInput';
 import Button from '@/components/Common/Button';
-import { type Settings as TypeSettings } from '@/types/user';
+// import { type Settings as TypeSettings } from '@/types/user';
 import { useState } from 'react';
 import { updateSettingsReq } from '@/app/actions/profile';
-import { useToastStore } from '@/store/toast-store';
-import { useAppStore } from '@/store/app-store';
+import useStore from '@/store/store';
+import { type Settings as TypeSettings } from '@/types/settings';
 
 function Settings({ data }: { data: TypeSettings }) {
 
-    const [settings, setSettings] = useState(data);
+    // const [settings, setSettings] = useState(data);
     const [loading, setLoading] = useState(false);
 
-    const addToast = useToastStore(state => state.addToast)
-    const syncSettings = useAppStore(state => state.setSettings)
+    // const { addToast } = useStore();
+    const { addToast, settings, setSettings } = useStore()
 
     async function toggleShowAsMe() {
 
@@ -28,7 +28,7 @@ function Settings({ data }: { data: TypeSettings }) {
 
         if (res.success) {
             setSettings(res.settings)
-            syncSettings(res.settings)
+            // syncSettings(res.settings)
             const successToast = {
                 message: res.message,
                 type: 'success' as const

@@ -8,12 +8,13 @@ import { useRouter } from "next/navigation";
 import { zValidate } from "@/helpers/validation-helper";
 import { loginCredentialsSchema } from "@/database/validations/auth-validation";
 import { loginReq } from "@/app/actions/auth";
-import { useAppStore } from "@/store/app-store";
 import { LoginCredentialsRequest } from "@/types/requests/auth";
+import useStore from "@/store/store";
+import { FormStatusMessage } from "@/types/globals";
 
 function LoginForm() {
 
-    const setUser = useAppStore(state => state.setUser)
+    const { setUser } = useStore()
 
     const initInputs = {
         email: '',

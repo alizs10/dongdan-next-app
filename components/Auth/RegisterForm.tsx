@@ -3,6 +3,7 @@
 import { registerReq } from "@/app/actions/auth";
 import { registerCredentialsSchema } from "@/database/validations/auth-validation";
 import { transformLaravelFieldErrors, zValidate } from "@/helpers/validation-helper";
+import { FormStatusMessage } from "@/types/globals";
 import { RegisterCredentialsRequest } from "@/types/requests/auth";
 import { ArrowLeft, Key, Mail } from "lucide-react";
 import { useRouter } from "next/navigation";

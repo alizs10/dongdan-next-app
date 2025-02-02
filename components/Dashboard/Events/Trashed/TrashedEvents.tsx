@@ -6,12 +6,10 @@ import NoEventsTrashed from './NoEventsTrashed';
 import TrashedEventsList from './TrashedEventsList';
 import { useContext } from 'react';
 import { TrashedEventsContext } from '@/context/TrashedEventsContext';
-import { Toast, useToastStore } from '@/store/toast-store';
-import { generateUID } from '@/helpers/helpers';
 import { MultiSelectItemContext } from '@/context/MultiSelectItemContext';
-import { useDialogStore } from '@/store/dialog-store';
 import { deleteEventItemsReq, restoreEventItemsReq } from '@/app/actions/events';
 import Button from '@/components/Common/Button';
+import useStore from '@/store/store';
 
 function TrashedEvents() {
 
@@ -19,8 +17,7 @@ function TrashedEvents() {
 
     const { enableSelectMode, selectMode, disableSelectMode, selectAllItems, selectedItems } = useContext(MultiSelectItemContext);
 
-    const addToast = useToastStore(state => state.addToast)
-    const openDialog = useDialogStore(state => state.openDialog)
+    const { addToast, openDialog } = useStore()
 
     function onDeleteSelectedItems() {
 
@@ -147,7 +144,7 @@ function TrashedEvents() {
                                     <Button
                                         text="انتخاب همه"
                                         color="accent"
-                                        onClick={() => selectAllItems(items.map(item => item.id))}
+                                        onClick={() => selectAllItems(items.map(item => item.id.toString()))}
                                         size="small"
                                         icon={<ListCheck className="size-5" />}
                                     />

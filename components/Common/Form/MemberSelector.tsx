@@ -1,5 +1,4 @@
 import { EventContext } from "@/context/EventContext";
-import { useAppStore } from "@/store/app-store";
 import { SchemeType } from "@/types/event-types";
 import { Ban, User, Users } from "lucide-react";
 import { useContext } from "react";

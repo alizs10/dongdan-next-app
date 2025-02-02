@@ -8,16 +8,15 @@ import { Loader, Save } from "lucide-react";
 import { useContext, useEffect, useState } from "react";
 import { createPortal, useFormStatus } from "react-dom";
 import { Member, SchemeType } from "@/types/event-types";
-import { useToastStore } from "@/store/toast-store";
 import Button from "@/components/Common/Button";
 import AvatarSelector from "@/components/Common/Form/AvatarSelector";
 import { EventContext } from "@/context/EventContext";
 import { getEventNonMembersReq } from "@/app/actions/events";
 import MemberSelector from "@/components/Common/Form/MemberSelector";
-import { useAppStore } from "@/store/app-store";
 import { addMembersSchema, createMemberSchema } from "@/database/validations/member-validation";
 import { createMemberReq } from "@/app/actions/event";
 import { CreateMemberRequest } from "@/types/requests/event";
+import useStore from "@/store/store";
 
 type FormInputs = {
     name: string;
@@ -28,8 +27,7 @@ type FormInputs = {
 
 function NewMemberModal({ onClose }: { onClose: () => void }) {
 
-    const addToast = useToastStore(state => state.addToast)
-    const user = useAppStore(state => state.user)
+    const { user, addToast } = useStore()
     const { event, addMember, setMembers } = useContext(EventContext)
     const [fetchingNonMembers, setFetchingNonMembers] = useState(true);
     const [nonMembers, setNonMembers] = useState<null | Member[]>(null)

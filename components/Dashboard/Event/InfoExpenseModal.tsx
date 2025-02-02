@@ -5,17 +5,17 @@ import ModalWrapper from "@/components/Common/ModalWrapper";
 import { useContext } from "react";
 import { createPortal } from "react-dom";
 import { Expense } from "@/types/event-types";
-import { useAppStore } from "@/store/app-store";
 import { EventContext } from "@/context/EventContext";
 import moment from "jalali-moment";
 import { ArrowRightLeft, DollarSign, User } from "lucide-react";
 import { TomanPriceFormatter } from "@/helpers/helpers";
 import { RenderLabelIcon } from "../Events/EventItem";
+import useStore from "@/store/store";
 
 
 function InfoExpenseModal({ onClose, expense }: { onClose: () => void, expense: Expense }) {
 
-    const user = useAppStore(state => state.user)
+    const { user } = useStore()
     const { event } = useContext(EventContext);
 
     if (typeof window === "object") {

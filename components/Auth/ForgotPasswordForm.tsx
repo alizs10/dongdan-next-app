@@ -3,6 +3,7 @@
 import { forgotPasswordReq } from "@/app/actions/auth";
 import { forgotPasswordSchema } from "@/database/validations/auth-validation";
 import { transformLaravelFieldErrors, zValidate } from "@/helpers/validation-helper";
+import { FormStatusMessage } from "@/types/globals";
 import { Key, Mail, MoveRight, Send } from "lucide-react";
 import Link from "next/link";
 import { FormEvent, useState } from "react";

@@ -1,6 +1,6 @@
 'use client'
 
-import { CalendarCheck, CalendarClock, Filter, ListCheck, ListChecks, MoveRight, Plus, Trash, UserPlus, X, Zap } from "lucide-react";
+import { CalendarCheck, CalendarClock, Filter, ListCheck, ListChecks, MoveRight, Plus, Trash, UserPlus, X } from "lucide-react";
 import Link from "next/link";
 import { useContext, useState } from "react";
 import NewExpenseModal from "./NewExpenseModal";
@@ -10,25 +10,21 @@ import NoGroupExpenses from "./Expenses/NoGroupExpenses";
 import moment from "jalali-moment";
 import Button from "@/components/Common/Button";
 import { TomanPriceFormatter } from "@/helpers/helpers";
-import SettleHintsModal from "./SettleHintsModal";
 import GroupMembers from "./GroupMembers";
 import NoGroupMembers from "./NoGroupMembers";
-import FiltersModal from "./FiltersModal";
 import ActiveFilters from "./ActiveFilters";
 import ShareEventLink from "./ShareEventLink";
 import { EventContext } from "@/context/EventContext";
-import { useAppStore } from "@/store/app-store";
 import NewMemberModal from "./NewMemberModal";
 import { MultiSelectItemContext } from "@/context/MultiSelectItemContext";
-import { useDialogStore } from "@/store/dialog-store";
-import { useToastStore } from "@/store/toast-store";
 import { deleteExpenseItemsReq } from "@/app/actions/event";
 import MembersShare from "./MembersShare";
 import NewFiltersModal from "./NewFiltersModal";
+import useStore from "@/store/store";
 
 function Event() {
 
-    const { user, settings } = useAppStore(state => state)
+    const { user, addToast, openDialog } = useStore()
     const { enableSelectMode, selectMode, disableSelectMode, selectAllItems, selectedItems } = useContext(MultiSelectItemContext);
 
     const {
@@ -41,9 +37,6 @@ function Event() {
         deleteMultiExpenses,
         activeFilters, filteredExpenses
     } = useContext(EventContext);
-
-    const addToast = useToastStore(state => state.addToast)
-    const openDialog = useDialogStore(state => state.openDialog)
 
     function onDeleteSelectedItems() {
 

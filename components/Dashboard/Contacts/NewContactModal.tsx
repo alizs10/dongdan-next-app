@@ -7,14 +7,13 @@ import { zValidate } from "@/helpers/validation-helper";
 import { Save } from "lucide-react";
 import { useContext, useState } from "react";
 import { createPortal, useFormStatus } from "react-dom";
-import { generateUID } from "@/helpers/helpers";
 import { SchemeType } from "@/types/event-types";
 import { createContactSchema } from "@/database/validations/contact-validation";
-import { Toast, useToastStore } from "@/store/toast-store";
 import Button from "@/components/Common/Button";
 import AvatarSelector from "@/components/Common/Form/AvatarSelector";
 import { createContactReq } from "@/app/actions/contacts";
 import { ContactsContext } from "@/context/ContactsContext";
+import useStore from "@/store/store";
 
 type FormInputs = {
     name: string;
@@ -25,7 +24,7 @@ function NewContactModal({ onClose }: { onClose: () => void }) {
 
     const { addContact } = useContext(ContactsContext);
 
-    const addToast = useToastStore(state => state.addToast)
+    const { addToast } = useStore();
     const { pending } = useFormStatus();
 
     const initInputs: FormInputs = {

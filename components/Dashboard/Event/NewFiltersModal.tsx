@@ -1,6 +1,6 @@
 'use client'
 
-import { AnyExpense, ExpendFilter, ExpenseFilters, TransferFilter, Event } from "@/types/event-types";
+import { AnyExpense, ExpenseFilters, Event } from "@/types/event-types";
 
 import TextInput from "@/components/Common/Form/TextInput";
 import ModalHeader from "@/components/Common/ModalHeader";
@@ -9,15 +9,42 @@ import { zValidate } from "@/helpers/validation-helper";
 import { Filter } from "lucide-react";
 import { useContext, useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
-import { TomanPriceFormatter } from "@/helpers/helpers";
-import { useToastStore } from "@/store/toast-store";
+import { TomanPriceFormatter, TomanPriceToNumber } from "@/helpers/helpers";
+
 import Button from "@/components/Common/Button";
 import MemberSelector from "@/components/Common/Form/MemberSelector";
 import PRangeDatePicker from "@/components/Common/Form/PRangeDatePicker";
 import { anyFilterSchema, expendFilterSchema, transferFilterSchema } from "@/database/validations/filters-validation";
 import { EventContext } from "@/context/EventContext";
 
+import { DateObject } from "react-multi-date-picker";
+import { filterExpensesReq } from "@/app/actions/filter";
+import useStore from "@/store/store";
+
+type ExpendFilter = {
+    payer_id: string;
+    contributor_ids: string[];
+}
+
+type TransferFilter = {
+    transmitter_id: string;
+    receiver_id: string;
+}
+
+type AmountFilter = {
+    min_amount: string;
+    max_amount: string;
+}
+
+type DateFilter = {
+    start_date: DateObject;
+    end_date: DateObject;
+}
+
+
+
 function ToggleFilters({ label, filterStatus, toggleFiltersStatus }: { label: string, filterStatus: boolean, toggleFiltersStatus: () => void }) {
+
 
     return (
         <div className="flex flex-row items-center justify-between">
@@ -49,14 +76,42 @@ function FiltersTextInput({ name, type, className, value, handleChange }: { name
 function NewFiltersModal({ onClose, event }: { onClose: () => void, event: Event }) {
 
 
-    // const addToast = useToastStore(state => state.addToast)
+    const { user } = useStore()
+
+    const [cursor, setCursor] = useState<string | null>(null)
+    const [nextCursorId, setNextCursorId] = useState<number | null>(null)
+
+    // const { addToast } = useStore();
     // const { applyFilters, eventData, expenses } = useContext(EventContext)
+
+
+    const [amountFilters, setAmountFilters] = useState<AmountFilter>({
+        min_amount: '',
+        max_amount: '',
+    })
+
+    const [dateFilters, setDateFilters] = useState<DateFilter>({
+        start_date: new DateObject(event.start_date),
+        end_date: new DateObject(),
+    })
+
+
+    const [expendFilters, setExpendFilters] = useState<ExpendFilter>({
+        payer_id: '',
+        contributor_ids: [],
+    })
+
+    const [transferFilters, setTransferFilters] = useState<TransferFilter>({
+        transmitter_id: '',
+        receiver_id: '',
+    })
 
     const [filtersStatus, setFiltersStatus] = useState({
         type: true,
         amount: false,
         date: false,
         payer_id: false,
+
         contributor_ids: false,
         transmitter_id: false,
         receiver_id: false,
@@ -77,70 +132,124 @@ function NewFiltersModal({ onClose, event }: { onClose: () => void, event: Event
 
     tommorowDate.setDate(tommorowDate.getDate() + 1);
 
+    function togglePayer(id: string) {
+        if (type !== 'expend' || !filtersStatus.payer_id) return
+        setExpendFilters(prev => ({ ...prev, payer_id: prev.payer_id === id ? '' : id }))
+    }
 
-    // function selectType(type: ExpenseFilters['type']) {
+    function toggleAllContributors() {
 
-    //     const newFiltersState = type === 'transfer' ? { ...initTransferFilters, type } :
-    //         type === 'expend' ? { ...initExpendFilter, type }
-    //             : { ...initAnyFilters, type }
-
-    //     setFilters(newFiltersState);
-    // }
-
-    // function toggleGroupMember(id: string) {
-
-    //     if (filters.type !== 'expend') return
-
-    //     if (id === 'all' && filters.type === 'expend') {
-    //         setFilters((prev) => ({ ...prev, contributors: (prev.type === 'expend' && prev.contributors.length === event.members.length) ? [] : event.members.map(m => m.id.toString()) }))
-    //         return
-    //     }
-
-    //     setFilters(prev => prev.type === 'expend' ? ({ ...prev, contributors: prev.contributors.includes(id) ? prev.contributors.filter(mId => mId.toString() !== id) : [...prev.contributors, id] }) : prev)
-    // }
-
-    // function togglePayer(id: string) {
-    //     if (filters.type !== 'expend') return
-    //     setFilters(prev => prev.type === 'expend' ? ({ ...prev, payer_id: prev.payer_id === id ? '' : id }) : prev)
-    // }
-
-    // function toggleTransmitter(id: string) {
-    //     if (filters.type !== 'transfer') return
-
-    //     if (id === filters.receiver_id) return
-
-    //     setFilters(prev => prev.type === 'transfer' ? ({ ...prev, transmitter_id: prev.transmitter_id === id ? '' : id }) : prev)
-    // }
-
-    // function toggleReceiver(id: string) {
-    //     if (filters.type !== 'transfer') return
-    //     if (id === filters.transmitter_id) return
-    //     setFilters(prev => prev.type === 'transfer' ? ({ ...prev, receiver_id: prev.receiver_id === id ? '' : id }) : prev)
-    // }
+        if (expendFilters.contributor_ids.length === event.members.length) {
+            setExpendFilters(prev => ({ ...prev, contributor_ids: [] }))
+            return
+        }
+        setExpendFilters(prev => ({ ...prev, contributor_ids: event.members.map(m => m.id.toString()) ?? [] }))
+    }
 
 
-    // function changeAmountMinHandler(e: React.ChangeEvent<HTMLInputElement>) {
-    //     const regex = /^[0-9]+$/;
-    //     const amount = e.target.value.replaceAll(',', '');
+    function isMemberContributor(memberId: string) {
+        return expendFilters.contributor_ids.some(c => c === memberId);
+    }
 
-    //     if (amount.length > 0 && !regex.test(amount)) return;
 
-    //     setFilters(prev => ({ ...prev, amountMin: amount.length > 0 ? TomanPriceFormatter(amount) : '' }))
+    function toggleContributor(actionKey: string) {
 
-    // }
+        if (type !== 'expend' || !filtersStatus.contributor_ids) return
 
-    // function changeAmountMaxHandler(e: React.ChangeEvent<HTMLInputElement>) {
-    //     const regex = /^[0-9]+$/;
-    //     const amount = e.target.value.replaceAll(',', '');
+        if (actionKey === 'all') {
+            toggleAllContributors()
+            return
+        }
 
-    //     if (amount.length > 0 && !regex.test(amount)) return;
+        if (isMemberContributor(actionKey)) {
+            setExpendFilters(prev => ({ ...prev, contributor_ids: prev.contributor_ids.filter(c => c !== actionKey) }))
+        } else {
+            setExpendFilters(prev => ({ ...prev, contributor_ids: [...prev.contributor_ids, actionKey] }))
+        }
 
-    //     setFilters(prev => ({ ...prev, amountMax: amount.length > 0 ? TomanPriceFormatter(amount) : '' }))
+    }
 
-    // }
+    function toggleTransmitter(id: string) {
+
+        if ((type !== 'transfer' || !filtersStatus.transmitter_id) || (filtersStatus.receiver_id && id === transferFilters.receiver_id)) return
+        setTransferFilters(prev => ({ ...prev, transmitter_id: prev.transmitter_id === id ? '' : id }))
+    }
+
+    function toggleReceiver(id: string) {
+        if ((type !== 'transfer' || !filtersStatus.receiver_id) || (filtersStatus.transmitter_id && id === transferFilters.transmitter_id)) return
+        setTransferFilters(prev => ({ ...prev, receiver_id: prev.receiver_id === id ? '' : id }))
+    }
+
+
+    function changemin_amountHandler(e: React.ChangeEvent<HTMLInputElement>) {
+        const regex = /^[0-9]+$/;
+        const amount = e.target.value.replaceAll(',', '');
+
+        if (amount.length > 0 && !regex.test(amount)) return;
+
+        setAmountFilters(prev => ({ ...prev, min_amount: amount.length > 0 ? TomanPriceFormatter(amount) : '' }))
+    }
+
+
+    function changeAmountMaxHandler(e: React.ChangeEvent<HTMLInputElement>) {
+        const regex = /^[0-9]+$/;
+        const amount = e.target.value.replaceAll(',', '');
+
+        if (amount.length > 0 && !regex.test(amount)) return;
+
+        setAmountFilters(prev => ({ ...prev, max_amount: amount.length > 0 ? TomanPriceFormatter(amount) : '' }))
+    }
+
+    function handleDateRangeChange(dates: [DateObject, DateObject]) {
+        // (dates) => setFilters((prevState: ExpenseFilters) => ({ ...prevState, dateRange: dates.map(date => date.toDate()) as [Date, Date] }))
+        setDateFilters({ start_date: dates[0], end_date: dates[1] })
+    }
+
+    const [errors, setErrors] = useState({
+        min_amount: '',
+        max_amount: '',
+        dateRange: '',
+        payer_id: '',
+        contributor_ids: '',
+        transmitter_id: '',
+        receiver_id: '',
+    })
+
+    async function handleApplyFilter() {
+
+        const filtersQuery = new URLSearchParams({
+            ...(amountFilters.min_amount && { min_amount: TomanPriceToNumber(amountFilters.min_amount).toString() }),
+            ...(amountFilters.max_amount && { max_amount: TomanPriceToNumber(amountFilters.max_amount).toString() }),
+            ...(dateFilters.start_date && { start_date: dateFilters.start_date.toDate().toISOString() }),
+            ...(dateFilters.end_date && { end_date: dateFilters.end_date.toDate().toISOString() }),
+            ...(expendFilters.payer_id && { payer_id: expendFilters.payer_id }),
+            ...(expendFilters.contributor_ids.length > 0 && { contributor_ids: expendFilters.contributor_ids.join(',') }),
+            ...(transferFilters.transmitter_id && { transmitter_id: transferFilters.transmitter_id }),
+            ...(transferFilters.receiver_id && { receiver_id: transferFilters.receiver_id })
+            , limit: '10',
+            ...(cursor && { cursor }),
+            ...(nextCursorId && { cursor_id: nextCursorId.toString() })
+        });
+
+
+        try {
+            const response = await filterExpensesReq(event.id, filtersQuery.toString())
+
+            if (response.success) {
+                console.log(response.expenses)
+                console.log(response.paginationData)
+            }
+
+        } catch (error) {
+            console.log(error)
+        }
+
+
+    }
 
 
     // function handleFilterExpenses() {
+
 
     //     const validationSchema = filters.type === 'any' ? anyFilterSchema : filters.type === 'expend' ? expendFilterSchema : transferFilterSchema;
 
@@ -203,12 +312,13 @@ function NewFiltersModal({ onClose, event }: { onClose: () => void, event: Event
                                     <div className="col-span-1">از</div>
                                     <div className="col-span-5">
                                         <FiltersTextInput
-                                            name="amountMin"
+                                            name="min_amount"
                                             type="text"
                                             className=" w-full"
-                                            value={'0'}
-                                            handleChange={() => { }}
+                                            value={amountFilters.min_amount}
+                                            handleChange={changemin_amountHandler}
                                         />
+
 
                                     </div>
                                 </div>
@@ -217,12 +327,13 @@ function NewFiltersModal({ onClose, event }: { onClose: () => void, event: Event
                                     <div className="col-span-1">تا</div>
                                     <div className="col-span-5">
                                         <FiltersTextInput
-                                            name="amountMax"
+                                            name="max_amount"
                                             type="text"
                                             className=" w-full"
-                                            value={'0'}
-                                            handleChange={() => { }}
+                                            value={amountFilters.max_amount}
+                                            handleChange={changeAmountMaxHandler}
                                         />
+
 
                                     </div>
                                 </div>
@@ -239,10 +350,14 @@ function NewFiltersModal({ onClose, event }: { onClose: () => void, event: Event
                         {filtersStatus.date && (
                             <PRangeDatePicker
                                 name="date"
-                                values={[new Date, new Date]}
-                                onChange={(dates) => { }}
+                                values={[dateFilters.start_date.toDate(), dateFilters.end_date.toDate()]}
+                                onChange={handleDateRangeChange}
+                                minDate={new DateObject(event.start_date)}
+                                maxDate={new DateObject()}
+                                hint="تاریخ باید بین تاریخ شروع رویداد و تاریخ امروز باشد."
                             // error={formErrors.dateRange}
                             />
+
                         )}
 
 
@@ -255,28 +370,30 @@ function NewFiltersModal({ onClose, event }: { onClose: () => void, event: Event
 
                                         label="کی پرداخت کرده؟"
                                         members={event.members}
-                                        onSelect={() => { }}
-                                        value={''}
+                                        onSelect={togglePayer}
+                                        value={(type !== 'expend' || !filtersStatus.payer_id) ? '' : expendFilters.payer_id}
                                         error={''}
-
                                     />
                                 )}
 
 
                                 <ToggleFilters label="مشارکت کنندگان" filterStatus={filtersStatus.contributor_ids} toggleFiltersStatus={toggleFiltersStatus.bind(null, 'contributor_ids')} />
 
-                                {filtersStatus.contributor_ids && (
+                                {(user && filtersStatus.contributor_ids) && (
                                     <MemberSelector
                                         label="کیا سهیم بودن؟"
                                         members={event.members}
-                                        onSelect={() => { }}
-                                        value={''}
+                                        onSelect={toggleContributor}
+                                        value={(type !== 'expend' || !filtersStatus.contributor_ids) ? [] : expendFilters.contributor_ids}
                                         error={''}
                                         selectAllOption={true}
+                                        self={{
+                                            id: user.id.toString(),
+                                            scheme: user.scheme,
+                                            include: false
+                                        }}
                                     />
                                 )}
-
-
                             </>
                         )}
 
@@ -290,10 +407,10 @@ function NewFiltersModal({ onClose, event }: { onClose: () => void, event: Event
                                     <MemberSelector
                                         // label="مبداء"
                                         members={event.members}
-                                        onSelect={() => { }}
-                                        value={''}
+                                        onSelect={toggleTransmitter}
+                                        value={(type !== 'transfer' || !filtersStatus.transmitter_id) ? '' : transferFilters.transmitter_id}
                                         error={''}
-                                    // disalllows={filters.receiver_id.length > 0 ? [filters.receiver_id] : []}
+                                        disalllows={transferFilters.receiver_id.length > 0 ? [transferFilters.receiver_id] : []}
                                     />
                                 )}
 
@@ -302,11 +419,13 @@ function NewFiltersModal({ onClose, event }: { onClose: () => void, event: Event
                                     <MemberSelector
                                         // label="مقصد"
                                         members={event.members}
-                                        onSelect={() => { }}
-                                        value={''}
+                                        onSelect={toggleReceiver}
+                                        value={(type !== 'transfer' || !filtersStatus.receiver_id) ? '' : transferFilters.receiver_id}
                                         error={''}
-                                    // disalllows={filters.transmitter_id.length > 0 ? [filters.transmitter_id] : []}
+                                        disalllows={transferFilters.transmitter_id.length > 0 ? [transferFilters.transmitter_id] : []}
                                     />
+
+
 
                                 )}
                             </>
@@ -321,10 +440,11 @@ function NewFiltersModal({ onClose, event }: { onClose: () => void, event: Event
                         <Button
                             text="فیلتر کن"
                             icon={<Filter className="size-5" />}
-                            // onClick={handleFilterExpenses}
+                            onClick={handleApplyFilter}
                             size="medium"
                             color="accent"
                             type="button"
+
                         />
                     </div>
 

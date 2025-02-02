@@ -1,11 +1,12 @@
 'use client'
 
-import { useDialogStore } from "@/store/dialog-store";
+
+import useStore from "@/store/store";
 import Dialog from "./Dialog";
 
 function DialogContainer() {
 
-    const isOpen = useDialogStore(state => state.isOpen)
+    const { isOpen } = useStore()
 
     if (!isOpen) return null;
 

@@ -14,6 +14,8 @@ type PropsTypes = {
     error?: string,
     onChange: (datesObj: [DateObject, DateObject]) => void,
     inpProps?: React.InputHTMLAttributes<HTMLInputElement>,
+    minDate?: DateObject,
+    maxDate?: DateObject,
 }
 
 type CustomInputProps = CustomComponentProps & {
@@ -32,7 +34,7 @@ function CustomInput({ onFocus, value, onChange, error }: CustomInputProps) {
     />
 }
 
-function PRangeDatePicker({ name, label, values, onChange, error, hint }: PropsTypes) {
+function PRangeDatePicker({ name, label, values, onChange, error, hint, minDate, maxDate }: PropsTypes) {
 
 
     const { theme } = useTheme()
@@ -56,8 +58,11 @@ function PRangeDatePicker({ name, label, values, onChange, error, hint }: PropsT
                 calendarPosition="bottom-right"
                 ref={datePickerRef}
                 name={name}
+                minDate={minDate}
+                maxDate={maxDate}
                 range
             />
+
 
             {error && (
                 <div className="flex gap-x-2 items-center mt-2 text-sm text-red-500">

@@ -1,12 +1,13 @@
-import { useDialogStore } from "@/store/dialog-store";
+
 import { createPortal } from "react-dom";
 import Button from "../Button";
 import { Check, X } from "lucide-react";
 import ModalWrapper from "../ModalWrapper";
+import useStore from "@/store/store";
 
 function Dialog() {
 
-    const { title, desc, okText, onOk, cancelText, onCancel, closeDialog } = useDialogStore(state => state)
+    const { title, desc, okText, onOk, cancelText, onCancel, closeDialog } = useStore()
 
     function handleOkClick() {
         onOk()

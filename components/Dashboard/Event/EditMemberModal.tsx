@@ -9,11 +9,12 @@ import { useContext, useState } from "react";
 import { createPortal, useFormStatus } from "react-dom";
 import { Member, SchemeType } from "@/types/event-types";
 import Button from "@/components/Common/Button";
-import { useToastStore } from "@/store/toast-store";
+
 import AvatarSelector from "@/components/Common/Form/AvatarSelector";
 import { EventContext } from "@/context/EventContext";
 import { createMemberSchema } from "@/database/validations/member-validation";
 import { updateMemberReq } from "@/app/actions/event";
+import useStore from "@/store/store";
 
 type FormInputs = {
     name: string;
@@ -22,7 +23,7 @@ type FormInputs = {
 
 function EditMemberModal({ onClose, member }: { onClose: () => void, member: Member }) {
 
-    const addToast = useToastStore(state => state.addToast)
+    const { addToast } = useStore();
     const { event, updateMember } = useContext(EventContext)
 
     const { pending } = useFormStatus();

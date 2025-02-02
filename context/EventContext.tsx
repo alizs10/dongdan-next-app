@@ -4,8 +4,9 @@ import { deleteExpenseReq, deleteMemberReq, getEventExpensesReq, loadMoreExpense
 import { updateEventStatusReq } from "@/app/actions/events";
 import DashboardLoading from "@/components/Layout/DashboardLoading";
 import { arraysHaveSameValues, isDateBetween, TomanPriceFormatter, TomanPriceToNumber } from "@/helpers/helpers";
-import { useAppStore } from "@/store/app-store";
-import { useToastStore } from "@/store/toast-store";
+import useStore from "@/store/store";
+
+
 import { Event, Expend, Expense, ExpenseFilters, Member, SettlePerson, Transfer } from "@/types/event-types";
 import { Pagination } from "@/types/globals";
 import { EventData, GetEventResponse } from "@/types/responses/event";
@@ -101,8 +102,7 @@ export const EventContext = createContext<EventContextType>(EventContextInit);
 
 export function EventContextProvider({ children, data }: { children: React.ReactNode, data: GetEventResponse }) {
 
-    const { user, settings } = useAppStore(state => state)
-    const addToast = useToastStore(state => state.addToast)
+    const { user, settings, addToast } = useStore()
 
     const [loading, setLoading] = useState(false)
     const [event, setEvent] = useState<Event>(data.event)

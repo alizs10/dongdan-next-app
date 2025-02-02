@@ -8,10 +8,11 @@ import { LoaderCircle, UserX, X } from "lucide-react";
 import { useState } from "react";
 import { createPortal } from "react-dom";
 import Button from "@/components/Common/Button";
-import { useToastStore } from "@/store/toast-store";
+
 import { deleteAccountSchema } from "@/database/validations/auth-validation";
 import { deleteAccountReq } from "@/app/actions/profile";
 import { useRouter } from "next/navigation";
+import useStore from "@/store/store";
 
 
 type FormInputs = {
@@ -20,7 +21,7 @@ type FormInputs = {
 
 function DeleteAccountModal({ onClose }: { onClose: () => void }) {
 
-    const addToast = useToastStore(state => state.addToast);
+    const { addToast } = useStore();;
     const [loading, setLoading] = useState(false)
 
     const router = useRouter();

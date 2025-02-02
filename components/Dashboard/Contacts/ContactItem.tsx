@@ -4,12 +4,11 @@ import Button from '@/components/Common/Button';
 import { useContext, useState } from 'react';
 import useClickOutside from '@/hooks/useOutsideClick';
 import EditContactModal from './EditContactModal';
-import { useDialogStore } from '@/store/dialog-store';
-import { useToastStore } from '@/store/toast-store';
 import ContactInfoModal from './ContactInfoModal';
 import { trashContactReq } from '@/app/actions/contacts';
 import { ContactsContext } from '@/context/ContactsContext';
 import { MultiSelectItemContext } from '@/context/MultiSelectItemContext';
+import useStore from '@/store/store';
 
 
 function ContactItem({ contact }: { contact: Contact }) {
@@ -23,9 +22,7 @@ function ContactItem({ contact }: { contact: Contact }) {
     }
 
 
-    const openDialog = useDialogStore(state => state.openDialog)
-    const addToast = useToastStore(state => state.addToast)
-
+    const { openDialog, addToast } = useStore()
 
     const [isOptionsOpen, setIsOptionsOpen] = useState(false);
     const [isEditContactModalOpen, setIsEditContactModalOpen] = useState(false);

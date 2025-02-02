@@ -3,12 +3,10 @@ import { Ellipsis, RotateCw, Trash, User } from "lucide-react";
 import Button from '@/components/Common/Button';
 import { useContext, useState } from 'react';
 import useClickOutside from '@/hooks/useOutsideClick';
-import { useDialogStore } from '@/store/dialog-store';
-import { Toast, useToastStore } from '@/store/toast-store';
-import { generateUID } from '@/helpers/helpers';
 import { MultiSelectItemContext } from '@/context/MultiSelectItemContext';
 import { TrashedContactsContext } from '@/context/TrashedContactsContext';
 import { deleteContactReq, restoreContactReq } from '@/app/actions/contacts';
+import useStore from '@/store/store';
 
 
 function TrashedContactItem({ contact }: { contact: Contact }) {
@@ -16,8 +14,7 @@ function TrashedContactItem({ contact }: { contact: Contact }) {
     const { deleteContact } = useContext(TrashedContactsContext);
     const { toggleItem, selectMode, selectedItems } = useContext(MultiSelectItemContext);
 
-    const openDialog = useDialogStore(state => state.openDialog)
-    const addToast = useToastStore(state => state.addToast)
+    const { openDialog, addToast } = useStore()
 
     const [isOptionsOpen, setIsOptionsOpen] = useState(false);
 
@@ -79,7 +76,7 @@ function TrashedContactItem({ contact }: { contact: Contact }) {
         const res = await restoreContactReq(contact.id)
 
         if (res.success) {
-            deleteContact(contact.id)
+            deleteContact(contact.id.toString())
             const successToast = {
 
                 message: res.message,
@@ -101,7 +98,7 @@ function TrashedContactItem({ contact }: { contact: Contact }) {
         const res = await deleteContactReq(contact.id)
 
         if (res.success) {
-            deleteContact(contact.id)
+            deleteContact(contact.id.toString())
             const successToast = {
 
                 message: res.message,
@@ -121,14 +118,14 @@ function TrashedContactItem({ contact }: { contact: Contact }) {
 
     function onSelect() {
         if (!selectMode) return;
-        toggleItem(contact.id);
+        toggleItem(contact.id.toString());
     }
 
 
     return (
         <li
             onClick={onSelect}
-            className={`event_item ${selectMode && 'cursor-pointer'} ${selectedItems.includes(contact.id) ? 'bg-gray-200 dark:bg-gray-800' : ''}`}>
+            className={`event_item ${selectMode && 'cursor-pointer'} ${selectedItems.includes(contact.id.toString()) ? 'bg-gray-200 dark:bg-gray-800' : ''}`}>
             <div className="event_item_right">
 
                 <div className={`flex justify-center p-3 rounded-xl items-center user_avatar_${contact.scheme}_bg user_avatar_${contact.scheme}_text`}>

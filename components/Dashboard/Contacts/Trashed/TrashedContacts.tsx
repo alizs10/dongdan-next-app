@@ -7,19 +7,16 @@ import TrashedContactsList from './TrashedContactsList';
 import Button from '@/components/Common/Button';
 import { useContext } from 'react';
 import { MultiSelectItemContext } from '@/context/MultiSelectItemContext';
-import { Toast, useToastStore } from '@/store/toast-store';
-import { useDialogStore } from '@/store/dialog-store';
 import { TrashedContactsContext } from '@/context/TrashedContactsContext';
 import { deleteContactItemsReq, restoreContactItemsReq } from '@/app/actions/contacts';
-import { generateUID } from '@/helpers/helpers';
+import useStore from '@/store/store';
 
 function TrashedContacts() {
 
     const { trashedContacts: items, deleteMultiContact } = useContext(TrashedContactsContext)
     const { enableSelectMode, selectMode, disableSelectMode, selectAllItems, selectedItems } = useContext(MultiSelectItemContext);
 
-    const addToast = useToastStore(state => state.addToast)
-    const openDialog = useDialogStore(state => state.openDialog)
+    const { addToast, openDialog } = useStore()
 
     function onDeleteSelectedItems() {
 
@@ -146,7 +143,7 @@ function TrashedContacts() {
                                     <Button
                                         text="انتخاب همه"
                                         color="accent"
-                                        onClick={() => selectAllItems(items.map(item => item.id))}
+                                        onClick={() => selectAllItems(items.map(item => item.id.toString()))}
                                         size="small"
                                         icon={<ListCheck className="size-5" />}
                                     />

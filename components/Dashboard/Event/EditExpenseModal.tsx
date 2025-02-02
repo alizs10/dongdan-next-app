@@ -12,16 +12,15 @@ import ExpensePreview from "./ExpensePreview";
 import PDatePicker from "@/components/Common/Form/PDatePicker";
 import { Event, Expense } from "@/types/event-types";
 import Button from "@/components/Common/Button";
-import { useToastStore } from "@/store/toast-store";
 import { DateObject } from "react-multi-date-picker";
 import MemberSelector from "@/components/Common/Form/MemberSelector";
-import { useAppStore } from "@/store/app-store";
 import { EventContext } from "@/context/EventContext";
 import { updateExpenseReq } from "@/app/actions/event";
 import { createExpendSchema, createTransferSchema } from "@/database/validations/expense-validation";
 import MemberSelectorWithAmountInput from "@/components/Common/Form/MemberSelectorWithAmountInput";
 import ToggleInput from "@/components/Common/Form/ToggleInput";
 import { CreateExpendRequest, CreateTransferRequest } from "@/types/requests/event";
+import useStore from "@/store/store";
 
 type FormInputs = {
     description: string;
@@ -47,9 +46,8 @@ type FormTypes = 0 | 1;
 
 function EditExpenseModal({ onClose, event, expense }: { onClose: () => void, event: Event, expense: Expense }) {
 
-    const user = useAppStore(state => state.user)
+    const { user, addToast } = useStore()
     const { updateExpense } = useContext(EventContext);
-    const addToast = useToastStore(state => state.addToast)
 
     const { pending } = useFormStatus();
 

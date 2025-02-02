@@ -1,6 +1,5 @@
 import { EventContext } from "@/context/EventContext";
 import { TomanPriceFormatter, TomanPriceToNumber } from "@/helpers/helpers";
-import { useAppStore } from "@/store/app-store";
 import { SchemeType } from "@/types/event-types";
 import { Ban, User, Users } from "lucide-react";
 import { useCallback, useContext } from "react";

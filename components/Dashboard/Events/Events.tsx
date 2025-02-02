@@ -8,18 +8,15 @@ import EventsList from "./EventsList";
 import { useContext, useState } from "react";
 import { EventsContext } from "@/context/EventsContext";
 import { MultiSelectItemContext } from "@/context/MultiSelectItemContext";
-import { Toast, useToastStore } from "@/store/toast-store";
-import { useDialogStore } from "@/store/dialog-store";
-import { generateUID } from "@/helpers/helpers";
 import { trashEventItemsReq } from "@/app/actions/events";
+import useStore from "@/store/store";
 
 function Events() {
 
     const { events: items, deleteMultiEvent } = useContext(EventsContext);
     const { enableSelectMode, selectMode, disableSelectMode, selectAllItems, selectedItems } = useContext(MultiSelectItemContext);
 
-    const addToast = useToastStore(state => state.addToast)
-    const openDialog = useDialogStore(state => state.openDialog)
+    const { addToast, openDialog } = useStore()
 
     const [newEventModalVis, setNewEventModalVis] = useState(false);
 

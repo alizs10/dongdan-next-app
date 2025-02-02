@@ -11,8 +11,9 @@ import ModalWrapper from "@/components/Common/ModalWrapper";
 import { EventsContext } from "@/context/EventsContext";
 import { updateEventSchema } from "@/database/validations/event-validation";
 import { zValidate } from "@/helpers/validation-helper";
-import { useAppStore } from "@/store/app-store";
-import { useToastStore } from "@/store/toast-store";
+
+
+import useStore from "@/store/store";
 import { Contact } from "@/types/contact-types";
 import { Event, Member } from "@/types/event-types";
 import { Ban, BriefcaseBusiness, Cake, Coffee, Loader, Pencil, Plane, TreePalm, Utensils } from "lucide-react";
@@ -30,10 +31,8 @@ type FormInputs = {
 
 function EditEventModal({ onClose, event }: { onClose: () => void, event: Event }) {
 
-    const user = useAppStore(state => state.user)
+    const { user, addToast } = useStore()
     const { updateEvent } = useContext(EventsContext)
-
-    const addToast = useToastStore(state => state.addToast)
 
     const [fetchingEventMembers, setFetchingEventMembers] = useState(true);
     const [eventMembers, setEventMembers] = useState<null | Member[]>(null)

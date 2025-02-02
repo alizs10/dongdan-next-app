@@ -3,12 +3,13 @@
 import { createPortal } from "react-dom";
 import Toast from "./Toast";
 import dynamic from "next/dynamic";
-import { useToastStore } from "@/store/toast-store";
+
 import { motion, AnimatePresence } from "framer-motion";
+import useStore from "@/store/store";
 
 function ToastsContainer() {
 
-    const { toasts } = useToastStore(state => state);
+    const { toasts } = useStore();
 
     if (typeof window === 'object') {
 

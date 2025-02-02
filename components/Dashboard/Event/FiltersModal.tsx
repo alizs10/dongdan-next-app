@@ -10,16 +10,17 @@ import { Filter } from "lucide-react";
 import { useContext, useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 import { TomanPriceFormatter } from "@/helpers/helpers";
-import { useToastStore } from "@/store/toast-store";
+
 import Button from "@/components/Common/Button";
 import MemberSelector from "@/components/Common/Form/MemberSelector";
 import PRangeDatePicker from "@/components/Common/Form/PRangeDatePicker";
 import { anyFilterSchema, expendFilterSchema, transferFilterSchema } from "@/database/validations/filters-validation";
 import { EventContext } from "@/context/EventContext";
+import useStore from "@/store/store";
 
 function FiltersModal({ onClose, event }: { onClose: () => void, event: Event }) {
 
-    const addToast = useToastStore(state => state.addToast)
+    const { addToast } = useStore();
     const { applyFilters, eventData, expenses } = useContext(EventContext)
 
 

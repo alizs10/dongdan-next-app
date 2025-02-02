@@ -1,6 +1,6 @@
-import { create } from "zustand";
+import { StateCreator } from "zustand";
 
-type DialogState = {
+export interface DialogSlice {
     title: string,
     desc: string,
     okText: string,
@@ -12,9 +12,9 @@ type DialogState = {
     closeDialog: () => void,
 }
 
-type InitSateType = Omit<DialogState, 'openDialog' | 'closeDialog'>;
+type InitStateType = Omit<DialogSlice, 'openDialog' | 'closeDialog'>;
 
-const initState: InitSateType = {
+const initState: InitStateType = {
     title: 'Dialog Title',
     desc: 'Dialog Description',
     okText: 'Ok',
@@ -24,8 +24,7 @@ const initState: InitSateType = {
     isOpen: false,
 }
 
-export const useDialogStore = create<DialogState>((set) => ({
-
+export const createDialogSlice: StateCreator<DialogSlice, [], [], DialogSlice> = (set) => ({
     title: initState.title,
     desc: initState.desc,
     okText: initState.okText,
@@ -35,5 +34,4 @@ export const useDialogStore = create<DialogState>((set) => ({
     isOpen: initState.isOpen,
     openDialog: (title, desc, buttons) => set({ isOpen: true, title, desc, okText: buttons.ok.text, cancelText: buttons.cancel.text, onOk: buttons.ok.onClick, onCancel: buttons.cancel.onClick }),
     closeDialog: () => set({ ...initState }),
-
-}))
+})
