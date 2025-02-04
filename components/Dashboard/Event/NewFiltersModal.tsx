@@ -37,8 +37,8 @@ type AmountFilter = {
 }
 
 type DateFilter = {
-    start_date: DateObject;
-    end_date: DateObject;
+    start_date: Date;
+    end_date: Date;
 }
 
 
@@ -81,8 +81,8 @@ function NewFiltersModal({ onClose, event }: { onClose: () => void, event: Event
     const [cursor, setCursor] = useState<string | null>(null)
     const [nextCursorId, setNextCursorId] = useState<number | null>(null)
 
-    // const { addToast } = useStore();
-    // const { applyFilters, eventData, expenses } = useContext(EventContext)
+    const { addToast } = useStore()
+    const { applyFilters } = useContext(EventContext)
 
 
     const [amountFilters, setAmountFilters] = useState<AmountFilter>({
@@ -91,10 +91,9 @@ function NewFiltersModal({ onClose, event }: { onClose: () => void, event: Event
     })
 
     const [dateFilters, setDateFilters] = useState<DateFilter>({
-        start_date: new DateObject(event.start_date),
-        end_date: new DateObject(),
+        start_date: new Date(event.start_date),
+        end_date: new Date(),
     })
-
 
     const [expendFilters, setExpendFilters] = useState<ExpendFilter>({
         payer_id: '',
@@ -200,8 +199,9 @@ function NewFiltersModal({ onClose, event }: { onClose: () => void, event: Event
         setAmountFilters(prev => ({ ...prev, max_amount: amount.length > 0 ? TomanPriceFormatter(amount) : '' }))
     }
 
-    function handleDateRangeChange(dates: [DateObject, DateObject]) {
+    function handleDateRangeChange(dates: [Date, Date]) {
         // (dates) => setFilters((prevState: ExpenseFilters) => ({ ...prevState, dateRange: dates.map(date => date.toDate()) as [Date, Date] }))
+        // console.log(dates)
         setDateFilters({ start_date: dates[0], end_date: dates[1] })
     }
 
@@ -218,31 +218,27 @@ function NewFiltersModal({ onClose, event }: { onClose: () => void, event: Event
     async function handleApplyFilter() {
 
         const filtersQuery = new URLSearchParams({
-            ...(amountFilters.min_amount && { min_amount: TomanPriceToNumber(amountFilters.min_amount).toString() }),
-            ...(amountFilters.max_amount && { max_amount: TomanPriceToNumber(amountFilters.max_amount).toString() }),
-            ...(dateFilters.start_date && { start_date: dateFilters.start_date.toDate().toISOString() }),
-            ...(dateFilters.end_date && { end_date: dateFilters.end_date.toDate().toISOString() }),
-            ...(expendFilters.payer_id && { payer_id: expendFilters.payer_id }),
-            ...(expendFilters.contributor_ids.length > 0 && { contributor_ids: expendFilters.contributor_ids.join(',') }),
-            ...(transferFilters.transmitter_id && { transmitter_id: transferFilters.transmitter_id }),
-            ...(transferFilters.receiver_id && { receiver_id: transferFilters.receiver_id })
-            , limit: '10',
+            type: type,
+            ...((filtersStatus.amount && amountFilters.min_amount) && { min_amount: TomanPriceToNumber(amountFilters.min_amount).toString() }),
+            ...((filtersStatus.amount && amountFilters.max_amount) && { max_amount: TomanPriceToNumber(amountFilters.max_amount).toString() }),
+            ...((filtersStatus.date && dateFilters.start_date) && { start_date: dateFilters.start_date.toISOString() }),
+            ...((filtersStatus.date && dateFilters.end_date) && { end_date: dateFilters.end_date.toISOString() }),
+            ...((filtersStatus.payer_id && expendFilters.payer_id) && { payer_id: expendFilters.payer_id }),
+            ...((filtersStatus.contributor_ids && expendFilters.contributor_ids.length > 0) && { contributor_ids: expendFilters.contributor_ids.join(',') }),
+            ...((filtersStatus.transmitter_id && transferFilters.transmitter_id) && { transmitter_id: transferFilters.transmitter_id }),
+            ...((filtersStatus.receiver_id && transferFilters.receiver_id) && { receiver_id: transferFilters.receiver_id }),
+            limit: '10',
             ...(cursor && { cursor }),
             ...(nextCursorId && { cursor_id: nextCursorId.toString() })
+
         });
 
-
-        try {
-            const response = await filterExpensesReq(event.id, filtersQuery.toString())
-
-            if (response.success) {
-                console.log(response.expenses)
-                console.log(response.paginationData)
-            }
-
-        } catch (error) {
-            console.log(error)
-        }
+        applyFilters(filtersQuery.toString())
+        addToast({
+            message: `فیلترها با موفقیت اعمال شدند.`,
+            type: 'success' as const,
+        })
+        onClose()
 
 
     }
@@ -350,12 +346,13 @@ function NewFiltersModal({ onClose, event }: { onClose: () => void, event: Event
                         {filtersStatus.date && (
                             <PRangeDatePicker
                                 name="date"
-                                values={[dateFilters.start_date.toDate(), dateFilters.end_date.toDate()]}
-                                onChange={handleDateRangeChange}
+                                values={[dateFilters.start_date, dateFilters.end_date]}
+                                onChange={(dates) => handleDateRangeChange(dates.map(date => date.toDate()) as [Date, Date])}
                                 minDate={new DateObject(event.start_date)}
                                 maxDate={new DateObject()}
+
+
                                 hint="تاریخ باید بین تاریخ شروع رویداد و تاریخ امروز باشد."
-                            // error={formErrors.dateRange}
                             />
 
                         )}

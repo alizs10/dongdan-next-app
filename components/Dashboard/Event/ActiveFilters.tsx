@@ -6,7 +6,24 @@ import { EventContext } from "@/context/EventContext";
 
 function ActiveFilters() {
 
-    const { activeFilters, clearFilters } = useContext(EventContext);
+    const { filterQuery, clearFilters } = useContext(EventContext);
+
+    const searchParams = new URLSearchParams(filterQuery);
+
+    const activeFilters = {
+        type: searchParams.get('type') || 'any',
+        amountMin: searchParams.get('min_amount') || '0',
+        amountMax: searchParams.get('max_amount') || '0',
+        payer_id: searchParams.get('payer_id') || '',
+        contributor_ids: searchParams.get('contributor_ids')?.split(',') || [],
+        dateRange: [
+            searchParams.get('start_date') ? new Date(searchParams.get('start_date')!) : null,
+            searchParams.get('end_date') ? new Date(searchParams.get('end_date')!) : null
+        ],
+        transmitter_id: searchParams.get('transmitter_id') || '',
+        receiver_id: searchParams.get('receiver_id') || ''
+    }
+
 
     return (
         <section className="w-full flex flex-col gap-y-2 py-3">
@@ -29,7 +46,6 @@ function ActiveFilters() {
 
 
                 <div className="flex flex-row gap-x-2 items-center text-xs text-white bg-indigo-800 px-3 py-2 rounded-full">
-
                     {activeFilters?.type === 'expend' ? (
                         <DollarSign className="size-4" />
                     ) : activeFilters?.type === 'transfer' ? (
@@ -38,21 +54,28 @@ function ActiveFilters() {
                     <span>{activeFilters?.type === 'any' ? 'همه' : activeFilters?.type === 'expend' ? 'فقط هزینه ها' : 'فقط جابجایی های پول'}</span>
 
                 </div>
-                <div className="flex flex-row gap-x-2 items-center text-xs text-white bg-indigo-800 px-3 py-2 rounded-full">
-                    <CalendarRange className="size-4" />
-                    <span>از تاریخ</span>
-                    <span>{moment(activeFilters?.dateRange[0]).locale('fa').format("YYYY/MM/DD")}</span>
-                    <span>تا</span>
-                    <span>{moment(activeFilters?.dateRange[1]).locale('fa').format("YYYY/MM/DD")}</span>
-                </div>
-                <div className="flex flex-row gap-x-2 items-center text-xs text-white bg-indigo-800 px-3 py-2 rounded-full">
-                    <Banknote className="size-4" />
-                    <span>از</span>
-                    <span>{activeFilters?.amountMin}</span>
-                    <span>تا</span>
-                    <span>{activeFilters?.amountMax}</span>
-                    <span>تومان</span>
-                </div>
+
+                {activeFilters?.dateRange[0] && activeFilters?.dateRange[1] && (
+                    <div className="flex flex-row gap-x-2 items-center text-xs text-white bg-indigo-800 px-3 py-2 rounded-full">
+                        <CalendarRange className="size-4" />
+                        <span>از تاریخ</span>
+                        <span>{moment(activeFilters?.dateRange[0]).locale('fa').format("YYYY/MM/DD")}</span>
+                        <span>تا</span>
+                        <span>{moment(activeFilters?.dateRange[1]).locale('fa').format("YYYY/MM/DD")}</span>
+                    </div>
+                )}
+
+                {+activeFilters?.amountMax > 0 && (
+                    <div className="flex flex-row gap-x-2 items-center text-xs text-white bg-indigo-800 px-3 py-2 rounded-full">
+                        <Banknote className="size-4" />
+                        <span>از</span>
+                        <span>{activeFilters?.amountMin}</span>
+                        <span>تا</span>
+                        <span>{activeFilters?.amountMax}</span>
+                        <span>تومان</span>
+                    </div>
+                )}
+
 
                 {activeFilters?.type === 'expend' && activeFilters?.payer_id && activeFilters?.payer_id.length > 0 && (
                     <div className="flex flex-row gap-x-2 items-center text-xs text-white bg-indigo-800 px-3 py-2 rounded-full">
@@ -60,7 +83,7 @@ function ActiveFilters() {
                         <span>پرداخت کننده</span>
                     </div>
                 )}
-                {activeFilters?.type === 'expend' && activeFilters?.contributors && activeFilters?.contributors.length > 0 && (
+                {activeFilters?.type === 'expend' && activeFilters?.contributor_ids && activeFilters?.contributor_ids.length > 0 && (
                     <div className="flex flex-row gap-x-2 items-center text-xs text-white bg-indigo-800 px-3 py-2 rounded-full">
                         <Users className="size-4" />
                         <span>کی سهیم بوده</span>

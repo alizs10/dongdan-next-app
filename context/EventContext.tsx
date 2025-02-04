@@ -2,6 +2,7 @@
 
 import { deleteExpenseReq, deleteMemberReq, getEventExpensesReq, loadMoreExpensesReq } from "@/app/actions/event";
 import { updateEventStatusReq } from "@/app/actions/events";
+import { filterExpensesReq } from "@/app/actions/filter";
 import DashboardLoading from "@/components/Layout/DashboardLoading";
 import { arraysHaveSameValues, isDateBetween, TomanPriceFormatter, TomanPriceToNumber } from "@/helpers/helpers";
 import useStore from "@/store/store";
@@ -22,14 +23,21 @@ export type EventContextType = {
     event: Event;
     eventData: EventData;
     expenses: Expense[];
+    expensesToShow: Expense[];
     paginationData: Pagination;
-    applyFilters: (filters: ExpenseFilters) => void;
     filteredExpenses: Expense[];
-    activeFilters: ExpenseFilters | null;
+    filterQuery: string;
+    isFiltering: boolean;
+    filterPaginationData: Pagination | null;
+    applyFilters: (query: string) => void;
     clearFilters: () => void;
+    // applyFilters: (filters: ExpenseFilters) => void;
+    // activeFilters: ExpenseFilters | null;
+    // clearFilters: () => void;
     // getAllCosts: () => number;
     // getCostsCount: () => number;
     // getTransfersCount: () => number;
+
     // getMostCost: () => number;
     // getHighestTransfer: () => number;
     // getAllPersonExpends: (memberId: string) => number;
@@ -63,10 +71,14 @@ const EventContextInit = {
     event: {} as Event,
     eventData: {} as EventData,
     expenses: [],
+    expensesToShow: [],
     paginationData: {} as Pagination,
     applyFilters: () => { },
     filteredExpenses: [],
-    activeFilters: null,
+    filterQuery: '',
+    isFiltering: false,
+    filterPaginationData: null,
+    // activeFilters: null,
     clearFilters: () => { },
     getAllCosts: () => 0,
     getCostsCount: () => 0,
@@ -110,90 +122,128 @@ export function EventContextProvider({ children, data }: { children: React.React
     const [expenses, setExpenses] = useState<Expense[]>(data.expenses_data.expenses)
     const [paginationData, setPaginationData] = useState<Pagination>(data.expenses_data.pagination)
     const [fetchingMoreExpenses, setFetchingMoreExpenses] = useState(false)
-    const [activeFilters, setActiveFilters] = useState<ExpenseFilters | null>(null)
+    // const [activeFilters, setActiveFilters] = useState<ExpenseFilters | null>(null)
+
+    const [filterQuery, setFilterQuery] = useState<string>('')
     const [filteredExpenses, setFilteredExpenses] = useState<Expense[]>([])
+    const [isFiltering, setIsFiltering] = useState<boolean>(false)
+    const [filterPaginationData, setFilterPaginationData] = useState<Pagination | null>(null)
+    const expensesToShow = isFiltering ? filteredExpenses : expenses;
+
+
+
+    async function applyFilters(query: string) {
+
+        setLoading(true)
+        const res = await filterExpensesReq(event.id.toString(), query)
+
+        if (res.success && res.expenses && res.paginationData) {
+            setFilterQuery(query)
+            setIsFiltering(true)
+            setFilteredExpenses(res.expenses)
+            setFilterPaginationData(res.paginationData)
+            setLoading(false)
+            return;
+
+        }
+
+        const errorToast = {
+            message: res.message,
+            type: 'danger' as const,
+        }
+        addToast(errorToast)
+        setLoading(false)
+    }
+
+
+    function clearFilters() {
+        setFilterQuery('')
+        setIsFiltering(false)
+        setFilteredExpenses([])
+        setFilterPaginationData(null)
+    }
 
     const [excludeIds, setExcludeIds] = useState<number[]>([])
 
-    useEffect(() => {
+    // useEffect(() => {
 
-        if (!!activeFilters) {
-            applyFilters(activeFilters)
-        }
+    //     if (!!activeFilters) {
+    //         applyFilters(activeFilters)
+    //     }
 
-    }, [expenses, activeFilters])
+    // }, [expenses, activeFilters])
 
-    function applyFilters(filters: ExpenseFilters) {
-        // Start with base expenses based on type filter
-        let results = filters.type === 'any'
-            ? [...expenses]
-            : expenses.filter(exp => exp.type === filters.type);
+    // function applyFilters(filters: ExpenseFilters) {
+    //     // Start with base expenses based on type filter
+    //     let results = filters.type === 'any'
+    //         ? [...expenses]
+    //         : expenses.filter(exp => exp.type === filters.type);
 
-        // Apply amount range filter
-        results = results.filter(exp => {
-            const amount = TomanPriceToNumber(exp.amount.toString());
-            const min = TomanPriceToNumber(filters.amountMin.toString());
-            const max = TomanPriceToNumber(filters.amountMax.toString());
-            return amount >= min && amount < max;
-        });
+    //     // Apply amount range filter
+    //     results = results.filter(exp => {
+    //         const amount = TomanPriceToNumber(exp.amount.toString());
+    //         const min = TomanPriceToNumber(filters.amountMin.toString());
+    //         const max = TomanPriceToNumber(filters.amountMax.toString());
+    //         return amount >= min && amount < max;
+    //     });
 
-        // Apply date range filter 
-        results = results.filter(exp =>
-            isDateBetween(exp.date, filters.dateRange[0], filters.dateRange[1])
-        );
-        // Apply expense-specific filters
-
-
-
-        if (filters.type === 'expend') {
-            // Filter by payer
-            if (filters.payer_id) {
-                results = results.filter(exp =>
-                    (exp as Expend).payer_id.toString() === filters.payer_id
-                );
-            }
-
-            // Filter by contributors
-            if (filters.contributors?.length > 0) {
-                results = results.filter(exp => {
-
-                    const contributors = (exp as Expend).contributors.map(p => p.event_member?.id.toString()).filter((c): c is string => c !== undefined)
-                    return arraysHaveSameValues(
-                        contributors,
-                        filters.contributors
-                    )
-                }
-                );
-            }
-        }
+    //     // Apply date range filter 
+    //     results = results.filter(exp =>
+    //         isDateBetween(exp.date, filters.dateRange[0], filters.dateRange[1])
+    //     );
+    //     // Apply expense-specific filters
 
 
-        // Apply transfer-specific filters
-        if (filters.type === 'transfer') {
-            // Filter by transmitter
-            if (filters.transmitter_id) {
-                results = results.filter(exp =>
-                    (exp as Transfer).transmitter_id.toString() === filters.transmitter_id
-                );
-            }
 
-            // Filter by receiver
-            if (filters.receiver_id) {
-                results = results.filter(exp =>
-                    (exp as Transfer).receiver_id.toString() === filters.receiver_id
-                );
-            }
-        }
+    //     if (filters.type === 'expend') {
+    //         // Filter by payer
+    //         if (filters.payer_id) {
+    //             results = results.filter(exp =>
+    //                 (exp as Expend).payer_id.toString() === filters.payer_id
+    //             );
+    //         }
+
+    //         // Filter by contributors
+    //         if (filters.contributors?.length > 0) {
+    //             results = results.filter(exp => {
+
+    //                 const contributors = (exp as Expend).contributors.map(p => p.event_member?.id.toString()).filter((c): c is string => c !== undefined)
+    //                 return arraysHaveSameValues(
+    //                     contributors,
+    //                     filters.contributors
+    //                 )
+    //             }
+    //             );
+    //         }
+    //     }
 
 
-        setFilteredExpenses(results);
-        setActiveFilters(filters);
-    }
+    //     // Apply transfer-specific filters
+    //     if (filters.type === 'transfer') {
+    //         // Filter by transmitter
+    //         if (filters.transmitter_id) {
+    //             results = results.filter(exp =>
+    //                 (exp as Transfer).transmitter_id.toString() === filters.transmitter_id
+    //             );
+    //         }
 
-    function clearFilters() {
-        setActiveFilters(null)
-        setFilteredExpenses([])
-    }
+    //         // Filter by receiver
+    //         if (filters.receiver_id) {
+    //             results = results.filter(exp =>
+    //                 (exp as Transfer).receiver_id.toString() === filters.receiver_id
+    //             );
+    //         }
+    //     }
+
+
+    //     setFilteredExpenses(results);
+    //     setActiveFilters(filters);
+    // }
+
+    // function clearFilters() {
+    //     setActiveFilters(null)
+    //     setFilteredExpenses([])
+    // }
 
     function addMember(member: Member) {
         setEvent(prevState => ({ ...prevState, members: [...prevState.members, member] }))
@@ -297,19 +347,46 @@ export function EventContextProvider({ children, data }: { children: React.React
         setFetchingMoreExpenses(true)
 
         // const nextCursor = expenses[expenses.length - 1].id
-        if (!paginationData.next_cursor) return;
+        if ((!isFiltering && !paginationData.next_cursor) || (isFiltering && !filterPaginationData?.next_cursor)) return;
 
         // fetch more expenses
-        const res = await loadMoreExpensesReq(event.id.toString(), paginationData.next_cursor!, paginationData.next_cursor_id!, excludeIds)
+        if (isFiltering) {
+            const res = await filterExpensesReq(event.id.toString(), filterQuery, filterPaginationData!.next_cursor!, filterPaginationData!.next_cursor_id!, excludeIds)
 
-        if (res.success && res.expenses && res.paginationData) {
-            setExpenses(prevState => [...prevState, ...res.expenses])
-            setPaginationData(res.paginationData)
+            if (res.success && res.expenses && res.paginationData) {
+                setFilteredExpenses(prevState => [...prevState, ...res.expenses])
+                setFilterPaginationData(res.paginationData)
+                setFetchingMoreExpenses(false)
+                return;
+            }
+
+            const errorToast = {
+                message: res.message,
+                type: 'danger' as const,
+            }
+            addToast(errorToast)
+            setFetchingMoreExpenses(false)
+            return;
+
+        } else {
+            const res = await loadMoreExpensesReq(event.id.toString(), paginationData.next_cursor!, paginationData.next_cursor_id!, excludeIds)
+
+            if (res.success && res.expenses && res.paginationData) {
+                setExpenses(prevState => [...prevState, ...res.expenses])
+                setPaginationData(res.paginationData)
+                setFetchingMoreExpenses(false)
+                return;
+            }
+
+            const errorToast = {
+                message: res.message,
+                type: 'danger' as const,
+            }
+            addToast(errorToast)
             setFetchingMoreExpenses(false)
             return;
         }
 
-        setFetchingMoreExpenses(false)
     }
 
     async function toggleEventStatus() {
@@ -347,146 +424,146 @@ export function EventContextProvider({ children, data }: { children: React.React
 
     }
 
-    const getAllCosts = useCallback(() => {
-        let total = 0;
+    // const getAllCosts = useCallback(() => {
+    //     let total = 0;
 
-        expenses.forEach(expense => {
-            if (expense.type === 'expend') {
-                total += expense.amount;
-            }
-        });
-        return total;
-    }, [expenses]);
+    //     expenses.forEach(expense => {
+    //         if (expense.type === 'expend') {
+    //             total += expense.amount;
+    //         }
+    //     });
+    //     return total;
+    // }, [expenses]);
 
-    const getCostsCount = useCallback(() => {
-        return expenses.filter(e => e.type === 'expend').length;
-    }, [expenses]);
+    // const getCostsCount = useCallback(() => {
+    //     return expenses.filter(e => e.type === 'expend').length;
+    // }, [expenses]);
 
-    const getTransfersCount = useCallback(() => {
-        return expenses.filter(e => e.type === 'transfer').length;
-    }, [expenses]);
+    // const getTransfersCount = useCallback(() => {
+    //     return expenses.filter(e => e.type === 'transfer').length;
+    // }, [expenses]);
 
-    const getMostCost = useCallback(() => {
+    // const getMostCost = useCallback(() => {
 
-        let max = 0;
+    //     let max = 0;
 
-        expenses.forEach(expense => {
-            if (expense.type === 'expend' && expense.amount > max) {
-                max = expense.amount;
-            }
-        });
+    //     expenses.forEach(expense => {
+    //         if (expense.type === 'expend' && expense.amount > max) {
+    //             max = expense.amount;
+    //         }
+    //     });
 
-        return max;
+    //     return max;
 
-    }, [expenses]);
+    // }, [expenses]);
 
-    const getHighestTransfer = useCallback(() => {
-        let max = 0;
+    // const getHighestTransfer = useCallback(() => {
+    //     let max = 0;
 
-        expenses.forEach(expense => {
-            if (expense.type === 'transfer' && expense.amount > max) {
-                max = expense.amount;
-            }
-        });
+    //     expenses.forEach(expense => {
+    //         if (expense.type === 'transfer' && expense.amount > max) {
+    //             max = expense.amount;
+    //         }
+    //     });
 
-        return max;
-    }, [expenses]);
+    //     return max;
+    // }, [expenses]);
 
-    const getAllPersonExpends = useCallback((memberId: string) => {
-        let total = 0;
+    // const getAllPersonExpends = useCallback((memberId: string) => {
+    //     let total = 0;
 
-        expenses.forEach(expense => {
-            if (expense.type === 'expend' && expense.payer_id.toString() === memberId) {
-                total += expense.amount;
-            }
-        });
+    //     expenses.forEach(expense => {
+    //         if (expense.type === 'expend' && expense.payer_id.toString() === memberId) {
+    //             total += expense.amount;
+    //         }
+    //     });
 
-        return total;
-    }, [event.members, expenses]);
+    //     return total;
+    // }, [event.members, expenses]);
 
-    const getAllPersonDebts = useCallback((memberId: string) => {
-        let total = 0;
+    // const getAllPersonDebts = useCallback((memberId: string) => {
+    //     let total = 0;
 
-        expenses.forEach(expense => {
-            let contributorIds = expense.type === 'expend' ? expense.contributors.map(c => c.event_member_id.toString()) : [];
-            if (expense.type === 'expend' && contributorIds.includes(memberId)) {
-                const contributor = expense.contributors.find(c => c.event_member_id.toString() === memberId);
-                total += contributor?.amount ?? 0;
-            }
-        });
+    //     expenses.forEach(expense => {
+    //         let contributorIds = expense.type === 'expend' ? expense.contributors.map(c => c.event_member_id.toString()) : [];
+    //         if (expense.type === 'expend' && contributorIds.includes(memberId)) {
+    //             const contributor = expense.contributors.find(c => c.event_member_id.toString() === memberId);
+    //             total += contributor?.amount ?? 0;
+    //         }
+    //     });
 
-        return total;
-    }, [event.members, expenses]);
+    //     return total;
+    // }, [event.members, expenses]);
 
-    const getAllPersonRecieved = useCallback((memberId: string) => {
+    // const getAllPersonRecieved = useCallback((memberId: string) => {
 
-        let total = 0;
+    //     let total = 0;
 
-        expenses.forEach(expense => {
-            if (expense.type === 'transfer' && expense.receiver_id.toString() === memberId) {
-                total += expense.amount;
-            }
-        })
+    //     expenses.forEach(expense => {
+    //         if (expense.type === 'transfer' && expense.receiver_id.toString() === memberId) {
+    //             total += expense.amount;
+    //         }
+    //     })
 
-        return total;
+    //     return total;
 
-    }, [event.members, expenses])
+    // }, [event.members, expenses])
 
-    const getAllPersonSent = useCallback((memberId: string) => {
+    // const getAllPersonSent = useCallback((memberId: string) => {
 
-        let total = 0;
+    //     let total = 0;
 
-        expenses.forEach(expense => {
-            if (expense.type === 'transfer' && expense.transmitter_id.toString() === memberId) {
-                total += expense.amount;
-            }
-        })
+    //     expenses.forEach(expense => {
+    //         if (expense.type === 'transfer' && expense.transmitter_id.toString() === memberId) {
+    //             total += expense.amount;
+    //         }
+    //     })
 
-        return total;
+    //     return total;
 
-    }, [event.members, expenses])
-
-
-    const getMaxPayer = useCallback(() => {
-
-        let maxPayer = '';
-        let paid = 0;
-
-        if (!user || !settings) return { name: '', amount: 0 };
-
-        event.members.forEach(member => {
-            let memberPaid = getAllPersonExpends(member.id.toString());
-            if (memberPaid > paid) {
-                paid = memberPaid;
-                maxPayer = user.id === member.member_id ? settings.show_as_me ? 'خودم' : user.name : member.name;
-            }
-        })
-
-        return { name: maxPayer, amount: paid };
-    }, [expenses, settings, user]);
+    // }, [event.members, expenses])
 
 
-    const getPersonBalance = useCallback((memberId: string) => {
+    // const getMaxPayer = useCallback(() => {
 
-        const memberDebts = getAllPersonDebts(memberId);
-        const memberRecieved = getAllPersonRecieved(memberId);
-        const memberSent = getAllPersonSent(memberId);
-        const memberExpends = getAllPersonExpends(memberId);
-        const memberBalance = (memberSent + memberExpends - memberRecieved - memberDebts);
+    //     let maxPayer = '';
+    //     let paid = 0;
 
-        return (memberBalance > 0 || memberBalance < 0) ? memberBalance : 0;
-    }, [event.members, expenses, settings]);
+    //     if (!user || !settings) return { name: '', amount: 0 };
 
-    const getPersonBalanceStatus = useCallback((memberId: string) => {
-        const memberBalance = getPersonBalance(memberId);
-        if (memberBalance > 0) {
-            return 'طلبکار';
-        } else if (memberBalance < 0) {
-            return 'بدهکار';
-        } else {
-            return 'تسویه';
-        }
-    }, [event.members, expenses]);
+    //     event.members.forEach(member => {
+    //         let memberPaid = getAllPersonExpends(member.id.toString());
+    //         if (memberPaid > paid) {
+    //             paid = memberPaid;
+    //             maxPayer = user.id === member.member_id ? settings.show_as_me ? 'خودم' : user.name : member.name;
+    //         }
+    //     })
+
+    //     return { name: maxPayer, amount: paid };
+    // }, [expenses, settings, user]);
+
+
+    // const getPersonBalance = useCallback((memberId: string) => {
+
+    //     const memberDebts = getAllPersonDebts(memberId);
+    //     const memberRecieved = getAllPersonRecieved(memberId);
+    //     const memberSent = getAllPersonSent(memberId);
+    //     const memberExpends = getAllPersonExpends(memberId);
+    //     const memberBalance = (memberSent + memberExpends - memberRecieved - memberDebts);
+
+    //     return (memberBalance > 0 || memberBalance < 0) ? memberBalance : 0;
+    // }, [event.members, expenses, settings]);
+
+    // const getPersonBalanceStatus = useCallback((memberId: string) => {
+    //     const memberBalance = getPersonBalance(memberId);
+    //     if (memberBalance > 0) {
+    //         return 'طلبکار';
+    //     } else if (memberBalance < 0) {
+    //         return 'بدهکار';
+    //     } else {
+    //         return 'تسویه';
+    //     }
+    // }, [event.members, expenses]);
 
     const creditors = useMemo(() => {
 
@@ -579,15 +656,21 @@ export function EventContextProvider({ children, data }: { children: React.React
         event,
         eventData,
         expenses,
+        expensesToShow,
         paginationData,
         applyFilters,
         clearFilters,
         filteredExpenses,
-        activeFilters,
+        filterQuery,
+        isFiltering,
+        filterPaginationData,
+        // activeFilters,
         // getAllCosts,
         // getCostsCount,
         // getTransfersCount,
         // getMostCost,
+
+
         // getHighestTransfer,
         // getAllPersonExpends,
         // getAllPersonDebts,

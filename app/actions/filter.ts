@@ -2,12 +2,12 @@
 
 import { cookies } from 'next/headers'
 
-export async function filterExpensesReq(eventId: string | number, filtersQuery: string) {
+export async function filterExpensesReq(eventId: string | number, filtersQuery: string, cursor?: string, cursorId?: number, excludeIds?: number[]) {
 
     const token = (await cookies()).get('token');
 
     try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/event/${eventId}/expenses/filter?${filtersQuery}`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/event/${eventId}/expenses/filter?${filtersQuery}${cursor ? `&cursor=${cursor}` : ''}${cursorId ? `&cursor_id=${cursorId}` : ''}${excludeIds ? `&exclude_ids=${excludeIds.join(',')}` : ''}`, {
             method: 'GET',
             headers: {
                 Authorization: `Bearer ${token?.value}`,

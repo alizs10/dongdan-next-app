@@ -30,12 +30,14 @@ function Event() {
     const {
         event,
         expenses,
+        expensesToShow,
         eventData,
         showMemberName,
         toggleEventStatus,
         transactions,
         deleteMultiExpenses,
-        activeFilters, filteredExpenses
+        isFiltering,
+        filterQuery
     } = useContext(EventContext);
 
     function onDeleteSelectedItems() {
@@ -341,7 +343,7 @@ function Event() {
 
                     )}
 
-                    {activeFilters && (
+                    {filterQuery && (
                         <ActiveFilters />
                     )}
 
@@ -349,9 +351,9 @@ function Event() {
 
                 {/* <Expenses expenses={expenses} /> */}
 
-                {(expenses.length > 0 && !activeFilters) || (activeFilters && filteredExpenses.length > 0) ? (
-                    <Expenses expenses={activeFilters ? filteredExpenses : expenses} />
-                ) : (event.deleted_at !== null || eventStatus === 'inactive' || (eventStatus === 'active' && event.members.length > 0)) ? <NoExpenses isFilterMode={!!activeFilters} isDeleted={event.deleted_at !== null} eventStatus={eventStatus} openNewExpenseModal={openNewExpenseModal} /> : (<NoGroupExpenses openNewMemberModal={openNewMemberModal} />)}
+                {(expensesToShow.length > 0) ? (
+                    <Expenses expenses={expensesToShow} />
+                ) : (event.deleted_at !== null || eventStatus === 'inactive' || (eventStatus === 'active' && event.members.length > 0)) ? <NoExpenses isFilterMode={isFiltering} isDeleted={event.deleted_at !== null} eventStatus={eventStatus} openNewExpenseModal={openNewExpenseModal} /> : (<NoGroupExpenses openNewMemberModal={openNewMemberModal} />)}
 
 
                 {isNewExpenseModalOpen && <NewExpenseModal event={event} onClose={closeNewExpenseModal} />}
