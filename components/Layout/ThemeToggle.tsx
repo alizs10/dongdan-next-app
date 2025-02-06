@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 function ThemeToggleSkeleton() {
     return (
         <div className="header_left_button">
-            <div className="size-6 animate-pulse rounded-full bg-gray-200 dark:bg-gray-700"></div>
+            <div className="size-6 animate-pulse rounded-xl bg-gray-200 dark:bg-gray-700"></div>
         </div>
     )
 }

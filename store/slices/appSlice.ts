@@ -8,7 +8,10 @@ export interface AppSlice {
     updateUser: (user: User) => void;
     settings: Settings;
     setSettings: (settings: Settings) => void;
+    isMenuMinimized: boolean;
+    setIsMenuMinimized: (isMinimized: boolean) => void;
 }
+
 
 export const createAppSlice: StateCreator<AppSlice, [], [], AppSlice> = (set) => ({
     user: null,
@@ -18,4 +21,6 @@ export const createAppSlice: StateCreator<AppSlice, [], [], AppSlice> = (set) =>
         show_as_me: 1,
     },
     setSettings: (settings: Settings) => set((state) => ({ settings: settings })),
+    isMenuMinimized: false,
+    setIsMenuMinimized: (isMinimized: boolean) => set(() => ({ isMenuMinimized: isMinimized })),
 });
