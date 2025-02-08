@@ -29,6 +29,7 @@ function CustomInput({ onFocus, value, onChange, error }: CustomInputProps) {
         onFocus={onFocus}
         value={value}
         onChange={onChange}
+        readOnly
         className={`rounded-xl w-full px-5 py-2 border ${error ? 'border-red-500' : 'app_border_color focus:border-indigo-800 dark:focus:border-indigo-600'} p-1 text-base bg-transparent focus:outline-none text-gray-700 dark:text-gray-300 placeholder:text-gray-600 dark:placeholder:text-gray-400 transition-all duration-300 outline-none placeholder:text-base`}
     />
 }

@@ -5,3 +5,7 @@ export type UpdateProfileRequest = {
     email: string;
     scheme: SchemeType;
 }
+
+export type UploadAvatarRequest = {
+    avatar: File;
+}

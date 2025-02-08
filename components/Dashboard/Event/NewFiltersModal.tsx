@@ -121,10 +121,16 @@ function NewFiltersModal({ onClose, event }: { onClose: () => void, event: Event
     }
 
     const [type, setType] = useState<'expend' | 'transfer' | 'any'>('any')
+    const [condition, setCondition] = useState<'and' | 'or'>('and')
 
     const selectType = (type: ExpenseFilters['type']) => {
         setType(type)
     }
+
+    const selectCondition = (condition: 'and' | 'or') => {
+        setCondition(condition)
+    }
+
 
     const tommorowDate = new Date();
 
@@ -132,9 +138,13 @@ function NewFiltersModal({ onClose, event }: { onClose: () => void, event: Event
     tommorowDate.setDate(tommorowDate.getDate() + 1);
 
     function togglePayer(id: string) {
-        if (type !== 'expend' || !filtersStatus.payer_id) return
+        console.log(type, filtersStatus.payer_id)
+        if (!['expend', 'any'].includes(type) || !filtersStatus.payer_id) return
+
+        console.log('here')
         setExpendFilters(prev => ({ ...prev, payer_id: prev.payer_id === id ? '' : id }))
     }
+
 
     function toggleAllContributors() {
 
@@ -153,7 +163,8 @@ function NewFiltersModal({ onClose, event }: { onClose: () => void, event: Event
 
     function toggleContributor(actionKey: string) {
 
-        if (type !== 'expend' || !filtersStatus.contributor_ids) return
+        if (!['expend', 'any'].includes(type) || !filtersStatus.contributor_ids) return
+
 
         if (actionKey === 'all') {
             toggleAllContributors()
@@ -170,14 +181,16 @@ function NewFiltersModal({ onClose, event }: { onClose: () => void, event: Event
 
     function toggleTransmitter(id: string) {
 
-        if ((type !== 'transfer' || !filtersStatus.transmitter_id) || (filtersStatus.receiver_id && id === transferFilters.receiver_id)) return
+        if ((!['transfer', 'any'].includes(type) || !filtersStatus.transmitter_id) || (filtersStatus.receiver_id && id === transferFilters.receiver_id)) return
         setTransferFilters(prev => ({ ...prev, transmitter_id: prev.transmitter_id === id ? '' : id }))
+
     }
 
     function toggleReceiver(id: string) {
-        if ((type !== 'transfer' || !filtersStatus.receiver_id) || (filtersStatus.transmitter_id && id === transferFilters.transmitter_id)) return
+        if ((!['transfer', 'any'].includes(type) || !filtersStatus.receiver_id) || (filtersStatus.transmitter_id && id === transferFilters.transmitter_id)) return
         setTransferFilters(prev => ({ ...prev, receiver_id: prev.receiver_id === id ? '' : id }))
     }
+
 
 
     function changemin_amountHandler(e: React.ChangeEvent<HTMLInputElement>) {
@@ -219,6 +232,7 @@ function NewFiltersModal({ onClose, event }: { onClose: () => void, event: Event
 
         const filtersQuery = new URLSearchParams({
             type: type,
+            filter_type: condition,
             ...((filtersStatus.amount && amountFilters.min_amount) && { min_amount: TomanPriceToNumber(amountFilters.min_amount).toString() }),
             ...((filtersStatus.amount && amountFilters.max_amount) && { max_amount: TomanPriceToNumber(amountFilters.max_amount).toString() }),
             ...((filtersStatus.date && dateFilters.start_date) && { start_date: dateFilters.start_date.toISOString() }),
@@ -244,40 +258,6 @@ function NewFiltersModal({ onClose, event }: { onClose: () => void, event: Event
     }
 
 
-    // function handleFilterExpenses() {
-
-
-    //     const validationSchema = filters.type === 'any' ? anyFilterSchema : filters.type === 'expend' ? expendFilterSchema : transferFilterSchema;
-
-    //     const { errors, hasError } = zValidate(validationSchema, filters);
-
-    //     if (hasError) {
-
-    //         const validationToast = {
-    //             message: `فرم فیلتر ها نامعتبر است.`,
-    //             type: 'danger' as const,
-    //         }
-
-
-    //         addToast(validationToast);
-    //         setFormErrors(errors);
-    //         return;
-    //     }
-    //     setFormErrors(initFormErrors);
-
-
-    //     const newToast = {
-
-    //         message: `فیلترها با موفقیت اعمال شدند.`,
-    //         type: 'success' as const,
-    //     }
-
-    //     applyFilters(filters);
-
-    //     addToast(newToast);
-    //     onClose();
-    // }
-
 
     if (typeof window === "object") {
         return createPortal(
@@ -286,7 +266,7 @@ function NewFiltersModal({ onClose, event }: { onClose: () => void, event: Event
                 <section onClick={e => e.stopPropagation()} className="modal_container">
                     <ModalHeader title="فیلتر" onClose={onClose} />
 
-                    <div className="p-5 flex flex-col gap-y-4">
+                    <div className="p-5 flex flex-col gap-y-4 max-h-[60vh] overflow-y-scroll">
 
                         <div className="flex flex-row justify-between items-center">
                             <label className="text-base primary_text_color" htmlFor="type">فیلتر نوع</label>
@@ -299,10 +279,14 @@ function NewFiltersModal({ onClose, event }: { onClose: () => void, event: Event
                         </div>
 
 
+                        <ToggleFilters label="تطبیق همه شروط" filterStatus={condition === 'and'} toggleFiltersStatus={() => setCondition(prev => prev === 'and' ? 'or' : 'and')} />
+
+
                         <ToggleFilters label="قیمت" filterStatus={filtersStatus.amount} toggleFiltersStatus={toggleFiltersStatus.bind(null, 'amount')} />
 
-                        {filtersStatus.amount && (
+                        {(filtersStatus.amount) && (
                             <div className="flex flex-row flex-nowrap justify-evenly items-center gap-x-4">
+
 
                                 <div className="w-[40%] grid grid-cols-6 items-center gap-x-2">
                                     <div className="col-span-1">از</div>
@@ -343,7 +327,7 @@ function NewFiltersModal({ onClose, event }: { onClose: () => void, event: Event
 
                         <ToggleFilters label="تاریخ" filterStatus={filtersStatus.date} toggleFiltersStatus={toggleFiltersStatus.bind(null, 'date')} />
 
-                        {filtersStatus.date && (
+                        {(filtersStatus.date) && (
                             <PRangeDatePicker
                                 name="date"
                                 values={[dateFilters.start_date, dateFilters.end_date]}
@@ -358,7 +342,7 @@ function NewFiltersModal({ onClose, event }: { onClose: () => void, event: Event
                         )}
 
 
-                        {type === 'expend' && (
+                        {['expend', 'any'].includes(type) && (
                             <>
                                 <ToggleFilters label="پرداخت کننده" filterStatus={filtersStatus.payer_id} toggleFiltersStatus={toggleFiltersStatus.bind(null, 'payer_id')} />
 
@@ -368,9 +352,10 @@ function NewFiltersModal({ onClose, event }: { onClose: () => void, event: Event
                                         label="کی پرداخت کرده؟"
                                         members={event.members}
                                         onSelect={togglePayer}
-                                        value={(type !== 'expend' || !filtersStatus.payer_id) ? '' : expendFilters.payer_id}
+                                        value={(!['expend', 'any'].includes(type) || !filtersStatus.payer_id) ? '' : expendFilters.payer_id}
                                         error={''}
                                     />
+
                                 )}
 
 
@@ -381,9 +366,10 @@ function NewFiltersModal({ onClose, event }: { onClose: () => void, event: Event
                                         label="کیا سهیم بودن؟"
                                         members={event.members}
                                         onSelect={toggleContributor}
-                                        value={(type !== 'expend' || !filtersStatus.contributor_ids) ? [] : expendFilters.contributor_ids}
+                                        value={(!['expend', 'any'].includes(type) || !filtersStatus.contributor_ids) ? [] : expendFilters.contributor_ids}
                                         error={''}
                                         selectAllOption={true}
+
                                         self={{
                                             id: user.id.toString(),
                                             scheme: user.scheme,
@@ -396,19 +382,21 @@ function NewFiltersModal({ onClose, event }: { onClose: () => void, event: Event
 
 
 
-                        {type === 'transfer' && (
+                        {['transfer', 'any'].includes(type) && (
                             <>
                                 <ToggleFilters label="ارسال کننده" filterStatus={filtersStatus.transmitter_id} toggleFiltersStatus={toggleFiltersStatus.bind(null, 'transmitter_id')} />
+
 
                                 {filtersStatus.transmitter_id && (
                                     <MemberSelector
                                         // label="مبداء"
                                         members={event.members}
                                         onSelect={toggleTransmitter}
-                                        value={(type !== 'transfer' || !filtersStatus.transmitter_id) ? '' : transferFilters.transmitter_id}
+                                        value={(!['transfer', 'any'].includes(type) || !filtersStatus.transmitter_id) ? '' : transferFilters.transmitter_id}
                                         error={''}
                                         disalllows={transferFilters.receiver_id.length > 0 ? [transferFilters.receiver_id] : []}
                                     />
+
                                 )}
 
                                 <ToggleFilters label="دریافت کننده" filterStatus={filtersStatus.receiver_id} toggleFiltersStatus={toggleFiltersStatus.bind(null, 'receiver_id')} />
@@ -417,9 +405,10 @@ function NewFiltersModal({ onClose, event }: { onClose: () => void, event: Event
                                         // label="مقصد"
                                         members={event.members}
                                         onSelect={toggleReceiver}
-                                        value={(type !== 'transfer' || !filtersStatus.receiver_id) ? '' : transferFilters.receiver_id}
+                                        value={(!['transfer', 'any'].includes(type) || !filtersStatus.receiver_id) ? '' : transferFilters.receiver_id}
                                         error={''}
                                         disalllows={transferFilters.transmitter_id.length > 0 ? [transferFilters.transmitter_id] : []}
+
                                     />
 
 
