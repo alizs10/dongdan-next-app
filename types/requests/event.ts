@@ -9,6 +9,7 @@ type CreateMember = {
     name: string;
     scheme: SchemeType;
     email?: string;
+    avatar?: File;
 }
 
 export type CreateMemberRequest = AddContacts | CreateMember;

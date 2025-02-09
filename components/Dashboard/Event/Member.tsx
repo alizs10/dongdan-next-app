@@ -79,9 +79,16 @@ function Member({ member }: { member: Member }) {
 
         <li className="flex flex-row justify-between items-center">
             <div className="flex flex-row gap-x-4 items-center">
-                <div className={`p-2 border user_avatar_${member.scheme}_border user_avatar_${member.scheme}_bg rounded-full`}>
-                    <User className={`size-5 user_avatar_${member.scheme}_text`} />
-                </div>
+                {member.avatar ? (
+                    <div className={`rounded-full overflow-hidden`}>
+                        <img src={member.avatar} alt={showMemberName(member.id)} className="size-10 object-center object-cover" />
+                    </div>
+                ) : (
+                    <div className={`size-10 flex justify-center items-center border user_avatar_${member.scheme}_border user_avatar_${member.scheme}_bg rounded-full`}>
+                        <User className={`size-5 user_avatar_${member.scheme}_text`} />
+                    </div>
+                )}
+
                 <span className={`text-base user_avatar_${member.scheme}_text`}>{showMemberName(member.id)}</span>
             </div>
 

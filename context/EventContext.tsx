@@ -637,7 +637,7 @@ export function EventContextProvider({ children, data }: { children: React.React
 
         if (!user) return '...';
 
-        const member = event.members.find(member => member.id.toString() === memberId.toString());
+        const member = event.members.find(member => member.id === memberId);
         if (!member) return 'ناشناس';
         let memberName = member.member_id === user.id ? settings.show_as_me ? 'خودم' : user.name : member.name;
 

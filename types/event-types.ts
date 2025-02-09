@@ -18,6 +18,7 @@ export type Member = {
     id: number;
     name: string;
     email?: string;
+    avatar?: string;
     scheme: SchemeType;
     eventId: string;
     member_id?: number;

@@ -4,23 +4,24 @@ import TextInput from "@/components/Common/Form/TextInput";
 import ModalHeader from "@/components/Common/ModalHeader";
 import ModalWrapper from "@/components/Common/ModalWrapper";
 import { zValidate } from "@/helpers/validation-helper";
-import { Loader, Save } from "lucide-react";
-import { useContext, useEffect, useState } from "react";
+import { File, Loader, Save, Trash, Upload } from "lucide-react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { createPortal, useFormStatus } from "react-dom";
 import { Member, SchemeType } from "@/types/event-types";
 import Button from "@/components/Common/Button";
 import AvatarSelector from "@/components/Common/Form/AvatarSelector";
 import { EventContext } from "@/context/EventContext";
 import { getEventNonMembersReq } from "@/app/actions/events";
-import MemberSelector from "@/components/Common/Form/MemberSelector";
 import { addMembersSchema, createMemberSchema } from "@/database/validations/member-validation";
 import { createMemberReq } from "@/app/actions/event";
 import { CreateMemberRequest } from "@/types/requests/event";
 import useStore from "@/store/store";
+import NonMemberSelector from "@/components/Common/Form/NonMemberSelector";
 
 type FormInputs = {
     name: string;
     scheme: SchemeType;
+    avatar: File | null;
     contacts: string[];
     selfIncluded: boolean;
 }
@@ -36,9 +37,11 @@ function NewMemberModal({ onClose }: { onClose: () => void }) {
     const initInputs: FormInputs = {
         name: '',
         scheme: 'gray',
+        avatar: null,
         contacts: [],
         selfIncluded: false
     }
+
     const [inputs, setInputs] = useState<FormInputs>(initInputs);
 
 
@@ -46,9 +49,11 @@ function NewMemberModal({ onClose }: { onClose: () => void }) {
         name: '',
         scheme: '',
         eventId: '',
-        contacts: ''
+        contacts: '',
+        avatar: '',
     }
     const [formErrors, setFormErrors] = useState<Record<string, string>>(initFormErrors);
+
 
 
     useEffect(() => {
@@ -123,6 +128,23 @@ function NewMemberModal({ onClose }: { onClose: () => void }) {
             setInputs(prev => ({ ...prev, contacts: [...prev.contacts, actionKey] }))
         }
     }
+
+
+
+    const fileRef = useRef<HTMLInputElement | null>(null)
+    function handleChangeAvatarFile() {
+        setInputs(prev => ({ ...prev, avatar: (fileRef && fileRef.current && fileRef.current.files && fileRef.current.files[0]) ?? null }));
+    }
+
+    function handleDeleteSelectedAvatarFile(event: React.MouseEvent) {
+        event.stopPropagation();
+
+        setInputs(prev => ({ ...prev, avatar: null }));
+        if (fileRef.current) {
+            fileRef.current.value = '';
+        }
+    }
+
 
 
     async function formActionHandler() {
@@ -200,6 +222,38 @@ function NewMemberModal({ onClose }: { onClose: () => void }) {
                                 disabled={inputsDisallowed}
                             />
 
+
+                            <div onClick={() => {
+                                if (inputsDisallowed) return;
+                                fileRef.current?.click()
+                            }} className={`flex flex-col gap-y-3 justify-center items-center border py-10 border-dashed app_border_color rounded-xl ${inputsDisallowed ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}>
+                                <div className="flex flex-row gap-x-2 text-gray-300 dark:text-gray-600 items-center">
+
+                                    {inputs.avatar ? <File className="size-4" /> : <Upload className="size-4" />}
+                                    <span className="text-base">
+                                        {inputs.avatar ? inputs.avatar.name : 'آپلود آواتار'}
+                                    </span>
+                                </div>
+
+                                {inputs.avatar && (
+                                    <Button
+                                        text="حذف"
+                                        onClick={handleDeleteSelectedAvatarFile}
+                                        color="danger"
+                                        icon={<Trash className="size-4" />}
+                                        size="small"
+
+                                    />
+                                )}
+                                <input
+                                    ref={fileRef}
+                                    onChange={handleChangeAvatarFile}
+                                    type="file"
+                                    className="hidden"
+                                    name="avatar_file"
+                                />
+                            </div>
+
                             <AvatarSelector
                                 error={formErrors.scheme}
                                 value={inputs.scheme}
@@ -209,7 +263,7 @@ function NewMemberModal({ onClose }: { onClose: () => void }) {
 
 
                             {(nonMembers && user && (nonMembers.length > 0 || selfIncluded)) && (
-                                <MemberSelector
+                                <NonMemberSelector
                                     label="اعضای رویداد"
                                     members={nonMembers}
                                     onSelect={toggleMember}
@@ -220,7 +274,7 @@ function NewMemberModal({ onClose }: { onClose: () => void }) {
                                         id: user.id.toString(),
                                         scheme: user.scheme,
                                         include: selfIncluded,
-                                        value: inputs.selfIncluded
+                                        value: !inputs.selfIncluded
                                     }}
                                 />
                             )}

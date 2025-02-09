@@ -4,8 +4,8 @@ import TextInput from "@/components/Common/Form/TextInput";
 import ModalHeader from "@/components/Common/ModalHeader";
 import ModalWrapper from "@/components/Common/ModalWrapper";
 import { zValidate } from "@/helpers/validation-helper";
-import { Info, Pencil } from "lucide-react";
-import { useContext, useState } from "react";
+import { File, Info, Pencil, Trash, Upload } from "lucide-react";
+import { ChangeEventHandler, MouseEvent, useContext, useRef, useState } from "react";
 import { createPortal, useFormStatus } from "react-dom";
 import { Member, SchemeType } from "@/types/event-types";
 import Button from "@/components/Common/Button";
@@ -19,6 +19,7 @@ import useStore from "@/store/store";
 type FormInputs = {
     name: string;
     scheme: SchemeType;
+    avatar: File | null;
 }
 
 function EditMemberModal({ onClose, member }: { onClose: () => void, member: Member }) {
@@ -31,15 +32,31 @@ function EditMemberModal({ onClose, member }: { onClose: () => void, member: Mem
     const initInputs: FormInputs = {
         name: member.name,
         scheme: member.scheme,
+        avatar: null
     }
 
     const [inputs, setInputs] = useState(initInputs);
 
 
+    const fileRef = useRef<HTMLInputElement | null>(null)
+    function handleChangeAvatarFile() {
+        setInputs(prev => ({ ...prev, avatar: (fileRef && fileRef.current && fileRef.current.files && fileRef.current.files[0]) ?? null }));
+    }
+
+    function handleDeleteSelectedAvatarFile(event: React.MouseEvent) {
+        event.stopPropagation();
+
+        setInputs(prev => ({ ...prev, avatar: null }));
+        if (fileRef.current) {
+            fileRef.current.value = '';
+        }
+    }
+
     const initFormErrors = {
         name: '',
         scheme: '',
         eventId: '',
+        avatar: '',
     }
     const [formErrors, setFormErrors] = useState<Record<string, string>>(initFormErrors);
 
@@ -51,9 +68,9 @@ function EditMemberModal({ onClose, member }: { onClose: () => void, member: Mem
 
         const createMembeInputs = {
             name: inputs.name,
-            scheme: inputs.scheme
+            scheme: inputs.scheme,
+            avatar: inputs.avatar ? inputs.avatar : undefined,
         }
-
 
         const { hasError, errors } = zValidate(createMemberSchema, createMembeInputs);
 
@@ -107,6 +124,34 @@ function EditMemberModal({ onClose, member }: { onClose: () => void, member: Mem
                         <div className="p-5 flex flex-col gap-y-4">
 
                             <TextInput name="name" value={inputs.name} error={formErrors.name} label="نام عضو" handleChange={e => setInputs(prev => ({ ...prev, [e.target.name]: e.target.value }))} />
+
+                            <div onClick={() => fileRef?.current?.click()} className="cursor-pointer flex flex-col gap-y-3 justify-center items-center border py-10 border-dashed app_border_color rounded-xl">
+                                <div className="flex flex-row gap-x-2 text-gray-300 dark:text-gray-600 items-center">
+                                    {inputs.avatar ? <File className="size-4" /> : <Upload className="size-4" />}
+                                    <span className="text-base">
+                                        {inputs.avatar ? inputs.avatar.name : 'آپلود آواتار'}
+                                    </span>
+                                </div>
+
+                                {inputs.avatar && (
+                                    <Button
+                                        text="حذف"
+                                        onClick={handleDeleteSelectedAvatarFile}
+                                        color="danger"
+                                        icon={<Trash className="size-4" />}
+                                        size="small"
+
+                                    />
+                                )}
+                                <input
+                                    ref={fileRef}
+                                    onChange={handleChangeAvatarFile}
+                                    type="file"
+                                    className="hidden"
+                                    name="avatar_file"
+                                />
+                            </div>
+
 
                             <AvatarSelector
                                 error={formErrors.scheme}

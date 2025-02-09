@@ -1,6 +1,6 @@
 
 type ButtonProps = {
-    onClick?: () => void;
+    onClick?: (event: React.MouseEvent) => void;
     text: string;
     icon: React.ReactNode;
     size: 'small' | 'medium' | 'large';

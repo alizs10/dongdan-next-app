@@ -143,14 +143,21 @@ export async function updateMemberReq(eventId: string | number, memberId: string
 
     const token = (await cookies()).get('token');
 
+    const formData = new FormData;
+    formData.append("_method", 'PUT')
+    Object.entries(inputs).forEach(([key, value]) => {
+        console.log(key, value)
+        formData.append(key, value);
+    });
+
     try {
         const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/event/${eventId}/member/${memberId}`, {
-            method: 'PUT',
-            body: JSON.stringify(inputs),
+            method: 'POST',
+            body: formData,
             headers: {
                 Authorization: `Bearer ${token?.value}`,
-                'Content-Type': 'application/json',
                 'Accept': 'application/json',
+                // 'Content-Type': 'multipart/form-data', // اصلاح نوع محتوا
             },
         });
 
