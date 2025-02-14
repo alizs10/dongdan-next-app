@@ -8,6 +8,7 @@ import { useState } from 'react'
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import useWidth from '@/hooks/useWidth';
+import Tooltip from '@/components/Common/Tooltip';
 
 interface ListItemProps {
     href?: string;
@@ -24,7 +25,6 @@ function ListItem({ href, icon, text, isActive, isMenuMinimized, onClick }: List
         <>
             {icon}
             <AnimatePresence>
-
                 {(!isMenuMinimized || width < 1024) && (
                     <motion.span
                         initial={{ opacity: 0, x: -10, width: 0, scale: 0.8 }}
@@ -38,6 +38,7 @@ function ListItem({ href, icon, text, isActive, isMenuMinimized, onClick }: List
                     >{text}</motion.span>
                 )}
             </AnimatePresence>
+
         </>
     )
 
@@ -49,17 +50,33 @@ function ListItem({ href, icon, text, isActive, isMenuMinimized, onClick }: List
     const contentClassName = `flex flex-row items-center gap-x-2 px-5 py-3 w-full h-full ${(isMenuMinimized && width > 1024) ? 'justify-center' : ''}`
 
     return (
-        <li className={className}>
-            {href ? (
-                <Link className={contentClassName} href={href}>
-                    <Content />
-                </Link>
-            ) : (
-                <div onClick={onClick} className={contentClassName}>
-                    <Content />
-                </div>
-            )}
-        </li>
+        isMenuMinimized ? (
+            <Tooltip text={text} key={text} position='right'>
+                <li className={className}>
+                    {href ? (
+                        <Link className={contentClassName} href={href}>
+                            <Content />
+                        </Link>
+                    ) : (
+                        <div onClick={onClick} className={contentClassName}>
+                            <Content />
+                        </div>
+                    )}
+                </li>
+            </Tooltip>
+        ) : (
+            <li className={className}>
+                {href ? (
+                    <Link className={contentClassName} href={href}>
+                        <Content />
+                    </Link>
+                ) : (
+                    <div onClick={onClick} className={contentClassName}>
+                        <Content />
+                    </div>
+                )}
+            </li>
+        )
     )
 }
 
