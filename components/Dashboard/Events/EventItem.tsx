@@ -10,6 +10,7 @@ import { trashEventReq } from '@/app/actions/events';
 import { EventsContext } from '@/context/EventsContext';
 import { MultiSelectItemContext } from '@/context/MultiSelectItemContext';
 import useStore from '@/store/store';
+import TrackedLink from '@/components/Common/TrackedLinks';
 
 
 export function RenderLabelIcon(label: string) {
@@ -124,9 +125,9 @@ function EventItem({ event }: { event: Event }) {
 
                 <div className="flex flex-col gap-y-1">
 
-                    <Link href={`/dashboard/events/${event.slug}`}>
+                    <TrackedLink href={`/dashboard/events/${event.slug}`}>
                         <h2 className='event_item_name'>{event.name}</h2>
-                    </Link>
+                    </TrackedLink>
 
                     <div className="flex flex-row gap-x-1 items-center">
 
@@ -175,7 +176,7 @@ function EventItem({ event }: { event: Event }) {
                         </div>
                     )}
                 </div>
-                <Link className='hidden lg:block' href={`/dashboard/events/${event.slug}`}>
+                <TrackedLink className='hidden lg:block' href={`/dashboard/events/${event.slug}`}>
                     <Button
                         text='مشاهده جزییات'
                         icon={<Info className='event_item_button_icon' />}
@@ -183,7 +184,7 @@ function EventItem({ event }: { event: Event }) {
                         size='small'
                         onClick={() => { }}
                     />
-                </Link>
+                </TrackedLink>
                 {isEditEventModalOpen && (
                     <EditEventModal event={event} onClose={toggleModal} />
                 )}

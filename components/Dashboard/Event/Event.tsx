@@ -21,6 +21,7 @@ import { deleteExpenseItemsReq } from "@/app/actions/event";
 import MembersShare from "./MembersShare";
 import NewFiltersModal from "./NewFiltersModal";
 import useStore from "@/store/store";
+import TrackedLink from "@/components/Common/TrackedLinks";
 
 function Event() {
 
@@ -278,9 +279,9 @@ function Event() {
                 <div className="event_header_container ">
 
                     <div className="event_header_right">
-                        <Link href={event.deleted_at === null ? '/dashboard/events' : '/dashboard/events/trash'} className="event_back_button">
+                        <TrackedLink href={event.deleted_at === null ? '/dashboard/events' : '/dashboard/events/trash'} className="event_back_button">
                             <MoveRight className="event_back_button_icon" />
-                        </Link>
+                        </TrackedLink>
                         <h1 className="event_header_title">{event.name}</h1>
                     </div>
 

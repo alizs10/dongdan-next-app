@@ -7,7 +7,7 @@ import React from 'react';
 
 interface TrackedLinkProps extends LinkProps {
     children: React.ReactNode;
-    className: string;
+    className?: string;
 }
 
 const TrackedLink: React.FC<TrackedLinkProps> = ({ children, ...props }) => {
