@@ -48,9 +48,15 @@ function NonMemberSelector({ label, members, onSelect, value, error, self = unde
 
     const { user, settings } = useStore()
 
+    console.log("members", members)
+
     const showMemberName = useCallback((memberId: number) => {
 
         if (!user) return '...';
+
+        if (self && self.include && memberId === user.id) {
+            return settings.show_as_me ? 'خودم' : user.name
+        }
 
         const member = members.find(member => member.id === memberId);
         if (!member) return 'ناشناس';
