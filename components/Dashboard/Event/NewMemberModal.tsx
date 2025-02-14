@@ -17,6 +17,7 @@ import { createMemberReq } from "@/app/actions/event";
 import { CreateMemberRequest } from "@/types/requests/event";
 import useStore from "@/store/store";
 import NonMemberSelector from "@/components/Common/Form/NonMemberSelector";
+import UploadImage from "@/components/Common/Form/UploadImage";
 
 type FormInputs = {
     name: string;
@@ -131,18 +132,12 @@ function NewMemberModal({ onClose }: { onClose: () => void }) {
 
 
 
-    const fileRef = useRef<HTMLInputElement | null>(null)
-    function handleChangeAvatarFile() {
-        setInputs(prev => ({ ...prev, avatar: (fileRef && fileRef.current && fileRef.current.files && fileRef.current.files[0]) ?? null }));
+    function handleChangeAvatarFile(file: File) {
+        setInputs(prev => ({ ...prev, avatar: file }));
     }
 
-    function handleDeleteSelectedAvatarFile(event: React.MouseEvent) {
-        event.stopPropagation();
-
+    function handleDeleteSelectedAvatarFile() {
         setInputs(prev => ({ ...prev, avatar: null }));
-        if (fileRef.current) {
-            fileRef.current.value = '';
-        }
     }
 
 
@@ -222,37 +217,13 @@ function NewMemberModal({ onClose }: { onClose: () => void }) {
                                 disabled={inputsDisallowed}
                             />
 
+                            <UploadImage
+                                disabled={inputsDisallowed}
+                                value={inputs.avatar}
+                                onChange={handleChangeAvatarFile}
+                                onDelete={handleDeleteSelectedAvatarFile}
+                            />
 
-                            <div onClick={() => {
-                                if (inputsDisallowed) return;
-                                fileRef.current?.click()
-                            }} className={`flex flex-col gap-y-3 justify-center items-center border py-10 border-dashed app_border_color rounded-xl ${inputsDisallowed ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}>
-                                <div className="flex flex-row gap-x-2 text-gray-300 dark:text-gray-600 items-center">
-
-                                    {inputs.avatar ? <File className="size-4" /> : <Upload className="size-4" />}
-                                    <span className="text-base">
-                                        {inputs.avatar ? inputs.avatar.name : 'آپلود آواتار'}
-                                    </span>
-                                </div>
-
-                                {inputs.avatar && (
-                                    <Button
-                                        text="حذف"
-                                        onClick={handleDeleteSelectedAvatarFile}
-                                        color="danger"
-                                        icon={<Trash className="size-4" />}
-                                        size="small"
-
-                                    />
-                                )}
-                                <input
-                                    ref={fileRef}
-                                    onChange={handleChangeAvatarFile}
-                                    type="file"
-                                    className="hidden"
-                                    name="avatar_file"
-                                />
-                            </div>
 
                             <AvatarSelector
                                 error={formErrors.scheme}

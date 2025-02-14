@@ -97,9 +97,18 @@ function ContactItem({ contact }: { contact: Contact }) {
             className={`event_item ${selectMode && 'cursor-pointer'} ${selectedItems.includes(contact.id.toString()) ? 'bg-gray-200 dark:bg-gray-800' : ''}`}>
             <div className="flex flex-row gap-x-4 items-center">
 
-                <div className={`flex justify-center p-3 rounded-xl items-center user_avatar_${contact.scheme}_bg user_avatar_${contact.scheme}_text`}>
-                    <User className='size-6' />
-                </div>
+
+
+                {contact.avatar ? (
+                    <div className={`rounded-xl overflow-hidden`}>
+                        <img src={contact.avatar} alt={contact.name} className="size-12 object-center object-cover" />
+                    </div>
+                ) : (
+                    <div className={`size-12 flex justify-center rounded-xl items-center user_avatar_${contact.scheme}_bg user_avatar_${contact.scheme}_text`}>
+                        <User className='size-6' />
+                    </div>
+
+                )}
 
                 <h2 className={`text-base lg:text-lg user_avatar_${contact.scheme}_text`}>{contact.name}</h2>
             </div>

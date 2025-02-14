@@ -4,6 +4,7 @@ export type Contact = {
     id: number;
     name: string;
     scheme: SchemeType;
+    avatar: string;
     event_member_ships?: Member[];
     created_at: Date;
     updated_at: Date;

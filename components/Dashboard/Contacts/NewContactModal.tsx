@@ -14,9 +14,11 @@ import AvatarSelector from "@/components/Common/Form/AvatarSelector";
 import { createContactReq } from "@/app/actions/contacts";
 import { ContactsContext } from "@/context/ContactsContext";
 import useStore from "@/store/store";
+import UploadImage from "@/components/Common/Form/UploadImage";
 
 type FormInputs = {
     name: string;
+    avatar: File | null;
     scheme: SchemeType;
 }
 
@@ -29,6 +31,7 @@ function NewContactModal({ onClose }: { onClose: () => void }) {
 
     const initInputs: FormInputs = {
         name: '',
+        avatar: null,
         scheme: 'gray',
     }
     const [inputs, setInputs] = useState(initInputs);
@@ -43,6 +46,15 @@ function NewContactModal({ onClose }: { onClose: () => void }) {
     function selectSchemeHandler(scheme: SchemeType) {
         setInputs(prev => ({ ...prev, scheme }))
     }
+
+    function handleChangeAvatarFile(file: File) {
+        setInputs(prev => ({ ...prev, avatar: file }));
+    }
+
+    function handleDeleteSelectedAvatarFile() {
+        setInputs(prev => ({ ...prev, avatar: null }));
+    }
+
 
     async function formActionHandler() {
 
@@ -100,6 +112,13 @@ function NewContactModal({ onClose }: { onClose: () => void }) {
                         <div className="p-5 flex flex-col gap-y-4">
 
                             <TextInput name="name" value={inputs.name} error={formErrors.name} label="نام شخص" handleChange={e => setInputs(prev => ({ ...prev, [e.target.name]: e.target.value }))} />
+
+
+                            <UploadImage
+                                value={inputs.avatar}
+                                onChange={handleChangeAvatarFile}
+                                onDelete={handleDeleteSelectedAvatarFile}
+                            />
 
                             <AvatarSelector
                                 error={formErrors.scheme}

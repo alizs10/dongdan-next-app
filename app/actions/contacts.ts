@@ -80,13 +80,21 @@ export async function createContactReq(inputs: CreateContactRequest) {
     const token = (await cookies()).get('token');
 
     try {
+        const formData: FormData = new FormData();
+        Object.entries(inputs).forEach(([key, value]) => {
+            if (value === null) return;
+            if (value instanceof File) {
+                formData.append(key, value);
+            } else {
+                formData.append(key, value.toString());
+            }
+        });
 
         const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/contacts`, {
             method: 'POST',
-            body: JSON.stringify(inputs),
+            body: formData,
             headers: {
                 Authorization: `Bearer ${token?.value}`,
-                'Content-Type': 'application/json',
                 'Accept': 'application/json',
             },
         });
@@ -164,12 +172,24 @@ export async function updateContactReq(contactId: string | number, inputs: Creat
     const token = (await cookies()).get('token');
 
     try {
+
+        const formData: FormData = new FormData();
+        formData.append("_method", 'PUT')
+        Object.entries(inputs).forEach(([key, value]) => {
+            if (value === null) return;
+            if (value instanceof File) {
+                formData.append(key, value);
+            } else {
+                formData.append(key, value.toString());
+            }
+        });
+
+
         const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/contact/${contactId}`, {
-            method: 'PUT',
-            body: JSON.stringify(inputs),
+            method: 'POST',
+            body: formData,
             headers: {
                 Authorization: `Bearer ${token?.value}`,
-                'Content-Type': 'application/json',
                 'Accept': 'application/json',
             },
         });

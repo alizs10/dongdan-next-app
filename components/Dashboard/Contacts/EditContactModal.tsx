@@ -15,10 +15,12 @@ import AvatarSelector from "@/components/Common/Form/AvatarSelector";
 import { updateContactReq } from "@/app/actions/contacts";
 import { ContactsContext } from "@/context/ContactsContext";
 import useStore from "@/store/store";
+import UploadImage from "@/components/Common/Form/UploadImage";
 
 type FormInputs = {
     name: string;
     scheme: SchemeType;
+    avatar: File | null;
 }
 
 function EditContactModal({ onClose, contact }: { onClose: () => void, contact: Contact }) {
@@ -30,6 +32,7 @@ function EditContactModal({ onClose, contact }: { onClose: () => void, contact: 
     const initInputs: FormInputs = {
         name: contact.name,
         scheme: contact.scheme,
+        avatar: null
     }
     const [inputs, setInputs] = useState(initInputs);
 
@@ -37,12 +40,23 @@ function EditContactModal({ onClose, contact }: { onClose: () => void, contact: 
     const initFormErrors = {
         name: '',
         scheme: '',
+        avatar: ''
     }
     const [formErrors, setFormErrors] = useState<Record<string, string>>(initFormErrors);
 
     function selectSchemeHandler(scheme: SchemeType) {
         setInputs(prev => ({ ...prev, scheme }))
     }
+
+
+    function handleChangeAvatarFile(file: File) {
+        setInputs(prev => ({ ...prev, avatar: file }));
+    }
+
+    function handleDeleteSelectedAvatarFile() {
+        setInputs(prev => ({ ...prev, avatar: null }));
+    }
+
 
     async function formActionHandler() {
 
@@ -69,7 +83,6 @@ function EditContactModal({ onClose, contact }: { onClose: () => void, contact: 
         if (res.success) {
             updateContact(contact.id.toString(), res.updatedContact);
             const successToast = {
-
                 message: res.message,
                 type: 'success' as const,
             }
@@ -99,6 +112,13 @@ function EditContactModal({ onClose, contact }: { onClose: () => void, contact: 
                         <div className="p-5 flex flex-col gap-y-4">
 
                             <TextInput name="name" value={inputs.name} error={formErrors.name} label="نام شخص" handleChange={e => setInputs(prev => ({ ...prev, [e.target.name]: e.target.value }))} />
+
+
+                            <UploadImage
+                                value={inputs.avatar}
+                                onChange={handleChangeAvatarFile}
+                                onDelete={handleDeleteSelectedAvatarFile}
+                            />
 
                             <AvatarSelector
                                 error={formErrors.scheme}

@@ -22,9 +22,19 @@ function ContactInfoModal({ onClose, contact }: PropsTypes) {
 
                 <div className="p-5 grid grid-cols-2 gap-4">
                     <div className="col-span-2 flex flex-row items-center gap-x-2">
-                        <span className={`p-3 w-fit rounded-full border user_avatar_${contact.scheme}_text user_avatar_${contact.scheme}_border user_avatar_${contact.scheme}_bg`}>
-                            <User className="size-5" />
-                        </span>
+
+
+                        {contact.avatar ? (
+                            <div className={`rounded-xl overflow-hidden`}>
+                                <img src={contact.avatar} alt={contact.name} className="size-12 object-center object-cover" />
+                            </div>
+                        ) : (
+                            <div className={`size-12 flex justify-center rounded-xl items-center user_avatar_${contact.scheme}_bg user_avatar_${contact.scheme}_text`}>
+                                <User className='size-6' />
+                            </div>
+
+                        )}
+
                         <span className={`user_avatar_${contact.scheme}_text text-base`}>{contact.name}</span>
                     </div>
 
