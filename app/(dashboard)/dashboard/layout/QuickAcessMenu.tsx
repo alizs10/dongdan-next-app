@@ -5,10 +5,11 @@ import useStore from '@/store/store';
 import { BookOpenCheck, CalendarRange, Headset, Info, LogOut, Maximize2, Minimize2, Settings2, Trash, User, Users, Zap } from 'lucide-react'
 import { usePathname, useRouter } from 'next/navigation';
 import { useState } from 'react'
-import Link from 'next/link';
+// import TrackedLink from 'next/TrackedLink';
 import { motion, AnimatePresence } from 'framer-motion';
 import useWidth from '@/hooks/useWidth';
 import Tooltip from '@/components/Common/Tooltip';
+import TrackedLink from '@/components/Common/TrackedLinks';
 
 interface ListItemProps {
     href?: string;
@@ -54,9 +55,9 @@ function ListItem({ href, icon, text, isActive, isMenuMinimized, onClick }: List
             <Tooltip text={text} key={text} position='right'>
                 <li className={className}>
                     {href ? (
-                        <Link className={contentClassName} href={href}>
+                        <TrackedLink className={contentClassName} href={href}>
                             <Content />
-                        </Link>
+                        </TrackedLink>
                     ) : (
                         <div onClick={onClick} className={contentClassName}>
                             <Content />
@@ -67,9 +68,9 @@ function ListItem({ href, icon, text, isActive, isMenuMinimized, onClick }: List
         ) : (
             <li className={className}>
                 {href ? (
-                    <Link className={contentClassName} href={href}>
+                    <TrackedLink className={contentClassName} href={href}>
                         <Content />
-                    </Link>
+                    </TrackedLink>
                 ) : (
                     <div onClick={onClick} className={contentClassName}>
                         <Content />

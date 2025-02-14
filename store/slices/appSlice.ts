@@ -10,6 +10,8 @@ export interface AppSlice {
     setSettings: (settings: Settings) => void;
     isMenuMinimized: boolean;
     setIsMenuMinimized: (isMinimized: boolean) => void;
+    redirecting: boolean;
+    setRedirecting: (isRedirecting: boolean) => void;
 }
 
 
@@ -20,7 +22,9 @@ export const createAppSlice: StateCreator<AppSlice, [], [], AppSlice> = (set) =>
     settings: {
         show_as_me: 1,
     },
-    setSettings: (settings: Settings) => set((state) => ({ settings: settings })),
+    setSettings: (settings: Settings) => set(() => ({ settings: settings })),
     isMenuMinimized: false,
     setIsMenuMinimized: (isMinimized: boolean) => set(() => ({ isMenuMinimized: isMinimized })),
+    redirecting: false,
+    setRedirecting: (isRedirecting) => set(() => ({ redirecting: isRedirecting }))
 });
