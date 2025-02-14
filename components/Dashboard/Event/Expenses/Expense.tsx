@@ -141,6 +141,11 @@ function Expense({ expense, index }: { expense: Expense, index: number }) {
                 <span className="text-xs text-gray-500 dark:text-gray-400">{moment(expense.date).locale('fa').format("dddd DD MMM، YYYY")}</span>
                 <div className="flex flex-row items-end gap-x-2">
 
+                    {/* 
+                    <span className="px-2 lg:px-4  py-1 lg:py-2 text-sm lg:text-base font-semibold bg-indigo-100 dark:bg-indigo-950/50 primary_text_color rounded-full">{TomanPriceFormatter(expense.amount.toString())} تومان</span> */}
+
+                    <span className="text-sm lg:text-base font-semibold primary_text_color ml-2">{TomanPriceFormatter(expense.amount.toString())} تومان</span>
+
                     <div ref={optionsParentRef} className='relative'>
                         {!selectMode && (
                             <Button
@@ -180,7 +185,6 @@ function Expense({ expense, index }: { expense: Expense, index: number }) {
                         )}
                     </div>
 
-                    <span className="px-2 lg:px-4  py-1 lg:py-2 text-sm lg:text-base font-semibold bg-indigo-100 dark:bg-indigo-950/50 primary_text_color rounded-full">{TomanPriceFormatter(expense.amount.toString())} تومان</span>
                 </div>
             </div>
 
