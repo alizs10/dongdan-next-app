@@ -187,6 +187,9 @@ function NewEventModal({ onClose }: { onClose: () => void }) {
         setLoading(false);
     }
 
+
+
+
     if (typeof window === "object") {
         return createPortal(
             <ModalWrapper onClose={onClose}>

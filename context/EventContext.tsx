@@ -4,14 +4,14 @@ import { deleteExpenseReq, deleteMemberReq, getEventExpensesReq, loadMoreExpense
 import { updateEventStatusReq } from "@/app/actions/events";
 import { filterExpensesReq } from "@/app/actions/filter";
 import DashboardLoading from "@/components/Layout/DashboardLoading";
-import { arraysHaveSameValues, isDateBetween, TomanPriceFormatter, TomanPriceToNumber } from "@/helpers/helpers";
+import { TomanPriceFormatter } from "@/helpers/helpers";
 import useStore from "@/store/store";
 
 
-import { Event, Expend, Expense, ExpenseFilters, Member, SettlePerson, Transfer } from "@/types/event-types";
+import { Event, Expense, Member, SettlePerson } from "@/types/event-types";
 import { Pagination } from "@/types/globals";
 import { EventData, GetEventResponse } from "@/types/responses/event";
-import { createContext, useCallback, useEffect, useMemo, useState } from "react";
+import { createContext, useCallback, useMemo, useState } from "react";
 
 export type SettlementTransactions = {
     transmitter: SettlePerson;
@@ -31,23 +31,7 @@ export type EventContextType = {
     filterPaginationData: Pagination | null;
     applyFilters: (query: string) => void;
     clearFilters: () => void;
-    // applyFilters: (filters: ExpenseFilters) => void;
-    // activeFilters: ExpenseFilters | null;
-    // clearFilters: () => void;
-    // getAllCosts: () => number;
-    // getCostsCount: () => number;
-    // getTransfersCount: () => number;
-
-    // getMostCost: () => number;
-    // getHighestTransfer: () => number;
-    // getAllPersonExpends: (memberId: string) => number;
-    // getAllPersonDebts: (memberId: string) => number;
-    // getAllPersonRecieved: (memberId: string) => number;
-    // getAllPersonSent: (memberId: string) => number;
-    // getMaxPayer: () => { name: string, amount: number };
-    // getPersonBalance: (memberId: string) => number;
-    // getPersonBalanceStatus: (memberId: string) => string;
-    toggleEventStatus: () => void;
+    toggleEventStatus: (end_date?: Date) => Promise<boolean>;
     addMember: (member: Member) => void;
     addExpense: (expense: Expense, event_data: EventData) => void;
     loadMoreExpenses: () => void;
@@ -78,7 +62,6 @@ const EventContextInit = {
     filterQuery: '',
     isFiltering: false,
     filterPaginationData: null,
-    // activeFilters: null,
     clearFilters: () => { },
     getAllCosts: () => 0,
     getCostsCount: () => 0,
@@ -92,7 +75,7 @@ const EventContextInit = {
     getMaxPayer: () => ({ name: '', amount: 0 }),
     getPersonBalance: () => 0,
     getPersonBalanceStatus: () => 'تسویه',
-    toggleEventStatus: () => { },
+    toggleEventStatus: async () => true,
     addMember: () => { },
     addExpense: () => { },
     loadMoreExpenses: () => { },
@@ -106,7 +89,7 @@ const EventContextInit = {
     creditors: [],
     debtors: [],
     transactions: { hints: [], transactions: [] },
-    showMemberName: () => '...'
+    showMemberName: () => ''
 }
 
 
@@ -122,7 +105,6 @@ export function EventContextProvider({ children, data }: { children: React.React
     const [expenses, setExpenses] = useState<Expense[]>(data.expenses_data.expenses)
     const [paginationData, setPaginationData] = useState<Pagination>(data.expenses_data.pagination)
     const [fetchingMoreExpenses, setFetchingMoreExpenses] = useState(false)
-    // const [activeFilters, setActiveFilters] = useState<ExpenseFilters | null>(null)
 
     const [filterQuery, setFilterQuery] = useState<string>('')
     const [filteredExpenses, setFilteredExpenses] = useState<Expense[]>([])
@@ -165,85 +147,6 @@ export function EventContextProvider({ children, data }: { children: React.React
 
     const [excludeIds, setExcludeIds] = useState<number[]>([])
 
-    // useEffect(() => {
-
-    //     if (!!activeFilters) {
-    //         applyFilters(activeFilters)
-    //     }
-
-    // }, [expenses, activeFilters])
-
-    // function applyFilters(filters: ExpenseFilters) {
-    //     // Start with base expenses based on type filter
-    //     let results = filters.type === 'any'
-    //         ? [...expenses]
-    //         : expenses.filter(exp => exp.type === filters.type);
-
-    //     // Apply amount range filter
-    //     results = results.filter(exp => {
-    //         const amount = TomanPriceToNumber(exp.amount.toString());
-    //         const min = TomanPriceToNumber(filters.amountMin.toString());
-    //         const max = TomanPriceToNumber(filters.amountMax.toString());
-    //         return amount >= min && amount < max;
-    //     });
-
-    //     // Apply date range filter 
-    //     results = results.filter(exp =>
-    //         isDateBetween(exp.date, filters.dateRange[0], filters.dateRange[1])
-    //     );
-    //     // Apply expense-specific filters
-
-
-
-    //     if (filters.type === 'expend') {
-    //         // Filter by payer
-    //         if (filters.payer_id) {
-    //             results = results.filter(exp =>
-    //                 (exp as Expend).payer_id.toString() === filters.payer_id
-    //             );
-    //         }
-
-    //         // Filter by contributors
-    //         if (filters.contributors?.length > 0) {
-    //             results = results.filter(exp => {
-
-    //                 const contributors = (exp as Expend).contributors.map(p => p.event_member?.id.toString()).filter((c): c is string => c !== undefined)
-    //                 return arraysHaveSameValues(
-    //                     contributors,
-    //                     filters.contributors
-    //                 )
-    //             }
-    //             );
-    //         }
-    //     }
-
-
-    //     // Apply transfer-specific filters
-    //     if (filters.type === 'transfer') {
-    //         // Filter by transmitter
-    //         if (filters.transmitter_id) {
-    //             results = results.filter(exp =>
-    //                 (exp as Transfer).transmitter_id.toString() === filters.transmitter_id
-    //             );
-    //         }
-
-    //         // Filter by receiver
-    //         if (filters.receiver_id) {
-    //             results = results.filter(exp =>
-    //                 (exp as Transfer).receiver_id.toString() === filters.receiver_id
-    //             );
-    //         }
-    //     }
-
-
-    //     setFilteredExpenses(results);
-    //     setActiveFilters(filters);
-    // }
-
-    // function clearFilters() {
-    //     setActiveFilters(null)
-    //     setFilteredExpenses([])
-    // }
 
     function addMember(member: Member) {
         setEvent(prevState => ({ ...prevState, members: [...prevState.members, member] }))
@@ -296,7 +199,6 @@ export function EventContextProvider({ children, data }: { children: React.React
         const res = await deleteExpenseReq(event.id.toString(), expenseId)
 
         if (res.success && res.event_data) {
-            // setEvent(prevState => ({ ...prevState, expenses: prevState.expenses.filter(m => m.id !== expenseId) }));
             setExpenses(prevState => prevState.filter(e => e.id !== expenseId))
             setEventData(res.event_data)
 
@@ -318,7 +220,6 @@ export function EventContextProvider({ children, data }: { children: React.React
     }
 
     function deleteMultiExpenses(expenseIds: string[]) {
-        // setEvent(prevState => ({ ...prevState, expenses: prevState.expenses.filter(e => !expenseIds.includes(e.id.toString())) }));
         setExpenses(prevState => prevState.filter(e => !expenseIds.includes(e.id.toString())))
     }
 
@@ -327,14 +228,12 @@ export function EventContextProvider({ children, data }: { children: React.React
     }
 
     async function updateExpense(expenseId: number, updatedExpense: Expense, event_data: EventData) {
-        // setEvent(prevState => ({ ...prevState, expenses: prevState.expenses.map(e => e.id === expenseId ? updatedExpense : e) }));
         setExpenses(prevState => prevState.map(e => e.id === expenseId ? updatedExpense : e))
         setEventData(event_data)
     }
 
 
     function addExpense(expense: Expense, event_data: EventData) {
-        // setEvent(prevState => ({ ...prevState, expenses: [...prevState.expenses, expense] }))
         setExpenses(prevState => [...prevState, expense])
         setEventData(event_data)
         setExcludeIds(prevState => [...prevState, expense.id])
@@ -346,7 +245,6 @@ export function EventContextProvider({ children, data }: { children: React.React
         if (fetchingMoreExpenses) return;
         setFetchingMoreExpenses(true)
 
-        // const nextCursor = expenses[expenses.length - 1].id
         if ((!isFiltering && !paginationData.next_cursor) || (isFiltering && !filterPaginationData?.next_cursor)) return;
 
         // fetch more expenses
@@ -389,9 +287,15 @@ export function EventContextProvider({ children, data }: { children: React.React
 
     }
 
-    async function toggleEventStatus() {
+    async function toggleEventStatus(end_date?: Date): Promise<boolean> {
 
-        const res = await updateEventStatusReq(event.id.toString())
+        let res;
+
+        if (end_date) {
+            res = await updateEventStatusReq(event.id.toString(), end_date)
+        } else {
+            res = await updateEventStatusReq(event.id.toString())
+        }
 
         if (res.success) {
             const event_end_date = res.end_date;
@@ -412,7 +316,7 @@ export function EventContextProvider({ children, data }: { children: React.React
                 }
                 addToast(activateToast)
             }
-            return;
+            return true;
         }
 
         const errorToast = {
@@ -421,149 +325,9 @@ export function EventContextProvider({ children, data }: { children: React.React
             type: 'danger' as const,
         }
         addToast(errorToast)
-
+        return false
     }
 
-    // const getAllCosts = useCallback(() => {
-    //     let total = 0;
-
-    //     expenses.forEach(expense => {
-    //         if (expense.type === 'expend') {
-    //             total += expense.amount;
-    //         }
-    //     });
-    //     return total;
-    // }, [expenses]);
-
-    // const getCostsCount = useCallback(() => {
-    //     return expenses.filter(e => e.type === 'expend').length;
-    // }, [expenses]);
-
-    // const getTransfersCount = useCallback(() => {
-    //     return expenses.filter(e => e.type === 'transfer').length;
-    // }, [expenses]);
-
-    // const getMostCost = useCallback(() => {
-
-    //     let max = 0;
-
-    //     expenses.forEach(expense => {
-    //         if (expense.type === 'expend' && expense.amount > max) {
-    //             max = expense.amount;
-    //         }
-    //     });
-
-    //     return max;
-
-    // }, [expenses]);
-
-    // const getHighestTransfer = useCallback(() => {
-    //     let max = 0;
-
-    //     expenses.forEach(expense => {
-    //         if (expense.type === 'transfer' && expense.amount > max) {
-    //             max = expense.amount;
-    //         }
-    //     });
-
-    //     return max;
-    // }, [expenses]);
-
-    // const getAllPersonExpends = useCallback((memberId: string) => {
-    //     let total = 0;
-
-    //     expenses.forEach(expense => {
-    //         if (expense.type === 'expend' && expense.payer_id.toString() === memberId) {
-    //             total += expense.amount;
-    //         }
-    //     });
-
-    //     return total;
-    // }, [event.members, expenses]);
-
-    // const getAllPersonDebts = useCallback((memberId: string) => {
-    //     let total = 0;
-
-    //     expenses.forEach(expense => {
-    //         let contributorIds = expense.type === 'expend' ? expense.contributors.map(c => c.event_member_id.toString()) : [];
-    //         if (expense.type === 'expend' && contributorIds.includes(memberId)) {
-    //             const contributor = expense.contributors.find(c => c.event_member_id.toString() === memberId);
-    //             total += contributor?.amount ?? 0;
-    //         }
-    //     });
-
-    //     return total;
-    // }, [event.members, expenses]);
-
-    // const getAllPersonRecieved = useCallback((memberId: string) => {
-
-    //     let total = 0;
-
-    //     expenses.forEach(expense => {
-    //         if (expense.type === 'transfer' && expense.receiver_id.toString() === memberId) {
-    //             total += expense.amount;
-    //         }
-    //     })
-
-    //     return total;
-
-    // }, [event.members, expenses])
-
-    // const getAllPersonSent = useCallback((memberId: string) => {
-
-    //     let total = 0;
-
-    //     expenses.forEach(expense => {
-    //         if (expense.type === 'transfer' && expense.transmitter_id.toString() === memberId) {
-    //             total += expense.amount;
-    //         }
-    //     })
-
-    //     return total;
-
-    // }, [event.members, expenses])
-
-
-    // const getMaxPayer = useCallback(() => {
-
-    //     let maxPayer = '';
-    //     let paid = 0;
-
-    //     if (!user || !settings) return { name: '', amount: 0 };
-
-    //     event.members.forEach(member => {
-    //         let memberPaid = getAllPersonExpends(member.id.toString());
-    //         if (memberPaid > paid) {
-    //             paid = memberPaid;
-    //             maxPayer = user.id === member.member_id ? settings.show_as_me ? 'خودم' : user.name : member.name;
-    //         }
-    //     })
-
-    //     return { name: maxPayer, amount: paid };
-    // }, [expenses, settings, user]);
-
-
-    // const getPersonBalance = useCallback((memberId: string) => {
-
-    //     const memberDebts = getAllPersonDebts(memberId);
-    //     const memberRecieved = getAllPersonRecieved(memberId);
-    //     const memberSent = getAllPersonSent(memberId);
-    //     const memberExpends = getAllPersonExpends(memberId);
-    //     const memberBalance = (memberSent + memberExpends - memberRecieved - memberDebts);
-
-    //     return (memberBalance > 0 || memberBalance < 0) ? memberBalance : 0;
-    // }, [event.members, expenses, settings]);
-
-    // const getPersonBalanceStatus = useCallback((memberId: string) => {
-    //     const memberBalance = getPersonBalance(memberId);
-    //     if (memberBalance > 0) {
-    //         return 'طلبکار';
-    //     } else if (memberBalance < 0) {
-    //         return 'بدهکار';
-    //     } else {
-    //         return 'تسویه';
-    //     }
-    // }, [event.members, expenses]);
 
     const creditors = useMemo(() => {
 
@@ -664,21 +428,6 @@ export function EventContextProvider({ children, data }: { children: React.React
         filterQuery,
         isFiltering,
         filterPaginationData,
-        // activeFilters,
-        // getAllCosts,
-        // getCostsCount,
-        // getTransfersCount,
-        // getMostCost,
-
-
-        // getHighestTransfer,
-        // getAllPersonExpends,
-        // getAllPersonDebts,
-        // getAllPersonRecieved,
-        // getAllPersonSent,
-        // getMaxPayer,
-        // getPersonBalance,
-        // getPersonBalanceStatus,
         toggleEventStatus,
         addMember,
         setMembers,

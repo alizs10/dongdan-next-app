@@ -1,7 +1,6 @@
 'use client'
 
 import { CalendarCheck, CalendarClock, Filter, ListCheck, ListChecks, MoveRight, Plus, Trash, UserPlus, X } from "lucide-react";
-import Link from "next/link";
 import { useContext, useState } from "react";
 import NewExpenseModal from "./NewExpenseModal";
 import Expenses from "./Expenses/Expenses";
@@ -22,11 +21,13 @@ import MembersShare from "./MembersShare";
 import NewFiltersModal from "./NewFiltersModal";
 import useStore from "@/store/store";
 import TrackedLink from "@/components/Common/TrackedLinks";
+import EndEventModal from "./EndEventModal";
 
 function Event() {
 
     const { user, addToast, openDialog } = useStore()
     const { enableSelectMode, selectMode, disableSelectMode, selectAllItems, selectedItems } = useContext(MultiSelectItemContext);
+    const [endEventModalVis, setEndEventModalVis] = useState(false)
 
     const {
         event,
@@ -120,9 +121,9 @@ function Event() {
     function toggleFiltersModal() {
         setIsFiltersModalOpen(prev => !prev);
     }
-
-    const eventDays = moment().diff(moment(event.start_date), 'days') + 1;
-
+    const eventDays = event.end_date
+        ? moment(event.end_date).diff(moment(event.start_date), 'days') + 1
+        : moment().diff(moment(event.start_date), 'days') + 1;
 
     return (
         <div className="event_container">
@@ -228,6 +229,12 @@ function Event() {
                             <h1 className="text-sm text-gray-500 dark:text-gray-400">تاریخ شروع</h1>
                             <span className="text-sm text-gray-500 dark:text-gray-400">{moment(event.start_date).locale('fa').format("DD MMM، YYYY")}</span>
                         </div>
+                        {event.end_date && (
+                            <div className="flex w-full justify-between items-center">
+                                <h1 className="text-sm text-gray-500 dark:text-gray-400">تاریخ پایان</h1>
+                                <span className="text-sm text-gray-500 dark:text-gray-400">{event.end_date ? moment(event.end_date).locale('fa').format("DD MMM، YYYY") : '-'}</span>
+                            </div>
+                        )}
                         <div className="flex w-full justify-between items-center">
                             <h1 className="text-sm text-gray-500 dark:text-gray-400">تاریخ امروز</h1>
                             <span className="text-sm text-gray-500 dark:text-gray-400">{moment().locale('fa').format("DD MMM، YYYY")}</span>
@@ -255,20 +262,18 @@ function Event() {
                         </div>
 
                         <ShareEventLink />
-
-
-
                     </ul>
 
-                    {event.deleted_at === null && (
+                    <Button
+                        text={eventStatus === 'active' ? 'پایان رویداد' : 'باز کردن رویداد'}
+                        color={eventStatus === 'active' ? 'danger' : 'success'}
+                        onClick={eventStatus === 'active' ? () => setEndEventModalVis(true) : async () => await toggleEventStatus()}
+                        size="small"
+                        icon={eventStatus === 'active' ? <CalendarCheck className="size-4" /> : <CalendarClock className="size-4" />}
+                    />
 
-                        <Button
-                            text={eventStatus === 'active' ? 'پایان رویداد' : 'باز کردن رویداد'}
-                            color={eventStatus === 'active' ? 'danger' : 'success'}
-                            onClick={toggleEventStatus}
-                            size="small"
-                            icon={eventStatus === 'active' ? <CalendarCheck className="size-4" /> : <CalendarClock className="size-4" />}
-                        />
+                    {eventStatus && endEventModalVis && (
+                        <EndEventModal onClose={() => setEndEventModalVis(false)} event={event} />
                     )}
 
                 </div>

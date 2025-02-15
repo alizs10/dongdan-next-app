@@ -117,13 +117,18 @@ export async function updateEventReq(eventId: string, inputs: UpdateEventRequest
 
 }
 
-export async function updateEventStatusReq(eventId: string) {
+export async function updateEventStatusReq(eventId: string, end_date?: Date) {
 
     const token = (await cookies()).get('token');
+
+    let input_data: { end_date?: Date } = {}
+    if (end_date)
+        input_data['end_date'] = end_date
 
     try {
         const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/event/${eventId}/status`, {
             method: 'PUT',
+            body: JSON.stringify(input_data),
             headers: {
                 Authorization: `Bearer ${token?.value}`,
                 'Content-Type': 'application/json',

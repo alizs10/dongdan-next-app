@@ -1,7 +1,7 @@
-import { EventContext } from "@/context/EventContext";
+import useStore from "@/store/store";
 import { SchemeType } from "@/types/event-types";
 import { Ban, User, Users } from "lucide-react";
-import { useContext } from "react";
+import { useCallback } from "react";
 
 type Member = {
     id: number;
@@ -29,6 +29,9 @@ type PropsTypes = {
 
 function MemberSelector({ label, members, onSelect, value, error, self = undefined, selectAllOption = false, disalllows = [] }: PropsTypes) {
 
+
+    const { user, settings } = useStore()
+
     let membersCount = members.length;
     if (self && self.include) {
         membersCount++;
@@ -45,7 +48,28 @@ function MemberSelector({ label, members, onSelect, value, error, self = undefin
         return 0;
     }));
 
-    const { showMemberName } = useContext(EventContext);
+    const showMemberName = useCallback((memberId: number) => {
+
+        if (!user) return '...';
+
+        if (self && self.include && memberId === user.id) {
+            return settings.show_as_me ? 'خودم' : user.name
+        }
+
+        const member = members.find(member => member.id === memberId);
+        if (!member) return 'ناشناس';
+        let memberName = member.member_id === user.id ? settings.show_as_me ? 'خودم' : user.name : member.name;
+
+        if (memberName.length > 12) {
+            const memberNameArr = memberName.split(" ");
+            memberName = memberNameArr.length > 1 ? memberNameArr[1] : memberName.slice(0, 12);
+        }
+
+        return memberName;
+
+
+    }, [members, settings, user]);
+
 
     return (
 
