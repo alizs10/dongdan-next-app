@@ -244,7 +244,7 @@ function NewMemberModal({ onClose }: { onClose: () => void }) {
                                     self={{
                                         id: user.id.toString(),
                                         scheme: user.scheme,
-                                        include: true,
+                                        include: selfIncluded,
                                         value: inputs.selfIncluded
                                     }}
                                 />
