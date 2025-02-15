@@ -18,6 +18,7 @@ import { CreateMemberRequest } from "@/types/requests/event";
 import useStore from "@/store/store";
 import NonMemberSelector from "@/components/Common/Form/NonMemberSelector";
 import UploadImage from "@/components/Common/Form/UploadImage";
+import ToggleInput from "@/components/Common/Form/ToggleInput";
 
 type FormInputs = {
     name: string;
@@ -25,6 +26,7 @@ type FormInputs = {
     avatar: File | null;
     contacts: string[];
     selfIncluded: boolean;
+    add_to_contacts: boolean;
 }
 
 function NewMemberModal({ onClose }: { onClose: () => void }) {
@@ -40,7 +42,8 @@ function NewMemberModal({ onClose }: { onClose: () => void }) {
         scheme: 'gray',
         avatar: null,
         contacts: [],
-        selfIncluded: false
+        selfIncluded: false,
+        add_to_contacts: false
     }
 
     const [inputs, setInputs] = useState<FormInputs>(initInputs);
@@ -52,6 +55,7 @@ function NewMemberModal({ onClose }: { onClose: () => void }) {
         eventId: '',
         contacts: '',
         avatar: '',
+        add_to_contacts: '',
     }
     const [formErrors, setFormErrors] = useState<Record<string, string>>(initFormErrors);
 
@@ -87,6 +91,12 @@ function NewMemberModal({ onClose }: { onClose: () => void }) {
 
     function onInputChange(e: React.ChangeEvent<HTMLInputElement>) {
         if (inputsDisallowed) return;
+
+        if (e.target.name === 'add_to_contacts') {
+            setInputs(prev => ({ ...prev, add_to_contacts: !prev.add_to_contacts }))
+            return
+        }
+
         setInputs(prev => ({ ...prev, [e.target.name]: e.target.value }))
     }
 
@@ -150,10 +160,11 @@ function NewMemberModal({ onClose }: { onClose: () => void }) {
             self_included: inputs.selfIncluded ? 'true' : 'false'
         } : {
             name: inputs.name,
-            scheme: inputs.scheme
+            scheme: inputs.scheme,
+            avatar: inputs.avatar,
+            add_to_contacts: inputs.add_to_contacts
         }
 
-        console.log(reqInputs)
 
         const validationSchema = inputsDisallowed ? addMembersSchema : createMemberSchema;
         const { hasError, errors } = zValidate(validationSchema, reqInputs);
@@ -224,6 +235,12 @@ function NewMemberModal({ onClose }: { onClose: () => void }) {
                                 onDelete={handleDeleteSelectedAvatarFile}
                             />
 
+                            <ToggleInput
+                                label="افزودن به لیست دوستان"
+                                name="add_to_contacts"
+                                value={inputs.add_to_contacts}
+                                handleChange={onInputChange}
+                            />
 
                             <AvatarSelector
                                 error={formErrors.scheme}

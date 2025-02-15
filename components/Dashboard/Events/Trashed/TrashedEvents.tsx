@@ -10,6 +10,7 @@ import { MultiSelectItemContext } from '@/context/MultiSelectItemContext';
 import { deleteEventItemsReq, restoreEventItemsReq } from '@/app/actions/events';
 import Button from '@/components/Common/Button';
 import useStore from '@/store/store';
+import TrackedLink from '@/components/Common/TrackedLinks';
 
 function TrashedEvents() {
 
@@ -112,9 +113,9 @@ function TrashedEvents() {
         <div className='events_container'>
             <div className='event_header_container'>
                 <div className='event_header_right'>
-                    <Link href={'/dashboard/events'} className='event_back_button'>
+                    <TrackedLink href={'/dashboard/events'} className='event_back_button'>
                         <MoveRight className='event_back_button_icon' />
-                    </Link>
+                    </TrackedLink>
                     <h1 className='event_header_title'>رویداد های حذف شده</h1>
                 </div>
 

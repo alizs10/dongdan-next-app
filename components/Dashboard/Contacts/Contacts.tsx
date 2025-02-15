@@ -2,7 +2,7 @@
 
 import Button from "@/components/Common/Button";
 import { ListCheck, ListChecks, MoveRight, Trash, UserPlus, X } from "lucide-react";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import NewContactModal from "./NewContactModal";
 import ContactsList from "./ContactsList";
 import NoContacts from "./NoContacts";
@@ -13,6 +13,8 @@ import { MultiSelectItemContext } from "@/context/MultiSelectItemContext";
 
 import { trashContactItemsReq } from "@/app/actions/contacts";
 import useStore from "@/store/store";
+import { useRouter } from "next/router";
+import TrackedLink from "@/components/Common/TrackedLinks";
 
 function Contacts() {
 
@@ -70,14 +72,15 @@ function Contacts() {
         addToast(errorToast)
     }
 
+
     return (
         <div className="events_container">
             <div className="event_header_container">
 
                 <div className="event_header_right">
-                    <Link href={'/dashboard/contacts'} className="event_back_button">
+                    <TrackedLink href={'/dashboard/events'} className="event_back_button">
                         <MoveRight className="event_back_button_icon" />
-                    </Link>
+                    </TrackedLink>
                     <h1 className="event_header_title">دوستان {`(${contacts.length})`}</h1>
                 </div>
 

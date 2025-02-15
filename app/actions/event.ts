@@ -51,18 +51,24 @@ export async function createMemberReq(eventId: string, inputs: CreateMemberReque
     const token = (await cookies()).get('token');
 
     try {
-        console.log(inputs)
+
+        const formData = new FormData;
+        Object.entries(inputs).forEach(([key, value]) => {
+            formData.append(key, value);
+        });
+
         const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/event/${eventId}/members`, {
             method: 'POST',
-            body: JSON.stringify(inputs),
+            body: formData,
             headers: {
                 Authorization: `Bearer ${token?.value}`,
-                'Content-Type': 'application/json',
                 'Accept': 'application/json',
             },
         });
 
         const data = await response.json()
+
+        console.log(data)
 
         if (response.ok && data.status) {
 

@@ -187,15 +187,13 @@ export default function QuickAcessMenu() {
                     isActive={pathname === '/dashboard/events/contacts'}
                     isMenuMinimized={isMenuMinimized}
                 />
-                {pathname.includes('/dashboard/events') && (
-                    <ListItem
-                        href={pathname === '/dashboard/events' ? '/dashboard/events/trash' : '/dashboard/events/contacts/trash'}
-                        icon={<Trash className="size-4 xl:size-5" />}
-                        text="سطل زباله"
-                        isActive={pathname === '/dashboard/events/trash' || pathname === '/dashboard/events/contacts/trash'}
-                        isMenuMinimized={isMenuMinimized}
-                    />
-                )}
+                <ListItem
+                    href={pathname === '/dashboard/events/contacts' ? '/dashboard/events/contacts/trash' : '/dashboard/events/trash'}
+                    icon={<Trash className="size-4 xl:size-5" />}
+                    text="سطل زباله"
+                    isActive={pathname === '/dashboard/events/trash' || pathname === '/dashboard/events/contacts/trash'}
+                    isMenuMinimized={isMenuMinimized}
+                />
                 <ListItem
                     href="/dashboard/guide"
                     icon={<BookOpenCheck className="size-4 xl:size-5" />}

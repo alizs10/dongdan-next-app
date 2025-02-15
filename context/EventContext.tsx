@@ -31,7 +31,7 @@ export type EventContextType = {
     filterPaginationData: Pagination | null;
     applyFilters: (query: string) => void;
     clearFilters: () => void;
-    toggleEventStatus: (end_date?: Date) => Promise<boolean>;
+    toggleEventStatus: (end_date?: Date) => void;
     addMember: (member: Member) => void;
     addExpense: (expense: Expense, event_data: EventData) => void;
     loadMoreExpenses: () => void;
@@ -75,7 +75,7 @@ const EventContextInit = {
     getMaxPayer: () => ({ name: '', amount: 0 }),
     getPersonBalance: () => 0,
     getPersonBalanceStatus: () => 'تسویه',
-    toggleEventStatus: async () => true,
+    toggleEventStatus: async () => { },
     addMember: () => { },
     addExpense: () => { },
     loadMoreExpenses: () => { },
@@ -288,6 +288,8 @@ export function EventContextProvider({ children, data }: { children: React.React
     }
 
     async function toggleEventStatus(end_date?: Date): Promise<boolean> {
+
+        console.log("we are here")
 
         let res;
 

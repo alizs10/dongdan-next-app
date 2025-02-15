@@ -5,7 +5,7 @@ type PropsTypes = {
     label: string;
     inpRef?: MutableRefObject<null>;
     value: boolean;
-    handleChange: () => void;
+    handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 function ToggleInput({ name, label, inpRef, value, handleChange }: PropsTypes) {

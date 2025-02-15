@@ -10,6 +10,7 @@ import { MultiSelectItemContext } from '@/context/MultiSelectItemContext';
 import { TrashedContactsContext } from '@/context/TrashedContactsContext';
 import { deleteContactItemsReq, restoreContactItemsReq } from '@/app/actions/contacts';
 import useStore from '@/store/store';
+import TrackedLink from '@/components/Common/TrackedLinks';
 
 function TrashedContacts() {
 
@@ -111,9 +112,9 @@ function TrashedContacts() {
 
             <div className='event_header_container'>
                 <div className='event_header_right'>
-                    <Link href={'/dashboard/events/contacts'} className='event_back_button'>
+                    <TrackedLink href={'/dashboard/events/contacts'} className='event_back_button'>
                         <MoveRight className='event_back_button_icon' />
-                    </Link>
+                    </TrackedLink>
                     <h1 className='event_header_title'>دوستان حذف شده</h1>
                 </div>
 

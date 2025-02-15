@@ -9,7 +9,8 @@ type CreateMember = {
     name: string;
     scheme: SchemeType;
     email?: string;
-    avatar?: File;
+    avatar?: File | null;
+    add_to_contacts: boolean;
 }
 
 export type CreateMemberRequest = AddContacts | CreateMember;

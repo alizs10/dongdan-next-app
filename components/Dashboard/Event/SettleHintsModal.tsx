@@ -19,6 +19,9 @@ function SettleHintsModal({ onClose, transactions }: {
     }
 }) {
 
+
+    console.log(transactions)
+
     const { user, addToast } = useStore()
     const { event, addExpense } = useContext(EventContext)
 
