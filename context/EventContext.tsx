@@ -26,6 +26,7 @@ export type EventContextType = {
     expensesToShow: Expense[];
     paginationData: Pagination;
     filteredExpenses: Expense[];
+    filtersResultCount: number;
     filterQuery: string;
     isFiltering: boolean;
     filterPaginationData: Pagination | null;
@@ -59,6 +60,7 @@ const EventContextInit = {
     paginationData: {} as Pagination,
     applyFilters: () => { },
     filteredExpenses: [],
+    filtersResultCount: 0,
     filterQuery: '',
     isFiltering: false,
     filterPaginationData: null,
@@ -106,6 +108,7 @@ export function EventContextProvider({ children, data }: { children: React.React
     const [paginationData, setPaginationData] = useState<Pagination>(data.expenses_data.pagination)
     const [fetchingMoreExpenses, setFetchingMoreExpenses] = useState(false)
 
+    const [filtersResultCount, setFiltersResultCount] = useState(0)
     const [filterQuery, setFilterQuery] = useState<string>('')
     const [filteredExpenses, setFilteredExpenses] = useState<Expense[]>([])
     const [isFiltering, setIsFiltering] = useState<boolean>(false)
@@ -124,6 +127,7 @@ export function EventContextProvider({ children, data }: { children: React.React
             setIsFiltering(true)
             setFilteredExpenses(res.expenses)
             setFilterPaginationData(res.paginationData)
+            setFiltersResultCount(res.resCount)
             setLoading(false)
             return;
 
@@ -143,6 +147,7 @@ export function EventContextProvider({ children, data }: { children: React.React
         setIsFiltering(false)
         setFilteredExpenses([])
         setFilterPaginationData(null)
+        setFiltersResultCount(0)
     }
 
     const [excludeIds, setExcludeIds] = useState<number[]>([])
@@ -429,6 +434,7 @@ export function EventContextProvider({ children, data }: { children: React.React
         filteredExpenses,
         filterQuery,
         isFiltering,
+        filtersResultCount,
         filterPaginationData,
         toggleEventStatus,
         addMember,

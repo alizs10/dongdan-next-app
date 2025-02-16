@@ -1,12 +1,12 @@
 import Button from "@/components/Common/Button";
-import { Banknote, CalendarRange, CreditCard, DollarSign, FilterX, UserMinus, UserPlus, Users } from "lucide-react";
+import { Banknote, CalendarRange, CreditCard, DollarSign, FilterX, ListOrdered, UserMinus, UserPlus, Users } from "lucide-react";
 import moment from "jalali-moment";
 import { useContext } from "react";
 import { EventContext } from "@/context/EventContext";
 
 function ActiveFilters() {
 
-    const { filterQuery, clearFilters } = useContext(EventContext);
+    const { filterQuery, filtersResultCount, clearFilters } = useContext(EventContext);
 
     const searchParams = new URLSearchParams(filterQuery);
 
@@ -45,6 +45,11 @@ function ActiveFilters() {
             <div className="flex flex-wrap gap-2">
 
 
+                <div className="flex flex-row gap-x-2 items-center text-xs text-white bg-indigo-800 px-3 py-2 rounded-full">
+                    <ListOrdered className="size-4" />
+                    <span>{filtersResultCount} مورد</span>
+
+                </div>
                 <div className="flex flex-row gap-x-2 items-center text-xs text-white bg-indigo-800 px-3 py-2 rounded-full">
                     {activeFilters?.type === 'expend' ? (
                         <DollarSign className="size-4" />

@@ -23,6 +23,7 @@ export async function filterExpensesReq(eventId: string | number, filtersQuery: 
                 success: true,
                 expenses: data.data.expenses,
                 paginationData: data.data.pagination,
+                resCount: data.data.total_count,
                 message: 'هزینه‌های با موفقیت فیلتر شدند'
             }
         }
