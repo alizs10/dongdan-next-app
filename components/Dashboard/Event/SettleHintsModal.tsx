@@ -12,18 +12,16 @@ import { createPortal } from "react-dom";
 
 
 
-function SettleHintsModal({ onClose, transactions }: {
-    onClose: () => void, transactions: {
-        hints: string[];
-        transactions: SettlementTransactions[];
-    }
+function SettleHintsModal({ onClose }: {
+    onClose: () => void
 }) {
 
 
-    console.log(transactions)
 
     const { user, addToast } = useStore()
-    const { event, addExpense } = useContext(EventContext)
+    const { event, addExpense, transactions } = useContext(EventContext)
+
+    console.log(transactions)
 
     async function onSettleButtonClick(transaction: SettlementTransactions) {
 
@@ -38,14 +36,15 @@ function SettleHintsModal({ onClose, transactions }: {
 
         let res = await createExpenseReq(event.id, newTransferInputs)
 
-        if (res.success) {
+        if (res.success && res.expense && res.event_data) {
 
-            // addExpense(res.expense)
+            addExpense(res.expense, res.event_data)
             const successToast = {
                 message: 'تسویه حساب با موفقیت انجام شد',
                 type: 'success' as const
             }
             addToast(successToast)
+            onClose()
             return
         }
 

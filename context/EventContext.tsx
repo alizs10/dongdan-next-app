@@ -373,17 +373,17 @@ export function EventContextProvider({ children, data }: { children: React.React
 
         const transactions: SettlementTransactions[] = [];
 
-        // Sort debtors and creditors by the amount
-        debtors.sort((a, b) => b.amount - a.amount);
-        creditors.sort((a, b) => b.amount - a.amount);
+        // Create copies of debtors and creditors arrays and sort them by the amount
+        const sortedDebtors = [...debtors].map(d => ({ ...d })).sort((a, b) => Math.abs(b.amount) - Math.abs(a.amount));
+        const sortedCreditors = [...creditors].map(c => ({ ...c })).sort((a, b) => Math.abs(b.amount) - Math.abs(a.amount));
 
         const hints: string[] = [];
         let i = 0, j = 0;
 
-        while (i < debtors.length && j < creditors.length) {
-            const debtor = debtors[i];
-            const creditor = creditors[j];
-            const transactionAmount = Math.min(debtor.amount, creditor.amount);
+        while (i < sortedDebtors.length && j < sortedCreditors.length) {
+            const debtor = sortedDebtors[i];
+            const creditor = sortedCreditors[j];
+            const transactionAmount = Math.min(Math.abs(debtor.amount), Math.abs(creditor.amount));
 
             const debtorName = debtor.member_id === user?.id ? 'من' : debtor.name;
             const creditorName = creditor.member_id === user?.id ? 'من' : creditor.name;
@@ -398,8 +398,8 @@ export function EventContextProvider({ children, data }: { children: React.React
             debtor.amount -= transactionAmount;
             creditor.amount -= transactionAmount;
 
-            if (debtor.amount === 0) i++;
-            if (creditor.amount === 0) j++;
+            if (Math.abs(debtor.amount) <= 0) i++;
+            if (Math.abs(creditor.amount) <= 0) j++;
         }
         return { hints, transactions };
     }, [debtors, creditors, user]);

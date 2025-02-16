@@ -51,7 +51,7 @@ function MemberShareItemSkeleton() {
     )
 }
 
-export default function MembersShare({ members, toggleSettleHintsModal, isSettleHintsModalOpen, transactions }: { members: Member[], toggleSettleHintsModal: () => void, isSettleHintsModalOpen: boolean, transactions: { transactions: SettlementTransactions[], hints: string[] } }) {
+export default function MembersShare({ members, toggleSettleHintsModal, isSettleHintsModalOpen }: { members: Member[], toggleSettleHintsModal: () => void, isSettleHintsModalOpen: boolean }) {
 
     const { user } = useStore()
 
@@ -73,7 +73,7 @@ export default function MembersShare({ members, toggleSettleHintsModal, isSettle
                 </button>
 
                 {isSettleHintsModalOpen && (
-                    <SettleHintsModal transactions={transactions} onClose={toggleSettleHintsModal} />
+                    <SettleHintsModal onClose={toggleSettleHintsModal} />
                 )}
             </div>
 
