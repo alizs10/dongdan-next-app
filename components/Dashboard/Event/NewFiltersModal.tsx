@@ -1,24 +1,20 @@
 'use client'
 
-import { AnyExpense, ExpenseFilters, Event } from "@/types/event-types";
+import { ExpenseFilters, Event } from "@/types/event-types";
 
-import TextInput from "@/components/Common/Form/TextInput";
 import ModalHeader from "@/components/Common/ModalHeader";
 import ModalWrapper from "@/components/Common/ModalWrapper";
-import { zValidate } from "@/helpers/validation-helper";
 import { Filter } from "lucide-react";
-import { useContext, useEffect, useMemo, useState } from "react";
+import { useContext, useState } from "react";
 import { createPortal } from "react-dom";
 import { TomanPriceFormatter, TomanPriceToNumber } from "@/helpers/helpers";
 
 import Button from "@/components/Common/Button";
 import MemberSelector from "@/components/Common/Form/MemberSelector";
 import PRangeDatePicker from "@/components/Common/Form/PRangeDatePicker";
-import { anyFilterSchema, expendFilterSchema, transferFilterSchema } from "@/database/validations/filters-validation";
 import { EventContext } from "@/context/EventContext";
 
 import { DateObject } from "react-multi-date-picker";
-import { filterExpensesReq } from "@/app/actions/filter";
 import useStore from "@/store/store";
 
 type ExpendFilter = {
@@ -82,38 +78,38 @@ function NewFiltersModal({ onClose, event }: { onClose: () => void, event: Event
     const [nextCursorId, setNextCursorId] = useState<number | null>(null)
 
     const { addToast } = useStore()
-    const { applyFilters } = useContext(EventContext)
+    const { applyFilters, isFiltering, filterQuery } = useContext(EventContext)
 
+    const filterQueryParams = new URLSearchParams(filterQuery);
 
     const [amountFilters, setAmountFilters] = useState<AmountFilter>({
-        min_amount: '',
-        max_amount: '',
+        min_amount: isFiltering && filterQueryParams.get('min_amount') ? TomanPriceFormatter(filterQueryParams.get('min_amount')!) : '',
+        max_amount: isFiltering && filterQueryParams.get('max_amount') ? TomanPriceFormatter(filterQueryParams.get('max_amount')!) : '',
     })
 
     const [dateFilters, setDateFilters] = useState<DateFilter>({
-        start_date: new Date(event.start_date),
-        end_date: new Date(),
+        start_date: isFiltering && filterQueryParams.get('start_date') ? new Date(filterQueryParams.get('start_date')!) : new Date(event.start_date),
+        end_date: isFiltering && filterQueryParams.get('end_date') ? new Date(filterQueryParams.get('end_date')!) : new Date(),
     })
 
     const [expendFilters, setExpendFilters] = useState<ExpendFilter>({
-        payer_id: '',
-        contributor_ids: [],
+        payer_id: isFiltering && filterQueryParams.get('payer_id') ? filterQueryParams.get('payer_id')! : '',
+        contributor_ids: isFiltering && filterQueryParams.get('contributor_ids') ? filterQueryParams.get('contributor_ids')!.split(',') : [],
     })
 
     const [transferFilters, setTransferFilters] = useState<TransferFilter>({
-        transmitter_id: '',
-        receiver_id: '',
+        transmitter_id: isFiltering && filterQueryParams.get('transmitter_id') ? filterQueryParams.get('transmitter_id')! : '',
+        receiver_id: isFiltering && filterQueryParams.get('receiver_id') ? filterQueryParams.get('receiver_id')! : '',
     })
 
     const [filtersStatus, setFiltersStatus] = useState({
         type: true,
-        amount: false,
-        date: false,
-        payer_id: false,
-
-        contributor_ids: false,
-        transmitter_id: false,
-        receiver_id: false,
+        amount: isFiltering && (filterQueryParams.get('min_amount') || filterQueryParams.get('max_amount')) ? true : false,
+        date: isFiltering && (filterQueryParams.get('start_date') || filterQueryParams.get('end_date')) ? true : false,
+        payer_id: isFiltering && filterQueryParams.get('payer_id') ? true : false,
+        contributor_ids: isFiltering && filterQueryParams.get('contributor_ids') ? true : false,
+        transmitter_id: isFiltering && filterQueryParams.get('transmitter_id') ? true : false,
+        receiver_id: isFiltering && filterQueryParams.get('receiver_id') ? true : false,
     })
 
     const toggleFiltersStatus = (key: keyof typeof filtersStatus) => {

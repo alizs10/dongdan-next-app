@@ -316,13 +316,18 @@ function Event() {
                             )}
 
                             {!selectMode && expenses.length > 0 && (
-                                <Button
-                                    text="فیلتر"
-                                    color="gray"
-                                    onClick={toggleFiltersModal}
-                                    size="small"
-                                    icon={<Filter className="size-4" />}
-                                />
+                                <div className="relative">
+                                    <Button
+                                        text="فیلتر"
+                                        color="gray"
+                                        onClick={toggleFiltersModal}
+                                        size="small"
+                                        icon={<Filter className="size-4" />}
+                                    />
+                                    {isFiltering && (
+                                        <span className="absolute bottom-1.5 right-1.5 size-1.5 rounded-full primary_bg_color"></span>
+                                    )}
+                                </div>
                             )}
 
                             {!selectMode && expenses.length > 0 && isFiltersModalOpen && <NewFiltersModal event={event} onClose={toggleFiltersModal} />}
