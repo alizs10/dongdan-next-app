@@ -54,8 +54,16 @@ export async function createMemberReq(eventId: string, inputs: CreateMemberReque
 
         const formData = new FormData;
         Object.entries(inputs).forEach(([key, value]) => {
-            formData.append(key, value);
+            if (Array.isArray(value)) {
+                value.forEach((item, index) => {
+                    formData.append(`${key}[${index}]`, item);
+                });
+            } else {
+                formData.append(key, value);
+            }
         });
+
+
 
         const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/event/${eventId}/members`, {
             method: 'POST',
@@ -221,6 +229,7 @@ export async function createExpenseReq(eventId: string | number, inputs: CreateE
                 success: true,
                 expense: data.expense,
                 event_data: data.event_data,
+                event: data.event,
                 message: 'هزینه جدید با موفقیت اضافه شد'
             }
         }

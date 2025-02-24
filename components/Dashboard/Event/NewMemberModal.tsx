@@ -35,7 +35,7 @@ function NewMemberModal({ onClose }: { onClose: () => void }) {
     const { event, addMember, setMembers } = useContext(EventContext)
     const [fetchingNonMembers, setFetchingNonMembers] = useState(true);
     const [nonMembers, setNonMembers] = useState<null | Member[]>(null)
-    const [selfIncluded, setSelfIncluded] = useState(false);
+    const [isSelfMember, setIsSelfMember] = useState(false);
 
     const initInputs: FormInputs = {
         name: '',
@@ -67,7 +67,8 @@ function NewMemberModal({ onClose }: { onClose: () => void }) {
             const res = await getEventNonMembersReq(event.id.toString())
             if (res.success) {
                 setNonMembers(res.nonMembers)
-                setSelfIncluded(!res.selfIncluded)
+                setIsSelfMember(res.selfIncluded)
+                setInputs(prev => ({ ...prev, selfIncluded: res.selfIncluded }))
                 setFetchingNonMembers(false);
                 return
             }
@@ -250,7 +251,7 @@ function NewMemberModal({ onClose }: { onClose: () => void }) {
                             />
 
 
-                            {(nonMembers && user && (nonMembers.length > 0 || selfIncluded)) && (
+                            {(nonMembers && user && (nonMembers.length > 0 || !isSelfMember)) && (
                                 <NonMemberSelector
                                     label="اعضای رویداد"
                                     members={nonMembers}
@@ -261,7 +262,7 @@ function NewMemberModal({ onClose }: { onClose: () => void }) {
                                     self={{
                                         id: user.id.toString(),
                                         scheme: user.scheme,
-                                        include: selfIncluded,
+                                        include: !isSelfMember,
                                         value: inputs.selfIncluded
                                     }}
                                 />

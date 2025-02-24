@@ -21,6 +21,7 @@ export type SettlementTransactions = {
 
 export type EventContextType = {
     event: Event;
+    updateEvent: (updatedEvent: Event) => void;
     eventData: EventData;
     expenses: Expense[];
     expensesToShow: Expense[];
@@ -54,6 +55,7 @@ export type EventContextType = {
 
 const EventContextInit = {
     event: {} as Event,
+    updateEvent: () => { },
     eventData: {} as EventData,
     expenses: [],
     expensesToShow: [],
@@ -115,6 +117,9 @@ export function EventContextProvider({ children, data }: { children: React.React
     const [filterPaginationData, setFilterPaginationData] = useState<Pagination | null>(null)
     const expensesToShow = isFiltering ? filteredExpenses : expenses;
 
+    function updateEvent(updatedEvent: Event) {
+        setEvent(prevState => ({ ...prevState, ...updatedEvent }))
+    }
 
 
     async function applyFilters(query: string) {
@@ -425,6 +430,7 @@ export function EventContextProvider({ children, data }: { children: React.React
 
     let values: EventContextType = {
         event,
+        updateEvent,
         eventData,
         expenses,
         expensesToShow,

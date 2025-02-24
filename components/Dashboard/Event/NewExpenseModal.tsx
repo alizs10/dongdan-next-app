@@ -50,7 +50,7 @@ function NewExpenseModal({ onClose, event }: { onClose: () => void, event: Event
 
     const { user, addToast } = useStore()
 
-    const { addExpense } = useContext(EventContext);
+    const { addExpense, updateEvent } = useContext(EventContext);
 
     const [formType, setFormType] = useState<FormTypes>(0)
     const [expendFormLoading, setExpendFormLoading] = useState(false)
@@ -279,6 +279,7 @@ function NewExpenseModal({ onClose, event }: { onClose: () => void, event: Event
                 type: 'success' as const,
             }
             addExpense(res.expense, res.event_data)
+            updateEvent(res.event)
             addToast(successToast)
             setExpendFormLoading(false)
             onClose();

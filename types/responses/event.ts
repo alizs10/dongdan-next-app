@@ -42,6 +42,7 @@ export type CreateExpenseResponse = {
     message: string;
     expense: Expense;
     event_data: EventData;
+    event: Event;
 }
 
 
@@ -50,11 +51,13 @@ export type UpdateExpenseResponse = {
     message: string;
     expense: Expense;
     event_data: EventData;
+    event: Event;
 }
 
 export type DeleteExpenseResponse = {
     status: boolean;
     message: string;
     event_data: EventData;
+    event: Event;
 }
 
