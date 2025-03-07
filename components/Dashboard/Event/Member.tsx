@@ -7,6 +7,7 @@ import EditMemberModal from "./EditMemberModal";
 import MemberInfoModal from "./MemberInfoModal";
 import { EventContext } from "@/context/EventContext";
 import useStore from "@/store/store";
+import Image from "next/image";
 
 function MemberSkeleton() {
     return (
@@ -81,7 +82,7 @@ function Member({ member }: { member: Member }) {
             <div className="flex flex-row gap-x-4 items-center">
                 {member.avatar ? (
                     <div className={`rounded-full overflow-hidden`}>
-                        <img src={member.avatar} alt={showMemberName(member.id)} className="size-10 object-center object-cover" />
+                        <Image src={member.avatar} alt={showMemberName(member.id)} width={40} height={40} className="size-10 object-center object-cover" />
                     </div>
                 ) : (
                     <div className={`size-10 flex justify-center items-center border user_avatar_${member.scheme}_border user_avatar_${member.scheme}_bg rounded-full`}>

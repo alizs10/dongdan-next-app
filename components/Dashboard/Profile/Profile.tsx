@@ -19,6 +19,8 @@ function Profile({ data }: { data: TypeUser }) {
     const { setUser: syncUser, user, openDialog, addToast } = useStore()
     const [profile, setProfile] = useState<TypeUser>(data);
 
+    console.log("profile.avatar", profile.avatar)
+
     const [loading, setLoading] = useState(false);
     const [uploadingAvatar, setUploadingAvatar] = useState(false)
     const [deletingAvatar, setDeletingAvatar] = useState(false)

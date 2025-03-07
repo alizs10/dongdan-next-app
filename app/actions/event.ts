@@ -225,6 +225,8 @@ export async function createExpenseReq(eventId: string | number, inputs: CreateE
 
         if (response.ok && data.status) {
 
+            console.log(data.expense)
+
             return {
                 success: true,
                 expense: data.expense,

@@ -122,10 +122,10 @@ function Expense({ expense, index }: { expense: Expense, index: number }) {
                     <h2 className="text-xs md:text-sm max-w-64 lg:max-w-52 xl:max-w-72 overflow-clip text-ellipsis text-nowrap lg:text-base text-gray-700 dark:text-gray-300">{index + 1}.{<span className="mx-1"></span>}{expense.type === 'transfer' ? 'جابه جایی پول' : 'هزینه'}: {expense.description}</h2>
 
                     <div className="flex flex-wrap gap-x-2 lg:gap-x-4 items-center text-xs lg:text-sm">
-                        <span className="user_avatar_gray_text">{showMemberName(expense.type === 'expend' ? expense.payer_id : expense.transmitter_id)}</span>
+                        <span className="user_avatar_gray_text">{showMemberName(expense.type === 'expend' ? expense.payer.id : expense.transmitter.id)}</span>
                         <MoveLeft className="size-3.5 text-gray-500 dark:text-gray-400" />
                         {expense.type === 'transfer' ? (
-                            <span className={`user_avatar_${getMember(expense.receiver_id.toString())?.scheme ?? 'gray'}_text`}>{showMemberName(expense.receiver_id)}</span>
+                            <span className={`user_avatar_${getMember(expense.receiver.id.toString())?.scheme ?? 'gray'}_text`}>{showMemberName(expense.receiver.id)}</span>
                         ) : expense.contributors.length > 3 ? (
                             <span className={`user_avatar_blue_text`}>{expense.contributors.length} نفر</span>
                         ) : <div className="flex flex-wrap gap-x-2">
