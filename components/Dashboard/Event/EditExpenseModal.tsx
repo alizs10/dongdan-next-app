@@ -257,7 +257,7 @@ function EditExpenseModal({ onClose, event, expense }: { onClose: () => void, ev
                 message: res.message,
                 type: 'success' as const,
             }
-            updateExpense(expense.id, res.expense, res.event_data)
+            updateExpense(expense.id, res.expense, res.event_data, res.event_members)
             addToast(successToast)
             setExpendFormLoading(false)
             onClose();
@@ -311,7 +311,7 @@ function EditExpenseModal({ onClose, event, expense }: { onClose: () => void, ev
                 message: res.message,
                 type: 'success' as const,
             }
-            updateExpense(expense.id, res.expense, res.event_data)
+            updateExpense(expense.id, res.expense, res.event_data, res.event_members)
             addToast(successToast)
             setTransferFormLoading(false)
             onClose();

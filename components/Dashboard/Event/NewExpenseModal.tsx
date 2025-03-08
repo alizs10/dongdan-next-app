@@ -7,7 +7,7 @@ import { TomanPriceFormatter, TomanPriceToNumber } from "@/helpers/helpers";
 import { zValidate } from "@/helpers/validation-helper";
 import { Save } from "lucide-react";
 import { useCallback, useContext, useEffect, useState } from "react";
-import { createPortal, useFormStatus } from "react-dom";
+import { createPortal } from "react-dom";
 import ExpensePreview from "./ExpensePreview";
 import PDatePicker from "@/components/Common/Form/PDatePicker";
 import { Event } from "@/types/event-types";
@@ -50,7 +50,7 @@ function NewExpenseModal({ onClose, event }: { onClose: () => void, event: Event
 
     const { user, addToast } = useStore()
 
-    const { addExpense, updateEvent } = useContext(EventContext);
+    const { addExpense } = useContext(EventContext);
 
     const [formType, setFormType] = useState<FormTypes>(0)
     const [expendFormLoading, setExpendFormLoading] = useState(false)
@@ -278,8 +278,7 @@ function NewExpenseModal({ onClose, event }: { onClose: () => void, event: Event
                 message: res.message,
                 type: 'success' as const,
             }
-            addExpense(res.expense, res.event_data)
-            updateEvent(res.event)
+            addExpense(res.expense, res.event_data, res.event_members)
             addToast(successToast)
             setExpendFormLoading(false)
             onClose();
@@ -332,7 +331,7 @@ function NewExpenseModal({ onClose, event }: { onClose: () => void, event: Event
                 type: 'success' as const,
             }
 
-            addExpense(res.expense, res.event_data)
+            addExpense(res.expense, res.event_data, res.event_members)
             addToast(successToast)
             setTransferFormLoading(false)
             onClose();

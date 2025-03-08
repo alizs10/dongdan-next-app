@@ -7,6 +7,7 @@ export type EventData = {
     total_amount: number;
     max_expend_amount: number;
     max_transfer_amount: number;
+    // members: Member[];
     // member_with_most_expends: Member & {
     //     expenses_as_payer_sum_amount: number
     // } | null;
@@ -42,7 +43,7 @@ export type CreateExpenseResponse = {
     message: string;
     expense: Expense;
     event_data: EventData;
-    event: Event;
+    event_members: Member[];
 }
 
 
@@ -51,13 +52,13 @@ export type UpdateExpenseResponse = {
     message: string;
     expense: Expense;
     event_data: EventData;
-    event: Event;
+    event_members: Member[];
 }
 
 export type DeleteExpenseResponse = {
     status: boolean;
     message: string;
     event_data: EventData;
-    event: Event;
+    event_members: Member[];
 }
 

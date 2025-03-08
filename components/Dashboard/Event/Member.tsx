@@ -1,6 +1,6 @@
 import Button from "@/components/Common/Button";
 import useClickOutside from "@/hooks/useOutsideClick";
-import { type Member } from "@/types/event-types";
+import { Member as MemberType } from "@/types/event-types";
 import { Ellipsis, Info, Pencil, Trash, User } from "lucide-react";
 import { useContext, useState } from "react";
 import EditMemberModal from "./EditMemberModal";
@@ -22,7 +22,7 @@ function MemberSkeleton() {
     )
 }
 
-function Member({ member }: { member: Member }) {
+function Member({ member }: { member: MemberType }) {
 
     const { user, openDialog } = useStore()
 

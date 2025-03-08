@@ -42,6 +42,9 @@ function Event() {
         filterQuery
     } = useContext(EventContext);
 
+
+    console.log("event.members", event.members)
+
     function onDeleteSelectedItems() {
 
         openDialog(
@@ -66,8 +69,8 @@ function Event() {
     async function handleTrashExpenseItems() {
         const res = await deleteExpenseItemsReq(event.id, selectedItems)
 
-        if (res.success) {
-            deleteMultiExpenses(selectedItems)
+        if (res.success && res.event_data && res.event_members) {
+            deleteMultiExpenses(selectedItems, res.event_data, res.event_members)
             disableSelectMode()
             const successToast = {
 

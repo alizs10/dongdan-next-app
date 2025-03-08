@@ -35,15 +35,15 @@ export type EventContextType = {
     clearFilters: () => void;
     toggleEventStatus: (end_date?: Date) => void;
     addMember: (member: Member) => void;
-    addExpense: (expense: Expense, event_data: EventData) => void;
+    addExpense: (expense: Expense, event_data: EventData, event_members: Member[]) => void;
     loadMoreExpenses: () => void;
     fetchingMoreExpenses: boolean;
     setMembers: (members: Member[]) => void;
     deleteMember: (memberId: number) => void;
-    deleteExpense: (expenseId: number) => void;
-    deleteMultiExpenses: (expenseIds: string[]) => void;
+    deleteExpense: (expenseId: number, event_data: EventData, event_members: Member[]) => void;
+    deleteMultiExpenses: (expenseIds: string[], event_data: EventData, event_members: Member[]) => void;
     updateMember: (memberId: number, updatedMember: Member) => void;
-    updateExpense: (expenseId: number, updatedExpense: Expense, event_data: EventData) => void;
+    updateExpense: (expenseId: number, updatedExpense: Expense, event_data: EventData, event_members: Member[]) => void;
     creditors: SettlePerson[];
     debtors: SettlePerson[];
     transactions: {
@@ -118,7 +118,7 @@ export function EventContextProvider({ children, data }: { children: React.React
     const expensesToShow = isFiltering ? filteredExpenses : expenses;
 
     function updateEvent(updatedEvent: Event) {
-        setEvent(prevState => ({ ...prevState, ...updatedEvent }))
+        setEvent(updatedEvent)
     }
 
 
@@ -211,6 +211,7 @@ export function EventContextProvider({ children, data }: { children: React.React
         if (res.success && res.event_data) {
             setExpenses(prevState => prevState.filter(e => e.id !== expenseId))
             setEventData(res.event_data)
+            setEvent(prevState => ({ ...prevState, members: res.event_members }))
 
             const successToast = {
                 message: res.message,
@@ -229,23 +230,27 @@ export function EventContextProvider({ children, data }: { children: React.React
 
     }
 
-    function deleteMultiExpenses(expenseIds: string[]) {
+    function deleteMultiExpenses(expenseIds: string[], event_data: EventData, event_members: Member[]) {
         setExpenses(prevState => prevState.filter(e => !expenseIds.includes(e.id.toString())))
+        setEvent(prevState => ({ ...prevState, members: event_members }))
+        setEventData(event_data)
     }
 
     async function updateMember(memberId: number, updatedMember: Member) {
         setEvent(prevState => ({ ...prevState, members: prevState.members.map(m => m.id === memberId ? updatedMember : m) }));
     }
 
-    async function updateExpense(expenseId: number, updatedExpense: Expense, event_data: EventData) {
+    async function updateExpense(expenseId: number, updatedExpense: Expense, event_data: EventData, event_members: Member[]) {
         setExpenses(prevState => prevState.map(e => e.id === expenseId ? updatedExpense : e))
+        setEvent(prevState => ({ ...prevState, members: event_members }))
         setEventData(event_data)
     }
 
 
-    function addExpense(expense: Expense, event_data: EventData) {
+    function addExpense(expense: Expense, event_data: EventData, event_members: Member[]) {
         setExpenses(prevState => [...prevState, expense])
         setEventData(event_data)
+        setEvent(prevState => ({ ...prevState, members: event_members }))
         setExcludeIds(prevState => [...prevState, expense.id])
     }
 

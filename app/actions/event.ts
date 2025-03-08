@@ -1,7 +1,7 @@
 'use server'
 
 import { CreateExpendRequest, CreateMemberRequest, CreateTransferRequest } from "@/types/requests/event";
-import { CreateExpenseResponse, DeleteExpenseResponse, LoadMoreExpensesResponse } from "@/types/responses/event";
+import { CreateExpenseResponse, DeleteExpenseResponse, LoadMoreExpensesResponse, UpdateExpenseResponse } from "@/types/responses/event";
 import { cookies } from "next/headers";
 
 export async function getEventExpensesReq(eventId: string | number) {
@@ -225,13 +225,13 @@ export async function createExpenseReq(eventId: string | number, inputs: CreateE
 
         if (response.ok && data.status) {
 
-            console.log(data.expense)
+            console.log(data)
 
             return {
                 success: true,
                 expense: data.expense,
                 event_data: data.event_data,
-                event: data.event,
+                event_members: data.event_members,
                 message: 'هزینه جدید با موفقیت اضافه شد'
             }
         }
@@ -268,7 +268,7 @@ export async function updateExpenseReq(eventId: string | number, expenseId: stri
             },
         });
 
-        const data = await response.json()
+        const data: UpdateExpenseResponse = await response.json()
 
         if (response.ok && data.status) {
 
@@ -276,6 +276,7 @@ export async function updateExpenseReq(eventId: string | number, expenseId: stri
                 success: true,
                 expense: data.expense,
                 event_data: data.event_data,
+                event_members: data.event_members,
                 message: 'هزینه با موفقیت بروزرسانی شد'
             }
         }
@@ -318,6 +319,7 @@ export async function deleteExpenseReq(eventId: string, expenseId: string | numb
             return {
                 success: true,
                 event_data: data.event_data,
+                event_members: data.event_members,
                 message: 'هزینه با موفقیت خذف شد'
             }
         }
@@ -354,11 +356,13 @@ export async function deleteExpenseItemsReq(eventId: string | number, expenseIds
             },
         });
 
-        const data = await response.json()
+        const data: DeleteExpenseResponse = await response.json()
 
         if (response.ok && data.status) {
             return {
                 success: true,
+                event_data: data.event_data,
+                event_members: data.event_members,
                 message: 'هزینه ها با موفقیت حذف شدند'
             }
         }
