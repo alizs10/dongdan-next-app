@@ -70,6 +70,7 @@ function EditMemberModal({ onClose, member }: { onClose: () => void, member: Mem
             name: inputs.name,
             scheme: inputs.scheme,
             avatar: inputs.avatar ? inputs.avatar : undefined,
+            add_to_contacts: false,
         }
 
         const { hasError, errors } = zValidate(createMemberSchema, createMembeInputs);
