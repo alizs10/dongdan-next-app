@@ -4,7 +4,7 @@ import { logoutReq } from '@/app/actions/auth';
 import useStore from '@/store/store';
 import { BookOpenCheck, CalendarRange, Headset, Info, LogOut, Maximize2, Minimize2, Settings2, Trash, User, Users, Zap } from 'lucide-react'
 import { usePathname, useRouter } from 'next/navigation';
-import { useState } from 'react'
+import { memo, useState } from 'react'
 // import TrackedLink from 'next/TrackedLink';
 import { motion, AnimatePresence } from 'framer-motion';
 import useWidth from '@/hooks/useWidth';
@@ -18,74 +18,78 @@ interface ListItemProps {
     isActive: boolean;
     isMenuMinimized: boolean;
     onClick?: () => void;
+    width: number;
 }
 
-function ListItem({ href, icon, text, isActive, isMenuMinimized, onClick }: ListItemProps) {
-    const { width } = useWidth();
-    const Content = () => (
-        <>
-            {icon}
-            <AnimatePresence>
-                {(!isMenuMinimized || width < 1024) && (
-                    <motion.span
-                        initial={{ opacity: 0, x: -10, width: 0, scale: 0.8 }}
-                        animate={{ opacity: 1, x: 0, width: 'auto', scale: 1 }}
-                        exit={{ opacity: 0, x: -10, width: 0, scale: 0.8 }}
-                        transition={{
-                            duration: 0.2,
-                            ease: "easeOut"
-                        }}
-                        className="whitespace-nowrap"
-                    >{text}</motion.span>
-                )}
-            </AnimatePresence>
+const Content = memo(({ icon, text, isMenuMinimized, width }: Pick<ListItemProps, "icon" | "text" | "isMenuMinimized" | "width">) => (
+    <>
+        {icon}
+        <AnimatePresence mode="popLayout">
+            {(!isMenuMinimized || width < 1024) && (
+                <motion.span
+                    key={text} // Ensure animation only runs when text changes
+                    initial={{ opacity: 0, x: -10, width: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, x: 0, width: 'auto', scale: 1 }}
+                    exit={{ opacity: 0, x: -10, width: 0, scale: 0.8 }}
+                    transition={{
+                        duration: 0.2,
+                        ease: "easeOut"
+                    }}
+                    className="whitespace-nowrap"
+                >
+                    {text}
+                </motion.span>
+            )}
+        </AnimatePresence>
+    </>
+));
 
-        </>
-    )
-
+const ListItem = memo(({ href, icon, text, isActive, isMenuMinimized, onClick, width }: ListItemProps) => {
     const className = `border-r-2 transition-all duration-300 text-sm xl:text-base cursor-pointer ${isActive
-        ? 'border-indigo-800 dark:border-600 primary_text_color bg-indigo-50 dark:bg-indigo-600/10'
-        : 'hover:border-r-2 border-r-transparent text-gray-500 dark:text-gray-400 hover:border-r-indigo-800 hover:bg-indigo-50 dark:hover:bg-indigo-600/10 hover:text-indigo-800 dark:hover:text-indigo-600'
-        }`
+            ? 'border-indigo-800 dark:border-600 primary_text_color bg-indigo-50 dark:bg-indigo-600/10'
+            : 'hover:border-r-2 border-r-transparent text-gray-500 dark:text-gray-400 hover:border-r-indigo-800 hover:bg-indigo-50 dark:hover:bg-indigo-600/10 hover:text-indigo-800 dark:hover:text-indigo-600'
+        }`;
 
-    const contentClassName = `flex flex-row items-center gap-x-2 px-5 py-3 w-full h-full ${(isMenuMinimized && width > 1024) ? 'justify-center' : ''}`
+    const contentClassName = `flex flex-row items-center gap-x-2 px-5 py-3 w-full h-full ${isMenuMinimized && width > 1024 ? 'justify-center' : ''
+        }`;
 
-    return (
-        isMenuMinimized ? (
-            <Tooltip text={text} key={text} position='right'>
-                <li className={className}>
-                    {href ? (
-                        <TrackedLink className={contentClassName} href={href}>
-                            <Content />
-                        </TrackedLink>
-                    ) : (
-                        <div onClick={onClick} className={contentClassName}>
-                            <Content />
-                        </div>
-                    )}
-                </li>
-            </Tooltip>
-        ) : (
+    return isMenuMinimized ? (
+        <Tooltip text={text} key={text} position="right">
             <li className={className}>
                 {href ? (
                     <TrackedLink className={contentClassName} href={href}>
-                        <Content />
+                        <Content icon={icon} text={text} isMenuMinimized={isMenuMinimized} width={width} />
                     </TrackedLink>
                 ) : (
                     <div onClick={onClick} className={contentClassName}>
-                        <Content />
+                        <Content icon={icon} text={text} isMenuMinimized={isMenuMinimized} width={width} />
                     </div>
                 )}
             </li>
-        )
-    )
-}
+        </Tooltip>
+    ) : (
+        <li className={className}>
+            {href ? (
+                <TrackedLink className={contentClassName} href={href}>
+                    <Content icon={icon} text={text} isMenuMinimized={isMenuMinimized} width={width} />
+                </TrackedLink>
+            ) : (
+                <div onClick={onClick} className={contentClassName}>
+                    <Content icon={icon} text={text} isMenuMinimized={isMenuMinimized} width={width} />
+                </div>
+            )}
+        </li>
+    );
+});
+
+// ListItem.displayName = 'ListItem';
 
 export default function QuickAcessMenu() {
     const { addToast, isMenuMinimized, setIsMenuMinimized } = useStore()
     const router = useRouter();
     const pathname = usePathname();
     const [loading, setLoading] = useState(false);
+
 
     function toggleMenu() {
         setIsMenuMinimized(!isMenuMinimized)
@@ -179,6 +183,7 @@ export default function QuickAcessMenu() {
                     text="رویداد ها"
                     isActive={pathname === '/dashboard/events'}
                     isMenuMinimized={isMenuMinimized}
+                    width={width}
                 />
                 <ListItem
                     href="/dashboard/events/contacts"
@@ -186,6 +191,7 @@ export default function QuickAcessMenu() {
                     text="دوستان"
                     isActive={pathname === '/dashboard/events/contacts'}
                     isMenuMinimized={isMenuMinimized}
+                    width={width}
                 />
                 <ListItem
                     href={pathname === '/dashboard/events/contacts' ? '/dashboard/events/contacts/trash' : '/dashboard/events/trash'}
@@ -193,6 +199,7 @@ export default function QuickAcessMenu() {
                     text="سطل زباله"
                     isActive={pathname === '/dashboard/events/trash' || pathname === '/dashboard/events/contacts/trash'}
                     isMenuMinimized={isMenuMinimized}
+                    width={width}
                 />
                 <ListItem
                     href="/dashboard/guide"
@@ -200,6 +207,7 @@ export default function QuickAcessMenu() {
                     text="راهنمای استفاده"
                     isActive={pathname === '/dashboard/guide'}
                     isMenuMinimized={isMenuMinimized}
+                    width={width}
                 />
                 <ListItem
                     href="/dashboard/contact"
@@ -207,6 +215,7 @@ export default function QuickAcessMenu() {
                     text="ارتباط با ما"
                     isActive={pathname === '/dashboard/contact'}
                     isMenuMinimized={isMenuMinimized}
+                    width={width}
                 />
                 <ListItem
                     href="/dashboard/about"
@@ -214,6 +223,7 @@ export default function QuickAcessMenu() {
                     text="درباره"
                     isActive={pathname === '/dashboard/about'}
                     isMenuMinimized={isMenuMinimized}
+                    width={width}
                 />
                 <ListItem
                     href="/dashboard/settings"
@@ -221,6 +231,7 @@ export default function QuickAcessMenu() {
                     text="تنظیمات"
                     isActive={pathname === '/dashboard/settings'}
                     isMenuMinimized={isMenuMinimized}
+                    width={width}
                 />
                 <ListItem
                     href="/dashboard/profile"
@@ -228,6 +239,7 @@ export default function QuickAcessMenu() {
                     text="پروفایل کاربری"
                     isActive={pathname === '/dashboard/profile'}
                     isMenuMinimized={isMenuMinimized}
+                    width={width}
                 />
                 <ListItem
                     icon={<LogOut className="size-4 xl:size-5" />}
@@ -235,6 +247,7 @@ export default function QuickAcessMenu() {
                     isActive={false}
                     isMenuMinimized={isMenuMinimized}
                     onClick={handleLogout}
+                    width={width}
                 />
             </ul>
         </motion.aside>
