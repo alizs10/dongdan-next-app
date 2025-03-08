@@ -182,8 +182,7 @@ function Event() {
                 )}
 
                 {event.members.length > 0 && (
-
-                    <MembersShare members={event.members} toggleSettleHintsModal={toggleSettleHintsModal} isSettleHintsModalOpen={isSettleHintsModalOpen} transactions={transactions} />
+                    <MembersShare members={event.members} toggleSettleHintsModal={toggleSettleHintsModal} isSettleHintsModalOpen={isSettleHintsModalOpen} />
                 )}
 
 

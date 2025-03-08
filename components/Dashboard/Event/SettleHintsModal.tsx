@@ -10,8 +10,6 @@ import { CreditCard, Handshake, Minus, MoveLeft, User } from "lucide-react";
 import { useContext } from "react";
 import { createPortal } from "react-dom";
 
-
-
 function SettleHintsModal({ onClose }: {
     onClose: () => void
 }) {
@@ -20,8 +18,6 @@ function SettleHintsModal({ onClose }: {
 
     const { user, addToast } = useStore()
     const { event, addExpense, transactions } = useContext(EventContext)
-
-    console.log(transactions)
 
     async function onSettleButtonClick(transaction: SettlementTransactions) {
 
@@ -36,9 +32,9 @@ function SettleHintsModal({ onClose }: {
 
         let res = await createExpenseReq(event.id, newTransferInputs)
 
-        if (res.success && res.expense && res.event_data) {
+        if (res.success && res.expense && res.event_data && res.event_members) {
 
-            addExpense(res.expense, res.event_data)
+            addExpense(res.expense, res.event_data, res.event_members)
             const successToast = {
                 message: 'تسویه حساب با موفقیت انجام شد',
                 type: 'success' as const

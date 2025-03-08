@@ -360,11 +360,14 @@ export function EventContextProvider({ children, data }: { children: React.React
         })
 
         return creditorsArr;
-    }, [event.members, expenses]);
+    }, [event.members]);
 
     const debtors = useMemo(() => {
         const debtorsArr: SettlePerson[] = [];
-        event.members.forEach(member => {
+        event.members.forEach((member, index) => {
+
+
+            console.log("debtor number ", index + 1)
 
             if (member.balance_status === 'debtor') {
                 debtorsArr.push({
@@ -375,17 +378,22 @@ export function EventContextProvider({ children, data }: { children: React.React
         })
 
         return debtorsArr;
-    }, [event.members, expenses]);
+    }, [event.members]);
+
 
     const transactions = useMemo(() => {
-
-        if (!user) return { hints: [], transactions: [] }
+        if (!user) return { hints: [], transactions: [] };
 
         const transactions: SettlementTransactions[] = [];
 
-        // Create copies of debtors and creditors arrays and sort them by the amount
-        const sortedDebtors = [...debtors].map(d => ({ ...d })).sort((a, b) => Math.abs(b.amount) - Math.abs(a.amount));
-        const sortedCreditors = [...creditors].map(c => ({ ...c })).sort((a, b) => Math.abs(b.amount) - Math.abs(a.amount));
+        // Sort debtors and creditors by absolute amount in descending order
+        const sortedDebtors = debtors
+            .map(d => ({ ...d })) // Copy objects to avoid mutation
+            .sort((a, b) => Math.abs(b.amount) - Math.abs(a.amount));
+
+        const sortedCreditors = creditors
+            .map(c => ({ ...c }))
+            .sort((a, b) => Math.abs(b.amount) - Math.abs(a.amount));
 
         const hints: string[] = [];
         let i = 0, j = 0;
@@ -393,24 +401,38 @@ export function EventContextProvider({ children, data }: { children: React.React
         while (i < sortedDebtors.length && j < sortedCreditors.length) {
             const debtor = sortedDebtors[i];
             const creditor = sortedCreditors[j];
+
+            if (debtor.amount === 0) {
+                i++;
+                continue;
+            }
+            if (creditor.amount === 0) {
+                j++;
+                continue;
+            }
+
             const transactionAmount = Math.min(Math.abs(debtor.amount), Math.abs(creditor.amount));
+
+            transactions.push({
+                transmitter: { ...debtor },
+                receiver: { ...creditor },
+                amount: transactionAmount,
+            });
 
             const debtorName = debtor.member_id === user?.id ? 'من' : debtor.name;
             const creditorName = creditor.member_id === user?.id ? 'من' : creditor.name;
 
-            transactions.push({
-                transmitter: debtor,
-                receiver: creditor,
-                amount: transactionAmount,
-            });
-
             hints.push(`${debtorName} باید مقدار ${TomanPriceFormatter(transactionAmount.toString())} تومان به ${creditorName} پرداخت ${debtorName === 'من' ? 'کنم' : 'کند'}.`);
-            debtor.amount -= transactionAmount;
-            creditor.amount -= transactionAmount;
 
-            if (Math.abs(debtor.amount) <= 0) i++;
-            if (Math.abs(creditor.amount) <= 0) j++;
+            // Deduct from both parties
+            sortedDebtors[i].amount += transactionAmount; // Since debtors have negative amounts
+            sortedCreditors[j].amount -= transactionAmount;
+
+            // Move to the next debtor or creditor if fully settled
+            if (sortedDebtors[i].amount === 0) i++;
+            if (sortedCreditors[j].amount === 0) j++;
         }
+
         return { hints, transactions };
     }, [debtors, creditors, user]);
 
