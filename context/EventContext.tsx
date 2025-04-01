@@ -10,7 +10,7 @@ import useStore from "@/store/store";
 
 import { Event, Expense, Member, SettlePerson } from "@/types/event-types";
 import { Pagination } from "@/types/globals";
-import { EventData, GetEventResponse } from "@/types/responses/event";
+import { DeleteMemberResponse, EventData, GetEventResponse } from "@/types/responses/event";
 import { createContext, useCallback, useMemo, useState } from "react";
 
 export type SettlementTransactions = {
@@ -168,31 +168,19 @@ export function EventContextProvider({ children, data }: { children: React.React
 
     async function deleteMember(memberId: number) {
 
-        const res = await deleteMemberReq(event.id.toString(), memberId)
+        const res = await deleteMemberReq(event.id.toString(), memberId.toString())
 
-        if (res.success) {
+        if (res.success && res.expenses && res.event_members && res.event_data) {
 
-            const res2 = await getEventExpensesReq(event.id)
+            setExpenses(res.expenses)
+            setEvent(prevState => ({ ...prevState, members: res.event_members }))
+            setEventData(res.event_data)
 
-            if (res2.success) {
-
-                setEvent(prevState => ({ ...prevState, members: prevState.members.filter(m => m.id !== memberId), expenses: res2.expenses }));
-
-                const successToast = {
-                    message: res.message,
-                    type: 'success' as const,
-                }
-                addToast(successToast)
-                return;
-
+            const successToast = {
+                message: res.message,
+                type: 'success' as const,
             }
-
-
-            const errorToast = {
-                message: res2.message,
-                type: 'danger' as const,
-            }
-            addToast(errorToast)
+            addToast(successToast)
             return;
         }
 

@@ -11,17 +11,28 @@ export async function loginReq(credentials: LoginCredentialsRequest) {
         headers: {
             'Content-Type': 'application/json',
             'Accept': 'application/json',
-        }
+        },
+        credentials: "include"
     });
+
+    console.log("login response", response)
 
     const data = await response.json();
 
-    if (data.token) {
+    if (data.token && data.refresh_token) {
         (await cookies()).set('token', data.token, {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
             sameSite: 'strict',
-            path: '/'
+            path: '/',
+            maxAge: 1 * 24 * 60 * 60, // 1 days
+        });
+        (await cookies()).set('refresh_token', data.refresh_token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'strict',
+            path: '/',
+            maxAge: 30 * 24 * 60 * 60, // 30 days
         });
         return { success: true, user: data.user };
     }
@@ -172,6 +183,8 @@ export async function logoutReq() {
     });
 
     if (response.ok) {
+        (await cookies()).delete('token');
+        (await cookies()).delete('refresh_token');
         return { success: true };
     }
 

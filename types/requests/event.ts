@@ -36,3 +36,8 @@ export type CreateTransferRequest = {
     transmitter_id: string;
     receiver_id: string;
 }
+
+export type DeleteMemberRequest = {
+    member_id: string;
+    event_id: string;
+}

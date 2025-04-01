@@ -1,10 +1,5 @@
 import { Zap } from "lucide-react";
 import Link from "next/link";
-import Vector from "../Common/Vector";
-import Vector4 from "../Common/Vector4";
-import Wave4Down from "../Common/Wave4Down";
-import Wave6 from "../Common/Wave6";
-import Shape from "../Common/Shape";
 import Banner from "./Banner";
 import YourComments from "../Main/YourComments";
 
@@ -29,7 +24,7 @@ function Landing() {
 
                 <p className='app_text_color text-xl mx-auto'>دیگه چی میخوای؟ همین الان شروع کن.</p>
 
-                <Link href={'/dashboard/events'} className='landing_button'>
+                <Link href={'/dashboard'} className='landing_button'>
                     <p className='landing_button_text'>بزن بریم!</p>
                     <Zap className='landing_button_icon' />
                 </Link>

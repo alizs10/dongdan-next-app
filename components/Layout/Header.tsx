@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Logo from "../Common/Logo";
 import ThemeToggle from "./ThemeToggle";
+import ProfileHeader from "./ProfileHeader";
 
 function Header() {
     return (
@@ -15,6 +16,7 @@ function Header() {
             </div>
 
             <div className="header_left">
+                <ProfileHeader />
                 <ThemeToggle />
             </div>
 

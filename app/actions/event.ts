@@ -1,7 +1,7 @@
 'use server'
 
 import { CreateExpendRequest, CreateMemberRequest, CreateTransferRequest } from "@/types/requests/event";
-import { CreateExpenseResponse, DeleteExpenseResponse, LoadMoreExpensesResponse, UpdateExpenseResponse } from "@/types/responses/event";
+import { CreateExpenseResponse, DeleteExpenseResponse, DeleteMemberResponse, LoadMoreExpensesResponse, UpdateExpenseResponse } from "@/types/responses/event";
 import { cookies } from "next/headers";
 
 export async function getEventExpensesReq(eventId: string | number) {
@@ -126,13 +126,16 @@ export async function deleteMemberReq(eventId: string, memberId: string | number
             },
         });
 
-        const data = await response.json()
+        const data: DeleteMemberResponse = await response.json()
 
         if (response.ok && data.status) {
 
             return {
                 success: true,
-                message: 'عضو با موفقیت خذف شد'
+                message: 'عضو با موفقیت خذف شد',
+                expenses: data.expenses,
+                event_members: data.event_members,
+                event_data: data.event_data
             }
         }
 

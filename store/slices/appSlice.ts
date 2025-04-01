@@ -4,7 +4,7 @@ import { StateCreator } from "zustand";
 
 export interface AppSlice {
     user: null | User;
-    setUser: (user: User) => void;
+    setUser: (user: User | null) => void;
     updateUser: (user: User) => void;
     settings: Settings;
     setSettings: (settings: Settings) => void;
@@ -17,7 +17,7 @@ export interface AppSlice {
 
 export const createAppSlice: StateCreator<AppSlice, [], [], AppSlice> = (set) => ({
     user: null,
-    setUser: (user: User) => set(() => ({ user })),
+    setUser: (user: User | null) => set(() => ({ user })),
     updateUser: (user: User) => set((state) => ({ user: { ...state.user, ...user } })),
     settings: {
         show_as_me: 1,

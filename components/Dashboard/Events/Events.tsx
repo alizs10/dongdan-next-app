@@ -1,6 +1,6 @@
 'use client'
 
-import { CalendarPlus, ListCheck, ListChecks, Trash, X } from "lucide-react";
+import { CalendarPlus, ListCheck, ListChecks, MoveRight, Trash, X } from "lucide-react";
 import NewEventModal from "./NewEventModal";
 import NoEvents from "./NoEvents";
 import Button from "@/components/Common/Button";
@@ -10,6 +10,7 @@ import { EventsContext } from "@/context/EventsContext";
 import { MultiSelectItemContext } from "@/context/MultiSelectItemContext";
 import { trashEventItemsReq } from "@/app/actions/events";
 import useStore from "@/store/store";
+import TrackedLink from "@/components/Common/TrackedLinks";
 
 function Events() {
 
@@ -73,6 +74,9 @@ function Events() {
         <div className='events_container'>
             <div className='events_header_container'>
                 <div className="event_header_right">
+                    <TrackedLink href={'/dashboard'} className="event_back_button">
+                        <MoveRight className="event_back_button_icon" />
+                    </TrackedLink>
 
                     <h1 className='events_header_title'>رویداد ها {`(${items.length})`}</h1>
                 </div>

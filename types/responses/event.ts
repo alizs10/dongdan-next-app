@@ -62,3 +62,11 @@ export type DeleteExpenseResponse = {
     event_members: Member[];
 }
 
+
+export type DeleteMemberResponse = {
+    status: boolean;
+    message: string;
+    event_data: EventData;
+    expenses: Expense[];
+    event_members: Member[];
+}

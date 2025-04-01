@@ -46,8 +46,8 @@ const Content = memo(({ icon, text, isMenuMinimized, width }: Pick<ListItemProps
 
 const ListItem = memo(({ href, icon, text, isActive, isMenuMinimized, onClick, width }: ListItemProps) => {
     const className = `border-r-2 transition-all duration-300 text-sm xl:text-base cursor-pointer ${isActive
-            ? 'border-indigo-800 dark:border-600 primary_text_color bg-indigo-50 dark:bg-indigo-600/10'
-            : 'hover:border-r-2 border-r-transparent text-gray-500 dark:text-gray-400 hover:border-r-indigo-800 hover:bg-indigo-50 dark:hover:bg-indigo-600/10 hover:text-indigo-800 dark:hover:text-indigo-600'
+        ? 'border-indigo-800 dark:border-600 primary_text_color bg-indigo-50 dark:bg-indigo-600/10'
+        : 'hover:border-r-2 border-r-transparent text-gray-500 dark:text-gray-400 hover:border-r-indigo-800 hover:bg-indigo-50 dark:hover:bg-indigo-600/10 hover:text-indigo-800 dark:hover:text-indigo-600'
         }`;
 
     const contentClassName = `flex flex-row items-center gap-x-2 px-5 py-3 w-full h-full ${isMenuMinimized && width > 1024 ? 'justify-center' : ''
@@ -85,7 +85,7 @@ const ListItem = memo(({ href, icon, text, isActive, isMenuMinimized, onClick, w
 // ListItem.displayName = 'ListItem';
 
 export default function QuickAcessMenu() {
-    const { addToast, isMenuMinimized, setIsMenuMinimized } = useStore()
+    const { setUser, addToast, isMenuMinimized, setIsMenuMinimized } = useStore()
     const router = useRouter();
     const pathname = usePathname();
     const [loading, setLoading] = useState(false);
@@ -104,6 +104,7 @@ export default function QuickAcessMenu() {
         const response = await logoutReq();
 
         if (response.success) {
+            setUser(null)
             setLoading(false)
             router.push('/');
             return;
@@ -122,7 +123,7 @@ export default function QuickAcessMenu() {
             animate={{ width: width < 1024 ? '100%' : isMenuMinimized ? '5%' : '20%' }}
             transition={{ duration: 0.2 }}
 
-            className={`top-20 pb-8 sticky app_bg_color h-fit`}>
+            className={`pb-8 lg:sticky lg:top-20 app_bg_color h-fit`}>
 
 
             <div className={`w-full relative flex flex-row ${(isMenuMinimized && width > 1024) ? 'justify-center' : 'justify-between'} items-center h-14 lg:h-18 px-5 py-8`}>
@@ -202,42 +203,34 @@ export default function QuickAcessMenu() {
                     width={width}
                 />
                 <ListItem
-                    href="/dashboard/guide"
+                    href="/dashboard/events/guide"
                     icon={<BookOpenCheck className="size-4 xl:size-5" />}
                     text="راهنمای استفاده"
-                    isActive={pathname === '/dashboard/guide'}
+                    isActive={pathname === '/dashboard/events/guide'}
                     isMenuMinimized={isMenuMinimized}
                     width={width}
                 />
                 <ListItem
-                    href="/dashboard/contact"
+                    href="/dashboard/events/contact"
                     icon={<Headset className="size-4 xl:size-5" />}
                     text="ارتباط با ما"
-                    isActive={pathname === '/dashboard/contact'}
+                    isActive={pathname === '/dashboard/events/contact'}
                     isMenuMinimized={isMenuMinimized}
                     width={width}
                 />
                 <ListItem
-                    href="/dashboard/about"
+                    href="/dashboard/events/about"
                     icon={<Info className="size-4 xl:size-5" />}
                     text="درباره"
-                    isActive={pathname === '/dashboard/about'}
+                    isActive={pathname === '/dashboard/events/about'}
                     isMenuMinimized={isMenuMinimized}
                     width={width}
                 />
                 <ListItem
-                    href="/dashboard/settings"
+                    href="/dashboard/events/settings"
                     icon={<Settings2 className="size-4 xl:size-5" />}
                     text="تنظیمات"
-                    isActive={pathname === '/dashboard/settings'}
-                    isMenuMinimized={isMenuMinimized}
-                    width={width}
-                />
-                <ListItem
-                    href="/dashboard/profile"
-                    icon={<User className="size-4 xl:size-5" />}
-                    text="پروفایل کاربری"
-                    isActive={pathname === '/dashboard/profile'}
+                    isActive={pathname === '/dashboard/events/settings'}
                     isMenuMinimized={isMenuMinimized}
                     width={width}
                 />

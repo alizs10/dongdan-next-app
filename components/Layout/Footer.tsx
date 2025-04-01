@@ -1,6 +1,6 @@
 import { Github, Globe, Headset, Info, Instagram, Mail, MapPin, Phone, Send } from "lucide-react";
 import Link from "next/link";
-import FooterWave from "./FooterWave";
+// import FooterWave from "./FooterWave";
 
 
 function Footer() {
@@ -8,7 +8,7 @@ function Footer() {
     return (
         <footer className="relative">
 
-            <FooterWave />
+            {/* <FooterWave /> */}
 
             <div className='footer_container'>
 

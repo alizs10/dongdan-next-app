@@ -3,6 +3,7 @@
 import { CreateEventRequest, UpdateEventRequest } from "@/types/requests/events";
 import { cookies } from "next/headers";
 
+
 export async function getEventMembersReq(eventId: string) {
     const token = (await cookies()).get('token');
 

@@ -277,7 +277,7 @@
 /* footer styles */
 
 .footer_container {
-  @apply bg-indigo-800 dark:bg-indigo-600 px-10 md:px-14 xl:px-20 py-5 md:py-10 xl:py-20 flex flex-col gap-10 md:gap-12 xl:gap-20 md:grid md:grid-cols-2 xl:grid-cols-3;
+  @apply border-t app_border_color px-10 md:px-14 xl:px-20 py-5 md:py-10 xl:py-20 flex flex-col gap-10 md:gap-12 xl:gap-20 md:grid md:grid-cols-2 xl:grid-cols-3;
 }
 
 .footer_info {

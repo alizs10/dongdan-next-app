@@ -1,21 +1,19 @@
+'use server'
+
+import { fetchWithAuth } from "@/app/actions/apiFetch";
 import Events from "@/components/Dashboard/Events/Events";
 import { EventsContextProvider } from "@/context/EventsContext";
 import { MultiSelectItemContextProvider } from "@/context/MultiSelectItemContext";
-import { cookies } from "next/headers";
-
+// import { fetchWithAuth } from "@/lib/api";
+// import { apiFetch } from "@/lib/api";
+import { Event } from "@/types/event-types";
 
 async function getData() {
-    const token = (await cookies()).get('token');
 
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/events`, {
-        headers: {
-            Authorization: `Bearer ${token?.value}`
-        }
-    });
-
-    const data = await response.json();
+    const data = await fetchWithAuth('/events');
     return data.events;
 }
+
 
 async function DashboardPage() {
 

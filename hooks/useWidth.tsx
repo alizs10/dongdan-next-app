@@ -4,9 +4,9 @@ type BreakPoints = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl';
 
 export default function useWidth() {
 
-    const [width, setWidth] = useState(window.innerWidth);
+    const [width, setWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 0);
     const [breakPKey, setBreakPKey] = useState<BreakPoints>(() => {
-        const windowWidth = window.innerWidth;
+        const windowWidth = typeof window !== 'undefined' ? window.innerWidth : 0;
         if (windowWidth < 480) return 'xs';
         else if (windowWidth < 640) return 'sm';
         else if (windowWidth < 768) return 'md';

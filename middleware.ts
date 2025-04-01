@@ -2,9 +2,12 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
 export async function middleware(request: NextRequest) {
+
     const token = request.cookies.get('token')?.value;
+    console.log("we are here")
 
     if (!token) {
+        console.log("no token found!")
         return NextResponse.redirect(new URL('/auth?form=login', request.url));
     }
 
@@ -34,7 +37,7 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
     matcher: [
-        '/dashboard/:path*'
+        // '/dashboard/:path*'
         // Add other protected routes
     ]
 };
