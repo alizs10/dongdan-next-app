@@ -1,12 +1,32 @@
-import { Calendar, Tags } from "lucide-react";
+import Button from "@/components/Common/Button";
+import { Calendar, Plus, Tags } from "lucide-react";
+import { useState } from "react";
+import NewCategoryModal from "./Modals/NewCategoryModal";
 
 export default function LeftSidebar() {
+
+    const [newCategoryModalVis, setNewCategoryModalVis] = useState(false)
+
     return (
-        <div className="w-64 app_bg_color h-full sticky top-20">
+        <div className="w-72 app_bg_color h-full sticky top-20">
             <div className="mb-6">
-                <div className="flex items-center gap-2 text-lg font-semibold primary_text_color px-6 pt-6 mb-4">
-                    <Tags className="size-5" />
-                    <h3>برچسب‌ها</h3>
+                <div className="flex flex-row justify-between items-center px-6 pt-6 mb-4">
+
+                    <div className="flex items-center gap-2 text-lg font-semibold primary_text_color">
+                        <Tags className="size-5" />
+                        <h3>برچسب‌ها</h3>
+                    </div>
+
+                    <Button
+                        icon={<Plus className="size-4" />}
+                        size="small"
+                        color="accent"
+                        onClick={() => setNewCategoryModalVis(true)}
+                        text=""
+                    />
+
+                    {newCategoryModalVis && (<NewCategoryModal onClose={() => setNewCategoryModalVis(false)} />)}
+
                 </div>
                 <ul className="space-y-2">
                     <li>

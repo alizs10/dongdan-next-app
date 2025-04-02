@@ -18,7 +18,7 @@ export type Transaction = {
 }
 
 export default function PersonalMain() {
-    const [activeTab, setActiveTab] = useState("overview");
+    const [activeTab, setActiveTab] = useState<"overview" | "transactions">("transactions");
 
     const transactions: Transaction[] = [
         {
@@ -118,6 +118,15 @@ export default function PersonalMain() {
                 </div>
                 <div className="flex border-b app_border_color flex-row mb-6 w-full">
                     <button
+                        className={`flex-1 px-6 py-4 transition-colors ${activeTab === "transactions"
+                            ? "primary_bg_color text-white"
+                            : "app_bg_color hover:bg-gray-100 dark:hover:bg-gray-700"
+                            }`}
+                        onClick={() => setActiveTab("transactions")}
+                    >
+                        تراکنش ها
+                    </button>
+                    <button
                         className={`flex-1 px-6 py-4 transition-colors ${activeTab === "overview"
                             ? "primary_bg_color text-white"
                             : "app_bg_color hover:bg-gray-100 dark:hover:bg-gray-700"
@@ -126,18 +135,10 @@ export default function PersonalMain() {
                     >
                         نمای کلی
                     </button>
-                    <button
-                        className={`flex-1 px-6 py-4 transition-colors ${activeTab === "expenses"
-                            ? "primary_bg_color text-white"
-                            : "app_bg_color hover:bg-gray-100 dark:hover:bg-gray-700"
-                            }`}
-                        onClick={() => setActiveTab("expenses")}
-                    >
-                        هزینه‌ها
-                    </button>
+
                 </div>
                 <div className="space-y-6">
-                    {activeTab === "overview" ? <OverallView transactions={transactions} /> : <Transactions transactions={transactions} />}
+                    {activeTab === "overview" ? <OverallView /> : <Transactions transactions={transactions} />}
                 </div>
             </div>
 

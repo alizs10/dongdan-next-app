@@ -3,8 +3,13 @@
 import { AlertTriangle, Plus } from "lucide-react";
 import Button from "@/components/Common/Button";
 import { useState } from "react";
+import NewSavingsGoalModal from "./Modals/NewSavingsGoalModal";
 
 export default function RightSidebar() {
+
+    const [newSavingsGoalModalVis, setNewSavingsGoalModalVis] = useState(false)
+
+
     // Initial savings goal as an example
     const [savingsGoals, setSavingsGoals] = useState([
         {
@@ -25,7 +30,7 @@ export default function RightSidebar() {
     };
 
     return (
-        <div className="w-64 app_bg_color h-full sticky top-20">
+        <div className="w-72 app_bg_color h-full sticky top-20">
             <div className="mb-6">
                 <h3 className="text-lg font-semibold primary_text_color px-4 pt-4 mb-4">صورتحساب‌های آتی</h3>
                 <ul className="space-y-2">
@@ -67,12 +72,15 @@ export default function RightSidebar() {
                     })}
 
                     <Button
-                        onClick={addSavingsGoal}
+                        onClick={() => setNewSavingsGoalModalVis(true)}
                         text="هدف جدید"
                         icon={<Plus className="size-4" />}
                         size="small"
                         color="gray"
                     />
+
+                    {newSavingsGoalModalVis && (<NewSavingsGoalModal onClose={() => setNewSavingsGoalModalVis(false)} />)}
+
                 </div>
             </div>
         </div>

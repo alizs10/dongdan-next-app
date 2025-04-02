@@ -6,8 +6,12 @@ import ExpenseItem from "./ExpenseItem";
 import IncomeItem from "./IncomeItem";
 import { useState } from "react";
 import { Transaction } from "./PersonalMain";
+import NewTransactionModal from "./Modals/NewTransactionsModal";
 
 export default function Transactions({ transactions }: { transactions: Transaction[] }) {
+
+    const [newTransactionModalVis, setNewTransactionModalVis] = useState(false)
+
     const [activeFilter, setActiveFilter] = useState("all");
 
     transactions.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
@@ -19,9 +23,9 @@ export default function Transactions({ transactions }: { transactions: Transacti
     return (
         <div className="space-y-6">
             <div className="flex justify-between items-center mb-8 px-6">
-                <div className="flex gap-x-4">
+                <div className="flex gap-x-2">
                     <button
-                        className={`px-8 py-3 rounded-lg app_border_color border transition-colors ${activeFilter === "all"
+                        className={`px-4 py-2 rounded-md app_border_color border transition-colors ${activeFilter === "all"
                             ? "primary_bg_color text-white hover:bg-indigo-700 dark:hover:bg-indigo-500"
                             : "app_bg_color hover:bg-gray-100 dark:hover:bg-gray-700"
                             }`}
@@ -30,7 +34,7 @@ export default function Transactions({ transactions }: { transactions: Transacti
                         همه
                     </button>
                     <button
-                        className={`px-8 py-3 rounded-lg app_border_color border transition-colors ${activeFilter === "income"
+                        className={`px-4 py-2 rounded-md app_border_color border transition-colors ${activeFilter === "income"
                             ? "primary_bg_color text-white hover:bg-indigo-700 dark:hover:bg-indigo-500"
                             : "app_bg_color hover:bg-gray-100 dark:hover:bg-gray-700"
                             }`}
@@ -39,7 +43,7 @@ export default function Transactions({ transactions }: { transactions: Transacti
                         درآمد
                     </button>
                     <button
-                        className={`px-8 py-3 rounded-lg app_border_color border transition-colors ${activeFilter === "expense"
+                        className={`px-4 py-2 rounded-md app_border_color border transition-colors ${activeFilter === "expense"
                             ? "primary_bg_color text-white hover:bg-indigo-700 dark:hover:bg-indigo-500"
                             : "app_bg_color hover:bg-gray-100 dark:hover:bg-gray-700"
                             }`}
@@ -53,7 +57,10 @@ export default function Transactions({ transactions }: { transactions: Transacti
                     icon={<Plus className="size-6" />}
                     size="medium"
                     text="افزودن تراکنش جدید"
+                    onClick={() => setNewTransactionModalVis(true)}
                 />
+
+                {newTransactionModalVis && <NewTransactionModal onClose={() => setNewTransactionModalVis(false)} />}
             </div>
             {filteredTransactions.map((transaction, index) =>
                 transaction.type === "income" ? (

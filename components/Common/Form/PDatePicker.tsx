@@ -15,16 +15,14 @@ type PropsTypes = {
     onChange: (dateObj: DateObject) => void,
     inpProps?: React.InputHTMLAttributes<HTMLInputElement>,
     maxDate?: Date,
+    minDate?: Date, // Added minDate
 }
 
 type CustomInputProps = CustomComponentProps & {
     error?: string
 }
 
-
-
 function CustomInput({ onFocus, value, onChange, error }: CustomInputProps) {
-
     return <input
         onFocus={onFocus}
         value={value}
@@ -34,15 +32,13 @@ function CustomInput({ onFocus, value, onChange, error }: CustomInputProps) {
     />
 }
 
-function PDatePicker({ name, label, value, onChange, error, hint, maxDate }: PropsTypes) {
-
+function PDatePicker({ name, label, value, onChange, error, hint, maxDate, minDate }: PropsTypes) { // Added minDate to props
     const { theme } = useTheme()
 
     const datePickerRef = useClickOutside<DatePickerRef>(() => datePickerRef.current?.closeCalendar())
 
     return (
         <div className={`w-full flex flex-col gap-y-1`}>
-
             <label className={`text-base ${error ? 'text-red-500' : 'primary_text_color'} capitalize`}>{label}</label>
 
             <DatePicker
@@ -56,6 +52,7 @@ function PDatePicker({ name, label, value, onChange, error, hint, maxDate }: Pro
                 ref={datePickerRef}
                 name={name}
                 maxDate={maxDate}
+                minDate={minDate} // Passed minDate to DatePicker
             />
 
             {error && (
@@ -67,7 +64,6 @@ function PDatePicker({ name, label, value, onChange, error, hint, maxDate }: Pro
             {hint && (
                 <p className="text-xs text-slate-500 dark:text-slate-400">&#x2022; {hint}</p>
             )}
-
         </div>
     );
 }
