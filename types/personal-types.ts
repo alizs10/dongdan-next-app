@@ -4,7 +4,8 @@ export interface PersonalTransaction {
     title: string;
     amount: string;
     date: Date;
-    category_id: string | null;
+    description?: string | null;
+    category_id: string[] | null;
     is_recurring: 0 | 1;
     frequency: 'daily' | 'weekly' | 'monthly' | 'yearly' | null;
 }

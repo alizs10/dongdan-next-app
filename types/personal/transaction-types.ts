@@ -6,9 +6,9 @@ export interface Transaction {
     amount: number;
     date: Date;
     title: string;
-    description: null;
-    category_id: number | null;
-    category: Category | null;
+    description: string | null;
+    category_ids: number[] | null;
+    categories: Category[] | null;
     is_recurring: boolean;
     frequency: null | string;
     user_id: number;

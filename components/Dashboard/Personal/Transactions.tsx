@@ -1,6 +1,6 @@
 "use client";
 
-import { Plus } from "lucide-react";
+import { EllipsisIcon, Plus } from "lucide-react";
 import Button from "@/components/Common/Button";
 import ExpenseItem from "./ExpenseItem";
 import IncomeItem from "./IncomeItem";
@@ -14,6 +14,7 @@ export default function Transactions() {
     const { transactions } = useStore()
 
     const [newTransactionModalVis, setNewTransactionModalVis] = useState(false)
+    const [editMode, setEditMode] = useState(false);
 
     const [activeFilter, setActiveFilter] = useState("all");
 
@@ -23,9 +24,13 @@ export default function Transactions() {
         activeFilter === "all" ? true : transaction.type === activeFilter
     );
 
+    const toggleEditMode = () => {
+        setEditMode(prevState => !prevState);
+    };
+
     return (
         <div className="space-y-6">
-            <div className="flex justify-between items-center mb-8 px-6">
+            <div className="flex justify-between items-center px-6">
                 <div className="flex gap-x-2">
                     <button
                         className={`px-4 py-2 rounded-md app_border_color border transition-colors ${activeFilter === "all"
@@ -55,22 +60,29 @@ export default function Transactions() {
                         هزینه
                     </button>
                 </div>
-                <Button
-                    color="accent"
-                    icon={<Plus className="size-6" />}
-                    size="medium"
-                    text="افزودن تراکنش جدید"
-                    onClick={() => setNewTransactionModalVis(true)}
-                />
+                <div className="flex items-center gap-2">
+                    <button
+                        onClick={toggleEditMode}
+                        className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300">
+                        <EllipsisIcon className="size-5" />
+                    </button>
+                    <Button
+                        color="accent"
+                        icon={<Plus className="size-6" />}
+                        size="medium"
+                        text="افزودن تراکنش جدید"
+                        onClick={() => setNewTransactionModalVis(true)}
+                    />
+                </div>
 
                 {newTransactionModalVis && <NewTransactionModal onClose={() => setNewTransactionModalVis(false)} />}
             </div>
             {filteredTransactions.length > 0 ? (
                 filteredTransactions.map((transaction, index) =>
                     transaction.type === "income" ? (
-                        <IncomeItem key={index} transaction={transaction} />
+                        <IncomeItem key={index} transaction={transaction} showActions={editMode} setShowActions={setEditMode} />
                     ) : (
-                        <ExpenseItem key={index} transaction={transaction} />
+                        <ExpenseItem key={index} transaction={transaction} showActions={editMode} setShowActions={setEditMode} />
                     )
                 )
             ) : (

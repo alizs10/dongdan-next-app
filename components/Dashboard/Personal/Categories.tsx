@@ -4,56 +4,60 @@ import { EllipsisIcon, Pencil, Plus, Tags, Trash } from "lucide-react";
 import { useState } from "react";
 import NewCategoryModal from "./Modals/NewCategoryModal";
 import EditCategoryModal from "./Modals/EditCategoryModal";
-import ConfirmDialog from "./Modals/ConfirmDialog";
 import { Category } from "@/types/personal/category-types";
 import { deleteCategoryReq } from "@/app/actions/personal/category";
 
 const CategoryItem = ({ category, showActions, setShowActions }: { category: Category, showActions: boolean, setShowActions: (mode: boolean) => void }) => {
     const [showEditModal, setShowEditModal] = useState(false);
-    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-    const { removeCategory, addToast } = useStore();
+    const { removeCategory, addToast, openDialog } = useStore();
 
     const handleEditClick = (e: React.MouseEvent) => {
         e.stopPropagation();
-        // setShowActions(false);
         setShowEditModal(true);
     };
 
     const handleDeleteClick = (e: React.MouseEvent) => {
         e.stopPropagation();
         setShowActions(false);
-        setShowDeleteConfirm(true);
-    };
-    const handleDeleteConfirm = async () => {
-        try {
-            const response = await deleteCategoryReq({ id: category.id });
-            if (response.success) {
-                removeCategory(category);
-                setShowActions(false);
-                addToast({
-                    message: 'برچسب با موفقیت حذف شد',
-                    type: 'success',
-                });
-            } else {
-                addToast({
-                    message: response.message || 'خطا در حذف برچسب',
-                    type: 'danger',
-                });
-            }
-        } catch (error) {
-            console.error('Error deleting category:', error);
-            addToast({
-                message: 'خطا در ارتباط با سرور',
-                type: 'danger',
-            });
-        }
-        setShowDeleteConfirm(false);
-    };
 
-    // const toggleActions = (e: React.MouseEvent) => {
-    //     e.stopPropagation();
-    //     setShowActions(!showActions);
-    // };
+        openDialog(
+            "حذف برچسب",
+            `آیا از حذف برچسب "${category.name}" اطمینان دارید؟`,
+            {
+                ok: {
+                    text: "حذف",
+                    onClick: async () => {
+                        try {
+                            const response = await deleteCategoryReq({ id: category.id });
+                            if (response.success) {
+                                removeCategory(category);
+                                setShowActions(false);
+                                addToast({
+                                    message: 'برچسب با موفقیت حذف شد',
+                                    type: 'success',
+                                });
+                            } else {
+                                addToast({
+                                    message: response.message || 'خطا در حذف برچسب',
+                                    type: 'danger',
+                                });
+                            }
+                        } catch (error) {
+                            console.error('Error deleting category:', error);
+                            addToast({
+                                message: 'خطا در ارتباط با سرور',
+                                type: 'danger',
+                            });
+                        }
+                    }
+                },
+                cancel: {
+                    text: "انصراف",
+                    onClick: () => { }
+                }
+            }
+        );
+    };
 
     return (
         <li>
@@ -84,19 +88,10 @@ const CategoryItem = ({ category, showActions, setShowActions }: { category: Cat
             {showEditModal && (
                 <EditCategoryModal
                     onClose={() => {
-                        setShowActions(false)
-                        setShowEditModal(false)
+                        setShowActions(false);
+                        setShowEditModal(false);
                     }}
                     category={category}
-                />
-            )}
-
-            {showDeleteConfirm && (
-                <ConfirmDialog
-                    title="حذف برچسب"
-                    message={`آیا از حذف برچسب "${category.name}" اطمینان دارید؟`}
-                    onConfirm={handleDeleteConfirm}
-                    onCancel={() => setShowDeleteConfirm(false)}
                 />
             )}
         </li>
@@ -106,10 +101,11 @@ const CategoryItem = ({ category, showActions, setShowActions }: { category: Cat
 const Categories = () => {
     const { categories } = useStore();
     const [newCategoryModalVis, setNewCategoryModalVis] = useState(false);
-    const [editMode, setEditMode] = useState(false)
+    const [editMode, setEditMode] = useState(false);
+
     const toggleEditMode = () => {
-        setEditMode(prevState => !prevState)
-    }
+        setEditMode(prevState => !prevState);
+    };
 
     return (
         <div className="mb-6">

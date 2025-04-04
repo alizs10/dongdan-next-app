@@ -19,6 +19,8 @@ export const fetchInitData = async () => {
 
         const data: InitDataResponse = await response.json()
 
+        console.log(data)
+
         if (response.ok && data.status) {
 
             return {

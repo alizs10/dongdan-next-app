@@ -13,12 +13,12 @@ import { DateObject } from "react-multi-date-picker";
 import Button from "@/components/Common/Button";
 import ToggleInput from "@/components/Common/Form/ToggleInput";
 import useStore from "@/store/store";
-import { PersonalTransaction } from "@/types/personal-types"; // Assuming you define this
-import { createTransactionSchema } from "@/database/validations/personal/transaction-validation"; // To be created
-import { createTransactionReq } from "@/app/actions/personal/transaction"; // API call to Laravel
+import { PersonalTransaction } from "@/types/personal-types";
+import { updateTransactionSchema } from "@/database/validations/personal/transaction-validation";
+import { updateTransactionReq } from "@/app/actions/personal/transaction";
+import { Transaction } from "@/types/personal/transaction-types";
 import FrequencySelector from "../Inputs/FrequencySelector";
 import CategorySelector from "../Inputs/CategorySelector";
-import { CreateTransactionRequest } from "@/types/requests/personal/transaction";
 
 type FormInputs = {
     type: 'income' | 'expense';
@@ -31,20 +31,23 @@ type FormInputs = {
     frequency: 'daily' | 'weekly' | 'monthly' | 'yearly' | null;
 };
 
-function NewTransactionModal({ onClose }: { onClose: () => void }) {
-    const { user, addToast, categories, addTransaction } = useStore();
+function EditTransactionModal({ onClose, transaction }: { onClose: () => void, transaction: Transaction }) {
+    const { user, addToast, categories, updateTransaction } = useStore();
 
     const [formLoading, setFormLoading] = useState(false);
 
+    // Initialize form inputs with transaction data
     const initInputs: FormInputs = {
-        type: 'expense',
-        title: '',
-        amount: '',
-        date: new Date(Date.now()),
-        description: '',
-        category_ids: [],
-        is_recurring: 0,
-        frequency: null,
+        type: transaction.type as 'income' | 'expense',
+        title: transaction.title,
+        amount: TomanPriceFormatter(transaction.amount.toString()),
+        date: new Date(transaction.date),
+        description: transaction.description || '',
+        category_ids: transaction.category && transaction.category.length > 0
+            ? transaction.category.map(cat => cat.id.toString())
+            : [],
+        is_recurring: transaction.is_recurring ? 1 : 0,
+        frequency: transaction.frequency as 'daily' | 'weekly' | 'monthly' | 'yearly' | null,
     };
     const [inputs, setInputs] = useState(initInputs);
 
@@ -104,18 +107,20 @@ function NewTransactionModal({ onClose }: { onClose: () => void }) {
         if (formLoading) return;
         setFormLoading(true);
 
-        const newTransaction: CreateTransactionRequest = {
+        const updatedTransaction: Partial<PersonalTransaction> & { id: number } = {
+            id: transaction.id,
+            user_id: user?.id.toString() || '',
             type: inputs.type,
             title: inputs.title,
-            amount: TomanPriceToNumber(inputs.amount),
+            amount: TomanPriceToNumber(inputs.amount).toString(),
             date: inputs.date,
             description: inputs.description.trim() || null,
-            category_ids: inputs.category_ids.map(id => parseInt(id)),
+            category_id: inputs.category_ids,
             is_recurring: inputs.is_recurring,
             frequency: inputs.is_recurring === 1 ? inputs.frequency : null,
         };
 
-        const { hasError, errors } = zValidate(createTransactionSchema, newTransaction);
+        const { hasError, errors } = zValidate(updateTransactionSchema, updatedTransaction);
 
         if (hasError) {
             const validationToast = {
@@ -129,25 +134,34 @@ function NewTransactionModal({ onClose }: { onClose: () => void }) {
         }
         setFormErrors(initFormErrors);
 
-        const res = await createTransactionReq(newTransaction);
+        try {
+            const res = await updateTransactionReq(updatedTransaction);
 
-        if (res.success && res.transaction) {
-            const successToast = {
-                message: 'تراکنش با موفقیت ثبت شد.',
-                type: 'success' as const,
+            if (res.success && res.transaction) {
+                updateTransaction(res.transaction);
+                const successToast = {
+                    message: 'تراکنش با موفقیت بروزرسانی شد.',
+                    type: 'success' as const,
+                };
+                addToast(successToast);
+                setFormLoading(false);
+                onClose();
+                return;
+            }
+
+            const errorToast = {
+                message: res.message || 'خطا در بروزرسانی تراکنش.',
+                type: 'danger' as const,
             };
-            addToast(successToast);
-            addTransaction(res.transaction)
-            setFormLoading(false);
-            onClose();
-            return;
+            addToast(errorToast);
+        } catch (error) {
+            const errorToast = {
+                message: 'خطا در ارتباط با سرور.',
+                type: 'danger' as const,
+            };
+            addToast(errorToast);
         }
 
-        const errorToast = {
-            message: res.message || 'خطا در ثبت تراکنش.',
-            type: 'danger' as const,
-        };
-        addToast(errorToast);
         setFormLoading(false);
     }
 
@@ -155,7 +169,7 @@ function NewTransactionModal({ onClose }: { onClose: () => void }) {
         return createPortal(
             <ModalWrapper onClose={onClose}>
                 <section onClick={e => e.stopPropagation()} className="modal_container">
-                    <ModalHeader title="ثبت تراکنش جدید" onClose={onClose} />
+                    <ModalHeader title="ویرایش تراکنش" onClose={onClose} />
 
                     <div className="grid grid-cols-2">
                         <div
@@ -241,7 +255,7 @@ function NewTransactionModal({ onClose }: { onClose: () => void }) {
 
                         <div className="p-5 flex justify-end">
                             <Button
-                                text={formLoading ? 'در حال ثبت' : 'ثبت'}
+                                text={formLoading ? 'در حال ذخیره' : 'ذخیره تغییرات'}
                                 icon={<Save className="size-4" />}
                                 onClick={formHandler}
                                 size="medium"
@@ -259,4 +273,4 @@ function NewTransactionModal({ onClose }: { onClose: () => void }) {
     return null;
 }
 
-export default NewTransactionModal;
+export default EditTransactionModal; 

@@ -19,6 +19,7 @@ export interface PersonalSlice {
     setTransactions: (transactions: Transaction[]) => void;
     addTransaction: (transaction: Transaction) => void;
     removeTransaction: (id: number) => void;
+    updateTransaction: (transaction: Transaction) => void; // Added updateTransaction
     setInitData: (data: InitData) => void; // Added setInitData to types
 }
 
@@ -54,4 +55,13 @@ export const createPersonalSlice: StateCreator<PersonalSlice, [], [], PersonalSl
     setTransactions: (transactions: Transaction[]) => set(() => ({ transactions })),
     addTransaction: (transaction: Transaction) => set((state) => ({ transactions: [...state.transactions, transaction] })),
     removeTransaction: (id: number) => set((state) => ({ transactions: state.transactions.filter(transaction => transaction.id !== id) })),
+    updateTransaction: (transaction: Transaction) => set((state) => {
+        const index = state.transactions.findIndex(t => t.id === transaction.id);
+        if (index !== -1) {
+            const updatedTransactions = [...state.transactions];
+            updatedTransactions[index] = transaction;
+            return { transactions: updatedTransactions };
+        }
+        return state;
+    }),
 });

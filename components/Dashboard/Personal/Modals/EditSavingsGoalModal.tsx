@@ -1,39 +1,36 @@
-import Button from '@/components/Common/Button'
-import PDatePicker from '@/components/Common/Form/PDatePicker'
-import TextInput from '@/components/Common/Form/TextInput'
-import ModalHeader from '@/components/Common/ModalHeader'
-import ModalWrapper from '@/components/Common/ModalWrapper'
-import { TomanPriceFormatter } from '@/helpers/helpers'
-import { zValidate } from '@/helpers/validation-helper'
-import { createSavingsGoalSchema } from '@/database/validations/personal/savings-goal-validations'
-import { createSavingsGoalReq } from '@/app/actions/personal/savings-goal'
-import useStore from '@/store/store'
-import { Save } from 'lucide-react'
-import React, { useState } from 'react'
-import { createPortal } from 'react-dom'
-import { DateObject } from 'react-multi-date-picker'
+'use client'
 
-type FormInputs = {
-    name: string;
-    amount: string;
-    due_date: Date;
-}
+import { updateSavingsGoalReq } from '@/app/actions/personal/savings-goal';
+import Button from '@/components/Common/Button';
+import PDatePicker from '@/components/Common/Form/PDatePicker';
+import TextInput from '@/components/Common/Form/TextInput';
+import ModalHeader from '@/components/Common/ModalHeader';
+import ModalWrapper from '@/components/Common/ModalWrapper';
+import { TomanPriceFormatter } from '@/helpers/helpers';
+import { zValidate } from '@/helpers/validation-helper';
+import useStore from '@/store/store';
+import { SavingsGoal } from '@/types/personal/savings-goal-types';
+import { createSavingsGoalSchema } from '@/database/validations/personal/savings-goal-validations';
+import { Save } from 'lucide-react';
+import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
+import { DateObject } from 'react-multi-date-picker';
 
-export default function NewSavingsGoalModal({ onClose }: { onClose: () => void }) {
-    const { addToast, addSavingsGoal } = useStore();
-    const [loading, setLoading] = useState(false)
+export default function EditSavingsGoalModal({ onClose, goal }: { onClose: () => void, goal: SavingsGoal }) {
+    const { addToast, updateSavingsGoal } = useStore();
+    const [loading, setLoading] = useState(false);
 
     const [inputs, setInputs] = useState({
-        name: '',
-        amount: '',
-        due_date: new Date(new Date().setMonth(new Date().getMonth() + 1)),
-    })
+        name: goal.name,
+        amount: TomanPriceFormatter(goal.target_amount.toString()),
+        due_date: new Date(goal.due_date),
+    });
 
     const [formErrors, setFormErrors] = useState<Record<string, string>>({
         name: '',
         amount: '',
         due_date: '',
-    })
+    });
 
     function handleChangeDate(date: DateObject) {
         const selectedDate = new Date(date.toDate());
@@ -42,7 +39,7 @@ export default function NewSavingsGoalModal({ onClose }: { onClose: () => void }
         selectedDate.setSeconds(0o0)
         selectedDate.setMilliseconds(1)
 
-        setInputs((prev: FormInputs) => ({ ...prev, due_date: selectedDate }))
+        setInputs(prev => ({ ...prev, due_date: selectedDate }))
     }
 
     function changeAmountHandler(e: React.ChangeEvent<HTMLInputElement>) {
@@ -71,14 +68,15 @@ export default function NewSavingsGoalModal({ onClose }: { onClose: () => void }
         }
 
         // Send to server
-        const response = await createSavingsGoalReq({
+        const response = await updateSavingsGoalReq({
+            id: goal.id,
             name: inputs.name,
             target_amount: parseInt(inputs.amount.replaceAll(',', '')),
             due_date: inputs.due_date.toISOString(),
         });
 
         if (response.success && response.savingsGoal) {
-            addSavingsGoal(response.savingsGoal);
+            updateSavingsGoal(response.savingsGoal);
             addToast({
                 message: response.message,
                 type: 'success',
@@ -100,14 +98,26 @@ export default function NewSavingsGoalModal({ onClose }: { onClose: () => void }
                 <div
                     onClick={e => e.stopPropagation()}
                     className='modal_container'>
-                    <ModalHeader title="هدف جدید" onClose={onClose} />
+                    <ModalHeader title="ویرایش هدف پس‌انداز" onClose={onClose} />
                     <div className="p-5 flex flex-col gap-y-4">
-                        <TextInput name="name" value={inputs.name} error={formErrors.name} label="نام هدف" handleChange={e => setInputs(prev => ({ ...prev, [e.target.name]: e.target.value }))} />
-                        <TextInput name="amount" value={inputs.amount} error={formErrors.amount} label="مبلغ (تومان)" handleChange={changeAmountHandler} />
+                        <TextInput
+                            name="name"
+                            value={inputs.name}
+                            error={formErrors.name}
+                            label="نام هدف"
+                            handleChange={e => setInputs(prev => ({ ...prev, [e.target.name]: e.target.value }))}
+                        />
+                        <TextInput
+                            name="amount"
+                            value={inputs.amount}
+                            error={formErrors.amount}
+                            label="مبلغ (تومان)"
+                            handleChange={changeAmountHandler}
+                        />
 
                         <PDatePicker
                             label={'مهلت هدف'}
-                            name={"date"}
+                            name={"due_date"}
                             value={inputs.due_date}
                             error={formErrors.due_date}
                             onChange={handleChangeDate}
@@ -116,7 +126,7 @@ export default function NewSavingsGoalModal({ onClose }: { onClose: () => void }
 
                         <div className="flex justify-end">
                             <Button
-                                text={loading ? 'در حال ثبت' : 'ثبت'}
+                                text={loading ? 'در حال ثبت' : 'ثبت تغییرات'}
                                 icon={<Save className="size-4" />}
                                 onClick={handleSubmit}
                                 size="medium"
@@ -129,4 +139,4 @@ export default function NewSavingsGoalModal({ onClose }: { onClose: () => void }
             </ModalWrapper>
             , document.getElementById('modal-portal') as HTMLElement)
     }
-}
+} 

@@ -22,7 +22,7 @@ export default function PersonalMain({ data }: { data: InitData }) {
     }, [data, setInitData]);
 
     return (
-        <div className="flex min-h-screen pb-10">
+        <div className="flex min-h-screen">
             <RightSidebar />
 
             {/* Main Content */}
