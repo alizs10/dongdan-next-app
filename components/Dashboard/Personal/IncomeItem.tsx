@@ -1,16 +1,10 @@
 'use client'
 
+import { Transaction } from "@/types/personal/transaction-types";
 import moment from "jalali-moment";
 
-interface IncomeItemProps {
-    title: string
-    date: string
-    amount: string
-    description: string
-    tags: string[]
-}
-
-const IncomeItem = ({ title, date, amount, description, tags }: IncomeItemProps) => {
+const IncomeItem = ({ transaction }: { transaction: Transaction }) => {
+    const { date, title, amount, description } = transaction; // Destructure transaction properties
     const persianDate = moment(date).locale('fa').format('jYYYY/jMM/jDD'); // Convert to Persian date
 
     return (
@@ -19,7 +13,7 @@ const IncomeItem = ({ title, date, amount, description, tags }: IncomeItemProps)
                 <div>
                     <h3 className="text-xl font-semibold app_text_color mb-2">{title}</h3>
                     <p className="text-sm text-gray-500 dark:text-gray-400">{persianDate}</p>
-                    <div className="flex gap-2 mt-2">
+                    {/* <div className="flex gap-2 mt-2">
                         {tags.map((tag, index) => (
                             <span
                                 key={index}
@@ -28,7 +22,7 @@ const IncomeItem = ({ title, date, amount, description, tags }: IncomeItemProps)
                                 {tag}
                             </span>
                         ))}
-                    </div>
+                    </div> */}
                 </div>
                 <span className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">
                     {amount}

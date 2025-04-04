@@ -5,10 +5,13 @@ import Button from "@/components/Common/Button";
 import ExpenseItem from "./ExpenseItem";
 import IncomeItem from "./IncomeItem";
 import { useState } from "react";
-import { Transaction } from "./PersonalMain";
 import NewTransactionModal from "./Modals/NewTransactionsModal";
+import { Transaction } from "@/types/personal/transaction-types";
+import useStore from "@/store/store";
 
-export default function Transactions({ transactions }: { transactions: Transaction[] }) {
+export default function Transactions() {
+
+    const { transactions } = useStore()
 
     const [newTransactionModalVis, setNewTransactionModalVis] = useState(false)
 
@@ -62,12 +65,18 @@ export default function Transactions({ transactions }: { transactions: Transacti
 
                 {newTransactionModalVis && <NewTransactionModal onClose={() => setNewTransactionModalVis(false)} />}
             </div>
-            {filteredTransactions.map((transaction, index) =>
-                transaction.type === "income" ? (
-                    <IncomeItem key={index} {...transaction} />
-                ) : (
-                    <ExpenseItem key={index} {...transaction} />
+            {filteredTransactions.length > 0 ? (
+                filteredTransactions.map((transaction, index) =>
+                    transaction.type === "income" ? (
+                        <IncomeItem key={index} transaction={transaction} />
+                    ) : (
+                        <ExpenseItem key={index} transaction={transaction} />
+                    )
                 )
+            ) : (
+                <div className="text-center py-12 app_bg_color rounded-lg">
+                    <p className="text-lg text-gray-600 dark:text-gray-400 mb-4">اولین تراکنش رو اضافه کن</p>
+                </div>
             )}
         </div>
     );

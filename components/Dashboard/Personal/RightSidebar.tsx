@@ -4,6 +4,7 @@ import { AlertTriangle, Plus } from "lucide-react";
 import Button from "@/components/Common/Button";
 import { useState } from "react";
 import NewSavingsGoalModal from "./Modals/NewSavingsGoalModal";
+import SavingsGoals from "./SavingsGoals";
 
 export default function RightSidebar() {
 
@@ -53,36 +54,8 @@ export default function RightSidebar() {
                     </li>
                 </ul>
             </div>
-            <div>
-                <h3 className="text-lg font-semibold primary_text_color px-4 mb-4">هدف پس‌انداز</h3>
-                <div className="px-4">
-                    {savingsGoals.map((goal, index) => {
-                        const progress = (goal.current / goal.target) * 100;
-                        return (
-                            <div key={index} className="mb-4">
-                                <div className="flex justify-between items-center mb-2">
-                                    <span className="text-sm">{goal.name}</span>
-                                    <span className="text-sm text-gray-500 dark:text-gray-400">{Math.round(progress)}٪</span>
-                                </div>
-                                <div className="w-full h-2 bg-gray-200 dark:bg-gray-700">
-                                    <div className="h-2 bg-accent" style={{ width: `${progress}%` }}></div>
-                                </div>
-                            </div>
-                        );
-                    })}
 
-                    <Button
-                        onClick={() => setNewSavingsGoalModalVis(true)}
-                        text="هدف جدید"
-                        icon={<Plus className="size-4" />}
-                        size="small"
-                        color="gray"
-                    />
-
-                    {newSavingsGoalModalVis && (<NewSavingsGoalModal onClose={() => setNewSavingsGoalModalVis(false)} />)}
-
-                </div>
-            </div>
+            <SavingsGoals />
         </div>
     );
 }

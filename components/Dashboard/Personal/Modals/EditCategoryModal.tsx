@@ -1,7 +1,5 @@
-// NewCategoryModal.tsx
 'use client'
 
-import { createCategoryReq } from '@/app/actions/personal/category';
 import Button from '@/components/Common/Button';
 import TextInput from '@/components/Common/Form/TextInput';
 import ModalHeader from '@/components/Common/ModalHeader';
@@ -9,16 +7,17 @@ import ModalWrapper from '@/components/Common/ModalWrapper';
 import { createCategorySchema } from '@/database/validations/personal/category-validations';
 import { zValidate } from '@/helpers/validation-helper';
 import useStore from '@/store/store';
+import { Category } from '@/types/personal/category-types';
 import { Save } from 'lucide-react';
 import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
 
-export default function NewCategoryModal({ onClose }: { onClose: () => void }) {
-    const { addToast, addCategory } = useStore();
+export default function EditCategoryModal({ onClose, category }: { onClose: () => void, category: Category }) {
+    const { addToast } = useStore();
     const [loading, setLoading] = useState(false);
 
     const [inputs, setInputs] = useState({
-        name: '',
+        name: category.name,
     });
 
     const [formErrors, setFormErrors] = useState<Record<string, string>>({
@@ -44,24 +43,23 @@ export default function NewCategoryModal({ onClose }: { onClose: () => void }) {
 
         setFormErrors({ name: '' });
 
-        const res = await createCategoryReq(inputs);
+        // For now just simulate a successful update since we don't have an API endpoint
+        // This would be replaced with an actual API call
+        setTimeout(() => {
+            // Update the category in the store (this would be handled by the API response)
+            useStore.getState().addCategory({
+                ...category,
+                name: inputs.name,
+                updated_at: new Date()
+            });
 
-        if (res.success) {
             addToast({
-                message: res.message,
+                message: 'برچسب با موفقیت بروزرسانی شد',
                 type: 'success',
             });
-            addCategory(res.category)
             setLoading(false);
             onClose();
-            return;
-        }
-
-        addToast({
-            message: res.message,
-            type: 'danger',
-        });
-        setLoading(false);
+        }, 500);
     }
 
     if (typeof window === 'object') {
@@ -72,7 +70,7 @@ export default function NewCategoryModal({ onClose }: { onClose: () => void }) {
                     onClick={(e) => e.stopPropagation()}
                     className="modal_container"
                 >
-                    <ModalHeader title="برچسب جدید" onClose={onClose} />
+                    <ModalHeader title="ویرایش برچسب" onClose={onClose} />
                     <div className="p-5 flex flex-col gap-y-4">
                         <TextInput
                             name="name"
@@ -85,7 +83,7 @@ export default function NewCategoryModal({ onClose }: { onClose: () => void }) {
                         />
                         <div className="flex justify-end">
                             <Button
-                                text={loading ? 'در حال ثبت' : 'ثبت'}
+                                text={loading ? 'در حال ثبت' : 'ثبت تغییرات'}
                                 icon={<Save className="size-4" />}
                                 onClick={() => { }}
                                 size="medium"
@@ -101,4 +99,4 @@ export default function NewCategoryModal({ onClose }: { onClose: () => void }) {
     }
 
     return null;
-}
+} 

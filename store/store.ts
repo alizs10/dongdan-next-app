@@ -5,6 +5,7 @@ import { StoreState } from './types';
 import { createAppSlice } from './slices/appSlice';
 import { createSettingsSlice } from './slices/settingsSlice';
 import { createDialogSlice } from './slices/dialogSlice';
+import { createPersonalSlice } from './slices/personalSlice';
 
 
 const useStore = create<StoreState>()(
@@ -15,6 +16,7 @@ const useStore = create<StoreState>()(
                 ...createToastSlice(...a),
                 ...createSettingsSlice(...a),
                 ...createDialogSlice(...a),
+                ...createPersonalSlice(...a),
             }),
             {
                 name: 'app-storage', // Unique name for the persisted state
