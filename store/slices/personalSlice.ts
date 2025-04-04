@@ -12,6 +12,7 @@ export interface PersonalSlice {
     setBudget: (budget: number) => void; // Added setBudget
     addCategory: (category: Category) => void; // Added addCategory
     removeCategory: (category: Category) => void; // Added removeCategory
+    updateCategory: (category: Category) => void; // Added updateCategory
     addSavingsGoal: (goal: SavingsGoal) => void;
     removeSavingsGoal: (id: number) => void;
     updateSavingsGoal: (goal: SavingsGoal) => void;
@@ -29,6 +30,15 @@ export const createPersonalSlice: StateCreator<PersonalSlice, [], [], PersonalSl
     setBudget: (budget: number) => set(() => ({ budget })), // Implement setBudget
     addCategory: (category: Category) => set((state) => ({ categories: [...state.categories, category] })), // Implement addCategory
     removeCategory: (category: Category) => set((state) => ({ categories: state.categories.filter(cat => cat !== category) })), // Implement removeCategory
+    updateCategory: (category: Category) => set((state) => {
+        const index = state.categories.findIndex(cat => cat.id === category.id);
+        if (index !== -1) {
+            const updatedCategories = [...state.categories];
+            updatedCategories[index] = category;
+            return { categories: updatedCategories };
+        }
+        return state;
+    }),
     setInitData: (data: InitData) => set(() => ({ savingsGoals: data.savings_goals, transactions: data.transactions, budget: data.budget, categories: data.categories })),
     addSavingsGoal: (goal: SavingsGoal) => set((state) => ({ savingsGoals: [...state.savingsGoals, goal] })),
     removeSavingsGoal: (id: number) => set((state) => ({ savingsGoals: state.savingsGoals.filter(goal => goal.id !== id) })),

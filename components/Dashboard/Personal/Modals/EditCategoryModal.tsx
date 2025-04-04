@@ -1,5 +1,6 @@
 'use client'
 
+import { updateCategoryReq } from '@/app/actions/personal/category';
 import Button from '@/components/Common/Button';
 import TextInput from '@/components/Common/Form/TextInput';
 import ModalHeader from '@/components/Common/ModalHeader';
@@ -13,7 +14,7 @@ import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
 
 export default function EditCategoryModal({ onClose, category }: { onClose: () => void, category: Category }) {
-    const { addToast } = useStore();
+    const { addToast, updateCategory } = useStore();
     const [loading, setLoading] = useState(false);
 
     const [inputs, setInputs] = useState({
@@ -23,7 +24,6 @@ export default function EditCategoryModal({ onClose, category }: { onClose: () =
     const [formErrors, setFormErrors] = useState<Record<string, string>>({
         name: '',
     });
-
     async function formActionHandler() {
         if (loading) return;
 
@@ -41,25 +41,34 @@ export default function EditCategoryModal({ onClose, category }: { onClose: () =
             return;
         }
 
-        setFormErrors({ name: '' });
+        try {
+            const res = await updateCategoryReq({ id: category.id, ...inputs });
 
-        // For now just simulate a successful update since we don't have an API endpoint
-        // This would be replaced with an actual API call
-        setTimeout(() => {
-            // Update the category in the store (this would be handled by the API response)
-            useStore.getState().addCategory({
-                ...category,
-                name: inputs.name,
-                updated_at: new Date()
-            });
-
+            if (res.success) {
+                updateCategory(res.category as Category);
+                addToast({
+                    message: 'برچسب با موفقیت بروزرسانی شد',
+                    type: 'success',
+                });
+                setLoading(false);
+                onClose();
+            } else {
+                addToast({
+                    message: res.message || 'خطا در بروزرسانی برچسب',
+                    type: 'danger',
+                });
+                setLoading(false);
+            }
+        } catch (error) {
+            console.error('Error updating category:', error);
             addToast({
-                message: 'برچسب با موفقیت بروزرسانی شد',
-                type: 'success',
+                message: 'خطا در ارتباط با سرور',
+                type: 'danger',
             });
             setLoading(false);
-            onClose();
-        }, 500);
+        }
+
+        setFormErrors({ name: '' });
     }
 
     if (typeof window === 'object') {

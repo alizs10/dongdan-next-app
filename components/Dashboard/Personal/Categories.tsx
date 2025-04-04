@@ -6,11 +6,12 @@ import NewCategoryModal from "./Modals/NewCategoryModal";
 import EditCategoryModal from "./Modals/EditCategoryModal";
 import ConfirmDialog from "./Modals/ConfirmDialog";
 import { Category } from "@/types/personal/category-types";
+import { deleteCategoryReq } from "@/app/actions/personal/category";
 
-const CategoryItem = ({ category, showActions }: { category: Category, showActions: boolean }) => {
+const CategoryItem = ({ category, showActions, setShowActions }: { category: Category, showActions: boolean, setShowActions: (mode: boolean) => void }) => {
     const [showEditModal, setShowEditModal] = useState(false);
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-    const { removeCategory } = useStore();
+    const { removeCategory, addToast } = useStore();
 
     const handleEditClick = (e: React.MouseEvent) => {
         e.stopPropagation();
@@ -20,12 +21,32 @@ const CategoryItem = ({ category, showActions }: { category: Category, showActio
 
     const handleDeleteClick = (e: React.MouseEvent) => {
         e.stopPropagation();
-        // setShowActions(false);
+        setShowActions(false);
         setShowDeleteConfirm(true);
     };
-
-    const handleDeleteConfirm = () => {
-        removeCategory(category);
+    const handleDeleteConfirm = async () => {
+        try {
+            const response = await deleteCategoryReq({ id: category.id });
+            if (response.success) {
+                removeCategory(category);
+                setShowActions(false);
+                addToast({
+                    message: 'برچسب با موفقیت حذف شد',
+                    type: 'success',
+                });
+            } else {
+                addToast({
+                    message: response.message || 'خطا در حذف برچسب',
+                    type: 'danger',
+                });
+            }
+        } catch (error) {
+            console.error('Error deleting category:', error);
+            addToast({
+                message: 'خطا در ارتباط با سرور',
+                type: 'danger',
+            });
+        }
         setShowDeleteConfirm(false);
     };
 
@@ -62,7 +83,10 @@ const CategoryItem = ({ category, showActions }: { category: Category, showActio
 
             {showEditModal && (
                 <EditCategoryModal
-                    onClose={() => setShowEditModal(false)}
+                    onClose={() => {
+                        setShowActions(false)
+                        setShowEditModal(false)
+                    }}
                     category={category}
                 />
             )}
@@ -118,7 +142,7 @@ const Categories = () => {
             ) : (
                 <ul className="space-y-2">
                     {categories.map((category) => (
-                        <CategoryItem key={category.id} category={category} showActions={editMode} />
+                        <CategoryItem key={category.id} category={category} showActions={editMode} setShowActions={setEditMode} />
                     ))}
                 </ul>
             )}
