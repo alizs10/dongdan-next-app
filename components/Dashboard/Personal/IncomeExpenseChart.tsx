@@ -6,9 +6,12 @@ import { estedadFD } from "next-persian-fonts/estedad";
 interface IncomeExpenseChartProps {
     isDarkMode: boolean;
     fontLoaded: boolean;
+    categories: string[];
+    incomeData: number[];
+    expenseData: number[];
 }
 
-const IncomeExpenseChart = ({ isDarkMode, fontLoaded }: IncomeExpenseChartProps) => {
+const IncomeExpenseChart = ({ isDarkMode, fontLoaded, categories, incomeData, expenseData }: IncomeExpenseChartProps) => {
     const options = {
         chart: {
             type: "bar" as const,
@@ -21,18 +24,18 @@ const IncomeExpenseChart = ({ isDarkMode, fontLoaded }: IncomeExpenseChartProps)
                 horizontal: false,
                 columnWidth: "20%",
                 borderRadius: 6,
-                borderRadiusApplication: "around",
+                borderRadiusApplication: "around" as const,
             },
         },
         dataLabels: { enabled: false },
         stroke: { show: true, width: 2, colors: ["transparent"] },
         xaxis: {
-            categories: ["مهر ۱۴۰۳", "آبان ۱۴۰۳", "آذر ۱۴۰۳", "دی ۱۴۰۳", "بهمن ۱۴۰۳", "اسفند ۱۴۰۳"],
+            categories: categories,
             labels: {
                 style: {
                     fontSize: "12px",
                     fontFamily: estedadFD.style.fontFamily,
-                    colors: Array(6).fill(isDarkMode ? "#FFFFFF" : "rgb(55, 65, 81)"),
+                    colors: Array(categories.length).fill(isDarkMode ? "#FFFFFF" : "rgb(55, 65, 81)"),
                 },
             },
         },
@@ -62,8 +65,8 @@ const IncomeExpenseChart = ({ isDarkMode, fontLoaded }: IncomeExpenseChartProps)
             theme: isDarkMode ? "dark" : "light",
         },
         legend: {
-            position: "top",
-            horizontalAlign: "right",
+            position: "top" as const,
+            horizontalAlign: "right" as const,
             fontFamily: estedadFD.style.fontFamily,
             labels: { colors: isDarkMode ? "#FFFFFF" : "rgb(55, 65, 81)" },
         },
@@ -75,8 +78,8 @@ const IncomeExpenseChart = ({ isDarkMode, fontLoaded }: IncomeExpenseChartProps)
     };
 
     const series = [
-        { name: "درآمد", data: [5000000, 5200000, 5300000, 5400000, 5500000, 5600000] },
-        { name: "هزینه", data: [2500000, 2300000, 2800000, 2700000, 2550000, 3000000] },
+        { name: "درآمد", data: incomeData },
+        { name: "هزینه", data: expenseData },
     ];
 
     return fontLoaded ? (

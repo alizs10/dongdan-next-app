@@ -6,17 +6,10 @@ import { estedadFD } from "next-persian-fonts/estedad";
 interface CategoryPieChartProps {
     isDarkMode: boolean;
     fontLoaded: boolean;
+    categoryData: Record<string, number>;
 }
 
-const CategoryPieChart = ({ isDarkMode, fontLoaded }: CategoryPieChartProps) => {
-    const categoryData = {
-        "مسکن": 7200000, // e.g., rent over 6 months
-        "غذا": 3600000, // food
-        "تفریح": 2550000, // entertainment
-        "خدمات": 1250000, // services (e.g., internet)
-        "دیگر": 950000, // other
-    };
-
+const CategoryPieChart = ({ isDarkMode, fontLoaded, categoryData }: CategoryPieChartProps) => {
     const options = {
         chart: {
             type: "pie" as const,
@@ -25,13 +18,13 @@ const CategoryPieChart = ({ isDarkMode, fontLoaded }: CategoryPieChartProps) => 
             background: "transparent",
         },
         labels: Object.keys(categoryData),
-        colors: ["#EF4444", "#FBBF24", "#F59E0B", "#10B981", "#3B82F6"], // red-500, amber-400, amber-500, green-500, blue-500
+        colors: ["#EF4444", "#FBBF24", "#F59E0B", "#10B981", "#3B82F6", "#8B5CF6", "#EC4899", "#6B7280"], // Multiple colors to support more categories
         dataLabels: {
             style: { fontFamily: estedadFD.style.fontFamily },
         },
         legend: {
-            position: "bottom",
-            horizontalAlign: "center",
+            position: "bottom" as const,
+            horizontalAlign: "center" as const,
             fontFamily: estedadFD.style.fontFamily,
             labels: { colors: isDarkMode ? "#FFFFFF" : "rgb(55, 65, 81)" },
         },

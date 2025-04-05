@@ -6,12 +6,12 @@ import { estedadFD } from "next-persian-fonts/estedad";
 interface BudgetGaugeChartProps {
     isDarkMode: boolean;
     fontLoaded: boolean;
+    totalBudget: number;
+    totalSpent: number;
 }
 
-const BudgetGaugeChart = ({ isDarkMode, fontLoaded }: BudgetGaugeChartProps) => {
-    const totalBudget = 20000000; // Mock budget: 20M toman
-    const totalSpent = 15550000; // Sum of expenses: 15.55M toman
-    const spentPercentage = Math.round((totalSpent / totalBudget) * 100);
+const BudgetGaugeChart = ({ isDarkMode, fontLoaded, totalBudget, totalSpent }: BudgetGaugeChartProps) => {
+    const spentPercentage = totalBudget > 0 ? Math.round((totalSpent / totalBudget) * 100) : 0;
 
     const options = {
         chart: {
@@ -49,7 +49,7 @@ const BudgetGaugeChart = ({ isDarkMode, fontLoaded }: BudgetGaugeChartProps) => 
         },
     };
 
-    const series = [spentPercentage]; // 77.75% spent
+    const series = [spentPercentage]; // Percentage spent
 
     return fontLoaded ? (
         <ReactApexChart options={options} series={series} type="radialBar" height={300} />
