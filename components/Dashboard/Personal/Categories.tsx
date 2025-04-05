@@ -116,7 +116,7 @@ const Categories = () => {
     };
 
     return (
-        <div className="mb-6">
+        <div className="">
             <div className="flex flex-row justify-between items-center px-6 pt-6 mb-4">
                 <div className="flex items-center gap-2 text-lg font-semibold primary_text_color">
                     <Tags className="size-5" />
@@ -144,23 +144,31 @@ const Categories = () => {
             {categories.length === 0 ? (
                 <p className="py-4 text-gray-500 dark:text-gray-400 text-center">اولین برچسب رو اضافه کن</p>
             ) : (
-                <ul className="">
-                    <li
-                        onClick={() => setActiveFilters({ ...activeFilters, categoryIds: [] })}
-                        className="cursor-pointer"
-                    >
-                        <div className={`${activeFilters.categoryIds?.length === 0 ? 'primary_text_color bg-indigo-900/20 dark:bg-indigo-600/20' : ''} w-full text-right py-2 px-6 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors flex justify-between items-center`}>
-                            <span className="text-sm">همه</span>
-                            <div className="flex items-center">
-                                <span className={`${activeFilters.categoryIds?.length === 0 ? 'primary_text_color' : 'text-gray-500 dark:text-gray-400'} text-sm`}>{totalTransactionsCount}</span>
+                <div className="relative">
+                    {/* Overlay for top shadow effect */}
+                    <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/20 dark:from-gray-200/10 dark:via-transparent dark:to-gray-200/10 pointer-events-none z-10"></div>
 
+                    <ul className="h-[270px] hide-scrollbar overflow-y-scroll">
+
+                        <li
+                            onClick={() => setActiveFilters({ ...activeFilters, categoryIds: [] })}
+                            className="cursor-pointer"
+                        >
+                            <div className={`${activeFilters.categoryIds?.length === 0 ? 'primary_text_color bg-indigo-900/20 dark:bg-indigo-600/20' : ''} w-full text-right py-2 px-6 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors flex justify-between items-center`}>
+                                <span className="text-sm">همه</span>
+                                <div className="flex items-center">
+                                    <span className={`${activeFilters.categoryIds?.length === 0 ? 'primary_text_color' : 'text-gray-500 dark:text-gray-400'} text-sm`}>{totalTransactionsCount}</span>
+
+                                </div>
                             </div>
-                        </div>
-                    </li>
-                    {categories.map((category) => (
-                        <CategoryItem key={category.id} category={category} showActions={editMode} setShowActions={setEditMode} />
-                    ))}
-                </ul>
+                        </li>
+                        {categories.map((category) => (
+                            <CategoryItem key={category.id} category={category} showActions={editMode} setShowActions={setEditMode} />
+                        ))}
+
+
+                    </ul>
+                </div>
             )}
         </div>
     );

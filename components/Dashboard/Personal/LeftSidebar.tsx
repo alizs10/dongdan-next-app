@@ -10,9 +10,7 @@ export default function LeftSidebar() {
 
     return (
         <div className="w-72 app_bg_color h-full sticky top-20">
-
             <Categories />
-
             <TransactionsCalendar />
         </div>
     )
