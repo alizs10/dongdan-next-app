@@ -9,7 +9,7 @@ import { deleteCategoryReq } from "@/app/actions/personal/category";
 
 const CategoryItem = ({ category, showActions, setShowActions }: { category: Category, showActions: boolean, setShowActions: (mode: boolean) => void }) => {
     const [showEditModal, setShowEditModal] = useState(false);
-    const { removeCategory, addToast, openDialog } = useStore();
+    const { removeCategory, addToast, openDialog, activeFilters, setActiveFilters } = useStore();
 
     const handleEditClick = (e: React.MouseEvent) => {
         e.stopPropagation();
@@ -59,10 +59,14 @@ const CategoryItem = ({ category, showActions, setShowActions }: { category: Cat
         );
     };
 
+    const isCategorySelected = activeFilters.categoryIds?.includes(category.id)
+
     return (
-        <li>
-            <div className="w-full text-right py-2 px-6 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors flex justify-between items-center">
-                {category.name}
+        <li
+            onClick={() => setActiveFilters({ ...activeFilters, categoryIds: [category.id] })}
+            className="cursor-pointer">
+            <div className={`${isCategorySelected ? 'primary_text_color bg-indigo-900/20 dark:bg-indigo-600/20' : ''} w-full text-right py-2 px-6 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors flex justify-between items-center`}>
+                <span className="text-sm">{category.name}</span>
                 <div className="flex items-center">
                     {showActions ? (
                         <div className="flex gap-2">
@@ -80,7 +84,7 @@ const CategoryItem = ({ category, showActions, setShowActions }: { category: Cat
                             </button>
                         </div>
                     ) : (
-                        <span className="text-sm text-gray-500 dark:text-gray-400 mr-2">0</span>
+                        <span className={`${isCategorySelected ? 'primary_text_color' : 'text-gray-500 dark:text-gray-400'} text-sm`}>{category.transaction_count ?? '0'}</span>
                     )}
                 </div>
             </div>
@@ -99,7 +103,11 @@ const CategoryItem = ({ category, showActions, setShowActions }: { category: Cat
 };
 
 const Categories = () => {
-    const { categories } = useStore();
+    const { categories, activeFilters, setActiveFilters } = useStore();
+    // Calculate total transactions count from categories
+    const totalTransactionsCount = categories.reduce((total, category) => {
+        return total + (category.transaction_count || 0);
+    }, 0);
     const [newCategoryModalVis, setNewCategoryModalVis] = useState(false);
     const [editMode, setEditMode] = useState(false);
 
@@ -136,7 +144,19 @@ const Categories = () => {
             {categories.length === 0 ? (
                 <p className="py-4 text-gray-500 dark:text-gray-400 text-center">اولین برچسب رو اضافه کن</p>
             ) : (
-                <ul className="space-y-2">
+                <ul className="">
+                    <li
+                        onClick={() => setActiveFilters({ ...activeFilters, categoryIds: [] })}
+                        className="cursor-pointer"
+                    >
+                        <div className={`${activeFilters.categoryIds?.length === 0 ? 'primary_text_color bg-indigo-900/20 dark:bg-indigo-600/20' : ''} w-full text-right py-2 px-6 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors flex justify-between items-center`}>
+                            <span className="text-sm">همه</span>
+                            <div className="flex items-center">
+                                <span className={`${activeFilters.categoryIds?.length === 0 ? 'primary_text_color' : 'text-gray-500 dark:text-gray-400'} text-sm`}>{totalTransactionsCount}</span>
+
+                            </div>
+                        </div>
+                    </li>
                     {categories.map((category) => (
                         <CategoryItem key={category.id} category={category} showActions={editMode} setShowActions={setEditMode} />
                     ))}

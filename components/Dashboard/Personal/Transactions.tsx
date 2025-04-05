@@ -10,48 +10,41 @@ import TransactionItem from "./TransactionItem";
 
 export default function Transactions() {
 
-    const { transactions } = useStore()
+    const { transactionsForView, activeFilters, setActiveFilters } = useStore()
 
     const [newTransactionModalVis, setNewTransactionModalVis] = useState(false)
     const [editMode, setEditMode] = useState(false);
 
-    const [activeFilter, setActiveFilter] = useState("all");
-
-    transactions.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-
-    const filteredTransactions = transactions.filter((transaction) =>
-        activeFilter === "all" ? true : transaction.type === activeFilter
-    );
-
+    transactionsForView.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
     return (
         <div className="">
             <div className="flex justify-between items-center px-6">
                 <div className="flex gap-x-2">
                     <button
-                        className={`px-4 py-2 rounded-md app_border_color border transition-colors ${activeFilter === "all"
+                        className={`px-4 py-2 rounded-md app_border_color border transition-colors ${activeFilters?.type === "all"
                             ? "primary_bg_color text-white hover:bg-indigo-700 dark:hover:bg-indigo-500"
                             : "app_bg_color hover:bg-gray-100 dark:hover:bg-gray-700"
                             }`}
-                        onClick={() => setActiveFilter("all")}
+                        onClick={() => setActiveFilters({ ...activeFilters, type: "all" })}
                     >
                         همه
                     </button>
                     <button
-                        className={`px-4 py-2 rounded-md app_border_color border transition-colors ${activeFilter === "income"
+                        className={`px-4 py-2 rounded-md app_border_color border transition-colors ${activeFilters?.type === "income"
                             ? "primary_bg_color text-white hover:bg-indigo-700 dark:hover:bg-indigo-500"
                             : "app_bg_color hover:bg-gray-100 dark:hover:bg-gray-700"
                             }`}
-                        onClick={() => setActiveFilter("income")}
+                        onClick={() => setActiveFilters({ ...activeFilters, type: "income" })}
                     >
                         درآمد
                     </button>
                     <button
-                        className={`px-4 py-2 rounded-md app_border_color border transition-colors ${activeFilter === "expense"
+                        className={`px-4 py-2 rounded-md app_border_color border transition-colors ${activeFilters?.type === "expense"
                             ? "primary_bg_color text-white hover:bg-indigo-700 dark:hover:bg-indigo-500"
                             : "app_bg_color hover:bg-gray-100 dark:hover:bg-gray-700"
                             }`}
-                        onClick={() => setActiveFilter("expense")}
+                        onClick={() => setActiveFilters({ ...activeFilters, type: "expense" })}
                     >
                         هزینه
                     </button>
@@ -68,9 +61,9 @@ export default function Transactions() {
 
                 {newTransactionModalVis && <NewTransactionModal onClose={() => setNewTransactionModalVis(false)} />}
             </div>
-            {filteredTransactions.length > 0 ? (
+            {transactionsForView.length > 0 ? (
                 <div className="mt-6">
-                    {filteredTransactions.map((transaction, index) => (
+                    {transactionsForView.map((transaction, index) => (
                         <TransactionItem
                             key={transaction.id}
                             transaction={transaction}

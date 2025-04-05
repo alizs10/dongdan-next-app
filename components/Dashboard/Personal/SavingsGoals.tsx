@@ -1,6 +1,6 @@
 "use client";
 
-import { EllipsisIcon, Pencil, Plus, Trash } from "lucide-react";
+import { CreditCard, EllipsisIcon, Pencil, Plus, Trash } from "lucide-react";
 import Button from "@/components/Common/Button";
 import { useState } from "react";
 import NewSavingsGoalModal from "./Modals/NewSavingsGoalModal";
@@ -67,6 +67,8 @@ const SavingsGoalItem = ({ goal, showActions, setShowActions }: { goal: SavingsG
         );
     };
 
+
+
     return (
         <div className="app_bg_color p-4 rounded-lg">
             <div className="flex justify-between items-center mb-2">
@@ -88,7 +90,16 @@ const SavingsGoalItem = ({ goal, showActions, setShowActions }: { goal: SavingsG
                             </button>
                         </div>
                     ) : (
-                        <span className="text-sm text-gray-500 dark:text-gray-400">{isGoalReached ? "✓ 100%" : `${Math.round(progress)}٪`}</span>
+                        <div className="flex flex-row gap-x-2 items-center">
+                            <Button
+                                text=""
+                                size="small"
+                                onClick={() => { }}
+                                color="success"
+                                icon={<CreditCard className="size-4" />}
+                            />
+                            <span className="text-sm text-gray-500 dark:text-gray-400">{isGoalReached ? "100%" : `${Math.round(progress)}٪`}</span>
+                        </div>
                     )}
                 </div>
             </div>
