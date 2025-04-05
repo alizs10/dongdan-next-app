@@ -1,17 +1,14 @@
 'use server'
 
+import { fetchWithAuth } from "@/app/actions/apiFetch";
 import { fetchInitData } from "@/app/actions/personal/init";
 import PersonalMain from "@/components/Dashboard/Personal/PersonalMain";
 
 
 const getInitData = async () => {
-    const result = await fetchInitData();
-    if (result.success) {
-        return result.data
-    } else {
-        // Handle error
-        console.error(result.message);
-    }
+
+    const data = await fetchWithAuth('/personal/init');
+    return data.data;
 };
 
 

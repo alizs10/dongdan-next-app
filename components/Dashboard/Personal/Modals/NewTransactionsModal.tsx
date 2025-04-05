@@ -213,15 +213,13 @@ function NewTransactionModal({ onClose }: { onClose: () => void }) {
                                 maxDate={new Date()}
                             />
 
-                            {inputs.type === 'expense' && (
-                                <CategorySelector
-                                    categories={categories}
-                                    selectedIds={inputs.category_ids}
-                                    onChange={handleCategoriesChange}
-                                    error={formErrors.category_ids}
-                                    multiSelect={true}
-                                />
-                            )}
+                            <CategorySelector
+                                categories={categories}
+                                selectedIds={inputs.category_ids}
+                                onChange={handleCategoriesChange}
+                                error={formErrors.category_ids}
+                                multiSelect={true}
+                            />
 
                             <ToggleInput
                                 label="تکرارشونده"

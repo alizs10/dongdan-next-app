@@ -16,7 +16,7 @@
     "crypto": "^1.0.1",
     "framer-motion": "^11.17.0",
     "jalali-moment": "^3.3.11",
-    "lucide-react": "^0.456.0",
+    "lucide-react": "^0.487.0",
     "next": "15.0.3",
     "next-persian-fonts": "^1.0.0",
     "next-themes": "^0.4.3",

@@ -14,7 +14,8 @@ const SavingsGoalItem = ({ goal, showActions, setShowActions }: { goal: SavingsG
     const [showEditModal, setShowEditModal] = useState(false);
     const { budget, removeSavingsGoal, addToast, openDialog } = useStore();
 
-    const progress = (budget / goal.target_amount) * 100;
+    const progress = Math.min((budget / goal.target_amount) * 100, 100);
+    const isGoalReached = progress >= 100;
 
     const handleEditClick = (e: React.MouseEvent) => {
         e.stopPropagation();
@@ -87,18 +88,18 @@ const SavingsGoalItem = ({ goal, showActions, setShowActions }: { goal: SavingsG
                             </button>
                         </div>
                     ) : (
-                        <span className="text-sm text-gray-500 dark:text-gray-400">{Math.round(progress)}٪</span>
+                        <span className="text-sm text-gray-500 dark:text-gray-400">{isGoalReached ? "✓ 100%" : `${Math.round(progress)}٪`}</span>
                     )}
                 </div>
             </div>
             <div className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-full mb-2">
                 <div
-                    className="h-2 primary_bg_color rounded-full"
+                    className={`h-2 ${isGoalReached ? 'bg-emerald-500' : 'primary_bg_color'} rounded-full`}
                     style={{ width: `${progress}%` }}
                 ></div>
             </div>
             <div className="flex justify-between items-center text-sm text-gray-600 dark:text-gray-400">
-                <span>{new Intl.NumberFormat('fa-IR').format(budget)} تومان</span>
+                <span className={`${progress >= 100 ? 'text-emerald-500 dark:text-emerald-400' : ''}`}>{progress >= 100 ? "قابل خرید" : `${new Intl.NumberFormat('fa-IR').format(budget)} تومان`}</span>
                 <span>{new Intl.NumberFormat('fa-IR').format(goal.target_amount)} تومان</span>
             </div>
 

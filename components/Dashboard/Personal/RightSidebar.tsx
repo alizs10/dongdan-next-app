@@ -5,6 +5,7 @@ import Button from "@/components/Common/Button";
 import { useState } from "react";
 import NewSavingsGoalModal from "./Modals/NewSavingsGoalModal";
 import SavingsGoals from "./SavingsGoals";
+import BudgetStatusBar from "./BudgetStatusBar";
 
 export default function RightSidebar() {
 
@@ -54,6 +55,8 @@ export default function RightSidebar() {
                     </li>
                 </ul>
             </div>
+
+            <BudgetStatusBar />
 
             <SavingsGoals />
         </div>

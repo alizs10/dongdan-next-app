@@ -19,6 +19,7 @@ import { updateTransactionReq } from "@/app/actions/personal/transaction";
 import { Transaction } from "@/types/personal/transaction-types";
 import FrequencySelector from "../Inputs/FrequencySelector";
 import CategorySelector from "../Inputs/CategorySelector";
+import { UpdateTransactionRequest } from "@/types/requests/personal/transaction";
 
 type FormInputs = {
     type: 'income' | 'expense';
@@ -43,8 +44,8 @@ function EditTransactionModal({ onClose, transaction }: { onClose: () => void, t
         amount: TomanPriceFormatter(transaction.amount.toString()),
         date: new Date(transaction.date),
         description: transaction.description || '',
-        category_ids: transaction.category && transaction.category.length > 0
-            ? transaction.category.map(cat => cat.id.toString())
+        category_ids: transaction.categories && transaction.categories.length > 0
+            ? transaction.categories.map(cat => cat.id.toString())
             : [],
         is_recurring: transaction.is_recurring ? 1 : 0,
         frequency: transaction.frequency as 'daily' | 'weekly' | 'monthly' | 'yearly' | null,
@@ -107,15 +108,15 @@ function EditTransactionModal({ onClose, transaction }: { onClose: () => void, t
         if (formLoading) return;
         setFormLoading(true);
 
-        const updatedTransaction: Partial<PersonalTransaction> & { id: number } = {
+        const updatedTransaction: UpdateTransactionRequest = {
             id: transaction.id,
-            user_id: user?.id.toString() || '',
+            // user_id: user?.id.toString() || '',
             type: inputs.type,
             title: inputs.title,
-            amount: TomanPriceToNumber(inputs.amount).toString(),
+            amount: TomanPriceToNumber(inputs.amount),
             date: inputs.date,
             description: inputs.description.trim() || null,
-            category_id: inputs.category_ids,
+            category_ids: inputs.category_ids.map(id => parseInt(id)),
             is_recurring: inputs.is_recurring,
             frequency: inputs.is_recurring === 1 ? inputs.frequency : null,
         };
@@ -227,15 +228,14 @@ function EditTransactionModal({ onClose, transaction }: { onClose: () => void, t
                                 maxDate={new Date()}
                             />
 
-                            {inputs.type === 'expense' && (
-                                <CategorySelector
-                                    categories={categories}
-                                    selectedIds={inputs.category_ids}
-                                    onChange={handleCategoriesChange}
-                                    error={formErrors.category_ids}
-                                    multiSelect={true}
-                                />
-                            )}
+                            <CategorySelector
+                                categories={categories}
+                                selectedIds={inputs.category_ids}
+                                onChange={handleCategoriesChange}
+                                error={formErrors.category_ids}
+                                multiSelect={true}
+                            />
+
 
                             <ToggleInput
                                 label="تکرارشونده"

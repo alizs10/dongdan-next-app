@@ -2,12 +2,11 @@
 
 import { EllipsisIcon, Plus } from "lucide-react";
 import Button from "@/components/Common/Button";
-import ExpenseItem from "./ExpenseItem";
-import IncomeItem from "./IncomeItem";
 import { useState } from "react";
 import NewTransactionModal from "./Modals/NewTransactionsModal";
 import { Transaction } from "@/types/personal/transaction-types";
 import useStore from "@/store/store";
+import TransactionItem from "./TransactionItem";
 
 export default function Transactions() {
 
@@ -24,12 +23,9 @@ export default function Transactions() {
         activeFilter === "all" ? true : transaction.type === activeFilter
     );
 
-    const toggleEditMode = () => {
-        setEditMode(prevState => !prevState);
-    };
 
     return (
-        <div className="space-y-6">
+        <div className="">
             <div className="flex justify-between items-center px-6">
                 <div className="flex gap-x-2">
                     <button
@@ -61,11 +57,6 @@ export default function Transactions() {
                     </button>
                 </div>
                 <div className="flex items-center gap-2">
-                    <button
-                        onClick={toggleEditMode}
-                        className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300">
-                        <EllipsisIcon className="size-5" />
-                    </button>
                     <Button
                         color="accent"
                         icon={<Plus className="size-6" />}
@@ -78,13 +69,17 @@ export default function Transactions() {
                 {newTransactionModalVis && <NewTransactionModal onClose={() => setNewTransactionModalVis(false)} />}
             </div>
             {filteredTransactions.length > 0 ? (
-                filteredTransactions.map((transaction, index) =>
-                    transaction.type === "income" ? (
-                        <IncomeItem key={index} transaction={transaction} showActions={editMode} setShowActions={setEditMode} />
-                    ) : (
-                        <ExpenseItem key={index} transaction={transaction} showActions={editMode} setShowActions={setEditMode} />
-                    )
-                )
+                <div className="mt-6">
+                    {filteredTransactions.map((transaction, index) => (
+                        <TransactionItem
+                            key={transaction.id}
+                            transaction={transaction}
+                            index={index}
+                        // showActions={editMode}
+                        // setShowActions={setEditMode}
+                        />
+                    ))}
+                </div>
             ) : (
                 <div className="text-center py-12 app_bg_color rounded-lg">
                     <p className="text-lg text-gray-600 dark:text-gray-400 mb-4">اولین تراکنش رو اضافه کن</p>
