@@ -2,7 +2,7 @@ import { Category } from "./category-types";
 
 export interface Transaction {
     id: number;
-    type: string;
+    type: "income" | "expense";
     amount: number;
     date: Date;
     title: string;
