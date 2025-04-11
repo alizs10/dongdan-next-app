@@ -1,6 +1,6 @@
 "use client";
 
-import { MoveRight } from "lucide-react";
+import { ArrowLeftRightIcon, MoveRight, ViewIcon } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import LeftSidebar from "@/components/Dashboard/Personal/LeftSidebar";
@@ -35,21 +35,23 @@ export default function PersonalMain({ data }: { data: InitData }) {
                 </div>
                 <div className="flex border-b app_border_color flex-row mb-6 w-full">
                     <button
-                        className={`flex-1 px-6 py-4 transition-colors ${activeTab === "transactions"
+                        className={`flex-1 flex flex-row items-center gap-x-2 justify-center px-6 py-4 transition-colors ${activeTab === "transactions"
                             ? "primary_bg_color text-white"
                             : "app_bg_color hover:bg-gray-100 dark:hover:bg-gray-700"
                             }`}
                         onClick={() => setActiveTab("transactions")}
                     >
+                        <ArrowLeftRightIcon className="size-5" />
                         تراکنش ها
                     </button>
                     <button
-                        className={`flex-1 px-6 py-4 transition-colors ${activeTab === "overview"
+                        className={`flex-1 flex flex-row items-center gap-x-2 justify-center px-6 py-4 transition-colors ${activeTab === "overview"
                             ? "primary_bg_color text-white"
                             : "app_bg_color hover:bg-gray-100 dark:hover:bg-gray-700"
                             }`}
                         onClick={() => setActiveTab("overview")}
                     >
+                        <ViewIcon className="size-5" />
                         نمای کلی
                     </button>
 

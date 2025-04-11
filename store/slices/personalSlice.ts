@@ -3,6 +3,7 @@ import { SavingsGoal } from '@/types/personal/savings-goal-types';
 import { Transaction } from '@/types/personal/transaction-types';
 import { InitData } from "@/types/responses/personal/init";
 import { Category } from "@/types/personal/category-types";
+import { BudgetLimit } from "@/types/personal/limit-types";
 
 export interface TransactionFilter {
     minDate?: Date;
@@ -18,6 +19,7 @@ export interface PersonalSlice {
     transactionsForView: Transaction[];
     budget: number;
     categories: Category[]; // Added categories
+    budgetLimits: BudgetLimit[]; // Added budgetLimits
     setBudget: (budget: number) => void; // Added setBudget
     addCategory: (category: Category) => void; // Added addCategory
     removeCategory: (category: Category) => void; // Added removeCategory
@@ -32,6 +34,10 @@ export interface PersonalSlice {
     setInitData: (data: InitData) => void; // Added setInitData to types
     filterTransactions: (filter: TransactionFilter) => Transaction[]; // Added filterTransactions
     setActiveFilters: (filters: TransactionFilter) => void; // Added setActiveFilters
+    // Added budget limit functions
+    addBudgetLimit: (limit: BudgetLimit) => void;
+    removeBudgetLimit: (id: number) => void;
+    updateBudgetLimit: (limit: BudgetLimit) => void;
 }
 
 export const createPersonalSlice: StateCreator<PersonalSlice, [], [], PersonalSlice> = (set, get) => ({
@@ -41,6 +47,7 @@ export const createPersonalSlice: StateCreator<PersonalSlice, [], [], PersonalSl
     transactionsForView: [], // Initialize empty, will be populated by filterTransactions
     budget: 0,
     categories: [], // Initialize categories
+    budgetLimits: [], // Initialize budgetLimits
     setBudget: (budget: number) => set(() => ({ budget })), // Implement setBudget
     addCategory: (category: Category) => set((state) => ({ categories: [...state.categories, category] })), // Implement addCategory
     removeCategory: (category: Category) => set((state) => ({ categories: state.categories.filter(cat => cat !== category) })), // Implement removeCategory
@@ -53,7 +60,14 @@ export const createPersonalSlice: StateCreator<PersonalSlice, [], [], PersonalSl
         }
         return state;
     }),
-    setInitData: (data: InitData) => set(() => ({ savingsGoals: data.savings_goals, transactions: data.transactions, transactionsForView: data.transactions, budget: data.budget, categories: data.categories })),
+    setInitData: (data: InitData) => set(() => ({
+        savingsGoals: data.savings_goals,
+        transactions: data.transactions,
+        transactionsForView: data.transactions,
+        budget: data.budget,
+        categories: data.categories,
+        budgetLimits: data.limits || [] // Changed from budget_limits to limits
+    })),
     addSavingsGoal: (goal: SavingsGoal) => set((state) => ({ savingsGoals: [...state.savingsGoals, goal] })),
     removeSavingsGoal: (id: number) => set((state) => ({ savingsGoals: state.savingsGoals.filter(goal => goal.id !== id) })),
     updateSavingsGoal: (goal: SavingsGoal) => set((state) => {
@@ -96,6 +110,22 @@ export const createPersonalSlice: StateCreator<PersonalSlice, [], [], PersonalSl
     setActiveFilters: (filters: TransactionFilter) => set((state) => {
         const transactionsForView = filterTransactionsHelper(state.transactions, filters);
         return { activeFilters: filters, transactionsForView };
+    }),
+    // Added budget limit functions
+    addBudgetLimit: (limit: BudgetLimit) => set((state) => ({
+        budgetLimits: [...state.budgetLimits, limit]
+    })),
+    removeBudgetLimit: (id: number) => set((state) => ({
+        budgetLimits: state.budgetLimits.filter(limit => limit.id !== id)
+    })),
+    updateBudgetLimit: (limit: BudgetLimit) => set((state) => {
+        const index = state.budgetLimits.findIndex(l => l.id === limit.id);
+        if (index !== -1) {
+            const updatedLimits = [...state.budgetLimits];
+            updatedLimits[index] = limit;
+            return { budgetLimits: updatedLimits };
+        }
+        return state;
     }),
 });
 

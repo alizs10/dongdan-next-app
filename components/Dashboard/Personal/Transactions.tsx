@@ -1,6 +1,6 @@
 "use client";
 
-import { EllipsisIcon, Plus } from "lucide-react";
+import { AlignJustify, BanknoteArrowDownIcon, BanknoteArrowUpIcon, EllipsisIcon, Plus } from "lucide-react";
 import Button from "@/components/Common/Button";
 import { useState } from "react";
 import NewTransactionModal from "./Modals/NewTransactionsModal";
@@ -13,40 +13,51 @@ export default function Transactions() {
     const { transactionsForView, activeFilters, setActiveFilters } = useStore()
 
     const [newTransactionModalVis, setNewTransactionModalVis] = useState(false)
-    const [editMode, setEditMode] = useState(false);
 
     transactionsForView.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
+    // Calculate transaction counts
+    const transactionsCount = transactionsForView.length;
+    const incomesCount = transactionsForView.filter(transaction => transaction.type === 'income').length;
+    const expensesCount = transactionsForView.filter(transaction => transaction.type === 'expense').length;
+
 
     return (
         <div className="">
             <div className="flex justify-between items-center px-6">
                 <div className="flex gap-x-2">
                     <button
-                        className={`px-4 py-2 rounded-md app_border_color border transition-colors ${activeFilters?.type === "all"
+                        className={`px-4 py-2 flex flex-row items-center gap-x-2 rounded-md app_border_color border transition-colors ${activeFilters?.type === "all"
                             ? "primary_bg_color text-white hover:bg-indigo-700 dark:hover:bg-indigo-500"
                             : "app_bg_color hover:bg-gray-100 dark:hover:bg-gray-700"
                             }`}
                         onClick={() => setActiveFilters({ ...activeFilters, type: "all" })}
                     >
+                        <AlignJustify className="size-5" />
                         همه
+                        <span>{`(${transactionsCount})`}</span>
                     </button>
                     <button
-                        className={`px-4 py-2 rounded-md app_border_color border transition-colors ${activeFilters?.type === "income"
-                            ? "primary_bg_color text-white hover:bg-indigo-700 dark:hover:bg-indigo-500"
-                            : "app_bg_color hover:bg-gray-100 dark:hover:bg-gray-700"
-                            }`}
-                        onClick={() => setActiveFilters({ ...activeFilters, type: "income" })}
-                    >
-                        درآمد
-                    </button>
-                    <button
-                        className={`px-4 py-2 rounded-md app_border_color border transition-colors ${activeFilters?.type === "expense"
+                        className={`px-4 py-2 flex flex-row items-center gap-x-2 rounded-md app_border_color border transition-colors ${activeFilters?.type === "expense"
                             ? "primary_bg_color text-white hover:bg-indigo-700 dark:hover:bg-indigo-500"
                             : "app_bg_color hover:bg-gray-100 dark:hover:bg-gray-700"
                             }`}
                         onClick={() => setActiveFilters({ ...activeFilters, type: "expense" })}
                     >
+                        <BanknoteArrowDownIcon className="size-5" />
                         هزینه
+                        <span>{`(${expensesCount})`}</span>
+                    </button>
+                    <button
+                        className={`px-4 py-2 flex flex-row items-center gap-x-2 rounded-md app_border_color border transition-colors ${activeFilters?.type === "income"
+                            ? "primary_bg_color text-white hover:bg-indigo-700 dark:hover:bg-indigo-500"
+                            : "app_bg_color hover:bg-gray-100 dark:hover:bg-gray-700"
+                            }`}
+                        onClick={() => setActiveFilters({ ...activeFilters, type: "income" })}
+                    >
+                        <BanknoteArrowUpIcon className="size-5" />
+                        درآمد
+                        <span>{`(${incomesCount})`}</span>
                     </button>
                 </div>
                 <div className="flex items-center gap-2">

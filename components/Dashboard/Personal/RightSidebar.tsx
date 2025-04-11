@@ -6,6 +6,8 @@ import { useState } from "react";
 import NewSavingsGoalModal from "./Modals/NewSavingsGoalModal";
 import SavingsGoals from "./SavingsGoals";
 import BudgetStatusBar from "./BudgetStatusBar";
+import Alerts from "./Alerts";
+import Limits from "./Limits";
 
 export default function RightSidebar() {
 
@@ -46,17 +48,11 @@ export default function RightSidebar() {
                     </li>
                 </ul>
             </div>
-            <div className="mb-6">
-                <h3 className="text-lg font-semibold primary_text_color px-4 mb-4">هشدار بودجه</h3>
-                <ul className="space-y-2">
-                    <li className="flex items-center gap-2 px-4 text-sm text-gray-700 dark:text-gray-300">
-                        <AlertTriangle className="size-4 text-yellow-500" />
-                        <span>۸۰٪ بودجه تفریح مصرف شده</span>
-                    </li>
-                </ul>
-            </div>
+            <Alerts />
 
             <BudgetStatusBar />
+
+            <Limits />
 
             <SavingsGoals />
         </div>

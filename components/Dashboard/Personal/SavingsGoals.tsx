@@ -1,6 +1,6 @@
 "use client";
 
-import { CreditCard, EllipsisIcon, Pencil, Plus, Trash } from "lucide-react";
+import { CreditCard, Crosshair, EllipsisIcon, Pencil, Plus, Trash } from "lucide-react";
 import Button from "@/components/Common/Button";
 import { useState } from "react";
 import NewSavingsGoalModal from "./Modals/NewSavingsGoalModal";
@@ -139,7 +139,10 @@ export default function SavingsGoals() {
     return (
         <div className="space-y-2 border-t app_border_color pt-6">
             <div className="flex justify-between items-center px-4">
-                <h3 className="text-lg font-semibold primary_text_color">اهداف پس‌انداز</h3>
+                <h3 className="text-lg font-semibold primary_text_color flex items-center gap-x-2">
+                    <Crosshair className="size-5" />
+                    اهداف
+                </h3>
                 <div className="flex flex-row items-center gap-x-2">
                     <button
                         onClick={toggleEditMode}
