@@ -55,7 +55,7 @@ export default function Alerts() {
     const alert = getBudgetAlert();
 
     return (
-        <div className="mb-6">
+        <div className="border-t app_border_color py-3">
             <h3 className="text-lg font-semibold primary_text_color px-4 mb-4 flex items-center gap-x-2">
                 <AlertTriangle className="size-5" />
                 هشدار ها

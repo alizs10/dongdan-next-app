@@ -8,6 +8,7 @@ import SavingsGoals from "./SavingsGoals";
 import BudgetStatusBar from "./BudgetStatusBar";
 import Alerts from "./Alerts";
 import Limits from "./Limits";
+import UpcomingExpenses from "./UpcomingExpenses";
 
 export default function RightSidebar() {
 
@@ -35,19 +36,9 @@ export default function RightSidebar() {
 
     return (
         <div className="w-72 app_bg_color h-full sticky top-20">
-            <div className="mb-6">
-                <h3 className="text-lg font-semibold primary_text_color px-4 pt-4 mb-4">صورتحساب‌های آتی</h3>
-                <ul className="space-y-2">
-                    <li className="flex justify-between items-center px-4">
-                        <span>اجاره خانه</span>
-                        <span className="text-sm text-gray-500 dark:text-gray-400">۱۱ اسفند</span>
-                    </li>
-                    <li className="flex justify-between items-center px-4">
-                        <span>هزینه اینترنت</span>
-                        <span className="text-sm text-gray-500 dark:text-gray-400">۹ اسفند</span>
-                    </li>
-                </ul>
-            </div>
+
+            <UpcomingExpenses />
+
             <Alerts />
 
             <BudgetStatusBar />
