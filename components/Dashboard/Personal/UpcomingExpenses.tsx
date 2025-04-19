@@ -33,7 +33,9 @@ export default function UpcomingExpenses() {
                     nextDate.setDate(nextDate.getDate() + 7)
                     break
                 case 'monthly':
-                    nextDate.setMonth(nextDate.getMonth() + 1)
+                    // Get the number of days in the current month using jalali-moment
+                    const daysInMonth = moment(nextDate).jDaysInMonth();
+                    nextDate.setDate(nextDate.getDate() + daysInMonth);
                     break
                 case 'yearly':
                     nextDate.setFullYear(nextDate.getFullYear() + 1)
@@ -47,15 +49,21 @@ export default function UpcomingExpenses() {
             while (nextDate < today) {
                 switch (expense.frequency) {
                     case 'daily':
+                        console.log("are we here?")
                         nextDate.setDate(nextDate.getDate() + 1)
                         break
                     case 'weekly':
+                        console.log("are we here?")
                         nextDate.setDate(nextDate.getDate() + 7)
                         break
                     case 'monthly':
-                        nextDate.setMonth(nextDate.getMonth() + 1)
+                        console.log("are we here?")
+                        // Get the number of days in the current month
+                        const daysInMonth = moment(nextDate).jDaysInMonth();
+                        nextDate.setDate(nextDate.getDate() + daysInMonth);
                         break
                     case 'yearly':
+                        console.log("are we here?")
                         nextDate.setFullYear(nextDate.getFullYear() + 1)
                         break
                 }
