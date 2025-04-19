@@ -37,21 +37,14 @@ const OverallView = () => {
 
     // Calculate last six months data for IncomeExpenseChart
     const sixMonthsData = useMemo(() => {
-        // Get current date and six months ago
-        const sixMonthsAgo = new Date();
-        sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 5); // -5 to include current month (total 6 months)
-
-        // Create array to hold month data
-        const monthlyData: MonthlyData[] = [];
+        // Get current Jalali date
+        const now = moment().locale("fa");
         const monthNames: string[] = [];
+        const monthlyData: MonthlyData[] = [];
 
-        // Loop through the last 6 months
-        for (let i = 0; i < 6; i++) {
-            const date = new Date(sixMonthsAgo);
-            date.setMonth(date.getMonth() + i);
-
-            // Get Persian month name and year
-            const jalaliDate = moment(date).locale("fa");
+        // Loop through the last 6 months using Jalali calendar
+        for (let i = 5; i >= 0; i--) {
+            const jalaliDate = moment().locale("fa").subtract(i, 'months');
             const monthName = jalaliDate.format("MMMM YYYY");
             monthNames.push(monthName);
 
@@ -65,14 +58,14 @@ const OverallView = () => {
 
         // Sum up transactions by month
         transactions.forEach(transaction => {
-            const transactionDate = new Date(transaction.date);
+            const transactionDate = moment(transaction.date).locale("fa");
+            const sixMonthsAgo = moment().locale("fa").subtract(5, 'months').startOf('month');
 
             // Skip transactions older than six months
-            if (transactionDate < sixMonthsAgo) return;
+            if (transactionDate.isBefore(sixMonthsAgo)) return;
 
             // Find the month index
-            const jalaliDate = moment(transactionDate).locale("fa");
-            const monthName = jalaliDate.format("MMMM YYYY");
+            const monthName = transactionDate.format("MMMM YYYY");
             const monthIndex = monthNames.indexOf(monthName);
 
             if (monthIndex !== -1) {

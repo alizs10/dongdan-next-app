@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowLeftRightIcon, MoveRight, ViewIcon } from "lucide-react";
+import { ArrowLeftRightIcon, EyeIcon, MoveRight, ViewIcon } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import LeftSidebar from "@/components/Dashboard/Personal/LeftSidebar";
@@ -51,7 +51,7 @@ export default function PersonalMain({ data }: { data: InitData }) {
                             }`}
                         onClick={() => setActiveTab("overview")}
                     >
-                        <ViewIcon className="size-5" />
+                        <EyeIcon className="size-5" />
                         نمای کلی
                     </button>
 
