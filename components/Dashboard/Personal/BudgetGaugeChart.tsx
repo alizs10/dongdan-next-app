@@ -105,6 +105,13 @@ const BudgetGaugeChart = ({ isDarkMode, fontLoaded, transactions }: BudgetGaugeC
     return (
         <div>
             <div className="flex justify-between items-center mb-4">
+                <h2
+                    className="text-lg font-semibold text-gray-700 dark:text-white text-right"
+                    style={{ fontFamily: estedadFD.style.fontFamily }}
+                >
+                    مصرف بودجه
+                </h2>
+
                 <div className="flex gap-2">
                     <button
                         onClick={() => setFilterType('all')}
@@ -125,12 +132,7 @@ const BudgetGaugeChart = ({ isDarkMode, fontLoaded, transactions }: BudgetGaugeC
                         ماه جاری
                     </button>
                 </div>
-                <h2
-                    className="text-lg font-semibold text-gray-700 dark:text-white text-right"
-                    style={{ fontFamily: estedadFD.style.fontFamily }}
-                >
-                    مصرف بودجه
-                </h2>
+
             </div>
             {fontLoaded ? (
                 <ReactApexChart options={options} series={series} type="radialBar" height={300} />
