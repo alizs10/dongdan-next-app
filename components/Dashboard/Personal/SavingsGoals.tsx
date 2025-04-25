@@ -103,7 +103,7 @@ const SavingsGoalItem = ({ goal, showActions, setShowActions }: { goal: SavingsG
                     )}
                 </div>
             </div>
-            <div className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-full mb-2">
+            <div className="w-full h-2 bg-gray-200 overflow-hidden dark:bg-gray-700 rounded-full mb-2">
                 <div
                     className={`h-2 ${isGoalReached ? 'bg-emerald-500' : 'primary_bg_color'} rounded-full`}
                     style={{ width: `${progress}%` }}

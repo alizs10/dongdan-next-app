@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import useStore from '@/store/store';
 import { TomanPriceFormatter } from '@/helpers/helpers';
 import { LeafIcon } from 'lucide-react';
+import Tooltip from '@/components/Common/Tooltip';
 
 interface BudgetStatusBarProps {
     className?: string;
@@ -64,24 +65,29 @@ const BudgetStatusBar = ({ className = '' }: BudgetStatusBarProps) => {
                 </div>
             </div> */}
 
-            <div className="relative">
-                {/* Center line */}
-                <div className="absolute -top-1 -bottom-1 left-1/2 w-0.5 bg-black dark:bg-white z-10"></div>
+            <Tooltip
+                text={`بودجه: ${TomanPriceFormatter(income.toString())} تومان`}
+            >
 
-                {/* Pointer */}
-                <div
-                    className="absolute top-0 bottom-0 h-2 bg-black shadow-[0_0_4px_2px_rgba(0,0,0,0.35)] aspect-square rounded-full z-20 transform -translate-x-1/2 translate-y-1/2"
-                    style={{ left: `${percentage}%` }}
-                ></div>
+                <div className="relative">
+                    {/* Center line */}
+                    <div className="absolute -top-1 -bottom-1 left-1/2 w-0.5 bg-black dark:bg-white z-10"></div>
 
-                <div className="relative h-4 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
-                    {/* Status indicator */}
+                    {/* Pointer */}
                     <div
-                        className="absolute top-0 bottom-0 bg-gradient-to-r from-red-500 via-gray-300 to-emerald-400"
-                        style={{ width: '100%' }}
+                        className="absolute top-0 bottom-0 h-2 bg-black shadow-[0_0_4px_2px_rgba(0,0,0,0.35)] aspect-square rounded-full z-20 transform -translate-x-1/2 translate-y-1/2"
+                        style={{ left: `${percentage}%` }}
                     ></div>
+
+                    <div className="relative h-4 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                        {/* Status indicator */}
+                        <div
+                            className="absolute top-0 bottom-0 bg-gradient-to-r from-red-500 via-gray-300 to-emerald-400"
+                            style={{ width: '100%' }}
+                        ></div>
+                    </div>
                 </div>
-            </div>
+            </Tooltip>
 
             <div className="mt-3">
                 <span className={`font-semibold text-base ${balance >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-500 dark:text-red-400'}`}>
