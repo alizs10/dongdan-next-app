@@ -9,6 +9,7 @@ import BudgetStatusBar from "./BudgetStatusBar";
 import Alerts from "./Alerts";
 import Limits from "./Limits";
 import UpcomingExpenses from "./UpcomingExpenses";
+import ThisMonthStats from "./ThisMonthStats";
 
 export default function RightSidebar() {
 
@@ -35,16 +36,12 @@ export default function RightSidebar() {
     };
 
     return (
-        <div className="w-72 max-h-[calc(100vh_-_5rem)] overflow-y-scroll app_bg_color h-full sticky top-20">
-
+        <div className="w-72 max-h-[calc(100vh_-_5rem)] overflow-x-hidden overflow-y-scroll app_bg_color h-full sticky top-20">
             <UpcomingExpenses />
-
             <Alerts />
-
+            <ThisMonthStats />
             <BudgetStatusBar />
-
             <Limits />
-
             <SavingsGoals />
         </div>
     );
