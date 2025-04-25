@@ -82,7 +82,7 @@ const BudgetStatusBar = ({ className = '' }: BudgetStatusBarProps) => {
                     <div className="relative h-4 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
                         {/* Status indicator */}
                         <div
-                            className="absolute top-0 bottom-0 bg-gradient-to-r from-red-500 via-gray-300 to-emerald-400"
+                            className="absolute top-0 bottom-0 bg-gradient-to-r from-red-500 via-gray-300 to-green-500"
                             style={{ width: '100%' }}
                         ></div>
                     </div>

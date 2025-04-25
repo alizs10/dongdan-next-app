@@ -117,7 +117,7 @@ const Categories = () => {
 
     return (
         <div className="">
-            <div className="flex flex-row justify-between items-center px-6 pt-6 mb-4">
+            <div className="flex flex-row justify-between items-center px-6 pt-6">
                 <div className="flex items-center gap-2 text-lg font-semibold primary_text_color">
                     <Tags className="size-5" />
                     <h3>برچسب‌ها</h3>
@@ -146,9 +146,9 @@ const Categories = () => {
             ) : (
                 <div className="relative">
                     {/* Overlay for top shadow effect */}
-                    <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/20 dark:from-gray-200/10 dark:via-transparent dark:to-gray-200/10 pointer-events-none z-10"></div>
+                    <div className="absolute inset-0 bg-gradient-to-b from-white/60 via-transparent to-white/60 dark:from-gray-950/60 dark:via-transparent dark:to-gray-950/60 pointer-events-none z-10"></div>
 
-                    <ul className="h-[270px] hide-scrollbar overflow-y-scroll">
+                    <ul className="h-[270px] hide-scrollbar py-5 overflow-y-scroll">
 
                         <li
                             onClick={() => setActiveFilters({ ...activeFilters, categoryIds: [] })}
