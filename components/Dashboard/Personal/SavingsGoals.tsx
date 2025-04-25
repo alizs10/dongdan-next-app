@@ -2,7 +2,7 @@
 
 import { CreditCard, Crosshair, EllipsisIcon, Pencil, Plus, Trash } from "lucide-react";
 import Button from "@/components/Common/Button";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import NewSavingsGoalModal from "./Modals/NewSavingsGoalModal";
 import EditSavingsGoalModal from "./Modals/EditSavingsGoalModal";
 import useStore from "@/store/store";
@@ -12,7 +12,24 @@ import { deleteSavingsGoalReq } from "@/app/actions/personal/savings-goal";
 // Separate component for individual savings goal
 const SavingsGoalItem = ({ goal, showActions, setShowActions }: { goal: SavingsGoal, showActions: boolean, setShowActions: (mode: boolean) => void }) => {
     const [showEditModal, setShowEditModal] = useState(false);
-    const { budget, removeSavingsGoal, addToast, openDialog } = useStore();
+    const { removeSavingsGoal, addToast, openDialog, transactions } = useStore();
+
+    const budget = useMemo(() => {
+
+        const totalIncome = transactions
+            .filter(t => t.type === 'income')
+            .reduce((sum, t) => sum + t.amount, 0);
+
+        const totalExpenses = transactions
+            .filter(t => t.type === 'expense')
+            .reduce((sum, t) => sum + t.amount, 0);
+
+        const currentBalance = totalIncome - totalExpenses;
+
+
+        return currentBalance >= 0 ? currentBalance : 0;
+
+    }, [transactions])
 
     const progress = Math.min((budget / goal.target_amount) * 100, 100);
     const isGoalReached = progress >= 100;
