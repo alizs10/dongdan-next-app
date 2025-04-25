@@ -2,17 +2,17 @@
 
 import { AlignJustify, BanknoteArrowDownIcon, BanknoteArrowUpIcon, EllipsisIcon, Plus } from "lucide-react";
 import Button from "@/components/Common/Button";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import NewTransactionModal from "./Modals/NewTransactionsModal";
-import { Transaction } from "@/types/personal/transaction-types";
 import useStore from "@/store/store";
 import TransactionItem from "./TransactionItem";
+import { PersonalContext } from "@/context/PersonalContext";
 
 export default function Transactions() {
 
     const { transactionsForView, activeFilters, setActiveFilters } = useStore()
 
-    const [newTransactionModalVis, setNewTransactionModalVis] = useState(false)
+    const { newTransactionModalVis, openNewTransactionModal } = useContext(PersonalContext)
 
     transactionsForView.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
@@ -66,11 +66,11 @@ export default function Transactions() {
                         icon={<Plus className="size-6" />}
                         size="medium"
                         text="افزودن تراکنش جدید"
-                        onClick={() => setNewTransactionModalVis(true)}
+                        onClick={openNewTransactionModal}
                     />
                 </div>
 
-                {newTransactionModalVis && <NewTransactionModal onClose={() => setNewTransactionModalVis(false)} />}
+                {newTransactionModalVis && <NewTransactionModal />}
             </div>
             {transactionsForView.length > 0 ? (
                 <div className="mt-6">

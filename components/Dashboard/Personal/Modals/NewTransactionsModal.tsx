@@ -6,21 +6,23 @@ import ModalWrapper from "@/components/Common/ModalWrapper";
 import { TomanPriceFormatter, TomanPriceToNumber } from "@/helpers/helpers";
 import { zValidate } from "@/helpers/validation-helper";
 import { Save } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { createPortal } from "react-dom";
 import PDatePicker from "@/components/Common/Form/PDatePicker";
 import { DateObject } from "react-multi-date-picker";
 import Button from "@/components/Common/Button";
 import ToggleInput from "@/components/Common/Form/ToggleInput";
 import useStore from "@/store/store";
-import { PersonalTransaction } from "@/types/personal-types"; // Assuming you define this
-import { createTransactionSchema } from "@/database/validations/personal/transaction-validation"; // To be created
-import { createTransactionReq } from "@/app/actions/personal/transaction"; // API call to Laravel
+import { PersonalTransaction } from "@/types/personal-types";
+import { createTransactionSchema } from "@/database/validations/personal/transaction-validation";
+import { createTransactionReq } from "@/app/actions/personal/transaction";
 import FrequencySelector from "../Inputs/FrequencySelector";
 import CategorySelector from "../Inputs/CategorySelector";
 import { CreateTransactionRequest } from "@/types/requests/personal/transaction";
+import moment from 'jalali-moment';
+import { PersonalContext } from "@/context/PersonalContext";
 
-type FormInputs = {
+export type NewTransactionFormInputs = {
     type: 'income' | 'expense';
     title: string;
     amount: string;
@@ -31,21 +33,23 @@ type FormInputs = {
     frequency: 'daily' | 'weekly' | 'monthly' | 'yearly' | null;
 };
 
-function NewTransactionModal({ onClose }: { onClose: () => void }) {
+function NewTransactionModal() {
     const { user, addToast, categories, addTransaction } = useStore();
+    const { initTransaction, closeNewTransactionModal: onClose } = useContext(PersonalContext);
 
     const [formLoading, setFormLoading] = useState(false);
 
-    const initInputs: FormInputs = {
-        type: 'expense',
-        title: '',
-        amount: '',
-        date: new Date(Date.now()),
-        description: '',
-        category_ids: [],
-        is_recurring: 0,
-        frequency: null,
+    const initInputs: NewTransactionFormInputs = {
+        type: initTransaction?.type || 'expense',
+        title: initTransaction?.title || '',
+        amount: initTransaction?.amount ? TomanPriceFormatter(initTransaction.amount.toString()) : '',
+        date: initTransaction?.date ? moment(initTransaction.date, 'YYYY-MM-DDTHH:mm:ss.SSSSSSZ').toDate() : new Date(Date.now()),
+        description: initTransaction?.description || '',
+        category_ids: initTransaction?.category_ids?.map(id => id.toString()) || [],
+        is_recurring: initTransaction?.is_recurring ? 1 : 0,
+        frequency: initTransaction?.frequency || null,
     };
+
     const [inputs, setInputs] = useState(initInputs);
 
     const initFormErrors = {
@@ -137,7 +141,7 @@ function NewTransactionModal({ onClose }: { onClose: () => void }) {
                 type: 'success' as const,
             };
             addToast(successToast);
-            addTransaction(res.transaction)
+            addTransaction(res.transaction);
             setFormLoading(false);
             onClose();
             return;

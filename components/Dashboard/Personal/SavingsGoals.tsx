@@ -2,17 +2,33 @@
 
 import { CreditCard, Crosshair, EllipsisIcon, Pencil, Plus, Trash } from "lucide-react";
 import Button from "@/components/Common/Button";
-import { useMemo, useState } from "react";
+import { useContext, useMemo, useState } from "react";
 import NewSavingsGoalModal from "./Modals/NewSavingsGoalModal";
 import EditSavingsGoalModal from "./Modals/EditSavingsGoalModal";
 import useStore from "@/store/store";
 import { SavingsGoal } from "@/types/personal/savings-goal-types";
 import { deleteSavingsGoalReq } from "@/app/actions/personal/savings-goal";
+import { PersonalContext } from "@/context/PersonalContext";
 
 // Separate component for individual savings goal
 const SavingsGoalItem = ({ goal, showActions, setShowActions }: { goal: SavingsGoal, showActions: boolean, setShowActions: (mode: boolean) => void }) => {
     const [showEditModal, setShowEditModal] = useState(false);
     const { removeSavingsGoal, addToast, openDialog, transactions } = useStore();
+    const { openNewTransactionModal, setInitTransaction } = useContext(PersonalContext)
+
+    function handleCreateTransaction() {
+        setInitTransaction({
+            type: 'expense',
+            amount: goal.target_amount.toString(),
+            date: new Date(),
+            description: `خرید ${goal.name}`,
+            category_ids: [],
+            frequency: null,
+            is_recurring: 0,
+            title: goal.name
+        });
+        openNewTransactionModal()
+    }
 
     const budget = useMemo(() => {
 
@@ -112,7 +128,7 @@ const SavingsGoalItem = ({ goal, showActions, setShowActions }: { goal: SavingsG
                                 <Button
                                     text=""
                                     size="small"
-                                    onClick={() => { }}
+                                    onClick={handleCreateTransaction}
                                     color="success"
                                     icon={<CreditCard className="size-4" />}
                                 />
