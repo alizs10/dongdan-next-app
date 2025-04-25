@@ -42,16 +42,22 @@ export default function Alerts() {
             name: 'minusBudgetAllTime',
             status: false,
             message: 'کسری بودجه کل: ۰ تومان'
+        },
+        {
+            name: 'insufficientBudgetForUpcoming',
+            status: false,
+            message: 'بودجه برای صورتحساب‌های آتی کافی نیست'
         }
     ];
 
     const [alertsList, setAlertsList] = useState<Alert[]>(alertsInit);
 
-    const { currentMonthBudget, allTimeBudget } = useMemo(() => {
+    const { currentMonthBudget, allTimeBudget, upcomingExpensesTotal } = useMemo(() => {
         // Current Persian month
         const now = moment().locale('fa');
         const startOfMonth = now.clone().startOf('jMonth');
         const endOfMonth = now.clone().endOf('jMonth');
+        const today = moment().locale('fa').startOf('day');
 
         // Filter transactions for current month
         const currentMonthTransactions = transactions.filter(transaction => {
@@ -77,6 +83,63 @@ export default function Alerts() {
             .filter(t => t.type === 'expense')
             .reduce((sum, t) => sum + t.amount, 0);
 
+        // Calculate upcoming expenses (same logic as UpcomingExpenses)
+        const recurringExpenses = transactions.filter(transaction =>
+            transaction.type === 'expense' &&
+            transaction.is_recurring &&
+            transaction.frequency
+        );
+
+        const expensesWithNextDate = recurringExpenses.map(expense => {
+            let lastDate = moment(expense.date, 'YYYY-MM-DDTHH:mm:ss.SSSSSSZ').locale('fa');
+            let nextDate = lastDate.clone();
+
+            switch (expense.frequency) {
+                case 'daily':
+                    nextDate.add(1, 'day');
+                    break;
+                case 'weekly':
+                    nextDate.add(7, 'days');
+                    break;
+                case 'monthly':
+                    nextDate.add(1, 'jMonth');
+                    break;
+                case 'yearly':
+                    nextDate.add(1, 'jYear');
+                    break;
+                default:
+                    nextDate = lastDate;
+            }
+
+            while (nextDate.isBefore(today)) {
+                switch (expense.frequency) {
+                    case 'daily':
+                        nextDate.add(1, 'day');
+                        break;
+                    case 'weekly':
+                        nextDate.add(7, 'days');
+                        break;
+                    case 'monthly':
+                        nextDate.add(1, 'jMonth');
+                        break;
+                    case 'yearly':
+                        nextDate.add(1, 'jYear');
+                        break;
+                }
+            }
+
+            return {
+                ...expense,
+                nextDate
+            };
+        });
+
+        const upcomingExpenses = expensesWithNextDate
+            .sort((a, b) => a.nextDate.valueOf() - b.nextDate.valueOf())
+            .slice(0, 5);
+
+        const upcomingExpensesTotal = upcomingExpenses.reduce((sum, expense) => sum + expense.amount, 0);
+
         return {
             currentMonthBudget: {
                 income: currentMonthIncome,
@@ -87,7 +150,8 @@ export default function Alerts() {
                 income: allTimeIncome,
                 expenses: allTimeExpenses,
                 balance: allTimeIncome - allTimeExpenses
-            }
+            },
+            upcomingExpensesTotal
         };
     }, [transactions]);
 
@@ -135,13 +199,18 @@ export default function Alerts() {
                         status: allTimeBudget.balance < 0,
                         message: `کسری بودجه کل: ${Math.abs(allTimeBudget.balance).toLocaleString('fa-IR')} تومان`
                     };
+                case 'insufficientBudgetForUpcoming':
+                    return {
+                        ...alert,
+                        status: allTimeBudget.balance < upcomingExpensesTotal
+                    };
                 default:
                     return alert;
             }
         });
 
         setAlertsList(updatedAlerts);
-    }, [currentMonthBudget, allTimeBudget]);
+    }, [currentMonthBudget, allTimeBudget, upcomingExpensesTotal]);
 
     return (
         <div className="border-t app_border_color py-3">
@@ -152,8 +221,8 @@ export default function Alerts() {
             <ul className="space-y-2">
                 {alertsList.filter(alert => alert.status).length > 0 ? (
                     alertsList.filter(alert => alert.status).map((alert, index) => (
-                        <li key={index} className="flex items-center gap-2 px-4 text-sm text-gray-700 dark:text-gray-300">
-                            <AlertTriangle className="size-4 text-yellow-500" />
+                        <li key={index} className="px-4 text-sm text-gray-700 dark:text-gray-300">
+                            <AlertTriangle className="float-right mt-0.5 ml-2 size-4 text-yellow-500" />
                             <span>{alert.message}</span>
                         </li>
                     ))
