@@ -108,13 +108,15 @@ const SavingsGoalItem = ({ goal, showActions, setShowActions }: { goal: SavingsG
                         </div>
                     ) : (
                         <div className="flex flex-row gap-x-2 items-center">
-                            <Button
-                                text=""
-                                size="small"
-                                onClick={() => { }}
-                                color="success"
-                                icon={<CreditCard className="size-4" />}
-                            />
+                            {isGoalReached && (
+                                <Button
+                                    text=""
+                                    size="small"
+                                    onClick={() => { }}
+                                    color="success"
+                                    icon={<CreditCard className="size-4" />}
+                                />
+                            )}
                             <span className="text-sm text-gray-500 dark:text-gray-400">{isGoalReached ? "100%" : `${Math.round(progress)}٪`}</span>
                         </div>
                     )}
