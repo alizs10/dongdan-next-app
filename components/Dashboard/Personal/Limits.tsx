@@ -9,6 +9,7 @@ import { Category } from "@/types/personal/category-types";
 import NewBudgetLimitModal from "./Modals/NewBudgetLimitModal";
 import EditBudgetLimitModal from "./Modals/EditBudgetLimitModal";
 import { deleteBudgetLimitReq } from '@/app/actions/personal/budget-limit';
+import moment from 'jalali-moment';
 
 // Separate component for individual budget limit
 const BudgetLimitItem = ({ limit, category, showActions, setShowActions }: {
@@ -20,36 +21,47 @@ const BudgetLimitItem = ({ limit, category, showActions, setShowActions }: {
     const [showEditModal, setShowEditModal] = useState(false);
     const { removeBudgetLimit, addToast, openDialog, transactions } = useStore();
 
-    // Calculate current amount based on period
+    // Calculate current amount based on period using Persian calendar
     const calculateCurrentAmount = () => {
-        const now = new Date();
-        const startDate = new Date();
+        const now = moment();
+        let startDate = moment();
 
         switch (limit.period) {
             case 'weekly':
-                startDate.setDate(now.getDate() - 7);
+                startDate = now.clone().startOf('week');
                 break;
             case 'monthly':
-                startDate.setMonth(now.getMonth() - 1);
+                startDate = now.clone().startOf('jMonth');
                 break;
             case 'yearly':
-                startDate.setFullYear(now.getFullYear() - 1);
+                startDate = now.clone().startOf('jYear');
                 break;
         }
 
         return transactions
-            .filter(t =>
-                t.type === 'expense' &&
-                t.categories?.some(c => c.id === category.id) &&
-                new Date(t.date) >= startDate &&
-                new Date(t.date) <= now
-            )
+            .filter(t => {
+                const isExpense = t.type === 'expense';
+                const hasCategory = t.categories?.some(c => c.id === category.id);
+                // Parse ISO date and convert to Jalali
+                const transactionDate = moment(t.date, 'YYYY-MM-DDTHH:mm:ss.SSSSSSZ').locale('fa');
+                const isInRange = transactionDate.isSameOrAfter(startDate) && transactionDate.isSameOrBefore(now);
+
+                return isExpense && hasCategory && isInRange;
+            })
             .reduce((sum, t) => sum + t.amount, 0);
     };
 
     const currentAmount = calculateCurrentAmount();
     const progress = Math.min((currentAmount / limit.amount) * 100, 100);
     const isLimitReached = progress >= 100;
+
+    // Determine progress bar and percentage text color based on progress
+    const getProgressColor = () => {
+        if (progress < 33) return 'bg-green-500 text-green-500';
+        if (progress < 50) return 'bg-yellow-400 text-yellow-400';
+        if (progress < 67) return 'bg-orange-500 text-orange-500';
+        return 'bg-red-500 text-red-500';
+    };
 
     const handleEditClick = (e: React.MouseEvent) => {
         e.stopPropagation();
@@ -136,18 +148,18 @@ const BudgetLimitItem = ({ limit, category, showActions, setShowActions }: {
                             </div>
                         ) : (
                             <div className="flex flex-col items-end">
-                                <span className="font-medium">{Math.round(progress)}%</span>
+                                <span className={`font-medium ${getProgressColor().split(' ')[1]}`}>
+                                    {Math.round(progress)}%
+                                </span>
                                 <span className="text-sm text-gray-500 dark:text-gray-400">{getPeriodText(limit.period)}</span>
                             </div>
                         )}
                     </div>
-
                 </div>
-
             </div>
             <div className="mb-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
                 <div
-                    className={`h-2 ${isLimitReached ? 'bg-red-500' : 'primary_bg_color'} rounded-full`}
+                    className={`h-2 ${getProgressColor().split(' ')[0]} rounded-full`}
                     style={{ width: `${progress}%` }}
                 ></div>
             </div>
