@@ -82,7 +82,7 @@ export default function TransactionsCalendar() {
     };
 
     return (
-        <div className="py-6 border-t app_border_color">
+        <div className="pt-6 border-t app_border_color">
             <div className="flex items-center gap-2 text-lg font-semibold primary_text_color px-6 mb-4">
                 <Calendar className="size-5" />
                 <h3>تقویم</h3>

@@ -386,3 +386,59 @@
   scrollbar-width: none;
   /* Firefox */
 }
+
+/* custom scrollbar - default for all scrollbars */
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #4f46e5 #000;
+}
+
+*::-webkit-scrollbar {
+  width: 8px;
+}
+
+*::-webkit-scrollbar-track {
+  background: #000;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: #4f46e5;
+  border-radius: 10px;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: #4338ca;
+}
+
+*::-webkit-scrollbar-thumb:active {
+  background: #3730a3;
+}
+
+*::-webkit-scrollbar-corner {
+  background: #000;
+}
+
+*::-webkit-scrollbar-button {
+  background: #000;
+}
+
+*::-webkit-scrollbar-button:vertical:decrement {
+  background: #000;
+}
+
+*::-webkit-scrollbar-button:vertical:increment {
+  background: #000;
+}
+
+*::-webkit-scrollbar-button:horizontal:decrement {
+  background: #000;
+}
+
+*::-webkit-scrollbar-button:horizontal:increment {
+  background: #000;
+}
+
+*::-webkit-scrollbar-corner {
+  background: #000;
+}

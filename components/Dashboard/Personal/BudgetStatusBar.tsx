@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import useStore from '@/store/store';
 import { TomanPriceFormatter } from '@/helpers/helpers';
+import { LeafIcon } from 'lucide-react';
 
 interface BudgetStatusBarProps {
     className?: string;
@@ -50,7 +51,10 @@ const BudgetStatusBar = ({ className = '' }: BudgetStatusBarProps) => {
 
     return (
         <div className={`w-full border-t app_border_color py-6 px-4 app_bg_color rounded-lg ${className}`}>
-            <h2 className="text-lg font-semibold mb-3 primary_text_color">وضعیت بودجه</h2>
+            <div className="flex flex-row items-center  mb-3 gap-x-2 primary_text_color">
+                <LeafIcon className='size-5' />
+                <h2 className="text-lg font-semibold">وضعیت بودجه</h2>
+            </div>
             {/* <div className="flex flex-col gap-y-2 mb-2">
                 <div className="text-red-500 dark:text-red-400 text-sm">
                     هزینه‌ها: {TomanPriceFormatter(expenses.toString())} تومان
