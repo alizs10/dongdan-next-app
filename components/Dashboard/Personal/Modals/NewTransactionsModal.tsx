@@ -31,6 +31,7 @@ export type NewTransactionFormInputs = {
     category_ids: string[];
     is_recurring: 0 | 1;
     frequency: 'daily' | 'weekly' | 'monthly' | 'yearly' | null;
+    savings_goal_id?: number | null; // Optional for new transactions
 };
 
 function NewTransactionModal() {
@@ -48,6 +49,7 @@ function NewTransactionModal() {
         category_ids: initTransaction?.category_ids?.map(id => id.toString()) || [],
         is_recurring: initTransaction?.is_recurring ? 1 : 0,
         frequency: initTransaction?.frequency || null,
+        savings_goal_id: initTransaction?.savings_goal_id || null, // Optional for new transactions
     };
 
     const [inputs, setInputs] = useState(initInputs);
@@ -117,6 +119,7 @@ function NewTransactionModal() {
             category_ids: inputs.category_ids.map(id => parseInt(id)),
             is_recurring: inputs.is_recurring,
             frequency: inputs.is_recurring === 1 ? inputs.frequency : null,
+            savings_goal_id: inputs.savings_goal_id || null, // Optional for new transactions
         };
 
         const { hasError, errors } = zValidate(createTransactionSchema, newTransaction);

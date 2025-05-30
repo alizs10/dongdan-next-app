@@ -16,7 +16,7 @@ import { createBudgetLimitSchema } from '@/database/validations/personal/budget-
 
 type FormInputs = {
     name: string;
-    category_id: string | null;
+    category_id: string;
     amount: string;
     period: 'weekly' | 'monthly' | 'yearly';
 }
@@ -27,7 +27,7 @@ export default function NewBudgetLimitModal({ onClose }: { onClose: () => void }
 
     const [inputs, setInputs] = useState<FormInputs>({
         name: '',
-        category_id: null,
+        category_id: 'all',
         amount: '',
         period: 'monthly',
     })
@@ -64,13 +64,15 @@ export default function NewBudgetLimitModal({ onClose }: { onClose: () => void }
             return;
         }
 
+        const newBudgetLimit = {
+            name: inputs.name,
+            category_id: inputs.category_id === 'all' ? null : parseInt(inputs.category_id),
+            amount: parseInt(inputs.amount.replaceAll(',', '')),
+            period: inputs.period,
+        }
+
         try {
-            const result = await createBudgetLimitReq({
-                name: inputs.name,
-                category_id: inputs.category_id ? parseInt(inputs.category_id) : null,
-                amount: parseInt(inputs.amount.replaceAll(',', '')),
-                period: inputs.period,
-            });
+            const result = await createBudgetLimitReq(newBudgetLimit);
 
             if (result.success && result.budgetLimit) {
                 addBudgetLimit(result.budgetLimit);
@@ -117,7 +119,7 @@ export default function NewBudgetLimitModal({ onClose }: { onClose: () => void }
                             error={formErrors.category_id}
                             label="دسته‌بندی"
                             options={[
-                                { value: '', label: 'همه دسته‌بندی‌ها' },
+                                { value: 'all', label: 'همه دسته‌بندی‌ها' },
                                 ...categories.map(category => ({
                                     value: category.id.toString(),
                                     label: category.name

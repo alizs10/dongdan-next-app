@@ -29,7 +29,7 @@ export default function Select({ name, value, error, label, options, handleChang
                 onChange={handleChange}
                 className={`app_bg_color border app_border_color rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 ${error ? 'border-red-500 dark:border-red-400' : ''}`}
             >
-                <option value="">Select {label}</option>
+                <option value="">انتخاب {label}</option>
                 {options.map((option) => (
                     <option key={option.value} value={option.value}>
                         {option.label}

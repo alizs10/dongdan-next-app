@@ -12,6 +12,7 @@ export interface Transaction {
     is_recurring: boolean;
     frequency: null | string;
     user_id: number;
+    savings_goal_id: number | null;
     created_at: Date;
     updated_at: Date;
 }

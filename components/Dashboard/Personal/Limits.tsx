@@ -222,8 +222,15 @@ export default function Limits() {
             {budgetLimits.length > 0 ? (
                 <div className="space-y-6">
                     {budgetLimits.map((limit) => {
-                        const category = categories.find(c => c.id === limit.category_id);
-                        if (!category) return null;
+                        let category = categories.find(c => c.id === limit.category_id);
+                        if (!category) {
+                            category = {
+                                id: 0,
+                                name: 'همه دسته‌بندی‌ها',
+                                created_at: new Date(),
+                                updated_at: new Date(),
+                            }
+                        };
                         return (
                             <BudgetLimitItem
                                 key={limit.id}

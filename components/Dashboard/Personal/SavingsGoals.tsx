@@ -1,6 +1,6 @@
 "use client";
 
-import { CreditCard, Crosshair, EllipsisIcon, Pencil, Plus, Trash } from "lucide-react";
+import { CheckCircleIcon, CreditCard, Crosshair, EllipsisIcon, Pencil, Plus, Trash } from "lucide-react";
 import Button from "@/components/Common/Button";
 import { useContext, useMemo, useState } from "react";
 import NewSavingsGoalModal from "./Modals/NewSavingsGoalModal";
@@ -25,7 +25,8 @@ const SavingsGoalItem = ({ goal, showActions, setShowActions }: { goal: SavingsG
             category_ids: [],
             frequency: null,
             is_recurring: 0,
-            title: goal.name
+            title: goal.name,
+            savings_goal_id: goal.id,
         });
         openNewTransactionModal()
     }
@@ -48,8 +49,8 @@ const SavingsGoalItem = ({ goal, showActions, setShowActions }: { goal: SavingsG
     }, [transactions])
 
     const progress = Math.min((budget / goal.target_amount) * 100, 100);
-    const isGoalReached = progress >= 100;
-
+    const isReached = goal.status;
+    const isgGoalReachable = progress >= 100 && !isReached;
     const handleEditClick = (e: React.MouseEvent) => {
         e.stopPropagation();
         setShowEditModal(true);
@@ -107,7 +108,7 @@ const SavingsGoalItem = ({ goal, showActions, setShowActions }: { goal: SavingsG
             <div className="flex justify-between items-center mb-2">
                 <span className="font-medium">{goal.name}</span>
                 <div className="flex items-center">
-                    {showActions ? (
+                    {(!goal.status && showActions) ? (
                         <div className="flex gap-2">
                             <button
                                 onClick={handleEditClick}
@@ -124,7 +125,7 @@ const SavingsGoalItem = ({ goal, showActions, setShowActions }: { goal: SavingsG
                         </div>
                     ) : (
                         <div className="flex flex-row gap-x-2 items-center">
-                            {isGoalReached && (
+                            {isgGoalReachable && (
                                 <Button
                                     text=""
                                     size="small"
@@ -133,23 +134,38 @@ const SavingsGoalItem = ({ goal, showActions, setShowActions }: { goal: SavingsG
                                     icon={<CreditCard className="size-4" />}
                                 />
                             )}
-                            <span className="text-sm text-gray-500 dark:text-gray-400">{isGoalReached ? "100%" : `${Math.round(progress)}٪`}</span>
+                            {isReached ? (
+                                <CheckCircleIcon className="size-4 text-emerald-500" />
+                            ) : (
+                                <span className="text-sm text-gray-500 dark:text-gray-400">{isgGoalReachable ? "100%" : `${Math.round(progress)}٪`}</span>
+                            )}
                         </div>
                     )}
                 </div>
             </div>
-            <div className="w-full h-2 bg-gray-200 overflow-hidden dark:bg-gray-700 rounded-full mb-2">
-                <div
-                    className={`h-2 ${isGoalReached ? 'bg-emerald-500' : 'primary_bg_color'} rounded-full`}
-                    style={{ width: `${progress}%` }}
-                ></div>
-            </div>
-            <div className="flex justify-between items-center text-sm text-gray-600 dark:text-gray-400">
-                <span className={`${progress >= 100 ? 'text-emerald-500 dark:text-emerald-400' : ''}`}>{progress >= 100 ? "قابل خرید" : `${new Intl.NumberFormat('fa-IR').format(budget)} تومان`}</span>
-                <span>{new Intl.NumberFormat('fa-IR').format(goal.target_amount)} تومان</span>
-            </div>
 
-            {showEditModal && (
+            {!isReached ? (<>
+                <div className="w-full h-2 bg-gray-200 overflow-hidden dark:bg-gray-700 rounded-full mb-2">
+                    <div
+                        className={`h-2 ${isgGoalReachable ? 'bg-emerald-500' : 'primary_bg_color'} rounded-full`}
+                        style={{ width: `${progress}%` }}
+                    ></div>
+                </div>
+                <div className="flex justify-between items-center text-sm text-gray-600 dark:text-gray-400">
+                    <span className={`${progress >= 100 ? 'text-emerald-500 dark:text-emerald-400' : ''}`}>{progress >= 100 ? "قابل خرید" : `${new Intl.NumberFormat('fa-IR').format(budget)} تومان`}</span>
+                    <span>{new Intl.NumberFormat('fa-IR').format(goal.target_amount)} تومان</span>
+                </div>
+
+            </>) : (
+
+                <div className="flex flex-row items-center justify-between">
+                    <span className="text-emerald-500 dark:text-emerald-400">تکمیل شده</span>
+                    <span className="text-emerald-500">{new Intl.NumberFormat('fa-IR').format(goal.target_amount)} تومان</span>
+                </div>
+            )}
+
+
+            {(!goal.status && showEditModal) && (
                 <EditSavingsGoalModal
                     onClose={() => {
                         setShowActions(false);

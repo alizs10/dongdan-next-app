@@ -11,6 +11,7 @@ export const createTransactionSchema: ZodType<CreateTransactionRequest> = z.obje
     category_ids: z.array(z.number()).optional().default([]),
     is_recurring: z.union([z.literal(0), z.literal(1)]),
     frequency: z.enum(['daily', 'weekly', 'monthly', 'yearly']).nullable(),
+    savings_goal_id: z.number().nullable().optional(), // Optional for new transactions
 }).refine(data => data.is_recurring === 0 || (data.is_recurring === 1 && data.frequency), {
     message: 'تکرار باید انتخاب شود اگر تراکنش تکرارشونده است',
     path: ['frequency'],
